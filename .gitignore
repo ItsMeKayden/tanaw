@@ -10,6 +10,11 @@
 !.yarn/releases
 !.yarn/versions
 
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
 # testing
 /coverage
 
@@ -39,3 +44,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/lib/generated/prisma
