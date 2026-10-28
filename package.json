@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:pull": "prisma db pull --config prisma7.config.ts",
+    "db:push": "prisma db push --config prisma7.config.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
