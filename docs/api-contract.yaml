@@ -2,109 +2,431 @@ openapi: 3.1.0
 
 info:
   title: TANAW Shared API Contract
-  version: 0.1.0
+  version: 0.2.0
   description: |
-    Shared API contract for the TANAW system.
-
-    This file is the proposed single source of truth for inter-module API
-    agreements. The five module names are confirmed. Endpoint paths, HTTP
-    methods, request and response payloads, authentication requirements,
-    and error formats remain pending team agreement unless explicitly
-    approved and documented here.
-
-    Database model information below is reference material derived from
-    the supplied Prisma schema. It is not, by itself, an agreed public API
-    request or response format.
+    Shared API contract for TANAW.
+    This contract defines five selected endpoints connecting the
+    Admission System and Course Recommendation modules.
+    Request and response formats are proposed for implementation.
 
 servers: []
 
 tags:
-  - name: Dashboard
-    description: Module identified by the project team; API operations pending team agreement.
-  - name: Map Module
-    description: Module identified by the project team; API operations pending team agreement.
   - name: Admission System
-    description: Module identified by the project team; API operations pending team agreement.
-  - name: Analytics and Reports
-    description: Module identified by the project team; API operations pending team agreement.
+    description: Application and exam data.
   - name: Course Recommendation
-    description: Module identified by the project team; API operations pending team agreement.
+    description: Program listings and course recommendations.
 
-paths: {}
+paths:
+  /applications/{applicationId}/exam-results:
+    get:
+      tags:
+        - Admission System
+      summary: Get exam results for an application
+      operationId: getApplicationExamResults
+      parameters:
+        - $ref: "#/components/parameters/ApplicationId"
+      responses:
+        "200":
+          description: Exam results retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - application_id
+                  - exam_results
+                properties:
+                  application_id:
+                    type: integer
+                  exam_results:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ExamResult"
+              example:
+                application_id: 101
+                exam_results:
+                  - result_id: 501
+                    exam_id: 12
+                    raw_score: 42
+                    percentage: 84.00
+                    result_status: PASSED
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /applications/{applicationId}/details:
+    get:
+      tags:
+        - Admission System
+      summary: Get application details
+      operationId: getApplicationDetails
+      parameters:
+        - $ref: "#/components/parameters/ApplicationId"
+      responses:
+        "200":
+          description: Application details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApplicationDetails"
+              example:
+                application_id: 101
+                application_no: TANAW-2026-00101
+                applicant:
+                  applicant_id: 201
+                  first_name: Alex
+                  middle_name: null
+                  last_name: Santos
+                cycle_id: 3
+                program_id: 7
+                branch_id: 2
+                current_stage_id: 4
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /programs:
+    get:
+      tags:
+        - Course Recommendation
+      summary: Get available programs
+      operationId: getPrograms
+      responses:
+        "200":
+          description: Programs retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - programs
+                properties:
+                  programs:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Program"
+              example:
+                programs:
+                  - program_id: 7
+                    program_code: BSIT
+                    program_name: Bachelor of Science in Information Technology
+                    is_active: true
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /applications/{applicationId}/recommendations:
+    post:
+      tags:
+        - Course Recommendation
+      summary: Generate recommendations for an application
+      operationId: generateApplicationRecommendations
+      description: |
+        Generates course recommendations using application information,
+        exam results, program competencies, and competency weights.
+      parameters:
+        - $ref: "#/components/parameters/ApplicationId"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              maxProperties: 0
+            example: {}
+      responses:
+        "200":
+          description: Recommendations generated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - application_id
+                  - recommendations
+                properties:
+                  application_id:
+                    type: integer
+                  recommendations:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/CourseRecommendation"
+              example:
+                application_id: 101
+                recommendations:
+                  - program_id: 7
+                    program_code: BSIT
+                    program_name: Bachelor of Science in Information Technology
+                    compatibility_score: 87.50
+                    rank_no: 1
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          description: Insufficient data to generate recommendations.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error:
+                  code: INSUFFICIENT_DATA
+                  message: Insufficient data to generate recommendations.
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    get:
+      tags:
+        - Course Recommendation
+      summary: Get recommendations for an application
+      operationId: getApplicationRecommendations
+      parameters:
+        - $ref: "#/components/parameters/ApplicationId"
+      responses:
+        "200":
+          description: Recommendations retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - application_id
+                  - recommendations
+                properties:
+                  application_id:
+                    type: integer
+                  recommendations:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/CourseRecommendation"
+              example:
+                application_id: 101
+                recommendations:
+                  - program_id: 7
+                    program_code: BSIT
+                    program_name: Bachelor of Science in Information Technology
+                    compatibility_score: 87.50
+                    rank_no: 1
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
 components:
-  schemas: {}
-  responses: {}
+  parameters:
+    ApplicationId:
+      name: applicationId
+      in: path
+      required: true
+      description: Numeric application ID from tbl_application.
+      schema:
+        type: integer
+        minimum: 1
+      example: 101
 
-# Project-planning notes. These extensions are not API routes or runtime behavior.
-x-module-contract-status:
-  Dashboard:
-    status: pending-team-agreement
-    possible-data-sources:
-      - tbl_application
-      - tbl_applicant
-      - tbl_exam_result
-      - tbl_course_recommendation
-    endpoints: []
-  Map Module:
-    status: pending-team-agreement
-    possible-data-sources:
-      - tbl_district
-      - tbl_barangay
-      - tbl_school
-    endpoints: []
-  Admission System:
-    status: pending-team-agreement
-    possible-data-sources:
-      - tbl_applicant
-      - tbl_application
-      - tbl_admission_cycle
-      - tbl_admission_stage
-      - tbl_application_stage_log
-      - tbl_quota
-      - tbl_branch
-      - tbl_program
-      - tbl_school
-      - tbl_barangay
-    endpoints: []
-  Analytics and Reports:
-    status: pending-team-agreement
-    possible-data-sources:
-      - tbl_application
-      - tbl_applicant
-      - tbl_admission_cycle
-      - tbl_exam_result
-      - tbl_import_batch
-      - tbl_course_recommendation
-    endpoints: []
-  Course Recommendation:
-    status: pending-team-agreement
-    possible-data-sources:
-      - tbl_course_recommendation
-      - tbl_program
-      - tbl_program_competency
-      - tbl_competency
-      - tbl_exam_result
-      - tbl_question_response
-    endpoints: []
+  schemas:
+    ApplicantSummary:
+      type: object
+      required:
+        - applicant_id
+        - first_name
+        - last_name
+      properties:
+        applicant_id:
+          type: integer
+          example: 201
+        first_name:
+          type: string
+          example: Alex
+        middle_name:
+          type:
+            - string
+            - "null"
+          example: null
+        last_name:
+          type: string
+          example: Santos
 
-x-pending-team-agreement:
-  - Which modules communicate directly with each other
-  - Which module owns each dataset and is responsible for writes
-  - Endpoint paths and HTTP methods
-  - Request and response field names, data types, and validation rules
-  - Required versus optional fields for each operation
-  - Standard success and error response formats
-  - Authentication and authorization requirements
-  - API versioning and deployment base URLs
-  - Whether API payloads use database field names or a separate DTO naming convention
-  - Whether the Prisma models User and tbl_user_account represent separate account systems
+    ApplicationDetails:
+      type: object
+      required:
+        - application_id
+        - application_no
+      properties:
+        application_id:
+          type: integer
+          example: 101
+        application_no:
+          type: string
+          example: TANAW-2026-00101
+        applicant:
+          oneOf:
+            - $ref: "#/components/schemas/ApplicantSummary"
+            - type: "null"
+        cycle_id:
+          type:
+            - integer
+            - "null"
+        program_id:
+          type:
+            - integer
+            - "null"
+        branch_id:
+          type:
+            - integer
+            - "null"
+        current_stage_id:
+          type:
+            - integer
+            - "null"
 
-x-schema-observations:
-  source: "Prisma schema supplied by the project team"
+    ExamResult:
+      type: object
+      required:
+        - result_id
+        - exam_id
+      properties:
+        result_id:
+          type: integer
+          example: 501
+        exam_id:
+          type: integer
+          example: 12
+        raw_score:
+          type:
+            - number
+            - "null"
+          example: 42
+        percentage:
+          type:
+            - number
+            - "null"
+          minimum: 0
+          maximum: 100
+          example: 84.00
+        result_status:
+          type:
+            - string
+            - "null"
+          example: PASSED
+
+    Program:
+      type: object
+      required:
+        - program_id
+        - program_code
+        - program_name
+        - is_active
+      properties:
+        program_id:
+          type: integer
+          example: 7
+        program_code:
+          type: string
+          example: BSIT
+        program_name:
+          type: string
+          example: Bachelor of Science in Information Technology
+        is_active:
+          type: boolean
+          example: true
+
+    CourseRecommendation:
+      type: object
+      required:
+        - program_id
+        - compatibility_score
+        - rank_no
+      properties:
+        program_id:
+          type: integer
+          example: 7
+        program_code:
+          type: string
+          example: BSIT
+        program_name:
+          type: string
+          example: Bachelor of Science in Information Technology
+        compatibility_score:
+          type:
+            - number
+            - "null"
+          minimum: 0
+          maximum: 100
+          example: 87.50
+        rank_no:
+          type:
+            - integer
+            - "null"
+          minimum: 1
+          example: 1
+
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              example: NOT_FOUND
+            message:
+              type: string
+              example: The requested resource was not found.
+
+  responses:
+    BadRequest:
+      description: The request is invalid.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error:
+              code: BAD_REQUEST
+              message: The request contains an invalid application ID.
+
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error:
+              code: NOT_FOUND
+              message: The requested application was not found.
+
+    InternalServerError:
+      description: An unexpected server error occurred.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error:
+              code: INTERNAL_SERVER_ERROR
+              message: An unexpected error occurred.
+
+x-contract-notes:
+  status: proposed-for-team-review
   notes:
-    - "tbl_course_recommendation has a composite primary key: application_id and program_id."
-    - "tbl_application references applicant, school, barangay, branch, program, admission cycle, and current admission stage."
-    - "tbl_program_competency has a composite primary key: program_id and competency_id."
-    - "tbl_question_response has a composite primary key: result_id and question_id."
-    - "User and tbl_user_account are both present in the supplied Prisma schema; their intended relationship is not confirmed."
+    - Example IDs and values are illustrative, not real database records.
+    - Confirm whether GET /programs returns all programs or active programs only.
+    - Confirm whether recommendation generation requires a request body.
+    - Align authentication and authorization with TANAW's existing auth implementation.
+    - Agree on error handling with the affected module teams before implementation.
