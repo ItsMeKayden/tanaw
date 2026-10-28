@@ -1,0 +1,110 @@
+openapi: 3.1.0
+
+info:
+  title: TANAW Shared API Contract
+  version: 0.1.0
+  description: |
+    Shared API contract for the TANAW system.
+
+    This file is the proposed single source of truth for inter-module API
+    agreements. The five module names are confirmed. Endpoint paths, HTTP
+    methods, request and response payloads, authentication requirements,
+    and error formats remain pending team agreement unless explicitly
+    approved and documented here.
+
+    Database model information below is reference material derived from
+    the supplied Prisma schema. It is not, by itself, an agreed public API
+    request or response format.
+
+servers: []
+
+tags:
+  - name: Dashboard
+    description: Module identified by the project team; API operations pending team agreement.
+  - name: Map Module
+    description: Module identified by the project team; API operations pending team agreement.
+  - name: Admission System
+    description: Module identified by the project team; API operations pending team agreement.
+  - name: Analytics and Reports
+    description: Module identified by the project team; API operations pending team agreement.
+  - name: Course Recommendation
+    description: Module identified by the project team; API operations pending team agreement.
+
+paths: {}
+
+components:
+  schemas: {}
+  responses: {}
+
+# Project-planning notes. These extensions are not API routes or runtime behavior.
+x-module-contract-status:
+  Dashboard:
+    status: pending-team-agreement
+    possible-data-sources:
+      - tbl_application
+      - tbl_applicant
+      - tbl_exam_result
+      - tbl_course_recommendation
+    endpoints: []
+  Map Module:
+    status: pending-team-agreement
+    possible-data-sources:
+      - tbl_district
+      - tbl_barangay
+      - tbl_school
+    endpoints: []
+  Admission System:
+    status: pending-team-agreement
+    possible-data-sources:
+      - tbl_applicant
+      - tbl_application
+      - tbl_admission_cycle
+      - tbl_admission_stage
+      - tbl_application_stage_log
+      - tbl_quota
+      - tbl_branch
+      - tbl_program
+      - tbl_school
+      - tbl_barangay
+    endpoints: []
+  Analytics and Reports:
+    status: pending-team-agreement
+    possible-data-sources:
+      - tbl_application
+      - tbl_applicant
+      - tbl_admission_cycle
+      - tbl_exam_result
+      - tbl_import_batch
+      - tbl_course_recommendation
+    endpoints: []
+  Course Recommendation:
+    status: pending-team-agreement
+    possible-data-sources:
+      - tbl_course_recommendation
+      - tbl_program
+      - tbl_program_competency
+      - tbl_competency
+      - tbl_exam_result
+      - tbl_question_response
+    endpoints: []
+
+x-pending-team-agreement:
+  - Which modules communicate directly with each other
+  - Which module owns each dataset and is responsible for writes
+  - Endpoint paths and HTTP methods
+  - Request and response field names, data types, and validation rules
+  - Required versus optional fields for each operation
+  - Standard success and error response formats
+  - Authentication and authorization requirements
+  - API versioning and deployment base URLs
+  - Whether API payloads use database field names or a separate DTO naming convention
+  - Whether the Prisma models User and tbl_user_account represent separate account systems
+
+x-schema-observations:
+  source: "Prisma schema supplied by the project team"
+  notes:
+    - "tbl_course_recommendation has a composite primary key: application_id and program_id."
+    - "tbl_application references applicant, school, barangay, branch, program, admission cycle, and current admission stage."
+    - "tbl_program_competency has a composite primary key: program_id and competency_id."
+    - "tbl_question_response has a composite primary key: result_id and question_id."
+    - "User and tbl_user_account are both present in the supplied Prisma schema; their intended relationship is not confirmed."
