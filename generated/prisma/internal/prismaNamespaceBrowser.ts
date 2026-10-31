@@ -51,7 +51,31 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  User: 'User'
+  User: 'User',
+  tbl_admission_cycle: 'tbl_admission_cycle',
+  tbl_admission_stage: 'tbl_admission_stage',
+  tbl_applicant: 'tbl_applicant',
+  tbl_application: 'tbl_application',
+  tbl_application_stage_log: 'tbl_application_stage_log',
+  tbl_barangay: 'tbl_barangay',
+  tbl_branch: 'tbl_branch',
+  tbl_competency: 'tbl_competency',
+  tbl_course_recommendation: 'tbl_course_recommendation',
+  tbl_district: 'tbl_district',
+  tbl_exam: 'tbl_exam',
+  tbl_exam_question: 'tbl_exam_question',
+  tbl_exam_result: 'tbl_exam_result',
+  tbl_import_batch: 'tbl_import_batch',
+  tbl_passing_score_setting: 'tbl_passing_score_setting',
+  tbl_permission: 'tbl_permission',
+  tbl_program: 'tbl_program',
+  tbl_program_competency: 'tbl_program_competency',
+  tbl_question_response: 'tbl_question_response',
+  tbl_quota: 'tbl_quota',
+  tbl_role: 'tbl_role',
+  tbl_role_permission: 'tbl_role_permission',
+  tbl_school: 'tbl_school',
+  tbl_user_account: 'tbl_user_account'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -83,6 +107,274 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const Tbl_admission_cycleScalarFieldEnum = {
+  cycle_id: 'cycle_id',
+  school_year: 'school_year',
+  start_date: 'start_date',
+  end_date: 'end_date',
+  is_active: 'is_active'
+} as const
+
+export type Tbl_admission_cycleScalarFieldEnum = (typeof Tbl_admission_cycleScalarFieldEnum)[keyof typeof Tbl_admission_cycleScalarFieldEnum]
+
+
+export const Tbl_admission_stageScalarFieldEnum = {
+  stage_id: 'stage_id',
+  stage_name: 'stage_name',
+  stage_order: 'stage_order'
+} as const
+
+export type Tbl_admission_stageScalarFieldEnum = (typeof Tbl_admission_stageScalarFieldEnum)[keyof typeof Tbl_admission_stageScalarFieldEnum]
+
+
+export const Tbl_applicantScalarFieldEnum = {
+  applicant_id: 'applicant_id',
+  last_name: 'last_name',
+  first_name: 'first_name',
+  middle_name: 'middle_name',
+  sex: 'sex',
+  birth_date: 'birth_date',
+  email: 'email',
+  mobile_no: 'mobile_no'
+} as const
+
+export type Tbl_applicantScalarFieldEnum = (typeof Tbl_applicantScalarFieldEnum)[keyof typeof Tbl_applicantScalarFieldEnum]
+
+
+export const Tbl_applicationScalarFieldEnum = {
+  application_id: 'application_id',
+  applicant_id: 'applicant_id',
+  school_id: 'school_id',
+  barangay_id: 'barangay_id',
+  branch_id: 'branch_id',
+  program_id: 'program_id',
+  cycle_id: 'cycle_id',
+  current_stage_id: 'current_stage_id',
+  application_no: 'application_no',
+  application_date: 'application_date'
+} as const
+
+export type Tbl_applicationScalarFieldEnum = (typeof Tbl_applicationScalarFieldEnum)[keyof typeof Tbl_applicationScalarFieldEnum]
+
+
+export const Tbl_application_stage_logScalarFieldEnum = {
+  log_id: 'log_id',
+  application_id: 'application_id',
+  changed_by: 'changed_by',
+  stage_id: 'stage_id',
+  changed_at: 'changed_at',
+  remarks: 'remarks'
+} as const
+
+export type Tbl_application_stage_logScalarFieldEnum = (typeof Tbl_application_stage_logScalarFieldEnum)[keyof typeof Tbl_application_stage_logScalarFieldEnum]
+
+
+export const Tbl_barangayScalarFieldEnum = {
+  barangay_id: 'barangay_id',
+  district_id: 'district_id',
+  barangay_name: 'barangay_name',
+  boundary_geojson: 'boundary_geojson'
+} as const
+
+export type Tbl_barangayScalarFieldEnum = (typeof Tbl_barangayScalarFieldEnum)[keyof typeof Tbl_barangayScalarFieldEnum]
+
+
+export const Tbl_branchScalarFieldEnum = {
+  branch_id: 'branch_id',
+  branch_code: 'branch_code',
+  branch_name: 'branch_name',
+  is_active: 'is_active'
+} as const
+
+export type Tbl_branchScalarFieldEnum = (typeof Tbl_branchScalarFieldEnum)[keyof typeof Tbl_branchScalarFieldEnum]
+
+
+export const Tbl_competencyScalarFieldEnum = {
+  competency_id: 'competency_id',
+  competency_name: 'competency_name',
+  subject_area: 'subject_area',
+  description: 'description'
+} as const
+
+export type Tbl_competencyScalarFieldEnum = (typeof Tbl_competencyScalarFieldEnum)[keyof typeof Tbl_competencyScalarFieldEnum]
+
+
+export const Tbl_course_recommendationScalarFieldEnum = {
+  application_id: 'application_id',
+  program_id: 'program_id',
+  compatibility_score: 'compatibility_score',
+  rank_no: 'rank_no',
+  generated_at: 'generated_at'
+} as const
+
+export type Tbl_course_recommendationScalarFieldEnum = (typeof Tbl_course_recommendationScalarFieldEnum)[keyof typeof Tbl_course_recommendationScalarFieldEnum]
+
+
+export const Tbl_districtScalarFieldEnum = {
+  district_id: 'district_id',
+  district_name: 'district_name',
+  boundary_geojson: 'boundary_geojson'
+} as const
+
+export type Tbl_districtScalarFieldEnum = (typeof Tbl_districtScalarFieldEnum)[keyof typeof Tbl_districtScalarFieldEnum]
+
+
+export const Tbl_examScalarFieldEnum = {
+  exam_id: 'exam_id',
+  cycle_id: 'cycle_id',
+  exam_name: 'exam_name',
+  exam_date: 'exam_date',
+  total_items: 'total_items',
+  max_score: 'max_score'
+} as const
+
+export type Tbl_examScalarFieldEnum = (typeof Tbl_examScalarFieldEnum)[keyof typeof Tbl_examScalarFieldEnum]
+
+
+export const Tbl_exam_questionScalarFieldEnum = {
+  question_id: 'question_id',
+  exam_id: 'exam_id',
+  competency_id: 'competency_id',
+  question_no: 'question_no',
+  correct_answer: 'correct_answer',
+  points: 'points'
+} as const
+
+export type Tbl_exam_questionScalarFieldEnum = (typeof Tbl_exam_questionScalarFieldEnum)[keyof typeof Tbl_exam_questionScalarFieldEnum]
+
+
+export const Tbl_exam_resultScalarFieldEnum = {
+  result_id: 'result_id',
+  application_id: 'application_id',
+  exam_id: 'exam_id',
+  import_id: 'import_id',
+  raw_score: 'raw_score',
+  percentage: 'percentage',
+  result_status: 'result_status'
+} as const
+
+export type Tbl_exam_resultScalarFieldEnum = (typeof Tbl_exam_resultScalarFieldEnum)[keyof typeof Tbl_exam_resultScalarFieldEnum]
+
+
+export const Tbl_import_batchScalarFieldEnum = {
+  import_id: 'import_id',
+  imported_by: 'imported_by',
+  file_name: 'file_name',
+  imported_at: 'imported_at',
+  total_records: 'total_records',
+  status: 'status'
+} as const
+
+export type Tbl_import_batchScalarFieldEnum = (typeof Tbl_import_batchScalarFieldEnum)[keyof typeof Tbl_import_batchScalarFieldEnum]
+
+
+export const Tbl_passing_score_settingScalarFieldEnum = {
+  setting_id: 'setting_id',
+  cycle_id: 'cycle_id',
+  updated_by: 'updated_by',
+  criteria_type: 'criteria_type',
+  passing_value: 'passing_value',
+  target_pass_rate: 'target_pass_rate',
+  effective_date: 'effective_date'
+} as const
+
+export type Tbl_passing_score_settingScalarFieldEnum = (typeof Tbl_passing_score_settingScalarFieldEnum)[keyof typeof Tbl_passing_score_settingScalarFieldEnum]
+
+
+export const Tbl_permissionScalarFieldEnum = {
+  permission_id: 'permission_id',
+  permission_code: 'permission_code',
+  module_name: 'module_name',
+  description: 'description'
+} as const
+
+export type Tbl_permissionScalarFieldEnum = (typeof Tbl_permissionScalarFieldEnum)[keyof typeof Tbl_permissionScalarFieldEnum]
+
+
+export const Tbl_programScalarFieldEnum = {
+  program_id: 'program_id',
+  program_code: 'program_code',
+  program_name: 'program_name',
+  is_active: 'is_active'
+} as const
+
+export type Tbl_programScalarFieldEnum = (typeof Tbl_programScalarFieldEnum)[keyof typeof Tbl_programScalarFieldEnum]
+
+
+export const Tbl_program_competencyScalarFieldEnum = {
+  program_id: 'program_id',
+  competency_id: 'competency_id',
+  weight: 'weight'
+} as const
+
+export type Tbl_program_competencyScalarFieldEnum = (typeof Tbl_program_competencyScalarFieldEnum)[keyof typeof Tbl_program_competencyScalarFieldEnum]
+
+
+export const Tbl_question_responseScalarFieldEnum = {
+  result_id: 'result_id',
+  question_id: 'question_id',
+  selected_answer: 'selected_answer',
+  is_correct: 'is_correct',
+  points_earned: 'points_earned'
+} as const
+
+export type Tbl_question_responseScalarFieldEnum = (typeof Tbl_question_responseScalarFieldEnum)[keyof typeof Tbl_question_responseScalarFieldEnum]
+
+
+export const Tbl_quotaScalarFieldEnum = {
+  quota_id: 'quota_id',
+  branch_id: 'branch_id',
+  program_id: 'program_id',
+  cycle_id: 'cycle_id',
+  updated_by: 'updated_by',
+  quota_scope: 'quota_scope',
+  quota_slots: 'quota_slots'
+} as const
+
+export type Tbl_quotaScalarFieldEnum = (typeof Tbl_quotaScalarFieldEnum)[keyof typeof Tbl_quotaScalarFieldEnum]
+
+
+export const Tbl_roleScalarFieldEnum = {
+  role_id: 'role_id',
+  role_name: 'role_name',
+  description: 'description'
+} as const
+
+export type Tbl_roleScalarFieldEnum = (typeof Tbl_roleScalarFieldEnum)[keyof typeof Tbl_roleScalarFieldEnum]
+
+
+export const Tbl_role_permissionScalarFieldEnum = {
+  role_id: 'role_id',
+  permission_id: 'permission_id'
+} as const
+
+export type Tbl_role_permissionScalarFieldEnum = (typeof Tbl_role_permissionScalarFieldEnum)[keyof typeof Tbl_role_permissionScalarFieldEnum]
+
+
+export const Tbl_schoolScalarFieldEnum = {
+  school_id: 'school_id',
+  school_name: 'school_name',
+  school_type: 'school_type',
+  city_municipality: 'city_municipality'
+} as const
+
+export type Tbl_schoolScalarFieldEnum = (typeof Tbl_schoolScalarFieldEnum)[keyof typeof Tbl_schoolScalarFieldEnum]
+
+
+export const Tbl_user_accountScalarFieldEnum = {
+  user_id: 'user_id',
+  role_id: 'role_id',
+  username: 'username',
+  password_hash: 'password_hash',
+  full_name: 'full_name',
+  email: 'email',
+  is_active: 'is_active',
+  created_at: 'created_at'
+} as const
+
+export type Tbl_user_accountScalarFieldEnum = (typeof Tbl_user_accountScalarFieldEnum)[keyof typeof Tbl_user_accountScalarFieldEnum]
 
 
 export const SortOrder = {
