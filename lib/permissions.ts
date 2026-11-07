@@ -2,7 +2,10 @@ import type { UserRole } from "@/lib/authorization";
 
 export type ModuleName =
   | "dashboard"
+  | "map"
   | "admission"
+  | "course"
+  | "users"
   | "registrar"
   | "guidance"
   | "reports";
@@ -17,11 +20,32 @@ const permissions: Record<ModuleName, Record<UserRole, Permission[]>> = {
     GUIDANCE: ["read"],
   },
 
+  map: {
+    PRESIDENT: ["read"],
+    ADMISSION: ["read"],
+    REGISTRAR: ["read"],
+    GUIDANCE: ["read"],
+  },
+
   admission: {
     PRESIDENT: ["read"],
     ADMISSION: ["read", "write"],
     REGISTRAR: [],
     GUIDANCE: [],
+  },
+
+  course: {
+    PRESIDENT: ["read"],
+    ADMISSION: ["read"],
+    REGISTRAR: ["read"],
+    GUIDANCE: ["read"],
+  },
+
+  users: {
+    PRESIDENT: ["read"],
+    ADMISSION: ["read"],
+    REGISTRAR: ["read"],
+    GUIDANCE: ["read"],
   },
 
   registrar: {
