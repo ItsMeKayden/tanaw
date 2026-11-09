@@ -1,27 +1,19 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { Eye, EyeOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import qcuLogo from "../../public/qcu-logo.png";
 
 export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
   async function handleSubmit(formData: FormData) {
     setError("");
@@ -49,84 +41,89 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-muted/40 px-4 py-10">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-2 text-center">
-          <p className="text-sm font-semibold tracking-[0.2em] text-primary">
-            TANAW
+    <main className="grid min-h-screen bg-white lg:grid-cols-[58.8%_41.2%]">
+      <section className="flex min-h-[360px] flex-col items-center justify-center bg-[#a3a3a3] px-6 py-12 text-center text-white lg:min-h-screen">
+        <div className="flex flex-col items-center">
+          <div className="mb-3 flex size-[136px] items-center justify-center overflow-hidden rounded-full bg-white">
+            <Image
+              src={qcuLogo}
+              alt="Quezon City University seal"
+              priority
+              className="size-full object-cover"
+            />
+          </div>
+          <h1 className="text-[38px] font-normal leading-tight">
+            Quezon City University
+          </h1>
+          <p className="mt-4 text-2xl leading-tight">
+            Admission
           </p>
-          <CardTitle className="text-2xl">Welcome back</CardTitle>
-          <CardDescription>
-            Sign in to access the admission tracking system.
-          </CardDescription>
-        </CardHeader>
+        </div>
+      </section>
 
-        <CardContent>
+      <section className="flex items-center justify-center px-8 py-12">
+        <div className="w-full max-w-[281px]">
+          <h2 className="mb-3 text-xl font-normal leading-6 text-black">
+            Sign in
+          </h2>
+
           {typeof window !== "undefined" &&
             window.location.search.includes("registered=true") && (
-              <p className="mb-4 rounded-md border p-3 text-sm">
+              <p className="mb-4 border border-gray-300 p-2 text-xs text-gray-700">
                 Account created successfully. You can now sign in.
               </p>
             )}
 
-          <form action={handleSubmit} className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email address</Label>
+          <form action={handleSubmit}>
+            <div className="mb-2">
+              <Label htmlFor="email" className="mb-0.5 block text-xs font-normal text-black">
+                Email
+              </Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
                 autoComplete="email"
-                placeholder="you@example.com"
+                placeholder="name@qcu.edu.ph"
+                className="h-[31px] rounded-none border border-[#a3a3a3] bg-white px-2 text-xs placeholder:text-[#c7c7c7] focus-visible:border-[#171d70] focus-visible:ring-1 focus-visible:ring-[#171d70]/30"
                 required
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-
-              <div className="relative">
-                <Input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
-                  placeholder="Enter your password"
-                  className="pr-10"
-                  required
-                />
-
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                  aria-pressed={showPassword}
-                  className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
+            <div className="mb-[22px]">
+              <Label htmlFor="password" className="mb-0.5 block text-xs font-normal text-black">
+                Password
+              </Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                placeholder="******"
+                className="h-[31px] rounded-none border border-[#a3a3a3] bg-white px-2 text-xs placeholder:text-[#c7c7c7] focus-visible:border-[#171d70] focus-visible:ring-1 focus-visible:ring-[#171d70]/30"
+                required
+              />
             </div>
 
             {error && (
               <p
                 role="alert"
-                className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
+                className="mb-3 border border-red-300 bg-red-50 p-2 text-xs text-red-700"
               >
                 {error}
               </p>
             )}
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Signing in..." : "Sign in"}
+            <Button
+              type="submit"
+              className="h-[29px] w-full rounded-none bg-[#191e73] p-0 text-xs font-normal text-white hover:bg-[#191e73]"
+              disabled={loading}
+            >
+              {loading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </main>
   );
 }
