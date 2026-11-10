@@ -52,8 +52,318 @@ const stageNames = [
   "For Evaluation",
 ];
 
+const districtBarangays = [
+  {
+    district: "District 1",
+    barangays: [
+      "Alicia",
+      "Bagong Pag-asa",
+      "Bahay Toro",
+      "Balingasa",
+      "Bungad",
+      "Damar",
+      "Damayan",
+      "Del Monte",
+      "Katipunan",
+      "Lourdes",
+      "Maharlika",
+      "Manresa",
+      "Mariblo",
+      "Masambong",
+      "N.S. Amoranto",
+      "Nayong Kanluran",
+      "Paang Bundok",
+      "Pag-ibig sa Nayon",
+      "Paltok",
+      "Paraiso",
+      "Phil-am",
+      "Project 6",
+      "Ramon Magsaysay",
+      "Salvacion",
+      "San Antonio",
+      "San Isidro Labrador",
+      "San Jose",
+      "Siena",
+      "St. Peter",
+      "Sta. Cruz",
+      "Sta. Teresita",
+      "Sto. Cristo",
+      "Sto. Domingo",
+      "Talayan",
+      "Vasra",
+      "Veterans Village",
+      "West Triangle",
+    ],
+  },
+  {
+    district: "District 2",
+    barangays: [
+      "Bagong Silangan",
+      "Batasan Hills",
+      "Commonwealth",
+      "Holy Spirit",
+      "Payatas",
+    ],
+  },
+  {
+    district: "District 3",
+    barangays: [
+      "Amihan",
+      "Bagumbayan",
+      "Bagumbuhay",
+      "Bayanihan",
+      "Blue Ridge A",
+      "Blue Ridge B",
+      "Camp Aguinaldo",
+      "Dioquino Zobel",
+      "Duyan-Duyan",
+      "E. Rodriguez",
+      "East Kamias",
+      "Escopa I",
+      "Escopa II",
+      "Escopa III",
+      "Escopa IV",
+      "Libis",
+      "Loyola Heights",
+      "Mangga",
+      "Marilag",
+      "Masagana",
+      "Matandang Balara",
+      "Milagrosa",
+      "Pansol",
+      "Quirino 2-A",
+      "Quirino 2-B",
+      "Quirino 2-C",
+      "Quirino 3-A",
+      "Quirino 3-B (Claro)",
+      "San Roque",
+      "Silangan",
+      "Socorro",
+      "St. Ignatius",
+      "Tagumpay",
+      "Ugong Norte",
+      "Villa Maria Clara",
+      "West Kamias",
+      "White Plains",
+    ],
+  },
+  {
+    district: "District 4",
+    barangays: [
+      "Bagong Lipunan ng Crame",
+      "Botocan",
+      "Central",
+      "Damayang Lagi",
+      "Don Manuel",
+      "Doña Aurora",
+      "Doña Imelda",
+      "Doña Josefa",
+      "Horseshoe",
+      "Immaculate Concepcion",
+      "Kalusugan",
+      "Kamuning",
+      "Kaunlaran",
+      "Kristong Hari",
+      "Krus na Ligas",
+      "Laging Handa",
+      "Malaya",
+      "Mariana",
+      "Obrero",
+      "Old Capitol Site",
+      "Paligsahan",
+      "Pinagkaisahan",
+      "Pinyahan",
+      "Roxas",
+      "Sacred Heart",
+      "San Isidro Galas",
+      "San Martin de Porres",
+      "San Vicente",
+      "Santol",
+      "Sikatuna Village",
+      "South Triangle",
+      "Sto. Niño",
+      "Tatalon",
+      "Teachers' Village East",
+      "Teachers' Village West",
+      "UP Campus",
+      "UP Village",
+      "Valencia",
+    ],
+  },
+  {
+    district: "District 5",
+    barangays: [
+      "Bagbag",
+      "Capri",
+      "Fairview",
+      "Greater Lagro",
+      "Gulod",
+      "Kaligayahan",
+      "Nagkaisang Nayon",
+      "North Fairview",
+      "Novaliches Proper",
+      "Pasong Putik Proper",
+      "San Agustin",
+      "San Bartolome",
+      "Sta. Lucia",
+      "Sta. Monica",
+    ],
+  },
+  {
+    district: "District 6",
+    barangays: [
+      "Apolonio Samson",
+      "Baesa",
+      "Balon Bato",
+      "Culiat",
+      "New Era",
+      "Pasong Tamo",
+      "Sangandaan",
+      "Sauyo",
+      "Talipapa",
+      "Tandang Sora",
+      "Unang Sigaw",
+    ],
+  },
+];
+
+async function seedDistrictsAndBarangays() {
+  console.log("Seeding Quezon City districts and barangays...");
+
+  let totalBarangays = 0;
+
+  for (const item of districtBarangays) {
+    // Find or create the district.
+    let district = await prisma.tbl_district.findFirst({
+      where: { district_name: item.district },
+    });
+
+    if (!district) {
+      district = await prisma.tbl_district.create({
+        data: {
+          district_name: item.district,
+        },
+      });
+    }
+
+    // Find or create each barangay under its district.
+    for (const barangayName of item.barangays) {
+      const existingBarangay = await prisma.tbl_barangay.findFirst({
+        where: {
+          barangay_name: barangayName,
+          district_id: district.district_id,
+        },
+      });
+
+      if (!existingBarangay) {
+        await prisma.tbl_barangay.create({
+          data: {
+            barangay_name: barangayName,
+            district_id: district.district_id,
+          },
+        });
+      }
+
+      totalBarangays++;
+    }
+  }
+
+  console.log("Districts ready: 6");
+  console.log(`Barangays processed: ${totalBarangays}`);
+}
+
+const campuses = [
+  {
+    branch_code: "SB",
+    branch_name: "San Bartolome Campus",
+  },
+  {
+    branch_code: "SF",
+    branch_name: "San Francisco Campus",
+  },
+  {
+    branch_code: "BAT",
+    branch_name: "Batasan Campus",
+  },
+];
+
+const programs = [
+  {
+    program_code: "BSA",
+    program_name: "BS Accountancy",
+  },
+  {
+    program_code: "BSEntrep",
+    program_name: "BS Entrepreneurship",
+  },
+  {
+    program_code: "BECEd",
+    program_name: "Bachelor in Early Childhood Education",
+  },
+  {
+    program_code: "BSECE",
+    program_name: "BS Electronics Engineering",
+  },
+  {
+    program_code: "BSIE",
+    program_name: "BS Industrial Engineering",
+  },
+  {
+    program_code: "BSIT",
+    program_name: "BS Information Technology",
+  },
+  {
+    program_code: "BSMA",
+    program_name: "BS Management Accounting",
+  },
+];
+
+async function seedCampusesAndPrograms() {
+  console.log("Seeding QCU campuses and programs...");
+
+  // Create or reuse campuses
+  for (const campus of campuses) {
+    const existing = await prisma.tbl_branch.findFirst({
+      where: { branch_code: campus.branch_code },
+    });
+
+    if (!existing) {
+      await prisma.tbl_branch.create({
+        data: {
+          branch_code: campus.branch_code,
+          branch_name: campus.branch_name,
+          is_active: true,
+        },
+      });
+    }
+  }
+
+  // Create or reuse academic programs
+  for (const program of programs) {
+    const existing = await prisma.tbl_program.findFirst({
+      where: { program_code: program.program_code },
+    });
+
+    if (!existing) {
+      await prisma.tbl_program.create({
+        data: {
+          program_code: program.program_code,
+          program_name: program.program_name,
+          is_active: true,
+        },
+      });
+    }
+  }
+
+  console.log("Campuses ready: 3");
+  console.log(`Programs ready: ${programs.length}`);
+}
+
 async function main() {
   console.log("Starting TANAW sample data seeding...");
+
+  await seedDistrictsAndBarangays();
+  await seedCampusesAndPrograms();
 
   // 1. Create or reuse admission cycle
   let cycle = await prisma.tbl_admission_cycle.findFirst({

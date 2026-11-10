@@ -39,6 +39,7 @@ export type Tbl_applicantMinAggregateOutputType = {
   last_name: string | null
   first_name: string | null
   middle_name: string | null
+  suffix: string | null
   sex: string | null
   birth_date: Date | null
   email: string | null
@@ -50,6 +51,7 @@ export type Tbl_applicantMaxAggregateOutputType = {
   last_name: string | null
   first_name: string | null
   middle_name: string | null
+  suffix: string | null
   sex: string | null
   birth_date: Date | null
   email: string | null
@@ -61,6 +63,7 @@ export type Tbl_applicantCountAggregateOutputType = {
   last_name: number
   first_name: number
   middle_name: number
+  suffix: number
   sex: number
   birth_date: number
   email: number
@@ -82,6 +85,7 @@ export type Tbl_applicantMinAggregateInputType = {
   last_name?: true
   first_name?: true
   middle_name?: true
+  suffix?: true
   sex?: true
   birth_date?: true
   email?: true
@@ -93,6 +97,7 @@ export type Tbl_applicantMaxAggregateInputType = {
   last_name?: true
   first_name?: true
   middle_name?: true
+  suffix?: true
   sex?: true
   birth_date?: true
   email?: true
@@ -104,6 +109,7 @@ export type Tbl_applicantCountAggregateInputType = {
   last_name?: true
   first_name?: true
   middle_name?: true
+  suffix?: true
   sex?: true
   birth_date?: true
   email?: true
@@ -202,6 +208,7 @@ export type Tbl_applicantGroupByOutputType = {
   last_name: string
   first_name: string
   middle_name: string | null
+  suffix: string | null
   sex: string | null
   birth_date: Date | null
   email: string | null
@@ -236,6 +243,7 @@ export type tbl_applicantWhereInput = {
   last_name?: Prisma.StringFilter<"tbl_applicant"> | string
   first_name?: Prisma.StringFilter<"tbl_applicant"> | string
   middle_name?: Prisma.StringNullableFilter<"tbl_applicant"> | string | null
+  suffix?: Prisma.StringNullableFilter<"tbl_applicant"> | string | null
   sex?: Prisma.StringNullableFilter<"tbl_applicant"> | string | null
   birth_date?: Prisma.DateTimeNullableFilter<"tbl_applicant"> | Date | string | null
   email?: Prisma.StringNullableFilter<"tbl_applicant"> | string | null
@@ -248,6 +256,7 @@ export type tbl_applicantOrderByWithRelationInput = {
   last_name?: Prisma.SortOrder
   first_name?: Prisma.SortOrder
   middle_name?: Prisma.SortOrderInput | Prisma.SortOrder
+  suffix?: Prisma.SortOrderInput | Prisma.SortOrder
   sex?: Prisma.SortOrderInput | Prisma.SortOrder
   birth_date?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -263,6 +272,7 @@ export type tbl_applicantWhereUniqueInput = Prisma.AtLeast<{
   last_name?: Prisma.StringFilter<"tbl_applicant"> | string
   first_name?: Prisma.StringFilter<"tbl_applicant"> | string
   middle_name?: Prisma.StringNullableFilter<"tbl_applicant"> | string | null
+  suffix?: Prisma.StringNullableFilter<"tbl_applicant"> | string | null
   sex?: Prisma.StringNullableFilter<"tbl_applicant"> | string | null
   birth_date?: Prisma.DateTimeNullableFilter<"tbl_applicant"> | Date | string | null
   email?: Prisma.StringNullableFilter<"tbl_applicant"> | string | null
@@ -275,6 +285,7 @@ export type tbl_applicantOrderByWithAggregationInput = {
   last_name?: Prisma.SortOrder
   first_name?: Prisma.SortOrder
   middle_name?: Prisma.SortOrderInput | Prisma.SortOrder
+  suffix?: Prisma.SortOrderInput | Prisma.SortOrder
   sex?: Prisma.SortOrderInput | Prisma.SortOrder
   birth_date?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -294,6 +305,7 @@ export type tbl_applicantScalarWhereWithAggregatesInput = {
   last_name?: Prisma.StringWithAggregatesFilter<"tbl_applicant"> | string
   first_name?: Prisma.StringWithAggregatesFilter<"tbl_applicant"> | string
   middle_name?: Prisma.StringNullableWithAggregatesFilter<"tbl_applicant"> | string | null
+  suffix?: Prisma.StringNullableWithAggregatesFilter<"tbl_applicant"> | string | null
   sex?: Prisma.StringNullableWithAggregatesFilter<"tbl_applicant"> | string | null
   birth_date?: Prisma.DateTimeNullableWithAggregatesFilter<"tbl_applicant"> | Date | string | null
   email?: Prisma.StringNullableWithAggregatesFilter<"tbl_applicant"> | string | null
@@ -304,6 +316,7 @@ export type tbl_applicantCreateInput = {
   last_name: string
   first_name: string
   middle_name?: string | null
+  suffix?: string | null
   sex?: string | null
   birth_date?: Date | string | null
   email?: string | null
@@ -316,6 +329,7 @@ export type tbl_applicantUncheckedCreateInput = {
   last_name: string
   first_name: string
   middle_name?: string | null
+  suffix?: string | null
   sex?: string | null
   birth_date?: Date | string | null
   email?: string | null
@@ -327,6 +341,7 @@ export type tbl_applicantUpdateInput = {
   last_name?: Prisma.StringFieldUpdateOperationsInput | string
   first_name?: Prisma.StringFieldUpdateOperationsInput | string
   middle_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   birth_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -339,6 +354,7 @@ export type tbl_applicantUncheckedUpdateInput = {
   last_name?: Prisma.StringFieldUpdateOperationsInput | string
   first_name?: Prisma.StringFieldUpdateOperationsInput | string
   middle_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   birth_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -351,6 +367,7 @@ export type tbl_applicantCreateManyInput = {
   last_name: string
   first_name: string
   middle_name?: string | null
+  suffix?: string | null
   sex?: string | null
   birth_date?: Date | string | null
   email?: string | null
@@ -361,6 +378,7 @@ export type tbl_applicantUpdateManyMutationInput = {
   last_name?: Prisma.StringFieldUpdateOperationsInput | string
   first_name?: Prisma.StringFieldUpdateOperationsInput | string
   middle_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   birth_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -372,6 +390,7 @@ export type tbl_applicantUncheckedUpdateManyInput = {
   last_name?: Prisma.StringFieldUpdateOperationsInput | string
   first_name?: Prisma.StringFieldUpdateOperationsInput | string
   middle_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   birth_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -383,6 +402,7 @@ export type tbl_applicantCountOrderByAggregateInput = {
   last_name?: Prisma.SortOrder
   first_name?: Prisma.SortOrder
   middle_name?: Prisma.SortOrder
+  suffix?: Prisma.SortOrder
   sex?: Prisma.SortOrder
   birth_date?: Prisma.SortOrder
   email?: Prisma.SortOrder
@@ -398,6 +418,7 @@ export type tbl_applicantMaxOrderByAggregateInput = {
   last_name?: Prisma.SortOrder
   first_name?: Prisma.SortOrder
   middle_name?: Prisma.SortOrder
+  suffix?: Prisma.SortOrder
   sex?: Prisma.SortOrder
   birth_date?: Prisma.SortOrder
   email?: Prisma.SortOrder
@@ -409,6 +430,7 @@ export type tbl_applicantMinOrderByAggregateInput = {
   last_name?: Prisma.SortOrder
   first_name?: Prisma.SortOrder
   middle_name?: Prisma.SortOrder
+  suffix?: Prisma.SortOrder
   sex?: Prisma.SortOrder
   birth_date?: Prisma.SortOrder
   email?: Prisma.SortOrder
@@ -448,6 +470,7 @@ export type tbl_applicantCreateWithoutTbl_applicationInput = {
   last_name: string
   first_name: string
   middle_name?: string | null
+  suffix?: string | null
   sex?: string | null
   birth_date?: Date | string | null
   email?: string | null
@@ -459,6 +482,7 @@ export type tbl_applicantUncheckedCreateWithoutTbl_applicationInput = {
   last_name: string
   first_name: string
   middle_name?: string | null
+  suffix?: string | null
   sex?: string | null
   birth_date?: Date | string | null
   email?: string | null
@@ -485,6 +509,7 @@ export type tbl_applicantUpdateWithoutTbl_applicationInput = {
   last_name?: Prisma.StringFieldUpdateOperationsInput | string
   first_name?: Prisma.StringFieldUpdateOperationsInput | string
   middle_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   birth_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -496,6 +521,7 @@ export type tbl_applicantUncheckedUpdateWithoutTbl_applicationInput = {
   last_name?: Prisma.StringFieldUpdateOperationsInput | string
   first_name?: Prisma.StringFieldUpdateOperationsInput | string
   middle_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   birth_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -538,6 +564,7 @@ export type tbl_applicantSelect<ExtArgs extends runtime.Types.Extensions.Interna
   last_name?: boolean
   first_name?: boolean
   middle_name?: boolean
+  suffix?: boolean
   sex?: boolean
   birth_date?: boolean
   email?: boolean
@@ -551,6 +578,7 @@ export type tbl_applicantSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   last_name?: boolean
   first_name?: boolean
   middle_name?: boolean
+  suffix?: boolean
   sex?: boolean
   birth_date?: boolean
   email?: boolean
@@ -562,6 +590,7 @@ export type tbl_applicantSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   last_name?: boolean
   first_name?: boolean
   middle_name?: boolean
+  suffix?: boolean
   sex?: boolean
   birth_date?: boolean
   email?: boolean
@@ -573,13 +602,14 @@ export type tbl_applicantSelectScalar = {
   last_name?: boolean
   first_name?: boolean
   middle_name?: boolean
+  suffix?: boolean
   sex?: boolean
   birth_date?: boolean
   email?: boolean
   mobile_no?: boolean
 }
 
-export type tbl_applicantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"applicant_id" | "last_name" | "first_name" | "middle_name" | "sex" | "birth_date" | "email" | "mobile_no", ExtArgs["result"]["tbl_applicant"]>
+export type tbl_applicantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"applicant_id" | "last_name" | "first_name" | "middle_name" | "suffix" | "sex" | "birth_date" | "email" | "mobile_no", ExtArgs["result"]["tbl_applicant"]>
 export type tbl_applicantInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tbl_application?: boolean | Prisma.tbl_applicant$tbl_applicationArgs<ExtArgs>
   _count?: boolean | Prisma.Tbl_applicantCountOutputTypeDefaultArgs<ExtArgs>
@@ -597,6 +627,7 @@ export type $tbl_applicantPayload<ExtArgs extends runtime.Types.Extensions.Inter
     last_name: string
     first_name: string
     middle_name: string | null
+    suffix: string | null
     sex: string | null
     birth_date: Date | null
     email: string | null
@@ -1029,6 +1060,7 @@ export interface tbl_applicantFieldRefs {
   readonly last_name: Prisma.FieldRef<"tbl_applicant", 'String'>
   readonly first_name: Prisma.FieldRef<"tbl_applicant", 'String'>
   readonly middle_name: Prisma.FieldRef<"tbl_applicant", 'String'>
+  readonly suffix: Prisma.FieldRef<"tbl_applicant", 'String'>
   readonly sex: Prisma.FieldRef<"tbl_applicant", 'String'>
   readonly birth_date: Prisma.FieldRef<"tbl_applicant", 'DateTime'>
   readonly email: Prisma.FieldRef<"tbl_applicant", 'String'>

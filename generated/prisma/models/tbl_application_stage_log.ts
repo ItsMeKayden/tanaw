@@ -29,21 +29,19 @@ export type AggregateTbl_application_stage_log = {
 export type Tbl_application_stage_logAvgAggregateOutputType = {
   log_id: number | null
   application_id: number | null
-  changed_by: number | null
   stage_id: number | null
 }
 
 export type Tbl_application_stage_logSumAggregateOutputType = {
   log_id: number | null
   application_id: number | null
-  changed_by: number | null
   stage_id: number | null
 }
 
 export type Tbl_application_stage_logMinAggregateOutputType = {
   log_id: number | null
   application_id: number | null
-  changed_by: number | null
+  changed_by: string | null
   stage_id: number | null
   changed_at: Date | null
   remarks: string | null
@@ -52,7 +50,7 @@ export type Tbl_application_stage_logMinAggregateOutputType = {
 export type Tbl_application_stage_logMaxAggregateOutputType = {
   log_id: number | null
   application_id: number | null
-  changed_by: number | null
+  changed_by: string | null
   stage_id: number | null
   changed_at: Date | null
   remarks: string | null
@@ -72,14 +70,12 @@ export type Tbl_application_stage_logCountAggregateOutputType = {
 export type Tbl_application_stage_logAvgAggregateInputType = {
   log_id?: true
   application_id?: true
-  changed_by?: true
   stage_id?: true
 }
 
 export type Tbl_application_stage_logSumAggregateInputType = {
   log_id?: true
   application_id?: true
-  changed_by?: true
   stage_id?: true
 }
 
@@ -200,7 +196,7 @@ export type tbl_application_stage_logGroupByArgs<ExtArgs extends runtime.Types.E
 export type Tbl_application_stage_logGroupByOutputType = {
   log_id: number
   application_id: number | null
-  changed_by: number | null
+  changed_by: string | null
   stage_id: number | null
   changed_at: Date | null
   remarks: string | null
@@ -232,12 +228,12 @@ export type tbl_application_stage_logWhereInput = {
   NOT?: Prisma.tbl_application_stage_logWhereInput | Prisma.tbl_application_stage_logWhereInput[]
   log_id?: Prisma.IntFilter<"tbl_application_stage_log"> | number
   application_id?: Prisma.IntNullableFilter<"tbl_application_stage_log"> | number | null
-  changed_by?: Prisma.IntNullableFilter<"tbl_application_stage_log"> | number | null
+  changed_by?: Prisma.StringNullableFilter<"tbl_application_stage_log"> | string | null
   stage_id?: Prisma.IntNullableFilter<"tbl_application_stage_log"> | number | null
   changed_at?: Prisma.DateTimeNullableFilter<"tbl_application_stage_log"> | Date | string | null
   remarks?: Prisma.StringNullableFilter<"tbl_application_stage_log"> | string | null
   tbl_application?: Prisma.XOR<Prisma.Tbl_applicationNullableScalarRelationFilter, Prisma.tbl_applicationWhereInput> | null
-  tbl_user_account?: Prisma.XOR<Prisma.Tbl_user_accountNullableScalarRelationFilter, Prisma.tbl_user_accountWhereInput> | null
+  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   tbl_admission_stage?: Prisma.XOR<Prisma.Tbl_admission_stageNullableScalarRelationFilter, Prisma.tbl_admission_stageWhereInput> | null
 }
 
@@ -249,7 +245,7 @@ export type tbl_application_stage_logOrderByWithRelationInput = {
   changed_at?: Prisma.SortOrderInput | Prisma.SortOrder
   remarks?: Prisma.SortOrderInput | Prisma.SortOrder
   tbl_application?: Prisma.tbl_applicationOrderByWithRelationInput
-  tbl_user_account?: Prisma.tbl_user_accountOrderByWithRelationInput
+  user?: Prisma.UserOrderByWithRelationInput
   tbl_admission_stage?: Prisma.tbl_admission_stageOrderByWithRelationInput
 }
 
@@ -259,12 +255,12 @@ export type tbl_application_stage_logWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.tbl_application_stage_logWhereInput[]
   NOT?: Prisma.tbl_application_stage_logWhereInput | Prisma.tbl_application_stage_logWhereInput[]
   application_id?: Prisma.IntNullableFilter<"tbl_application_stage_log"> | number | null
-  changed_by?: Prisma.IntNullableFilter<"tbl_application_stage_log"> | number | null
+  changed_by?: Prisma.StringNullableFilter<"tbl_application_stage_log"> | string | null
   stage_id?: Prisma.IntNullableFilter<"tbl_application_stage_log"> | number | null
   changed_at?: Prisma.DateTimeNullableFilter<"tbl_application_stage_log"> | Date | string | null
   remarks?: Prisma.StringNullableFilter<"tbl_application_stage_log"> | string | null
   tbl_application?: Prisma.XOR<Prisma.Tbl_applicationNullableScalarRelationFilter, Prisma.tbl_applicationWhereInput> | null
-  tbl_user_account?: Prisma.XOR<Prisma.Tbl_user_accountNullableScalarRelationFilter, Prisma.tbl_user_accountWhereInput> | null
+  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   tbl_admission_stage?: Prisma.XOR<Prisma.Tbl_admission_stageNullableScalarRelationFilter, Prisma.tbl_admission_stageWhereInput> | null
 }, "log_id">
 
@@ -288,7 +284,7 @@ export type tbl_application_stage_logScalarWhereWithAggregatesInput = {
   NOT?: Prisma.tbl_application_stage_logScalarWhereWithAggregatesInput | Prisma.tbl_application_stage_logScalarWhereWithAggregatesInput[]
   log_id?: Prisma.IntWithAggregatesFilter<"tbl_application_stage_log"> | number
   application_id?: Prisma.IntNullableWithAggregatesFilter<"tbl_application_stage_log"> | number | null
-  changed_by?: Prisma.IntNullableWithAggregatesFilter<"tbl_application_stage_log"> | number | null
+  changed_by?: Prisma.StringNullableWithAggregatesFilter<"tbl_application_stage_log"> | string | null
   stage_id?: Prisma.IntNullableWithAggregatesFilter<"tbl_application_stage_log"> | number | null
   changed_at?: Prisma.DateTimeNullableWithAggregatesFilter<"tbl_application_stage_log"> | Date | string | null
   remarks?: Prisma.StringNullableWithAggregatesFilter<"tbl_application_stage_log"> | string | null
@@ -298,14 +294,14 @@ export type tbl_application_stage_logCreateInput = {
   changed_at?: Date | string | null
   remarks?: string | null
   tbl_application?: Prisma.tbl_applicationCreateNestedOneWithoutTbl_application_stage_logInput
-  tbl_user_account?: Prisma.tbl_user_accountCreateNestedOneWithoutTbl_application_stage_logInput
+  user?: Prisma.UserCreateNestedOneWithoutApplication_stage_logsInput
   tbl_admission_stage?: Prisma.tbl_admission_stageCreateNestedOneWithoutTbl_application_stage_logInput
 }
 
 export type tbl_application_stage_logUncheckedCreateInput = {
   log_id?: number
   application_id?: number | null
-  changed_by?: number | null
+  changed_by?: string | null
   stage_id?: number | null
   changed_at?: Date | string | null
   remarks?: string | null
@@ -315,14 +311,14 @@ export type tbl_application_stage_logUpdateInput = {
   changed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_application?: Prisma.tbl_applicationUpdateOneWithoutTbl_application_stage_logNestedInput
-  tbl_user_account?: Prisma.tbl_user_accountUpdateOneWithoutTbl_application_stage_logNestedInput
+  user?: Prisma.UserUpdateOneWithoutApplication_stage_logsNestedInput
   tbl_admission_stage?: Prisma.tbl_admission_stageUpdateOneWithoutTbl_application_stage_logNestedInput
 }
 
 export type tbl_application_stage_logUncheckedUpdateInput = {
   log_id?: Prisma.IntFieldUpdateOperationsInput | number
   application_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  changed_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  changed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   changed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -331,7 +327,7 @@ export type tbl_application_stage_logUncheckedUpdateInput = {
 export type tbl_application_stage_logCreateManyInput = {
   log_id?: number
   application_id?: number | null
-  changed_by?: number | null
+  changed_by?: string | null
   stage_id?: number | null
   changed_at?: Date | string | null
   remarks?: string | null
@@ -345,7 +341,7 @@ export type tbl_application_stage_logUpdateManyMutationInput = {
 export type tbl_application_stage_logUncheckedUpdateManyInput = {
   log_id?: Prisma.IntFieldUpdateOperationsInput | number
   application_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  changed_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  changed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   changed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -373,7 +369,6 @@ export type tbl_application_stage_logCountOrderByAggregateInput = {
 export type tbl_application_stage_logAvgOrderByAggregateInput = {
   log_id?: Prisma.SortOrder
   application_id?: Prisma.SortOrder
-  changed_by?: Prisma.SortOrder
   stage_id?: Prisma.SortOrder
 }
 
@@ -398,8 +393,49 @@ export type tbl_application_stage_logMinOrderByAggregateInput = {
 export type tbl_application_stage_logSumOrderByAggregateInput = {
   log_id?: Prisma.SortOrder
   application_id?: Prisma.SortOrder
-  changed_by?: Prisma.SortOrder
   stage_id?: Prisma.SortOrder
+}
+
+export type tbl_application_stage_logCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.tbl_application_stage_logCreateWithoutUserInput, Prisma.tbl_application_stage_logUncheckedCreateWithoutUserInput> | Prisma.tbl_application_stage_logCreateWithoutUserInput[] | Prisma.tbl_application_stage_logUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.tbl_application_stage_logCreateOrConnectWithoutUserInput | Prisma.tbl_application_stage_logCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.tbl_application_stage_logCreateManyUserInputEnvelope
+  connect?: Prisma.tbl_application_stage_logWhereUniqueInput | Prisma.tbl_application_stage_logWhereUniqueInput[]
+}
+
+export type tbl_application_stage_logUncheckedCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.tbl_application_stage_logCreateWithoutUserInput, Prisma.tbl_application_stage_logUncheckedCreateWithoutUserInput> | Prisma.tbl_application_stage_logCreateWithoutUserInput[] | Prisma.tbl_application_stage_logUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.tbl_application_stage_logCreateOrConnectWithoutUserInput | Prisma.tbl_application_stage_logCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.tbl_application_stage_logCreateManyUserInputEnvelope
+  connect?: Prisma.tbl_application_stage_logWhereUniqueInput | Prisma.tbl_application_stage_logWhereUniqueInput[]
+}
+
+export type tbl_application_stage_logUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.tbl_application_stage_logCreateWithoutUserInput, Prisma.tbl_application_stage_logUncheckedCreateWithoutUserInput> | Prisma.tbl_application_stage_logCreateWithoutUserInput[] | Prisma.tbl_application_stage_logUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.tbl_application_stage_logCreateOrConnectWithoutUserInput | Prisma.tbl_application_stage_logCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.tbl_application_stage_logUpsertWithWhereUniqueWithoutUserInput | Prisma.tbl_application_stage_logUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.tbl_application_stage_logCreateManyUserInputEnvelope
+  set?: Prisma.tbl_application_stage_logWhereUniqueInput | Prisma.tbl_application_stage_logWhereUniqueInput[]
+  disconnect?: Prisma.tbl_application_stage_logWhereUniqueInput | Prisma.tbl_application_stage_logWhereUniqueInput[]
+  delete?: Prisma.tbl_application_stage_logWhereUniqueInput | Prisma.tbl_application_stage_logWhereUniqueInput[]
+  connect?: Prisma.tbl_application_stage_logWhereUniqueInput | Prisma.tbl_application_stage_logWhereUniqueInput[]
+  update?: Prisma.tbl_application_stage_logUpdateWithWhereUniqueWithoutUserInput | Prisma.tbl_application_stage_logUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.tbl_application_stage_logUpdateManyWithWhereWithoutUserInput | Prisma.tbl_application_stage_logUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.tbl_application_stage_logScalarWhereInput | Prisma.tbl_application_stage_logScalarWhereInput[]
+}
+
+export type tbl_application_stage_logUncheckedUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.tbl_application_stage_logCreateWithoutUserInput, Prisma.tbl_application_stage_logUncheckedCreateWithoutUserInput> | Prisma.tbl_application_stage_logCreateWithoutUserInput[] | Prisma.tbl_application_stage_logUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.tbl_application_stage_logCreateOrConnectWithoutUserInput | Prisma.tbl_application_stage_logCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.tbl_application_stage_logUpsertWithWhereUniqueWithoutUserInput | Prisma.tbl_application_stage_logUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.tbl_application_stage_logCreateManyUserInputEnvelope
+  set?: Prisma.tbl_application_stage_logWhereUniqueInput | Prisma.tbl_application_stage_logWhereUniqueInput[]
+  disconnect?: Prisma.tbl_application_stage_logWhereUniqueInput | Prisma.tbl_application_stage_logWhereUniqueInput[]
+  delete?: Prisma.tbl_application_stage_logWhereUniqueInput | Prisma.tbl_application_stage_logWhereUniqueInput[]
+  connect?: Prisma.tbl_application_stage_logWhereUniqueInput | Prisma.tbl_application_stage_logWhereUniqueInput[]
+  update?: Prisma.tbl_application_stage_logUpdateWithWhereUniqueWithoutUserInput | Prisma.tbl_application_stage_logUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.tbl_application_stage_logUpdateManyWithWhereWithoutUserInput | Prisma.tbl_application_stage_logUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.tbl_application_stage_logScalarWhereInput | Prisma.tbl_application_stage_logScalarWhereInput[]
 }
 
 export type tbl_application_stage_logCreateNestedManyWithoutTbl_admission_stageInput = {
@@ -486,59 +522,70 @@ export type tbl_application_stage_logUncheckedUpdateManyWithoutTbl_applicationNe
   deleteMany?: Prisma.tbl_application_stage_logScalarWhereInput | Prisma.tbl_application_stage_logScalarWhereInput[]
 }
 
-export type tbl_application_stage_logCreateNestedManyWithoutTbl_user_accountInput = {
-  create?: Prisma.XOR<Prisma.tbl_application_stage_logCreateWithoutTbl_user_accountInput, Prisma.tbl_application_stage_logUncheckedCreateWithoutTbl_user_accountInput> | Prisma.tbl_application_stage_logCreateWithoutTbl_user_accountInput[] | Prisma.tbl_application_stage_logUncheckedCreateWithoutTbl_user_accountInput[]
-  connectOrCreate?: Prisma.tbl_application_stage_logCreateOrConnectWithoutTbl_user_accountInput | Prisma.tbl_application_stage_logCreateOrConnectWithoutTbl_user_accountInput[]
-  createMany?: Prisma.tbl_application_stage_logCreateManyTbl_user_accountInputEnvelope
-  connect?: Prisma.tbl_application_stage_logWhereUniqueInput | Prisma.tbl_application_stage_logWhereUniqueInput[]
+export type tbl_application_stage_logCreateWithoutUserInput = {
+  changed_at?: Date | string | null
+  remarks?: string | null
+  tbl_application?: Prisma.tbl_applicationCreateNestedOneWithoutTbl_application_stage_logInput
+  tbl_admission_stage?: Prisma.tbl_admission_stageCreateNestedOneWithoutTbl_application_stage_logInput
 }
 
-export type tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_user_accountInput = {
-  create?: Prisma.XOR<Prisma.tbl_application_stage_logCreateWithoutTbl_user_accountInput, Prisma.tbl_application_stage_logUncheckedCreateWithoutTbl_user_accountInput> | Prisma.tbl_application_stage_logCreateWithoutTbl_user_accountInput[] | Prisma.tbl_application_stage_logUncheckedCreateWithoutTbl_user_accountInput[]
-  connectOrCreate?: Prisma.tbl_application_stage_logCreateOrConnectWithoutTbl_user_accountInput | Prisma.tbl_application_stage_logCreateOrConnectWithoutTbl_user_accountInput[]
-  createMany?: Prisma.tbl_application_stage_logCreateManyTbl_user_accountInputEnvelope
-  connect?: Prisma.tbl_application_stage_logWhereUniqueInput | Prisma.tbl_application_stage_logWhereUniqueInput[]
+export type tbl_application_stage_logUncheckedCreateWithoutUserInput = {
+  log_id?: number
+  application_id?: number | null
+  stage_id?: number | null
+  changed_at?: Date | string | null
+  remarks?: string | null
 }
 
-export type tbl_application_stage_logUpdateManyWithoutTbl_user_accountNestedInput = {
-  create?: Prisma.XOR<Prisma.tbl_application_stage_logCreateWithoutTbl_user_accountInput, Prisma.tbl_application_stage_logUncheckedCreateWithoutTbl_user_accountInput> | Prisma.tbl_application_stage_logCreateWithoutTbl_user_accountInput[] | Prisma.tbl_application_stage_logUncheckedCreateWithoutTbl_user_accountInput[]
-  connectOrCreate?: Prisma.tbl_application_stage_logCreateOrConnectWithoutTbl_user_accountInput | Prisma.tbl_application_stage_logCreateOrConnectWithoutTbl_user_accountInput[]
-  upsert?: Prisma.tbl_application_stage_logUpsertWithWhereUniqueWithoutTbl_user_accountInput | Prisma.tbl_application_stage_logUpsertWithWhereUniqueWithoutTbl_user_accountInput[]
-  createMany?: Prisma.tbl_application_stage_logCreateManyTbl_user_accountInputEnvelope
-  set?: Prisma.tbl_application_stage_logWhereUniqueInput | Prisma.tbl_application_stage_logWhereUniqueInput[]
-  disconnect?: Prisma.tbl_application_stage_logWhereUniqueInput | Prisma.tbl_application_stage_logWhereUniqueInput[]
-  delete?: Prisma.tbl_application_stage_logWhereUniqueInput | Prisma.tbl_application_stage_logWhereUniqueInput[]
-  connect?: Prisma.tbl_application_stage_logWhereUniqueInput | Prisma.tbl_application_stage_logWhereUniqueInput[]
-  update?: Prisma.tbl_application_stage_logUpdateWithWhereUniqueWithoutTbl_user_accountInput | Prisma.tbl_application_stage_logUpdateWithWhereUniqueWithoutTbl_user_accountInput[]
-  updateMany?: Prisma.tbl_application_stage_logUpdateManyWithWhereWithoutTbl_user_accountInput | Prisma.tbl_application_stage_logUpdateManyWithWhereWithoutTbl_user_accountInput[]
-  deleteMany?: Prisma.tbl_application_stage_logScalarWhereInput | Prisma.tbl_application_stage_logScalarWhereInput[]
+export type tbl_application_stage_logCreateOrConnectWithoutUserInput = {
+  where: Prisma.tbl_application_stage_logWhereUniqueInput
+  create: Prisma.XOR<Prisma.tbl_application_stage_logCreateWithoutUserInput, Prisma.tbl_application_stage_logUncheckedCreateWithoutUserInput>
 }
 
-export type tbl_application_stage_logUncheckedUpdateManyWithoutTbl_user_accountNestedInput = {
-  create?: Prisma.XOR<Prisma.tbl_application_stage_logCreateWithoutTbl_user_accountInput, Prisma.tbl_application_stage_logUncheckedCreateWithoutTbl_user_accountInput> | Prisma.tbl_application_stage_logCreateWithoutTbl_user_accountInput[] | Prisma.tbl_application_stage_logUncheckedCreateWithoutTbl_user_accountInput[]
-  connectOrCreate?: Prisma.tbl_application_stage_logCreateOrConnectWithoutTbl_user_accountInput | Prisma.tbl_application_stage_logCreateOrConnectWithoutTbl_user_accountInput[]
-  upsert?: Prisma.tbl_application_stage_logUpsertWithWhereUniqueWithoutTbl_user_accountInput | Prisma.tbl_application_stage_logUpsertWithWhereUniqueWithoutTbl_user_accountInput[]
-  createMany?: Prisma.tbl_application_stage_logCreateManyTbl_user_accountInputEnvelope
-  set?: Prisma.tbl_application_stage_logWhereUniqueInput | Prisma.tbl_application_stage_logWhereUniqueInput[]
-  disconnect?: Prisma.tbl_application_stage_logWhereUniqueInput | Prisma.tbl_application_stage_logWhereUniqueInput[]
-  delete?: Prisma.tbl_application_stage_logWhereUniqueInput | Prisma.tbl_application_stage_logWhereUniqueInput[]
-  connect?: Prisma.tbl_application_stage_logWhereUniqueInput | Prisma.tbl_application_stage_logWhereUniqueInput[]
-  update?: Prisma.tbl_application_stage_logUpdateWithWhereUniqueWithoutTbl_user_accountInput | Prisma.tbl_application_stage_logUpdateWithWhereUniqueWithoutTbl_user_accountInput[]
-  updateMany?: Prisma.tbl_application_stage_logUpdateManyWithWhereWithoutTbl_user_accountInput | Prisma.tbl_application_stage_logUpdateManyWithWhereWithoutTbl_user_accountInput[]
-  deleteMany?: Prisma.tbl_application_stage_logScalarWhereInput | Prisma.tbl_application_stage_logScalarWhereInput[]
+export type tbl_application_stage_logCreateManyUserInputEnvelope = {
+  data: Prisma.tbl_application_stage_logCreateManyUserInput | Prisma.tbl_application_stage_logCreateManyUserInput[]
+  skipDuplicates?: boolean
+}
+
+export type tbl_application_stage_logUpsertWithWhereUniqueWithoutUserInput = {
+  where: Prisma.tbl_application_stage_logWhereUniqueInput
+  update: Prisma.XOR<Prisma.tbl_application_stage_logUpdateWithoutUserInput, Prisma.tbl_application_stage_logUncheckedUpdateWithoutUserInput>
+  create: Prisma.XOR<Prisma.tbl_application_stage_logCreateWithoutUserInput, Prisma.tbl_application_stage_logUncheckedCreateWithoutUserInput>
+}
+
+export type tbl_application_stage_logUpdateWithWhereUniqueWithoutUserInput = {
+  where: Prisma.tbl_application_stage_logWhereUniqueInput
+  data: Prisma.XOR<Prisma.tbl_application_stage_logUpdateWithoutUserInput, Prisma.tbl_application_stage_logUncheckedUpdateWithoutUserInput>
+}
+
+export type tbl_application_stage_logUpdateManyWithWhereWithoutUserInput = {
+  where: Prisma.tbl_application_stage_logScalarWhereInput
+  data: Prisma.XOR<Prisma.tbl_application_stage_logUpdateManyMutationInput, Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutUserInput>
+}
+
+export type tbl_application_stage_logScalarWhereInput = {
+  AND?: Prisma.tbl_application_stage_logScalarWhereInput | Prisma.tbl_application_stage_logScalarWhereInput[]
+  OR?: Prisma.tbl_application_stage_logScalarWhereInput[]
+  NOT?: Prisma.tbl_application_stage_logScalarWhereInput | Prisma.tbl_application_stage_logScalarWhereInput[]
+  log_id?: Prisma.IntFilter<"tbl_application_stage_log"> | number
+  application_id?: Prisma.IntNullableFilter<"tbl_application_stage_log"> | number | null
+  changed_by?: Prisma.StringNullableFilter<"tbl_application_stage_log"> | string | null
+  stage_id?: Prisma.IntNullableFilter<"tbl_application_stage_log"> | number | null
+  changed_at?: Prisma.DateTimeNullableFilter<"tbl_application_stage_log"> | Date | string | null
+  remarks?: Prisma.StringNullableFilter<"tbl_application_stage_log"> | string | null
 }
 
 export type tbl_application_stage_logCreateWithoutTbl_admission_stageInput = {
   changed_at?: Date | string | null
   remarks?: string | null
   tbl_application?: Prisma.tbl_applicationCreateNestedOneWithoutTbl_application_stage_logInput
-  tbl_user_account?: Prisma.tbl_user_accountCreateNestedOneWithoutTbl_application_stage_logInput
+  user?: Prisma.UserCreateNestedOneWithoutApplication_stage_logsInput
 }
 
 export type tbl_application_stage_logUncheckedCreateWithoutTbl_admission_stageInput = {
   log_id?: number
   application_id?: number | null
-  changed_by?: number | null
+  changed_by?: string | null
   changed_at?: Date | string | null
   remarks?: string | null
 }
@@ -569,28 +616,16 @@ export type tbl_application_stage_logUpdateManyWithWhereWithoutTbl_admission_sta
   data: Prisma.XOR<Prisma.tbl_application_stage_logUpdateManyMutationInput, Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_admission_stageInput>
 }
 
-export type tbl_application_stage_logScalarWhereInput = {
-  AND?: Prisma.tbl_application_stage_logScalarWhereInput | Prisma.tbl_application_stage_logScalarWhereInput[]
-  OR?: Prisma.tbl_application_stage_logScalarWhereInput[]
-  NOT?: Prisma.tbl_application_stage_logScalarWhereInput | Prisma.tbl_application_stage_logScalarWhereInput[]
-  log_id?: Prisma.IntFilter<"tbl_application_stage_log"> | number
-  application_id?: Prisma.IntNullableFilter<"tbl_application_stage_log"> | number | null
-  changed_by?: Prisma.IntNullableFilter<"tbl_application_stage_log"> | number | null
-  stage_id?: Prisma.IntNullableFilter<"tbl_application_stage_log"> | number | null
-  changed_at?: Prisma.DateTimeNullableFilter<"tbl_application_stage_log"> | Date | string | null
-  remarks?: Prisma.StringNullableFilter<"tbl_application_stage_log"> | string | null
-}
-
 export type tbl_application_stage_logCreateWithoutTbl_applicationInput = {
   changed_at?: Date | string | null
   remarks?: string | null
-  tbl_user_account?: Prisma.tbl_user_accountCreateNestedOneWithoutTbl_application_stage_logInput
+  user?: Prisma.UserCreateNestedOneWithoutApplication_stage_logsInput
   tbl_admission_stage?: Prisma.tbl_admission_stageCreateNestedOneWithoutTbl_application_stage_logInput
 }
 
 export type tbl_application_stage_logUncheckedCreateWithoutTbl_applicationInput = {
   log_id?: number
-  changed_by?: number | null
+  changed_by?: string | null
   stage_id?: number | null
   changed_at?: Date | string | null
   remarks?: string | null
@@ -622,14 +657,7 @@ export type tbl_application_stage_logUpdateManyWithWhereWithoutTbl_applicationIn
   data: Prisma.XOR<Prisma.tbl_application_stage_logUpdateManyMutationInput, Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_applicationInput>
 }
 
-export type tbl_application_stage_logCreateWithoutTbl_user_accountInput = {
-  changed_at?: Date | string | null
-  remarks?: string | null
-  tbl_application?: Prisma.tbl_applicationCreateNestedOneWithoutTbl_application_stage_logInput
-  tbl_admission_stage?: Prisma.tbl_admission_stageCreateNestedOneWithoutTbl_application_stage_logInput
-}
-
-export type tbl_application_stage_logUncheckedCreateWithoutTbl_user_accountInput = {
+export type tbl_application_stage_logCreateManyUserInput = {
   log_id?: number
   application_id?: number | null
   stage_id?: number | null
@@ -637,36 +665,33 @@ export type tbl_application_stage_logUncheckedCreateWithoutTbl_user_accountInput
   remarks?: string | null
 }
 
-export type tbl_application_stage_logCreateOrConnectWithoutTbl_user_accountInput = {
-  where: Prisma.tbl_application_stage_logWhereUniqueInput
-  create: Prisma.XOR<Prisma.tbl_application_stage_logCreateWithoutTbl_user_accountInput, Prisma.tbl_application_stage_logUncheckedCreateWithoutTbl_user_accountInput>
+export type tbl_application_stage_logUpdateWithoutUserInput = {
+  changed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tbl_application?: Prisma.tbl_applicationUpdateOneWithoutTbl_application_stage_logNestedInput
+  tbl_admission_stage?: Prisma.tbl_admission_stageUpdateOneWithoutTbl_application_stage_logNestedInput
 }
 
-export type tbl_application_stage_logCreateManyTbl_user_accountInputEnvelope = {
-  data: Prisma.tbl_application_stage_logCreateManyTbl_user_accountInput | Prisma.tbl_application_stage_logCreateManyTbl_user_accountInput[]
-  skipDuplicates?: boolean
+export type tbl_application_stage_logUncheckedUpdateWithoutUserInput = {
+  log_id?: Prisma.IntFieldUpdateOperationsInput | number
+  application_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  changed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
-export type tbl_application_stage_logUpsertWithWhereUniqueWithoutTbl_user_accountInput = {
-  where: Prisma.tbl_application_stage_logWhereUniqueInput
-  update: Prisma.XOR<Prisma.tbl_application_stage_logUpdateWithoutTbl_user_accountInput, Prisma.tbl_application_stage_logUncheckedUpdateWithoutTbl_user_accountInput>
-  create: Prisma.XOR<Prisma.tbl_application_stage_logCreateWithoutTbl_user_accountInput, Prisma.tbl_application_stage_logUncheckedCreateWithoutTbl_user_accountInput>
-}
-
-export type tbl_application_stage_logUpdateWithWhereUniqueWithoutTbl_user_accountInput = {
-  where: Prisma.tbl_application_stage_logWhereUniqueInput
-  data: Prisma.XOR<Prisma.tbl_application_stage_logUpdateWithoutTbl_user_accountInput, Prisma.tbl_application_stage_logUncheckedUpdateWithoutTbl_user_accountInput>
-}
-
-export type tbl_application_stage_logUpdateManyWithWhereWithoutTbl_user_accountInput = {
-  where: Prisma.tbl_application_stage_logScalarWhereInput
-  data: Prisma.XOR<Prisma.tbl_application_stage_logUpdateManyMutationInput, Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_user_accountInput>
+export type tbl_application_stage_logUncheckedUpdateManyWithoutUserInput = {
+  log_id?: Prisma.IntFieldUpdateOperationsInput | number
+  application_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  changed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type tbl_application_stage_logCreateManyTbl_admission_stageInput = {
   log_id?: number
   application_id?: number | null
-  changed_by?: number | null
+  changed_by?: string | null
   changed_at?: Date | string | null
   remarks?: string | null
 }
@@ -675,13 +700,13 @@ export type tbl_application_stage_logUpdateWithoutTbl_admission_stageInput = {
   changed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_application?: Prisma.tbl_applicationUpdateOneWithoutTbl_application_stage_logNestedInput
-  tbl_user_account?: Prisma.tbl_user_accountUpdateOneWithoutTbl_application_stage_logNestedInput
+  user?: Prisma.UserUpdateOneWithoutApplication_stage_logsNestedInput
 }
 
 export type tbl_application_stage_logUncheckedUpdateWithoutTbl_admission_stageInput = {
   log_id?: Prisma.IntFieldUpdateOperationsInput | number
   application_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  changed_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  changed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
@@ -689,14 +714,14 @@ export type tbl_application_stage_logUncheckedUpdateWithoutTbl_admission_stageIn
 export type tbl_application_stage_logUncheckedUpdateManyWithoutTbl_admission_stageInput = {
   log_id?: Prisma.IntFieldUpdateOperationsInput | number
   application_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  changed_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  changed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type tbl_application_stage_logCreateManyTbl_applicationInput = {
   log_id?: number
-  changed_by?: number | null
+  changed_by?: string | null
   stage_id?: number | null
   changed_at?: Date | string | null
   remarks?: string | null
@@ -705,13 +730,13 @@ export type tbl_application_stage_logCreateManyTbl_applicationInput = {
 export type tbl_application_stage_logUpdateWithoutTbl_applicationInput = {
   changed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tbl_user_account?: Prisma.tbl_user_accountUpdateOneWithoutTbl_application_stage_logNestedInput
+  user?: Prisma.UserUpdateOneWithoutApplication_stage_logsNestedInput
   tbl_admission_stage?: Prisma.tbl_admission_stageUpdateOneWithoutTbl_application_stage_logNestedInput
 }
 
 export type tbl_application_stage_logUncheckedUpdateWithoutTbl_applicationInput = {
   log_id?: Prisma.IntFieldUpdateOperationsInput | number
-  changed_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  changed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   changed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -719,38 +744,7 @@ export type tbl_application_stage_logUncheckedUpdateWithoutTbl_applicationInput 
 
 export type tbl_application_stage_logUncheckedUpdateManyWithoutTbl_applicationInput = {
   log_id?: Prisma.IntFieldUpdateOperationsInput | number
-  changed_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  changed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type tbl_application_stage_logCreateManyTbl_user_accountInput = {
-  log_id?: number
-  application_id?: number | null
-  stage_id?: number | null
-  changed_at?: Date | string | null
-  remarks?: string | null
-}
-
-export type tbl_application_stage_logUpdateWithoutTbl_user_accountInput = {
-  changed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tbl_application?: Prisma.tbl_applicationUpdateOneWithoutTbl_application_stage_logNestedInput
-  tbl_admission_stage?: Prisma.tbl_admission_stageUpdateOneWithoutTbl_application_stage_logNestedInput
-}
-
-export type tbl_application_stage_logUncheckedUpdateWithoutTbl_user_accountInput = {
-  log_id?: Prisma.IntFieldUpdateOperationsInput | number
-  application_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  changed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type tbl_application_stage_logUncheckedUpdateManyWithoutTbl_user_accountInput = {
-  log_id?: Prisma.IntFieldUpdateOperationsInput | number
-  application_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  changed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   changed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -766,7 +760,7 @@ export type tbl_application_stage_logSelect<ExtArgs extends runtime.Types.Extens
   changed_at?: boolean
   remarks?: boolean
   tbl_application?: boolean | Prisma.tbl_application_stage_log$tbl_applicationArgs<ExtArgs>
-  tbl_user_account?: boolean | Prisma.tbl_application_stage_log$tbl_user_accountArgs<ExtArgs>
+  user?: boolean | Prisma.tbl_application_stage_log$userArgs<ExtArgs>
   tbl_admission_stage?: boolean | Prisma.tbl_application_stage_log$tbl_admission_stageArgs<ExtArgs>
 }, ExtArgs["result"]["tbl_application_stage_log"]>
 
@@ -778,7 +772,7 @@ export type tbl_application_stage_logSelectCreateManyAndReturn<ExtArgs extends r
   changed_at?: boolean
   remarks?: boolean
   tbl_application?: boolean | Prisma.tbl_application_stage_log$tbl_applicationArgs<ExtArgs>
-  tbl_user_account?: boolean | Prisma.tbl_application_stage_log$tbl_user_accountArgs<ExtArgs>
+  user?: boolean | Prisma.tbl_application_stage_log$userArgs<ExtArgs>
   tbl_admission_stage?: boolean | Prisma.tbl_application_stage_log$tbl_admission_stageArgs<ExtArgs>
 }, ExtArgs["result"]["tbl_application_stage_log"]>
 
@@ -790,7 +784,7 @@ export type tbl_application_stage_logSelectUpdateManyAndReturn<ExtArgs extends r
   changed_at?: boolean
   remarks?: boolean
   tbl_application?: boolean | Prisma.tbl_application_stage_log$tbl_applicationArgs<ExtArgs>
-  tbl_user_account?: boolean | Prisma.tbl_application_stage_log$tbl_user_accountArgs<ExtArgs>
+  user?: boolean | Prisma.tbl_application_stage_log$userArgs<ExtArgs>
   tbl_admission_stage?: boolean | Prisma.tbl_application_stage_log$tbl_admission_stageArgs<ExtArgs>
 }, ExtArgs["result"]["tbl_application_stage_log"]>
 
@@ -806,17 +800,17 @@ export type tbl_application_stage_logSelectScalar = {
 export type tbl_application_stage_logOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"log_id" | "application_id" | "changed_by" | "stage_id" | "changed_at" | "remarks", ExtArgs["result"]["tbl_application_stage_log"]>
 export type tbl_application_stage_logInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tbl_application?: boolean | Prisma.tbl_application_stage_log$tbl_applicationArgs<ExtArgs>
-  tbl_user_account?: boolean | Prisma.tbl_application_stage_log$tbl_user_accountArgs<ExtArgs>
+  user?: boolean | Prisma.tbl_application_stage_log$userArgs<ExtArgs>
   tbl_admission_stage?: boolean | Prisma.tbl_application_stage_log$tbl_admission_stageArgs<ExtArgs>
 }
 export type tbl_application_stage_logIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tbl_application?: boolean | Prisma.tbl_application_stage_log$tbl_applicationArgs<ExtArgs>
-  tbl_user_account?: boolean | Prisma.tbl_application_stage_log$tbl_user_accountArgs<ExtArgs>
+  user?: boolean | Prisma.tbl_application_stage_log$userArgs<ExtArgs>
   tbl_admission_stage?: boolean | Prisma.tbl_application_stage_log$tbl_admission_stageArgs<ExtArgs>
 }
 export type tbl_application_stage_logIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tbl_application?: boolean | Prisma.tbl_application_stage_log$tbl_applicationArgs<ExtArgs>
-  tbl_user_account?: boolean | Prisma.tbl_application_stage_log$tbl_user_accountArgs<ExtArgs>
+  user?: boolean | Prisma.tbl_application_stage_log$userArgs<ExtArgs>
   tbl_admission_stage?: boolean | Prisma.tbl_application_stage_log$tbl_admission_stageArgs<ExtArgs>
 }
 
@@ -824,13 +818,13 @@ export type $tbl_application_stage_logPayload<ExtArgs extends runtime.Types.Exte
   name: "tbl_application_stage_log"
   objects: {
     tbl_application: Prisma.$tbl_applicationPayload<ExtArgs> | null
-    tbl_user_account: Prisma.$tbl_user_accountPayload<ExtArgs> | null
+    user: Prisma.$UserPayload<ExtArgs> | null
     tbl_admission_stage: Prisma.$tbl_admission_stagePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     log_id: number
     application_id: number | null
-    changed_by: number | null
+    changed_by: string | null
     stage_id: number | null
     changed_at: Date | null
     remarks: string | null
@@ -1229,7 +1223,7 @@ readonly fields: tbl_application_stage_logFieldRefs;
 export interface Prisma__tbl_application_stage_logClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   tbl_application<T extends Prisma.tbl_application_stage_log$tbl_applicationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_application_stage_log$tbl_applicationArgs<ExtArgs>>): Prisma.Prisma__tbl_applicationClient<runtime.Types.Result.GetResult<Prisma.$tbl_applicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  tbl_user_account<T extends Prisma.tbl_application_stage_log$tbl_user_accountArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_application_stage_log$tbl_user_accountArgs<ExtArgs>>): Prisma.Prisma__tbl_user_accountClient<runtime.Types.Result.GetResult<Prisma.$tbl_user_accountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  user<T extends Prisma.tbl_application_stage_log$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_application_stage_log$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   tbl_admission_stage<T extends Prisma.tbl_application_stage_log$tbl_admission_stageArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_application_stage_log$tbl_admission_stageArgs<ExtArgs>>): Prisma.Prisma__tbl_admission_stageClient<runtime.Types.Result.GetResult<Prisma.$tbl_admission_stagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1262,7 +1256,7 @@ export interface Prisma__tbl_application_stage_logClient<T, Null = never, ExtArg
 export interface tbl_application_stage_logFieldRefs {
   readonly log_id: Prisma.FieldRef<"tbl_application_stage_log", 'Int'>
   readonly application_id: Prisma.FieldRef<"tbl_application_stage_log", 'Int'>
-  readonly changed_by: Prisma.FieldRef<"tbl_application_stage_log", 'Int'>
+  readonly changed_by: Prisma.FieldRef<"tbl_application_stage_log", 'String'>
   readonly stage_id: Prisma.FieldRef<"tbl_application_stage_log", 'Int'>
   readonly changed_at: Prisma.FieldRef<"tbl_application_stage_log", 'DateTime'>
   readonly remarks: Prisma.FieldRef<"tbl_application_stage_log", 'String'>
@@ -1686,22 +1680,22 @@ export type tbl_application_stage_log$tbl_applicationArgs<ExtArgs extends runtim
 }
 
 /**
- * tbl_application_stage_log.tbl_user_account
+ * tbl_application_stage_log.user
  */
-export type tbl_application_stage_log$tbl_user_accountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type tbl_application_stage_log$userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the tbl_user_account
+   * Select specific fields to fetch from the User
    */
-  select?: Prisma.tbl_user_accountSelect<ExtArgs> | null
+  select?: Prisma.UserSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the tbl_user_account
+   * Omit specific fields from the User
    */
-  omit?: Prisma.tbl_user_accountOmit<ExtArgs> | null
+  omit?: Prisma.UserOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.tbl_user_accountInclude<ExtArgs> | null
-  where?: Prisma.tbl_user_accountWhereInput
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**

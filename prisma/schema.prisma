@@ -24,6 +24,8 @@ model User {
   emailVerified DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+
+  application_stage_logs tbl_application_stage_log[]
 }
 
 model tbl_admission_cycle {
@@ -51,6 +53,7 @@ model tbl_applicant {
   last_name       String            @db.VarChar(100)
   first_name      String            @db.VarChar(100)
   middle_name     String?           @db.VarChar(100)
+  suffix          String?           @db.VarChar(20)
   sex             String?           @db.VarChar(20)
   birth_date      DateTime?         @db.Date
   email           String?           @db.VarChar(150)
@@ -84,12 +87,12 @@ model tbl_application {
 model tbl_application_stage_log {
   log_id              Int                  @id @default(autoincrement())
   application_id      Int?
-  changed_by          Int?
+  changed_by          String?
   stage_id            Int?
   changed_at          DateTime?            @default(now()) @db.Timestamp(6)
   remarks             String?
   tbl_application     tbl_application?     @relation(fields: [application_id], references: [application_id], onDelete: Cascade, onUpdate: NoAction)
-  tbl_user_account    tbl_user_account?    @relation(fields: [changed_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  user                User? @relation(fields: [changed_by], references: [id], onDelete: SetNull, onUpdate: Cascade)
   tbl_admission_stage tbl_admission_stage? @relation(fields: [stage_id], references: [stage_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
@@ -289,7 +292,6 @@ model tbl_user_account {
   email                     String                      @db.VarChar(150)
   is_active                 Boolean?                    @default(true)
   created_at                DateTime?                   @default(now()) @db.Timestamp(6)
-  tbl_application_stage_log tbl_application_stage_log[]
   tbl_import_batch          tbl_import_batch[]
   tbl_passing_score_setting tbl_passing_score_setting[]
   tbl_quota                 tbl_quota[]

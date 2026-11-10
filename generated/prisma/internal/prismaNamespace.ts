@@ -2370,6 +2370,7 @@ export const Tbl_applicantScalarFieldEnum = {
   last_name: 'last_name',
   first_name: 'first_name',
   middle_name: 'middle_name',
+  suffix: 'suffix',
   sex: 'sex',
   birth_date: 'birth_date',
   email: 'email',
