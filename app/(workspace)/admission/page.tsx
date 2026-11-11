@@ -21,16 +21,41 @@ async function AdmissionContent() {
       email: true,
       mobile_no: true,
       tbl_application: {
+        orderBy: {
+          application_date: "desc",
+        },
+        take: 1,
         select: {
+          application_no: true,
+          application_date: true,
           tbl_admission_stage: {
             select: {
               stage_name: true,
+            },
+          },
+          tbl_exam_result: {
+            select: {
+              result_status: true,
+              percentage: true,
             },
           },
         },
       },
     },
   });
+
+  // Convert Prisma Decimal percentages into JavaScript numbers.
+  const applicantsForTable = applicants.map((applicant) => ({
+    ...applicant,
+    tbl_application: applicant.tbl_application.map((application) => ({
+      ...application,
+      tbl_exam_result: application.tbl_exam_result.map((result) => ({
+        ...result,
+        percentage:
+          result.percentage === null ? null : Number(result.percentage),
+      })),
+    })),
+  }));
 
   return (
     <div className="space-y-6 p-6">
@@ -50,7 +75,7 @@ async function AdmissionContent() {
         <p className="text-2xl font-bold">{applicants.length}</p>
       </div>
 
-      <ApplicantTable applicants={applicants} />
+      <ApplicantTable applicants={applicantsForTable} />
     </div>
   );
 }

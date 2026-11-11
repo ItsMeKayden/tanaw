@@ -15,9 +15,15 @@ type Applicant = {
   email: string | null;
   mobile_no: string | null;
   tbl_application: {
+    application_no: string;
+    application_date: Date;
     tbl_admission_stage: {
       stage_name: string;
     } | null;
+    tbl_exam_result: {
+      result_status: string | null;
+      percentage: number | null;
+    }[];
   }[];
 };
 
@@ -30,6 +36,8 @@ const PAGE_SIZE = 5;
 export default function ApplicantTable({ applicants }: ApplicantTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [stageFilter, setStageFilter] = useState("ALL");
+  const [examResultFilter, setExamResultFilter] = useState("ALL");
   const router = useRouter();
 
   // Filter applicants based on the search query.
@@ -47,13 +55,30 @@ export default function ApplicantTable({ applicants }: ApplicantTableProps) {
     const applicantId = String(applicant.applicant_id);
     const formattedId = applicantId.padStart(6, "0");
 
-    return (
+    const latestApplication = applicant.tbl_application[0];
+
+    const status =
+      latestApplication?.tbl_admission_stage?.stage_name ?? "No Application";
+
+    const resultStatus =
+      latestApplication?.tbl_exam_result[0]?.result_status ?? "NO_RESULT";
+
+    const matchesSearch =
       applicantId.includes(query) ||
       formattedId.includes(query) ||
       fullName.toLowerCase().includes(query) ||
       (applicant.email ?? "").toLowerCase().includes(query) ||
-      (applicant.mobile_no ?? "").toLowerCase().includes(query)
-    );
+      (applicant.mobile_no ?? "").toLowerCase().includes(query);
+
+    const matchesStage = stageFilter === "ALL" || status === stageFilter;
+
+    const matchesExamResult =
+      examResultFilter === "ALL" ||
+      (examResultFilter === "NO_RESULT"
+        ? resultStatus === "NO_RESULT"
+        : resultStatus.toUpperCase() === examResultFilter);
+
+    return matchesSearch && matchesStage && matchesExamResult;
   });
 
   // Pagination based on filtered results.
@@ -75,34 +100,87 @@ export default function ApplicantTable({ applicants }: ApplicantTableProps) {
 
   return (
     <div className="space-y-4">
-      {/* Search Bar and Add Applicant Button */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative w-full sm:max-w-sm">
-          <input
-            type="search"
-            value={searchQuery}
-            onChange={(event) => {
-              setSearchQuery(event.target.value);
-              setCurrentPage(1);
-            }}
-            placeholder="Search by ID, name, email, or mobile number..."
-            aria-label="Search applicants"
-            className="w-full rounded-md border bg-background px-4 py-2 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
-          />
+      {/* Search Bar, Filters, and Add Applicant Button */}
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+        <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 xl:flex xl:flex-1 xl:items-end">
+          {/* Search */}
+          <div className="flex w-full flex-col gap-1.5 xl:max-w-sm">
+            <label htmlFor="applicant-search" className="text-sm font-medium">
+              Search Applicants
+            </label>
+
+            <input
+              id="applicant-search"
+              type="search"
+              value={searchQuery}
+              onChange={(event) => {
+                setSearchQuery(event.target.value);
+                setCurrentPage(1);
+              }}
+              placeholder="Search by ID, name, email, or mobile number..."
+              aria-label="Search applicants"
+              className="h-10 w-full rounded-md border bg-background px-4 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+
+          {/* Admission Stage Filter */}
+          <div className="flex w-full flex-col gap-1.5 xl:max-w-48">
+            <label htmlFor="stage-filter" className="text-sm font-medium">
+              Admission Stage
+            </label>
+
+            <select
+              id="stage-filter"
+              value={stageFilter}
+              onChange={(event) => {
+                setStageFilter(event.target.value);
+                setCurrentPage(1);
+              }}
+              className="h-10 w-full rounded-md border bg-background px-3 text-sm"
+            >
+              <option value="ALL">All Admission Stages</option>
+              <option value="No Application">No Application</option>
+              <option value="Application Submitted">
+                Application Submitted
+              </option>
+              <option value="For Examination">For Examination</option>
+              <option value="Exam Completed">Exam Completed</option>
+              <option value="For Evaluation">For Evaluation</option>
+              <option value="Failed">Failed</option>
+              <option value="Enrolled">Enrolled</option>
+            </select>
+          </div>
+
+          {/* Exam Result Filter */}
+          <div className="flex w-full flex-col gap-1.5 xl:max-w-40">
+            <label htmlFor="exam-result-filter" className="text-sm font-medium">
+              Exam Result
+            </label>
+
+            <select
+              id="exam-result-filter"
+              value={examResultFilter}
+              onChange={(event) => {
+                setExamResultFilter(event.target.value);
+                setCurrentPage(1);
+              }}
+              className="h-10 w-full rounded-md border bg-background px-3 text-sm"
+            >
+              <option value="ALL">All Exam Results</option>
+              <option value="PASSED">Passed</option>
+              <option value="FAILED">Failed</option>
+              <option value="NO_RESULT">No Result</option>
+            </select>
+          </div>
         </div>
 
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-sm text-muted-foreground">
-            {filteredApplicants.length} applicant(s) found
-          </p>
-
-          <Link
-            href="/admission/applicants/new"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
-          >
-            + Add Applicant
-          </Link>
-        </div>
+        {/* Add Applicant */}
+        <Link
+          href="/admission/applicants/new"
+          className="inline-flex h-10 w-full shrink-0 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 xl:w-40"
+        >
+          + Add Applicant
+        </Link>
       </div>
 
       {/* Applicant Table */}
@@ -117,7 +195,8 @@ export default function ApplicantTable({ applicants }: ApplicantTableProps) {
                 <th className="px-4 py-3 font-medium">Birth Date</th>
                 <th className="px-4 py-3 font-medium">Email</th>
                 <th className="px-4 py-3 font-medium">Mobile Number</th>
-                <th className="px-4 py-3 font-medium">Status</th>
+                <th className="px-4 py-3 font-medium">Admission Stage</th>
+                <th className="px-4 py-3 font-medium">Exam Result</th>
                 <th className="px-4 py-3 text-center font-medium">Actions</th>
               </tr>
             </thead>
@@ -133,9 +212,16 @@ export default function ApplicantTable({ applicants }: ApplicantTableProps) {
                     .filter(Boolean)
                     .join(" ");
 
+                  const latestApplication = applicant.tbl_application[0];
+
                   const status =
-                    applicant.tbl_application[0]?.tbl_admission_stage
-                      ?.stage_name ?? "No Application";
+                    latestApplication?.tbl_admission_stage?.stage_name ??
+                    "No Application";
+
+                  const examResult = latestApplication?.tbl_exam_result[0];
+
+                  const resultStatus = examResult?.result_status ?? "--";
+                  const percentage = examResult?.percentage;
 
                   return (
                     <tr
@@ -164,7 +250,38 @@ export default function ApplicantTable({ applicants }: ApplicantTableProps) {
                         {applicant.mobile_no || "--"}
                       </td>
 
-                      <td className="px-4 py-3">{status}</td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${
+                            status === "Enrolled"
+                              ? "bg-green-100 text-green-700"
+                              : status === "Failed"
+                                ? "bg-red-100 text-red-700"
+                                : status === "For Evaluation"
+                                  ? "bg-blue-100 text-blue-700"
+                                  : "bg-muted text-muted-foreground"
+                          }`}
+                        >
+                          {status}
+                        </span>
+                      </td>
+
+                      <td className="px-4 py-3">
+                        <span
+                          className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${
+                            resultStatus === "PASSED"
+                              ? "bg-green-100 text-green-700"
+                              : resultStatus === "FAILED"
+                                ? "bg-red-100 text-red-700"
+                                : "bg-muted text-muted-foreground"
+                          }`}
+                        >
+                          {resultStatus}
+                          {percentage !== null && percentage !== undefined
+                            ? ` (${percentage}%)`
+                            : ""}
+                        </span>
+                      </td>
 
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-center gap-2">
@@ -215,11 +332,13 @@ export default function ApplicantTable({ applicants }: ApplicantTableProps) {
               ) : (
                 <tr>
                   <td
-                    colSpan={8}
+                    colSpan={9}
                     className="px-4 py-10 text-center text-muted-foreground"
                   >
-                    {searchQuery
-                      ? "No applicants match your search."
+                    {searchQuery ||
+                    stageFilter !== "ALL" ||
+                    examResultFilter !== "ALL"
+                      ? "No applicants match your search or filters."
                       : "No applicants found."}
                   </td>
                 </tr>
