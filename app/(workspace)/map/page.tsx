@@ -1,16 +1,17 @@
-import { Suspense } from "react";
+import { connection } from "next/server";
 
+import { ModulePlaceholder } from "@/components/layout/module-placeholder";
 import { requirePermission } from "@/lib/authorization";
 
-async function MapContent() {
-  await requirePermission("map", "read");
-  return null;
-}
+export default async function MapPage() {
+  await connection();
 
-export default function MapPage() {
+  await requirePermission("map", "read");
+
   return (
-    <Suspense fallback={null}>
-      <MapContent />
-    </Suspense>
+    <ModulePlaceholder
+      title="Campus Map"
+      description="View campus locations, facilities, and geographic information."
+    />
   );
 }

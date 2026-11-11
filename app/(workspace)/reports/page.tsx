@@ -1,22 +1,17 @@
-import { Suspense } from "react";
+import { connection } from "next/server";
 
+import { ModulePlaceholder } from "@/components/layout/module-placeholder";
 import { requirePermission } from "@/lib/authorization";
 
-async function ReportsContent() {
-  const user = await requirePermission("reports", "read");
+export default async function ReportsPage() {
+  await connection();
+
+  await requirePermission("reports", "read");
 
   return (
-    <div className="p-3">
-      <p>Welcome, {user.name ?? user.email}!</p>
-      <p className="mt-1 text-sm text-muted-foreground">Role: {user.role}</p>
-    </div>
-  );
-}
-
-export default function ReportsPage() {
-  return (
-    <Suspense fallback={null}>
-      <ReportsContent />
-    </Suspense>
+    <ModulePlaceholder
+      title="Analytics"
+      description="View institutional analytics, reports, and admission statistics."
+    />
   );
 }

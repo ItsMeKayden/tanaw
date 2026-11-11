@@ -1,16 +1,17 @@
-import { Suspense } from "react";
+import { connection } from "next/server";
 
+import { ModulePlaceholder } from "@/components/layout/module-placeholder";
 import { requirePermission } from "@/lib/authorization";
 
-async function UsersRolesContent() {
-  await requirePermission("users", "read");
-  return null;
-}
+export default async function UsersRolesPage() {
+  await connection();
 
-export default function UsersRolesPage() {
+  await requirePermission("users", "read");
+
   return (
-    <Suspense fallback={null}>
-      <UsersRolesContent />
-    </Suspense>
+    <ModulePlaceholder
+      title="User Access and Roles"
+      description="Manage system users, account access, and role-based permissions."
+    />
   );
 }
