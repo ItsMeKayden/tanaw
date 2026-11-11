@@ -8,6 +8,7 @@ datasource db {
 }
 
 enum UserRole {
+  SYSTEM_ADMIN
   PRESIDENT
   ADMISSION
   REGISTRAR
@@ -205,7 +206,7 @@ model tbl_passing_score_setting {
 
 model tbl_permission {
   permission_id       Int                   @id @default(autoincrement())
-  permission_code     String                @db.VarChar(100)
+  permission_code     String                @unique                 @db.VarChar(100)
   module_name         String                @db.VarChar(100)
   description         String?
   tbl_role_permission tbl_role_permission[]
@@ -260,7 +261,7 @@ model tbl_quota {
 
 model tbl_role {
   role_id             Int                   @id @default(autoincrement())
-  role_name           String                @db.VarChar(100)
+  role_name           String                @unique                 @db.VarChar(100)
   description         String?
   tbl_role_permission tbl_role_permission[]
   tbl_user_account    tbl_user_account[]

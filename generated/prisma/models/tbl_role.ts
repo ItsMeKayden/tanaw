@@ -214,14 +214,14 @@ export type tbl_roleOrderByWithRelationInput = {
 
 export type tbl_roleWhereUniqueInput = Prisma.AtLeast<{
   role_id?: number
+  role_name?: string
   AND?: Prisma.tbl_roleWhereInput | Prisma.tbl_roleWhereInput[]
   OR?: Prisma.tbl_roleWhereInput[]
   NOT?: Prisma.tbl_roleWhereInput | Prisma.tbl_roleWhereInput[]
-  role_name?: Prisma.StringFilter<"tbl_role"> | string
   description?: Prisma.StringNullableFilter<"tbl_role"> | string | null
   tbl_role_permission?: Prisma.Tbl_role_permissionListRelationFilter
   tbl_user_account?: Prisma.Tbl_user_accountListRelationFilter
-}, "role_id">
+}, "role_id" | "role_name">
 
 export type tbl_roleOrderByWithAggregationInput = {
   role_id?: Prisma.SortOrder

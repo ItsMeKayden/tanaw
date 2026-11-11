@@ -41,17 +41,32 @@ async function main() {
   const hashedPassword = await hash(password, 12);
 
   for (const testUser of testUsers) {
-    await prisma.user.upsert({
-      where: { email: testUser.email },
+    const role = await prisma.tbl_role.findUnique({
+      where: { role_name: testUser.role },
+    });
+
+    if (!role) {
+      throw new Error(
+        `Role ${testUser.role} not found. Run the database seeder first.`,
+      );
+    }
+
+    await prisma.tbl_user_account.upsert({
+      where: { username: testUser.email },
       update: {
-        name: testUser.name,
-        role: testUser.role,
-        password: hashedPassword,
-        isActive: true,
+        email: testUser.email,
+        full_name: testUser.name,
+        password_hash: hashedPassword,
+        role_id: role.role_id,
+        is_active: true,
       },
       create: {
-        ...testUser,
-        password: hashedPassword,
+        username: testUser.email,
+        email: testUser.email,
+        full_name: testUser.name,
+        password_hash: hashedPassword,
+        role_id: role.role_id,
+        is_active: true,
       },
     });
 

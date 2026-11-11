@@ -6,7 +6,12 @@ import {
   type Permission,
 } from "@/lib/permissions";
 
-export type UserRole = "PRESIDENT" | "ADMISSION" | "REGISTRAR" | "GUIDANCE";
+export type UserRole =
+  | "SYSTEM_ADMIN"
+  | "PRESIDENT"
+  | "ADMISSION"
+  | "REGISTRAR"
+  | "GUIDANCE";
 
 export async function requireUser() {
   const session = await auth();
@@ -34,7 +39,9 @@ export async function requirePermission(
 ) {
   const user = await requireUser();
 
-  if (!hasPermission(user.role, module, permission)) {
+  const allowed = await hasPermission(user.role, module, permission);
+
+  if (!allowed) {
     redirect("/dashboard");
   }
 

@@ -4,11 +4,17 @@ import { requirePermission } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
 import ApplicantTable from "@/components/admission/applicant-table";
 import { connection } from "next/server";
+import { hasPermission } from "@/lib/permissions";
 
 async function AdmissionContent() {
   await connection();
   const user = await requirePermission("admission", "read");
 
+  const canWriteAdmission = await hasPermission(
+    user.role,
+    "admission",
+    "write",
+  );
   const applicants = await prisma.tbl_applicant.findMany({
     orderBy: [{ last_name: "asc" }, { first_name: "asc" }],
     select: {
@@ -66,16 +72,15 @@ async function AdmissionContent() {
         </p>
       </div>
 
-      <div className="text-sm text-muted-foreground">
-        Welcome, {user.name ?? user.email} · {user.role}
-      </div>
-
       <div className="rounded-lg border p-4">
         <p className="text-sm text-muted-foreground">Total Applicants</p>
         <p className="text-2xl font-bold">{applicants.length}</p>
       </div>
 
-      <ApplicantTable applicants={applicantsForTable} />
+      <ApplicantTable
+        applicants={applicantsForTable}
+        canWrite={canWriteAdmission}
+      />
     </div>
   );
 }

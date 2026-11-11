@@ -221,14 +221,14 @@ export type tbl_permissionOrderByWithRelationInput = {
 
 export type tbl_permissionWhereUniqueInput = Prisma.AtLeast<{
   permission_id?: number
+  permission_code?: string
   AND?: Prisma.tbl_permissionWhereInput | Prisma.tbl_permissionWhereInput[]
   OR?: Prisma.tbl_permissionWhereInput[]
   NOT?: Prisma.tbl_permissionWhereInput | Prisma.tbl_permissionWhereInput[]
-  permission_code?: Prisma.StringFilter<"tbl_permission"> | string
   module_name?: Prisma.StringFilter<"tbl_permission"> | string
   description?: Prisma.StringNullableFilter<"tbl_permission"> | string | null
   tbl_role_permission?: Prisma.Tbl_role_permissionListRelationFilter
-}, "permission_id">
+}, "permission_id" | "permission_code">
 
 export type tbl_permissionOrderByWithAggregationInput = {
   permission_id?: Prisma.SortOrder

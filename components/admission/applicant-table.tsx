@@ -29,11 +29,15 @@ type Applicant = {
 
 type ApplicantTableProps = {
   applicants: Applicant[];
+  canWrite: boolean;
 };
 
 const PAGE_SIZE = 5;
 
-export default function ApplicantTable({ applicants }: ApplicantTableProps) {
+export default function ApplicantTable({
+  applicants,
+  canWrite,
+}: ApplicantTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [stageFilter, setStageFilter] = useState("ALL");
@@ -175,12 +179,14 @@ export default function ApplicantTable({ applicants }: ApplicantTableProps) {
         </div>
 
         {/* Add Applicant */}
-        <Link
-          href="/admission/applicants/new"
-          className="inline-flex h-10 w-full shrink-0 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 xl:w-40"
-        >
-          + Add Applicant
-        </Link>
+        {canWrite && (
+          <Link
+            href="/admission/applicants/new"
+            className="inline-flex h-10 w-full shrink-0 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 xl:w-40"
+          >
+            + Add Applicant
+          </Link>
+        )}
       </div>
 
       {/* Applicant Table */}
@@ -292,38 +298,42 @@ export default function ApplicantTable({ applicants }: ApplicantTableProps) {
                             View
                           </Link>
 
-                          <Link
-                            href={`/admission/applicants/${applicant.applicant_id}/edit`}
-                            className="rounded-md border px-2 py-1 text-xs transition-colors hover:bg-muted"
-                          >
-                            Edit
-                          </Link>
+                          {canWrite && (
+                            <Link
+                              href={`/admission/applicants/${applicant.applicant_id}/edit`}
+                              className="rounded-md border px-2 py-1 text-xs transition-colors hover:bg-muted"
+                            >
+                              Edit
+                            </Link>
+                          )}
 
-                          <button
-                            type="button"
-                            onClick={async () => {
-                              const confirmed = window.confirm(
-                                "Are you sure you want to delete this applicant? This action cannot be undone.",
-                              );
+                          {canWrite && (
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                const confirmed = window.confirm(
+                                  "Are you sure you want to delete this applicant? This action cannot be undone.",
+                                );
 
-                              if (!confirmed) return;
+                                if (!confirmed) return;
 
-                              const result = await deleteApplicant(
-                                applicant.applicant_id,
-                              );
+                                const result = await deleteApplicant(
+                                  applicant.applicant_id,
+                                );
 
-                              if (result.error) {
-                                window.alert(result.error);
-                                return;
-                              }
+                                if (result.error) {
+                                  window.alert(result.error);
+                                  return;
+                                }
 
-                              window.alert("Applicant successfully deleted.");
-                              router.refresh();
-                            }}
-                            className="rounded-md border px-2 py-1 text-xs text-red-600 hover:bg-red-50"
-                          >
-                            Delete
-                          </button>
+                                window.alert("Applicant successfully deleted.");
+                                router.refresh();
+                              }}
+                              className="rounded-md border px-2 py-1 text-xs text-red-600 hover:bg-red-50"
+                            >
+                              Delete
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

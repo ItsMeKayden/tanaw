@@ -48,7 +48,6 @@ const navigationItems: NavigationItem[] = [
       },
     ],
   },
-
   { label: "Analytics", href: "/reports", permission: "reports" },
   { label: "Course", href: "/course", permission: "course" },
   { label: "User Access and Roles", href: "/users-roles", permission: "users" },
@@ -56,23 +55,37 @@ const navigationItems: NavigationItem[] = [
   { label: "Guidance", href: "/guidance", permission: "guidance" },
 ];
 
-function filterNavigation(
+async function filterNavigation(
   items: NavigationItem[],
   role: UserRole,
-): NavigationItem[] {
-  return items
-    .filter((item) => hasPermission(role, item.permission, "read"))
-    .map(
-      (item): NavigationItem => ({
+): Promise<NavigationItem[]> {
+  const filteredItems: (NavigationItem | null)[] = await Promise.all(
+    items.map(async (item): Promise<NavigationItem | null> => {
+      const allowed = await hasPermission(role, item.permission, "read");
+
+      if (!allowed) {
+        return null;
+      }
+
+      const children = item.children
+        ? await filterNavigation(item.children, role)
+        : undefined;
+
+      return {
         ...item,
-        children: item.children
-          ? filterNavigation(item.children, role)
-          : undefined,
-      }),
-    )
-    .filter((item) => !item.children || item.children.length > 0);
+        children,
+      };
+    }),
+  );
+
+  return filteredItems.filter(
+    (item): item is NavigationItem =>
+      item !== null && (!item.children || item.children.length > 0),
+  );
 }
 
-export function getNavigationItems(role: UserRole): NavigationItem[] {
+export async function getNavigationItems(
+  role: UserRole,
+): Promise<NavigationItem[]> {
   return filterNavigation(navigationItems, role);
 }
