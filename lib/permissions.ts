@@ -1,83 +1,55 @@
+import { prisma } from "@/lib/prisma";
 import type { UserRole } from "@/lib/authorization";
+import { moduleCode, type ModuleName } from "@/lib/modules";
 
-export type ModuleName =
-  | "dashboard"
-  | "map"
-  | "admission"
-  | "course"
-  | "users"
-  | "registrar"
-  | "guidance"
-  | "reports";
+export type { ModuleName } from "@/lib/modules";
 
 export type Permission = "read" | "write";
 
-const permissions: Record<ModuleName, Record<UserRole, Permission[]>> = {
-  dashboard: {
-    PRESIDENT: ["read"],
-    ADMISSION: ["read"],
-    REGISTRAR: ["read"],
-    GUIDANCE: ["read"],
-  },
-
-  map: {
-    PRESIDENT: ["read"],
-    ADMISSION: ["read"],
-    REGISTRAR: ["read"],
-    GUIDANCE: ["read"],
-  },
-
-  admission: {
-    PRESIDENT: ["read"],
-    ADMISSION: ["read", "write"],
-    REGISTRAR: [],
-    GUIDANCE: [],
-  },
-
-  course: {
-    PRESIDENT: ["read"],
-    ADMISSION: ["read"],
-    REGISTRAR: ["read"],
-    GUIDANCE: ["read"],
-  },
-
-  users: {
-    PRESIDENT: ["read"],
-    ADMISSION: ["read"],
-    REGISTRAR: ["read"],
-    GUIDANCE: ["read"],
-  },
-
-  registrar: {
-    PRESIDENT: ["read"],
-    ADMISSION: [],
-    REGISTRAR: ["read", "write"],
-    GUIDANCE: [],
-  },
-
-  guidance: {
-    PRESIDENT: ["read"],
-    ADMISSION: [],
-    REGISTRAR: [],
-    GUIDANCE: ["read", "write"],
-  },
-
-  reports: {
-    PRESIDENT: ["read"],
-    ADMISSION: ["read", "write"],
-    REGISTRAR: ["read", "write"],
-    GUIDANCE: ["read", "write"],
-  },
-};
-
-export function hasPermission(
+export async function hasPermission(
   role: UserRole,
   module: ModuleName,
   permission: Permission,
-): boolean {
-  return permissions[module]?.[role]?.includes(permission) ?? false;
+): Promise<boolean> {
+  const permissionCode = `${moduleCode(module)}_${permission.toUpperCase()}`;
+
+  const assignment = await prisma.tbl_role_permission.findFirst({
+    where: {
+      tbl_role: {
+        role_name: role,
+      },
+      tbl_permission: {
+        permission_code: permissionCode,
+      },
+    },
+    select: {
+      permission_id: true,
+    },
+  });
+
+  return assignment !== null;
 }
 
-export function canWrite(role: UserRole, module: ModuleName): boolean {
+/**
+ * Returns true when the role holds the permission on at least one of the
+ * given modules (e.g. enrollment verification is shared by Admission and
+ * Registrar).
+ */
+export async function hasAnyPermission(
+  role: UserRole,
+  modules: ModuleName[],
+  permission: Permission,
+): Promise<boolean> {
+  const results = await Promise.all(
+    modules.map((module) => hasPermission(role, module, permission)),
+  );
+
+  return results.some(Boolean);
+}
+
+export async function canWrite(
+  role: UserRole,
+  module: ModuleName,
+): Promise<boolean> {
   return hasPermission(role, module, "write");
 }

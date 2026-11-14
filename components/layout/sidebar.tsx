@@ -1,40 +1,186 @@
 "use client";
 
+import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  ChartColumn,
+  ChevronRight,
+  ClipboardList,
+  GraduationCap,
+  HeartHandshake,
+  LayoutGrid,
+  MapPinned,
+  School,
+  UserRound,
+  type LucideIcon,
+} from "lucide-react";
 
-import type { NavigationItem } from "@/lib/navigation";
+import qcuLogo from "@/app/public/qcu-logo.png";
+import type { NavigationIcon, NavigationItem } from "@/lib/navigation";
+import { containsHref, findActiveHref } from "@/lib/navigation-match";
 
-export function Sidebar({ navigation }: { navigation: NavigationItem[] }) {
+const icons: Record<NavigationIcon, LucideIcon> = {
+  dashboard: LayoutGrid,
+  map: MapPinned,
+  admission: School,
+  analytics: ChartColumn,
+  recommendation: GraduationCap,
+  users: UserRound,
+  registrar: ClipboardList,
+  guidance: HeartHandshake,
+};
+
+export function Sidebar({ navigation }: Readonly<{ navigation: NavigationItem[] }>) {
   const pathname = usePathname();
+  const activeHref = findActiveHref(navigation, pathname);
 
-  return (
-    <aside className="w-full shrink-0 border-2 border-sky-500 bg-[#bdbdbd] sm:w-[138px]">
-      <div className="flex h-[58px] items-center px-4 text-xs">
-        QCU Admission
-      </div>
-      <nav
-        aria-label="Main navigation"
-        className="flex flex-wrap gap-1 px-3 pb-3 sm:flex-col"
+  // Groups containing the current page start expanded.
+  const [expanded, setExpanded] = useState<string[]>(() => {
+    const open: string[] = [];
+    const visit = (items: NavigationItem[]) => {
+      for (const item of items) {
+        if (item.children && containsHref(item, activeHref)) {
+          open.push(item.label);
+          visit(item.children);
+        }
+      }
+    };
+    visit(navigation);
+    return open;
+  });
+
+  function toggle(label: string) {
+    setExpanded((current) =>
+      current.includes(label)
+        ? current.filter((item) => item !== label)
+        : [...current, label],
+    );
+  }
+
+  function renderTopLevel(item: NavigationItem) {
+    const Icon = item.icon ? icons[item.icon] : null;
+    const isActive = containsHref(item, activeHref);
+    const isOpen = expanded.includes(item.label);
+    const hasChildren = Boolean(item.children?.length);
+
+    const content = (
+      <>
+        {Icon && <Icon aria-hidden="true" className="size-[22px] shrink-0" strokeWidth={2} />}
+        <span className="flex-1 truncate text-left">{item.label}</span>
+        {(hasChildren || isActive) && (
+          <ChevronRight
+            aria-hidden="true"
+            className={`size-5 shrink-0 transition-transform ${isOpen ? "rotate-90" : ""}`}
+          />
+        )}
+      </>
+    );
+
+    const className = `flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[17px] transition-colors ${
+      isActive ? "bg-white/30 font-bold" : "hover:bg-white/10"
+    }`;
+
+    return (
+      <li key={item.label}>
+        {hasChildren ? (
+          <button
+            type="button"
+            onClick={() => toggle(item.label)}
+            aria-expanded={isOpen}
+            className={className}
+          >
+            {content}
+          </button>
+        ) : (
+          item.href && (
+            <Link
+              href={item.href}
+              aria-current={item.href === activeHref ? "page" : undefined}
+              className={className}
+            >
+              {content}
+            </Link>
+          )
+        )}
+
+        {hasChildren && isOpen && renderChildren(item.children!, 1)}
+      </li>
+    );
+  }
+
+  function renderChildren(items: NavigationItem[], depth: number) {
+    return (
+      <ul
+        className={`mt-1 mb-1 space-y-0.5 border-l border-white/30 ${depth === 1 ? "ml-6" : "ml-3"}`}
       >
-        {navigation.map((item) => {
-          const isActive = pathname === item.href;
+        {items.map((child) => {
+          const isActive = child.href === activeHref;
+          const hasChildren = Boolean(child.children?.length);
+          const isOpen = expanded.includes(child.label);
+          const isParentActive = containsHref(child, activeHref);
+          const className = `flex w-full items-center gap-2 rounded-r-lg py-1.5 pr-2 pl-3 text-left text-sm transition-colors ${
+            isActive
+              ? "bg-white/25 font-semibold"
+              : `hover:bg-white/10 ${isParentActive ? "font-semibold" : "text-white/85"}`
+          }`;
 
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              aria-current={isActive ? "page" : undefined}
-              className={`flex min-h-7 items-center px-2.5 text-xs ${
-                isActive
-                  ? "bg-[#a3a3a3] font-semibold"
-                  : "hover:bg-[#adadad]"
-              }`}
-            >
-              {item.label}
-            </Link>
+            <li key={child.label}>
+              {hasChildren ? (
+                <button
+                  type="button"
+                  onClick={() => toggle(child.label)}
+                  aria-expanded={isOpen}
+                  className={className}
+                >
+                  <span className="flex-1">{child.label}</span>
+                  <ChevronRight
+                    aria-hidden="true"
+                    className={`size-4 transition-transform ${isOpen ? "rotate-90" : ""}`}
+                  />
+                </button>
+              ) : (
+                child.href && (
+                  <Link
+                    href={child.href}
+                    aria-current={isActive ? "page" : undefined}
+                    className={className}
+                  >
+                    {child.label}
+                  </Link>
+                )
+              )}
+              {hasChildren && isOpen && renderChildren(child.children!, depth + 1)}
+            </li>
           );
         })}
+      </ul>
+    );
+  }
+
+  return (
+    <aside className="w-full shrink-0 bg-[#0d1b8c] text-white sm:min-h-screen sm:w-[230px] print:hidden">
+      <div className="flex items-center gap-3 px-4 py-4 sm:flex-col sm:gap-1 sm:pt-5 sm:pb-6">
+        <Image
+          src={qcuLogo}
+          alt="Quezon City University seal"
+          priority
+          className="size-14 rounded-full sm:size-[104px]"
+        />
+        <div className="sm:text-center">
+          <p className="text-3xl leading-none font-black tracking-wide sm:text-[40px]">
+            QCU
+          </p>
+          <p className="text-xs font-extrabold tracking-[0.25em] text-white/90 [-webkit-text-stroke:0.5px_#0d1b8c] [text-shadow:0_0_1px_#fff]">
+            TANAW
+          </p>
+        </div>
+      </div>
+
+      <nav aria-label="Main navigation" className="px-2 pb-4">
+        <ul className="space-y-1">{navigation.map(renderTopLevel)}</ul>
       </nav>
     </aside>
   );

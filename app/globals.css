@@ -128,3 +128,19 @@
     @apply font-sans;
   }
 }
+/* District name labels on the Leaflet map (text with a halo for contrast). */
+.tanaw-map-label {
+  background: none;
+  border: none;
+}
+.tanaw-map-label span {
+  display: block;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  text-align: center;
+  font: 700 12px/1.15 Inter, Arial, sans-serif;
+  text-shadow:
+    -1px -1px 0 var(--halo), 1px -1px 0 var(--halo), -1px 1px 0 var(--halo), 1px 1px 0 var(--halo),
+    0 0 3px var(--halo);
+  pointer-events: none;
+}

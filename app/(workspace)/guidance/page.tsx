@@ -1,22 +1,17 @@
-import { Suspense } from "react";
+import { connection } from "next/server";
 
+import { ModulePlaceholder } from "@/components/layout/module-placeholder";
 import { requirePermission } from "@/lib/authorization";
 
-async function GuidanceContent() {
-  const user = await requirePermission("guidance", "read");
+export default async function GuidancePage() {
+  await connection();
+
+  await requirePermission("guidance", "read");
 
   return (
-    <div className="p-3">
-      <p>Welcome, {user.name ?? user.email}!</p>
-      <p className="mt-1 text-sm text-muted-foreground">Role: {user.role}</p>
-    </div>
-  );
-}
-
-export default function GuidancePage() {
-  return (
-    <Suspense fallback={null}>
-      <GuidanceContent />
-    </Suspense>
+    <ModulePlaceholder
+      title="Guidance Management"
+      description="Manage student guidance services, counseling records, and student support activities."
+    />
   );
 }

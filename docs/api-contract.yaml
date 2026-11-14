@@ -1,0 +1,722 @@
+openapi: 3.1.0
+
+info:
+  title: TANAW Shared API Contract
+  version: 0.3.0
+  description: |
+    Shared API contract for the five TANAW modules.
+    Endpoint definitions are proposed based on the supplied Prisma schema.
+    Confirm data ownership, request and response formats, and module
+    responsibilities before implementing these endpoints.
+
+servers: []
+
+tags:
+  - name: Dashboard
+    description: Summary statistics and dashboard information.
+  - name: Map Module
+    description: Geographic and school information.
+  - name: Admission System
+    description: Applicant, application, and exam information.
+  - name: Analytics and Reports
+    description: Admission statistics and reporting data.
+  - name: Course Recommendation
+    description: Programs and course recommendations.
+
+paths:
+  # DASHBOARD
+
+  /dashboard/summary:
+    get:
+      tags:
+        - Dashboard
+      summary: Get dashboard summary
+      operationId: getDashboardSummary
+      description: |
+        Returns summary statistics for the dashboard.
+        The exact statistics and access permissions must be agreed upon.
+      responses:
+        "200":
+          description: Dashboard summary retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_applications:
+                    type: integer
+                  applications_by_stage:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        stage_id:
+                          type: integer
+                        stage_name:
+                          type: string
+                        count:
+                          type: integer
+                  total_exam_results:
+                    type: integer
+                  total_recommendations:
+                    type: integer
+              example:
+                total_applications: 250
+                applications_by_stage:
+                  - stage_id: 1
+                    stage_name: Pending
+                    count: 80
+                total_exam_results: 180
+                total_recommendations: 150
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  # MAP MODULE
+
+  /geography/districts:
+    get:
+      tags:
+        - Map Module
+      summary: Get districts
+      operationId: getDistricts
+      description: Returns district information for map visualization.
+      responses:
+        "200":
+          description: Districts retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  districts:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        district_id:
+                          type: integer
+                        district_name:
+                          type: string
+                        boundary_geojson:
+                          type:
+                            - object
+                            - string
+                            - "null"
+              example:
+                districts:
+                  - district_id: 1
+                    district_name: District 1
+                    boundary_geojson: null
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /geography/barangays:
+    get:
+      tags:
+        - Map Module
+      summary: Get barangays
+      operationId: getBarangays
+      description: Returns barangay information, optionally filtered by district.
+      parameters:
+        - name: district_id
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Barangays retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  barangays:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        barangay_id:
+                          type: integer
+                        district_id:
+                          type:
+                            - integer
+                            - "null"
+                        barangay_name:
+                          type: string
+                        boundary_geojson:
+                          type:
+                            - object
+                            - string
+                            - "null"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /schools:
+    get:
+      tags:
+        - Map Module
+      summary: Get schools
+      operationId: getSchools
+      description: Returns school information for map display.
+      responses:
+        "200":
+          description: Schools retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  schools:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/School"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  # ADMISSION SYSTEM
+
+  /applications/{applicationId}/exam-results:
+    get:
+      tags:
+        - Admission System
+      summary: Get exam results for an application
+      operationId: getApplicationExamResults
+      parameters:
+        - $ref: "#/components/parameters/ApplicationId"
+      responses:
+        "200":
+          description: Exam results retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - application_id
+                  - exam_results
+                properties:
+                  application_id:
+                    type: integer
+                  exam_results:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ExamResult"
+              example:
+                application_id: 101
+                exam_results:
+                  - result_id: 501
+                    exam_id: 12
+                    raw_score: 42
+                    percentage: 84.0
+                    result_status: PASSED
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /applications/{applicationId}/details:
+    get:
+      tags:
+        - Admission System
+      summary: Get application details
+      operationId: getApplicationDetails
+      parameters:
+        - $ref: "#/components/parameters/ApplicationId"
+      responses:
+        "200":
+          description: Application details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApplicationDetails"
+              example:
+                application_id: 101
+                application_no: TANAW-2026-00101
+                applicant:
+                  applicant_id: 201
+                  first_name: Alex
+                  middle_name: null
+                  last_name: Santos
+                cycle_id: 3
+                program_id: 7
+                branch_id: 2
+                current_stage_id: 4
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  # ANALYTICS AND REPORTS
+
+  /analytics/admissions:
+    get:
+      tags:
+        - Analytics and Reports
+      summary: Get admission analytics
+      operationId: getAdmissionAnalytics
+      description: |
+        Returns aggregated admission statistics.
+        Available filters and report requirements must be agreed upon.
+      parameters:
+        - name: cycle_id
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Admission analytics retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cycle_id:
+                    type:
+                      - integer
+                      - "null"
+                  total_applications:
+                    type: integer
+                  applications_by_stage:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        stage_id:
+                          type: integer
+                        stage_name:
+                          type: string
+                        count:
+                          type: integer
+              example:
+                cycle_id: 3
+                total_applications: 250
+                applications_by_stage:
+                  - stage_id: 1
+                    stage_name: Pending
+                    count: 80
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /analytics/exam-results:
+    get:
+      tags:
+        - Analytics and Reports
+      summary: Get exam result analytics
+      operationId: getExamResultAnalytics
+      parameters:
+        - name: cycle_id
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Exam analytics retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cycle_id:
+                    type:
+                      - integer
+                      - "null"
+                  total_results:
+                    type: integer
+                  average_percentage:
+                    type:
+                      - number
+                      - "null"
+              example:
+                cycle_id: 3
+                total_results: 180
+                average_percentage: 78.5
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  # COURSE RECOMMENDATION
+
+  /programs:
+    get:
+      tags:
+        - Course Recommendation
+      summary: Get available programs
+      operationId: getPrograms
+      description: Returns programs that can be considered for recommendations.
+      responses:
+        "200":
+          description: Programs retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  programs:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Program"
+              example:
+                programs:
+                  - program_id: 7
+                    program_code: BSIT
+                    program_name: Bachelor of Science in Information Technology
+                    is_active: true
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /applications/{applicationId}/recommendations:
+    post:
+      tags:
+        - Course Recommendation
+      summary: Generate recommendations for an application
+      operationId: generateApplicationRecommendations
+      description: |
+        Generates course recommendations using available application,
+        exam, program competency, and competency weight data.
+        The recommendation algorithm is outside the scope of this contract.
+      parameters:
+        - $ref: "#/components/parameters/ApplicationId"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              maxProperties: 0
+            example: {}
+      responses:
+        "200":
+          description: Recommendations generated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecommendationList"
+              example:
+                application_id: 101
+                recommendations:
+                  - program_id: 7
+                    program_code: BSIT
+                    program_name: Bachelor of Science in Information Technology
+                    compatibility_score: 87.5
+                    rank_no: 1
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          description: Insufficient data to generate recommendations.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error:
+                  code: INSUFFICIENT_DATA
+                  message: Insufficient data to generate recommendations.
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    get:
+      tags:
+        - Course Recommendation
+      summary: Get recommendations for an application
+      operationId: getApplicationRecommendations
+      parameters:
+        - $ref: "#/components/parameters/ApplicationId"
+      responses:
+        "200":
+          description: Recommendations retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecommendationList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+components:
+  parameters:
+    ApplicationId:
+      name: applicationId
+      in: path
+      required: true
+      description: Numeric application ID from tbl_application.
+      schema:
+        type: integer
+        minimum: 1
+      example: 101
+
+  schemas:
+    ApplicantSummary:
+      type: object
+      required:
+        - applicant_id
+        - first_name
+        - last_name
+      properties:
+        applicant_id:
+          type: integer
+        first_name:
+          type: string
+        middle_name:
+          type:
+            - string
+            - "null"
+        last_name:
+          type: string
+
+    ApplicationDetails:
+      type: object
+      required:
+        - application_id
+        - application_no
+      properties:
+        application_id:
+          type: integer
+        application_no:
+          type: string
+        applicant:
+          oneOf:
+            - $ref: "#/components/schemas/ApplicantSummary"
+            - type: "null"
+        cycle_id:
+          type:
+            - integer
+            - "null"
+        program_id:
+          type:
+            - integer
+            - "null"
+        branch_id:
+          type:
+            - integer
+            - "null"
+        current_stage_id:
+          type:
+            - integer
+            - "null"
+
+    ExamResult:
+      type: object
+      required:
+        - result_id
+        - exam_id
+      properties:
+        result_id:
+          type: integer
+        exam_id:
+          type: integer
+        raw_score:
+          type:
+            - number
+            - "null"
+        percentage:
+          type:
+            - number
+            - "null"
+          minimum: 0
+          maximum: 100
+        result_status:
+          type:
+            - string
+            - "null"
+
+    Program:
+      type: object
+      required:
+        - program_id
+        - program_code
+        - program_name
+        - is_active
+      properties:
+        program_id:
+          type: integer
+        program_code:
+          type: string
+        program_name:
+          type: string
+        is_active:
+          type: boolean
+
+    CourseRecommendation:
+      type: object
+      required:
+        - program_id
+        - compatibility_score
+        - rank_no
+      properties:
+        program_id:
+          type: integer
+        program_code:
+          type: string
+        program_name:
+          type: string
+        compatibility_score:
+          type:
+            - number
+            - "null"
+          minimum: 0
+          maximum: 100
+        rank_no:
+          type:
+            - integer
+            - "null"
+          minimum: 1
+
+    RecommendationList:
+      type: object
+      required:
+        - application_id
+        - recommendations
+      properties:
+        application_id:
+          type: integer
+        recommendations:
+          type: array
+          items:
+            $ref: "#/components/schemas/CourseRecommendation"
+
+    School:
+      type: object
+      properties:
+        school_id:
+          type: integer
+        school_name:
+          type: string
+        school_type:
+          type:
+            - string
+            - "null"
+        city_municipality:
+          type:
+            - string
+            - "null"
+
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+
+  responses:
+    BadRequest:
+      description: The request is invalid.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error:
+              code: BAD_REQUEST
+              message: The request contains invalid parameters.
+
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error:
+              code: NOT_FOUND
+              message: The requested resource was not found.
+
+    InternalServerError:
+      description: An unexpected server error occurred.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error:
+              code: INTERNAL_SERVER_ERROR
+              message: An unexpected error occurred.
+
+x-module-contract-status:
+  Dashboard:
+    status: proposed
+    possible-data-sources:
+      - tbl_application
+      - tbl_admission_stage
+      - tbl_exam_result
+      - tbl_course_recommendation
+    endpoints:
+      - GET /dashboard/summary
+
+  Map Module:
+    status: proposed
+    possible-data-sources:
+      - tbl_district
+      - tbl_barangay
+      - tbl_school
+    endpoints:
+      - GET /geography/districts
+      - GET /geography/barangays
+      - GET /schools
+
+  Admission System:
+    status: proposed
+    possible-data-sources:
+      - tbl_applicant
+      - tbl_application
+      - tbl_admission_cycle
+      - tbl_admission_stage
+      - tbl_exam_result
+    endpoints:
+      - GET /applications/{applicationId}/details
+      - GET /applications/{applicationId}/exam-results
+
+  Analytics and Reports:
+    status: proposed
+    possible-data-sources:
+      - tbl_application
+      - tbl_admission_cycle
+      - tbl_admission_stage
+      - tbl_exam_result
+      - tbl_course_recommendation
+    endpoints:
+      - GET /analytics/admissions
+      - GET /analytics/exam-results
+
+  Course Recommendation:
+    status: proposed
+    possible-data-sources:
+      - tbl_course_recommendation
+      - tbl_program
+      - tbl_program_competency
+      - tbl_competency
+      - tbl_exam_result
+      - tbl_question_response
+    endpoints:
+      - GET /programs
+      - POST /applications/{applicationId}/recommendations
+      - GET /applications/{applicationId}/recommendations
+
+x-contract-notes:
+  status: proposed-for-team-review
+  notes:
+    - Example IDs and values are illustrative, not real database records.
+    - The added Dashboard, Map, and Analytics endpoints are proposals inferred from the supplied schema.
+    - Confirm which module owns each dataset and which module is allowed to modify it.
+    - Confirm whether modules communicate through APIs or use a shared backend.
+    - Align authentication and authorization with TANAW's existing auth implementation.
+    - Confirm the request body and generation behavior for POST recommendations.
+    - Confirm response fields, filters, and error handling with the affected teams.

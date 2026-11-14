@@ -1,65 +1,14 @@
+/**
+ * Creates/updates the four test accounts only.
+ * The main seeder (`npm run db:seed`) already does this; this script is kept
+ * for resetting test-account passwords without re-running the full seed.
+ */
 import "dotenv/config";
-import { hash } from "bcryptjs";
-import { prisma } from "../lib/prisma";
 
-async function main() {
-  if (process.env.NODE_ENV === "production") {
-    throw new Error("Test-user creation is disabled in production.");
-  }
+import { prisma } from "../prisma/seeds/client";
+import { seedTestUsers } from "../prisma/seeds/access-control";
 
-  const testUsers = [
-    {
-      name: "TANAW Test President",
-      email: "test.president@example.com",
-      role: "PRESIDENT" as const,
-    },
-    {
-      name: "TANAW Test Admission",
-      email: "test.admission@example.com",
-      role: "ADMISSION" as const,
-    },
-    {
-      name: "TANAW Test Registrar",
-      email: "test.registrar@example.com",
-      role: "REGISTRAR" as const,
-    },
-    {
-      name: "TANAW Test Guidance",
-      email: "test.guidance@example.com",
-      role: "GUIDANCE" as const,
-    },
-  ];
-
-  const password = process.env.TEST_USER_PASSWORD;
-
-  if (!password || password.length < 8 || password.length > 72) {
-    throw new Error(
-      "Set TEST_USER_PASSWORD to a password between 8 and 72 characters.",
-    );
-  }
-
-  const hashedPassword = await hash(password, 12);
-
-  for (const testUser of testUsers) {
-    await prisma.user.upsert({
-      where: { email: testUser.email },
-      update: {
-        name: testUser.name,
-        role: testUser.role,
-        password: hashedPassword,
-        isActive: true,
-      },
-      create: {
-        ...testUser,
-        password: hashedPassword,
-      },
-    });
-
-    console.log(`Created/updated ${testUser.role} test account.`);
-  }
-}
-
-main()
+seedTestUsers()
   .catch((error) => {
     console.error("Failed to create test accounts:", error);
     process.exitCode = 1;
