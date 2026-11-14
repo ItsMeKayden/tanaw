@@ -166,3 +166,8 @@ export type tbl_school = Prisma.tbl_schoolModel
  * 
  */
 export type tbl_user_account = Prisma.tbl_user_accountModel
+/**
+ * Model tbl_application_document
+ * 
+ */
+export type tbl_application_document = Prisma.tbl_application_documentModel

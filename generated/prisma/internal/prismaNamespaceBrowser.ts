@@ -75,7 +75,8 @@ export const ModelName = {
   tbl_role: 'tbl_role',
   tbl_role_permission: 'tbl_role_permission',
   tbl_school: 'tbl_school',
-  tbl_user_account: 'tbl_user_account'
+  tbl_user_account: 'tbl_user_account',
+  tbl_application_document: 'tbl_application_document'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -151,6 +152,8 @@ export const Tbl_applicationScalarFieldEnum = {
   barangay_id: 'barangay_id',
   branch_id: 'branch_id',
   program_id: 'program_id',
+  program_choice_2_id: 'program_choice_2_id',
+  program_choice_3_id: 'program_choice_3_id',
   cycle_id: 'cycle_id',
   current_stage_id: 'current_stage_id',
   application_no: 'application_no',
@@ -376,6 +379,21 @@ export const Tbl_user_accountScalarFieldEnum = {
 } as const
 
 export type Tbl_user_accountScalarFieldEnum = (typeof Tbl_user_accountScalarFieldEnum)[keyof typeof Tbl_user_accountScalarFieldEnum]
+
+
+export const Tbl_application_documentScalarFieldEnum = {
+  document_id: 'document_id',
+  application_id: 'application_id',
+  uploaded_by: 'uploaded_by',
+  document_type: 'document_type',
+  file_name: 'file_name',
+  mime_type: 'mime_type',
+  file_size: 'file_size',
+  file_data: 'file_data',
+  uploaded_at: 'uploaded_at'
+} as const
+
+export type Tbl_application_documentScalarFieldEnum = (typeof Tbl_application_documentScalarFieldEnum)[keyof typeof Tbl_application_documentScalarFieldEnum]
 
 
 export const SortOrder = {

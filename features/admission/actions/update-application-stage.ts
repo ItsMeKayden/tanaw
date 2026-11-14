@@ -1,8 +1,9 @@
 "use server";
 
-import { auth } from "@/auth";
-import { requirePermission } from "@/lib/authorization";
+import { getAccountId, requirePermission } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
+import { ENROLLMENT_DECISION_STAGES } from "@/features/admission/stages";
+import { stageUpdateSchema } from "@/features/admission/schemas";
 
 type UpdateApplicationStageInput = {
   application_id: number;
@@ -13,25 +14,21 @@ type UpdateApplicationStageInput = {
 export async function updateApplicationStage(
   input: UpdateApplicationStageInput,
 ) {
-  await requirePermission("admission", "write");
+  const user = await requirePermission("admission", "write");
+  const accountId = getAccountId(user);
 
-  const session = await auth();
-  const userId = session?.user?.id;
+  const { application_id, stage_id } = input;
 
-  if (!userId) {
-    throw new Error("Unauthorized. Please log in again.");
-  }
-
-  const { application_id, stage_id, remarks } = input;
-
-  if (
-    !Number.isInteger(application_id) ||
-    !Number.isInteger(stage_id) ||
-    application_id <= 0 ||
-    stage_id <= 0
-  ) {
+  if (!Number.isInteger(application_id) || application_id <= 0) {
     throw new Error("Invalid application or stage.");
   }
+
+  const parsed = stageUpdateSchema.safeParse({
+    stage_id: String(stage_id),
+    remarks: input.remarks ?? "",
+  });
+  if (!parsed.success) throw new Error(parsed.error.issues[0].message);
+  const remarks = parsed.data.remarks;
 
   const application = await prisma.tbl_application.findUnique({
     where: { application_id },
@@ -49,11 +46,19 @@ export async function updateApplicationStage(
     where: { stage_id },
     select: {
       stage_id: true,
+      stage_name: true,
     },
   });
 
   if (!stage) {
     throw new Error("Admission stage not found.");
+  }
+
+  // Enrollment decisions must go through Enrollment Verification.
+  if (ENROLLMENT_DECISION_STAGES.includes(stage.stage_name)) {
+    throw new Error(
+      `Applicants can only be marked "${stage.stage_name}" through Enrollment Verification.`,
+    );
   }
 
   if (application.current_stage_id === stage_id) {
@@ -74,7 +79,7 @@ export async function updateApplicationStage(
       data: {
         application_id,
         stage_id,
-        changed_by: userId,
+        changed_by: accountId,
         remarks: cleanRemarks,
       },
     }),

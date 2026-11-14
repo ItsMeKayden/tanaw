@@ -3,77 +3,30 @@
 import { hash } from "bcryptjs";
 import { revalidatePath } from "next/cache";
 
-import { requirePermission, type UserRole } from "@/lib/authorization";
+import { requirePermission } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
+import { createUserSchema, type CreateUserValues } from "@/features/users-roles/schemas";
 
 type CreateUserResult = {
   success: boolean;
   message: string;
+  fieldErrors?: Partial<Record<keyof CreateUserValues, string>>;
 };
 
-const allowedRoles: UserRole[] = [
-  "SYSTEM_ADMIN",
-  "PRESIDENT",
-  "ADMISSION",
-  "REGISTRAR",
-  "GUIDANCE",
-];
-
-export async function createUser(
-  formData: FormData,
-): Promise<CreateUserResult> {
+export async function createUser(input: CreateUserValues): Promise<CreateUserResult> {
   await requirePermission("users", "write");
 
-  const name = formData.get("name");
-  const email = formData.get("email");
-  const password = formData.get("password");
-  const role = formData.get("role");
-
-  if (
-    typeof name !== "string" ||
-    typeof email !== "string" ||
-    typeof password !== "string" ||
-    typeof role !== "string"
-  ) {
-    return {
-      success: false,
-      message: "Please complete all required fields.",
-    };
+  const parsed = createUserSchema.safeParse(input);
+  if (!parsed.success) {
+    const fieldErrors: CreateUserResult["fieldErrors"] = {};
+    for (const issue of parsed.error.issues) {
+      const field = issue.path[0] as keyof CreateUserValues;
+      fieldErrors[field] ??= issue.message;
+    }
+    return { success: false, message: parsed.error.issues[0].message, fieldErrors };
   }
 
-  const cleanName = name.trim();
-  const cleanEmail = email.trim().toLowerCase();
-
-  if (cleanName.length < 2 || cleanName.length > 150) {
-    return {
-      success: false,
-      message: "Name must be between 2 and 150 characters.",
-    };
-  }
-
-  if (
-    cleanEmail.length > 150 ||
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)
-  ) {
-    return {
-      success: false,
-      message: "Please enter a valid email address.",
-    };
-  }
-
-  if (password.length < 8 || password.length > 72) {
-    return {
-      success: false,
-      message: "Password must be between 8 and 72 characters.",
-    };
-  }
-
-  if (!allowedRoles.includes(role as UserRole)) {
-    return {
-      success: false,
-      message: "Invalid user role.",
-    };
-  }
+  const { name: cleanName, email: cleanEmail, password, role } = parsed.data;
 
   try {
     const existingUser = await prisma.tbl_user_account.findFirst({

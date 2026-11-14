@@ -25,20 +25,18 @@ model User {
   emailVerified DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-
-  application_stage_logs tbl_application_stage_log[]
 }
 
 model tbl_admission_cycle {
-  cycle_id                   Int                         @id @default(autoincrement())
-  school_year                String                      @db.VarChar(50)
-  start_date                 DateTime?                   @db.Date
-  end_date                   DateTime?                   @db.Date
-  is_active                  Boolean?                    @default(true)
-  tbl_application            tbl_application[]
-  tbl_exam                   tbl_exam[]
+  cycle_id                  Int                         @id @default(autoincrement())
+  school_year               String                      @db.VarChar(50)
+  start_date                DateTime?                   @db.Date
+  end_date                  DateTime?                   @db.Date
+  is_active                 Boolean?                    @default(true)
+  tbl_application           tbl_application[]
+  tbl_exam                  tbl_exam[]
   tbl_passing_score_setting tbl_passing_score_setting[]
-  tbl_quota                  tbl_quota[]
+  tbl_quota                 tbl_quota[]
 }
 
 model tbl_admission_stage {
@@ -69,6 +67,8 @@ model tbl_application {
   barangay_id               Int?
   branch_id                 Int?
   program_id                Int?
+  program_choice_2_id       Int?
+  program_choice_3_id       Int?
   cycle_id                  Int?
   current_stage_id          Int?
   application_no            String                      @unique @db.VarChar(50)
@@ -78,22 +78,26 @@ model tbl_application {
   tbl_branch                tbl_branch?                 @relation(fields: [branch_id], references: [branch_id], onDelete: NoAction, onUpdate: NoAction)
   tbl_admission_stage       tbl_admission_stage?        @relation(fields: [current_stage_id], references: [stage_id], onDelete: NoAction, onUpdate: NoAction)
   tbl_admission_cycle       tbl_admission_cycle?        @relation(fields: [cycle_id], references: [cycle_id], onDelete: NoAction, onUpdate: NoAction)
-  tbl_program               tbl_program?                @relation(fields: [program_id], references: [program_id], onDelete: NoAction, onUpdate: NoAction)
+  // program_id is the 1st choice; 2nd and 3rd choices are optional.
+  tbl_program               tbl_program?                @relation("application_program", fields: [program_id], references: [program_id], onDelete: NoAction, onUpdate: NoAction)
+  program_choice_2          tbl_program?                @relation("application_program_choice_2", fields: [program_choice_2_id], references: [program_id], onDelete: SetNull, onUpdate: NoAction)
+  program_choice_3          tbl_program?                @relation("application_program_choice_3", fields: [program_choice_3_id], references: [program_id], onDelete: SetNull, onUpdate: NoAction)
   tbl_school                tbl_school?                 @relation(fields: [school_id], references: [school_id], onDelete: NoAction, onUpdate: NoAction)
   tbl_application_stage_log tbl_application_stage_log[]
   tbl_course_recommendation tbl_course_recommendation[]
   tbl_exam_result           tbl_exam_result[]
+  tbl_application_document  tbl_application_document[]
 }
 
 model tbl_application_stage_log {
   log_id              Int                  @id @default(autoincrement())
   application_id      Int?
-  changed_by          String?
+  changed_by          Int?
   stage_id            Int?
   changed_at          DateTime?            @default(now()) @db.Timestamp(6)
   remarks             String?
   tbl_application     tbl_application?     @relation(fields: [application_id], references: [application_id], onDelete: Cascade, onUpdate: NoAction)
-  user                User? @relation(fields: [changed_by], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  tbl_user_account    tbl_user_account?    @relation(fields: [changed_by], references: [user_id], onDelete: SetNull, onUpdate: Cascade)
   tbl_admission_stage tbl_admission_stage? @relation(fields: [stage_id], references: [stage_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
@@ -206,7 +210,7 @@ model tbl_passing_score_setting {
 
 model tbl_permission {
   permission_id       Int                   @id @default(autoincrement())
-  permission_code     String                @unique                 @db.VarChar(100)
+  permission_code     String                @unique @db.VarChar(100)
   module_name         String                @db.VarChar(100)
   description         String?
   tbl_role_permission tbl_role_permission[]
@@ -217,7 +221,9 @@ model tbl_program {
   program_code              String                      @db.VarChar(50)
   program_name              String                      @db.VarChar(150)
   is_active                 Boolean?                    @default(true)
-  tbl_application           tbl_application[]
+  tbl_application           tbl_application[]           @relation("application_program")
+  choice_2_applications     tbl_application[]           @relation("application_program_choice_2")
+  choice_3_applications     tbl_application[]           @relation("application_program_choice_3")
   tbl_course_recommendation tbl_course_recommendation[]
   tbl_program_competency    tbl_program_competency[]
   tbl_quota                 tbl_quota[]
@@ -225,7 +231,7 @@ model tbl_program {
 
 model tbl_program_competency {
   program_id     Int
-  competency_id Int
+  competency_id  Int
   weight         Decimal        @db.Decimal(5, 2)
   tbl_competency tbl_competency @relation(fields: [competency_id], references: [competency_id], onDelete: Cascade, onUpdate: NoAction)
   tbl_program    tbl_program    @relation(fields: [program_id], references: [program_id], onDelete: Cascade, onUpdate: NoAction)
@@ -261,7 +267,7 @@ model tbl_quota {
 
 model tbl_role {
   role_id             Int                   @id @default(autoincrement())
-  role_name           String                @unique                 @db.VarChar(100)
+  role_name           String                @unique @db.VarChar(100)
   description         String?
   tbl_role_permission tbl_role_permission[]
   tbl_user_account    tbl_user_account[]
@@ -269,7 +275,7 @@ model tbl_role {
 
 model tbl_role_permission {
   role_id        Int
-  permission_id Int
+  permission_id  Int
   tbl_permission tbl_permission @relation(fields: [permission_id], references: [permission_id], onDelete: Cascade, onUpdate: NoAction)
   tbl_role       tbl_role       @relation(fields: [role_id], references: [role_id], onDelete: Cascade, onUpdate: NoAction)
 
@@ -296,5 +302,26 @@ model tbl_user_account {
   tbl_import_batch          tbl_import_batch[]
   tbl_passing_score_setting tbl_passing_score_setting[]
   tbl_quota                 tbl_quota[]
+  tbl_application_stage_log tbl_application_stage_log[]
+  tbl_application_document  tbl_application_document[]
   tbl_role                  tbl_role?                   @relation(fields: [role_id], references: [role_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+// Supporting documents uploaded with an application (Form 138, PSA birth
+// certificate). One file per document type per application; re-uploading
+// replaces it.
+model tbl_application_document {
+  document_id      Int               @id @default(autoincrement())
+  application_id   Int
+  uploaded_by      Int?
+  document_type    String            @db.VarChar(50)
+  file_name        String            @db.VarChar(255)
+  mime_type        String            @db.VarChar(100)
+  file_size        Int
+  file_data        Bytes
+  uploaded_at      DateTime          @default(now()) @db.Timestamp(6)
+  tbl_application  tbl_application   @relation(fields: [application_id], references: [application_id], onDelete: Cascade, onUpdate: NoAction)
+  tbl_user_account tbl_user_account? @relation(fields: [uploaded_by], references: [user_id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@unique([application_id, document_type])
 }
