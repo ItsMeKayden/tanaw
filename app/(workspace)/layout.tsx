@@ -12,7 +12,7 @@ async function AuthenticatedWorkspace({ children }: { children: ReactNode }) {
 
   const user = await requireUser();
 
-  const navigation = getNavigationItems(user.role);
+  const navigation = await getNavigationItems(user.role);
 
   return (
     <div className="flex min-h-screen flex-col bg-white text-black sm:flex-row">

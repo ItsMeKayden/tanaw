@@ -2,7 +2,12 @@ import "next-auth";
 import "next-auth/jwt";
 import { DefaultSession } from "next-auth";
 
-type UserRole = "PRESIDENT" | "ADMISSION" | "REGISTRAR" | "GUIDANCE";
+type UserRole =
+  | "SYSTEM_ADMIN"
+  | "PRESIDENT"
+  | "ADMISSION"
+  | "REGISTRAR"
+  | "GUIDANCE";
 
 declare module "next-auth" {
   interface User {

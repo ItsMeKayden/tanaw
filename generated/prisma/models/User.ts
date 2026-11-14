@@ -214,6 +214,7 @@ export type UserWhereInput = {
   emailVerified?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  application_stage_logs?: Prisma.Tbl_application_stage_logListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -226,6 +227,7 @@ export type UserOrderByWithRelationInput = {
   emailVerified?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  application_stage_logs?: Prisma.tbl_application_stage_logOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -241,6 +243,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   emailVerified?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  application_stage_logs?: Prisma.Tbl_application_stage_logListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -283,6 +286,7 @@ export type UserCreateInput = {
   emailVerified?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  application_stage_logs?: Prisma.tbl_application_stage_logCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -295,6 +299,7 @@ export type UserUncheckedCreateInput = {
   emailVerified?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  application_stage_logs?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -307,6 +312,7 @@ export type UserUpdateInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  application_stage_logs?: Prisma.tbl_application_stage_logUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -319,6 +325,7 @@ export type UserUncheckedUpdateInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  application_stage_logs?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -393,6 +400,11 @@ export type UserMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type UserNullableScalarRelationFilter = {
+  is?: Prisma.UserWhereInput | null
+  isNot?: Prisma.UserWhereInput | null
+}
+
 export type StringFieldUpdateOperationsInput = {
   set?: string
 }
@@ -413,6 +425,115 @@ export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
 
+export type UserCreateNestedOneWithoutApplication_stage_logsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutApplication_stage_logsInput, Prisma.UserUncheckedCreateWithoutApplication_stage_logsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutApplication_stage_logsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutApplication_stage_logsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutApplication_stage_logsInput, Prisma.UserUncheckedCreateWithoutApplication_stage_logsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutApplication_stage_logsInput
+  upsert?: Prisma.UserUpsertWithoutApplication_stage_logsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutApplication_stage_logsInput, Prisma.UserUpdateWithoutApplication_stage_logsInput>, Prisma.UserUncheckedUpdateWithoutApplication_stage_logsInput>
+}
+
+export type UserCreateWithoutApplication_stage_logsInput = {
+  id?: string
+  name: string
+  email: string
+  password: string
+  role?: $Enums.UserRole
+  isActive?: boolean
+  emailVerified?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type UserUncheckedCreateWithoutApplication_stage_logsInput = {
+  id?: string
+  name: string
+  email: string
+  password: string
+  role?: $Enums.UserRole
+  isActive?: boolean
+  emailVerified?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type UserCreateOrConnectWithoutApplication_stage_logsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutApplication_stage_logsInput, Prisma.UserUncheckedCreateWithoutApplication_stage_logsInput>
+}
+
+export type UserUpsertWithoutApplication_stage_logsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutApplication_stage_logsInput, Prisma.UserUncheckedUpdateWithoutApplication_stage_logsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutApplication_stage_logsInput, Prisma.UserUncheckedCreateWithoutApplication_stage_logsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutApplication_stage_logsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutApplication_stage_logsInput, Prisma.UserUncheckedUpdateWithoutApplication_stage_logsInput>
+}
+
+export type UserUpdateWithoutApplication_stage_logsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type UserUncheckedUpdateWithoutApplication_stage_logsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+
+/**
+ * Count Type UserCountOutputType
+ */
+
+export type UserCountOutputType = {
+  application_stage_logs: number
+}
+
+export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  application_stage_logs?: boolean | UserCountOutputTypeCountApplication_stage_logsArgs
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserCountOutputType
+   */
+  select?: Prisma.UserCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountApplication_stage_logsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.tbl_application_stage_logWhereInput
+}
 
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -425,6 +546,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   emailVerified?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  application_stage_logs?: boolean | Prisma.User$application_stage_logsArgs<ExtArgs>
+  _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -464,10 +587,18 @@ export type UserSelectScalar = {
 }
 
 export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "role" | "isActive" | "emailVerified" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  application_stage_logs?: boolean | Prisma.User$application_stage_logsArgs<ExtArgs>
+  _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
-  objects: {}
+  objects: {
+    application_stage_logs: Prisma.$tbl_application_stage_logPayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
@@ -872,6 +1003,7 @@ readonly fields: UserFieldRefs;
  */
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  application_stage_logs<T extends Prisma.User$application_stage_logsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$application_stage_logsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_application_stage_logPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -927,6 +1059,10 @@ export type UserFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Internal
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * Filter, which User to fetch.
    */
   where: Prisma.UserWhereUniqueInput
@@ -945,6 +1081,10 @@ export type UserFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * Filter, which User to fetch.
    */
   where: Prisma.UserWhereUniqueInput
@@ -962,6 +1102,10 @@ export type UserFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the User
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
   /**
    * Filter, which User to fetch.
    */
@@ -1011,6 +1155,10 @@ export type UserFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * Filter, which User to fetch.
    */
   where?: Prisma.UserWhereInput
@@ -1058,6 +1206,10 @@ export type UserFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    * Omit specific fields from the User
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
   /**
    * Filter, which Users to fetch.
    */
@@ -1107,6 +1259,10 @@ export type UserCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * The data needed to create a User.
    */
   data: Prisma.XOR<Prisma.UserCreateInput, Prisma.UserUncheckedCreateInput>
@@ -1154,6 +1310,10 @@ export type UserUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    * Omit specific fields from the User
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
   /**
    * The data needed to update a User.
    */
@@ -1221,6 +1381,10 @@ export type UserUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * The filter to search for the User to update in case it exists.
    */
   where: Prisma.UserWhereUniqueInput
@@ -1247,6 +1411,10 @@ export type UserDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * Filter which User to delete.
    */
   where: Prisma.UserWhereUniqueInput
@@ -1267,6 +1435,30 @@ export type UserDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
+ * User.application_stage_logs
+ */
+export type User$application_stage_logsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the tbl_application_stage_log
+   */
+  select?: Prisma.tbl_application_stage_logSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the tbl_application_stage_log
+   */
+  omit?: Prisma.tbl_application_stage_logOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.tbl_application_stage_logInclude<ExtArgs> | null
+  where?: Prisma.tbl_application_stage_logWhereInput
+  orderBy?: Prisma.tbl_application_stage_logOrderByWithRelationInput | Prisma.tbl_application_stage_logOrderByWithRelationInput[]
+  cursor?: Prisma.tbl_application_stage_logWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Tbl_application_stage_logScalarFieldEnum | Prisma.Tbl_application_stage_logScalarFieldEnum[]
+}
+
+/**
  * User without action
  */
 export type UserDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1278,4 +1470,8 @@ export type UserDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * Omit specific fields from the User
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
 }

@@ -1,16 +1,17 @@
-import { Suspense } from "react";
+import { connection } from "next/server";
 
+import { ModulePlaceholder } from "@/components/layout/module-placeholder";
 import { requirePermission } from "@/lib/authorization";
 
-async function CourseContent() {
-  await requirePermission("course", "read");
-  return null;
-}
+export default async function CoursePage() {
+  await connection();
 
-export default function CoursePage() {
+  await requirePermission("course", "read");
+
   return (
-    <Suspense fallback={null}>
-      <CourseContent />
-    </Suspense>
+    <ModulePlaceholder
+      title="Course Management"
+      description="Manage academic programs, courses, and their associated information."
+    />
   );
 }

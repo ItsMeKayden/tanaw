@@ -46,3 +46,123 @@ export { Prisma }
  * 
  */
 export type User = Prisma.UserModel
+/**
+ * Model tbl_admission_cycle
+ * 
+ */
+export type tbl_admission_cycle = Prisma.tbl_admission_cycleModel
+/**
+ * Model tbl_admission_stage
+ * 
+ */
+export type tbl_admission_stage = Prisma.tbl_admission_stageModel
+/**
+ * Model tbl_applicant
+ * 
+ */
+export type tbl_applicant = Prisma.tbl_applicantModel
+/**
+ * Model tbl_application
+ * 
+ */
+export type tbl_application = Prisma.tbl_applicationModel
+/**
+ * Model tbl_application_stage_log
+ * 
+ */
+export type tbl_application_stage_log = Prisma.tbl_application_stage_logModel
+/**
+ * Model tbl_barangay
+ * 
+ */
+export type tbl_barangay = Prisma.tbl_barangayModel
+/**
+ * Model tbl_branch
+ * 
+ */
+export type tbl_branch = Prisma.tbl_branchModel
+/**
+ * Model tbl_competency
+ * 
+ */
+export type tbl_competency = Prisma.tbl_competencyModel
+/**
+ * Model tbl_course_recommendation
+ * 
+ */
+export type tbl_course_recommendation = Prisma.tbl_course_recommendationModel
+/**
+ * Model tbl_district
+ * 
+ */
+export type tbl_district = Prisma.tbl_districtModel
+/**
+ * Model tbl_exam
+ * 
+ */
+export type tbl_exam = Prisma.tbl_examModel
+/**
+ * Model tbl_exam_question
+ * 
+ */
+export type tbl_exam_question = Prisma.tbl_exam_questionModel
+/**
+ * Model tbl_exam_result
+ * 
+ */
+export type tbl_exam_result = Prisma.tbl_exam_resultModel
+/**
+ * Model tbl_import_batch
+ * 
+ */
+export type tbl_import_batch = Prisma.tbl_import_batchModel
+/**
+ * Model tbl_passing_score_setting
+ * 
+ */
+export type tbl_passing_score_setting = Prisma.tbl_passing_score_settingModel
+/**
+ * Model tbl_permission
+ * 
+ */
+export type tbl_permission = Prisma.tbl_permissionModel
+/**
+ * Model tbl_program
+ * 
+ */
+export type tbl_program = Prisma.tbl_programModel
+/**
+ * Model tbl_program_competency
+ * 
+ */
+export type tbl_program_competency = Prisma.tbl_program_competencyModel
+/**
+ * Model tbl_question_response
+ * 
+ */
+export type tbl_question_response = Prisma.tbl_question_responseModel
+/**
+ * Model tbl_quota
+ * 
+ */
+export type tbl_quota = Prisma.tbl_quotaModel
+/**
+ * Model tbl_role
+ * 
+ */
+export type tbl_role = Prisma.tbl_roleModel
+/**
+ * Model tbl_role_permission
+ * 
+ */
+export type tbl_role_permission = Prisma.tbl_role_permissionModel
+/**
+ * Model tbl_school
+ * 
+ */
+export type tbl_school = Prisma.tbl_schoolModel
+/**
+ * Model tbl_user_account
+ * 
+ */
+export type tbl_user_account = Prisma.tbl_user_accountModel
