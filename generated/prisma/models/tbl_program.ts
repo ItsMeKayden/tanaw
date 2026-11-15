@@ -209,6 +209,8 @@ export type tbl_programWhereInput = {
   program_name?: Prisma.StringFilter<"tbl_program"> | string
   is_active?: Prisma.BoolNullableFilter<"tbl_program"> | boolean | null
   tbl_application?: Prisma.Tbl_applicationListRelationFilter
+  choice_2_applications?: Prisma.Tbl_applicationListRelationFilter
+  choice_3_applications?: Prisma.Tbl_applicationListRelationFilter
   tbl_course_recommendation?: Prisma.Tbl_course_recommendationListRelationFilter
   tbl_program_competency?: Prisma.Tbl_program_competencyListRelationFilter
   tbl_quota?: Prisma.Tbl_quotaListRelationFilter
@@ -220,6 +222,8 @@ export type tbl_programOrderByWithRelationInput = {
   program_name?: Prisma.SortOrder
   is_active?: Prisma.SortOrderInput | Prisma.SortOrder
   tbl_application?: Prisma.tbl_applicationOrderByRelationAggregateInput
+  choice_2_applications?: Prisma.tbl_applicationOrderByRelationAggregateInput
+  choice_3_applications?: Prisma.tbl_applicationOrderByRelationAggregateInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationOrderByRelationAggregateInput
   tbl_program_competency?: Prisma.tbl_program_competencyOrderByRelationAggregateInput
   tbl_quota?: Prisma.tbl_quotaOrderByRelationAggregateInput
@@ -234,6 +238,8 @@ export type tbl_programWhereUniqueInput = Prisma.AtLeast<{
   program_name?: Prisma.StringFilter<"tbl_program"> | string
   is_active?: Prisma.BoolNullableFilter<"tbl_program"> | boolean | null
   tbl_application?: Prisma.Tbl_applicationListRelationFilter
+  choice_2_applications?: Prisma.Tbl_applicationListRelationFilter
+  choice_3_applications?: Prisma.Tbl_applicationListRelationFilter
   tbl_course_recommendation?: Prisma.Tbl_course_recommendationListRelationFilter
   tbl_program_competency?: Prisma.Tbl_program_competencyListRelationFilter
   tbl_quota?: Prisma.Tbl_quotaListRelationFilter
@@ -266,6 +272,8 @@ export type tbl_programCreateInput = {
   program_name: string
   is_active?: boolean | null
   tbl_application?: Prisma.tbl_applicationCreateNestedManyWithoutTbl_programInput
+  choice_2_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_2Input
+  choice_3_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_3Input
   tbl_course_recommendation?: Prisma.tbl_course_recommendationCreateNestedManyWithoutTbl_programInput
   tbl_program_competency?: Prisma.tbl_program_competencyCreateNestedManyWithoutTbl_programInput
   tbl_quota?: Prisma.tbl_quotaCreateNestedManyWithoutTbl_programInput
@@ -277,6 +285,8 @@ export type tbl_programUncheckedCreateInput = {
   program_name: string
   is_active?: boolean | null
   tbl_application?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutTbl_programInput
+  choice_2_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_2Input
+  choice_3_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_3Input
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_programInput
   tbl_program_competency?: Prisma.tbl_program_competencyUncheckedCreateNestedManyWithoutTbl_programInput
   tbl_quota?: Prisma.tbl_quotaUncheckedCreateNestedManyWithoutTbl_programInput
@@ -287,6 +297,8 @@ export type tbl_programUpdateInput = {
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   tbl_application?: Prisma.tbl_applicationUpdateManyWithoutTbl_programNestedInput
+  choice_2_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_2NestedInput
+  choice_3_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_3NestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUpdateManyWithoutTbl_programNestedInput
   tbl_program_competency?: Prisma.tbl_program_competencyUpdateManyWithoutTbl_programNestedInput
   tbl_quota?: Prisma.tbl_quotaUpdateManyWithoutTbl_programNestedInput
@@ -298,6 +310,8 @@ export type tbl_programUncheckedUpdateInput = {
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   tbl_application?: Prisma.tbl_applicationUncheckedUpdateManyWithoutTbl_programNestedInput
+  choice_2_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_2NestedInput
+  choice_3_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_3NestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_programNestedInput
   tbl_program_competency?: Prisma.tbl_program_competencyUncheckedUpdateManyWithoutTbl_programNestedInput
   tbl_quota?: Prisma.tbl_quotaUncheckedUpdateManyWithoutTbl_programNestedInput
@@ -368,6 +382,18 @@ export type tbl_programCreateNestedOneWithoutTbl_applicationInput = {
   connect?: Prisma.tbl_programWhereUniqueInput
 }
 
+export type tbl_programCreateNestedOneWithoutChoice_2_applicationsInput = {
+  create?: Prisma.XOR<Prisma.tbl_programCreateWithoutChoice_2_applicationsInput, Prisma.tbl_programUncheckedCreateWithoutChoice_2_applicationsInput>
+  connectOrCreate?: Prisma.tbl_programCreateOrConnectWithoutChoice_2_applicationsInput
+  connect?: Prisma.tbl_programWhereUniqueInput
+}
+
+export type tbl_programCreateNestedOneWithoutChoice_3_applicationsInput = {
+  create?: Prisma.XOR<Prisma.tbl_programCreateWithoutChoice_3_applicationsInput, Prisma.tbl_programUncheckedCreateWithoutChoice_3_applicationsInput>
+  connectOrCreate?: Prisma.tbl_programCreateOrConnectWithoutChoice_3_applicationsInput
+  connect?: Prisma.tbl_programWhereUniqueInput
+}
+
 export type tbl_programUpdateOneWithoutTbl_applicationNestedInput = {
   create?: Prisma.XOR<Prisma.tbl_programCreateWithoutTbl_applicationInput, Prisma.tbl_programUncheckedCreateWithoutTbl_applicationInput>
   connectOrCreate?: Prisma.tbl_programCreateOrConnectWithoutTbl_applicationInput
@@ -376,6 +402,26 @@ export type tbl_programUpdateOneWithoutTbl_applicationNestedInput = {
   delete?: Prisma.tbl_programWhereInput | boolean
   connect?: Prisma.tbl_programWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.tbl_programUpdateToOneWithWhereWithoutTbl_applicationInput, Prisma.tbl_programUpdateWithoutTbl_applicationInput>, Prisma.tbl_programUncheckedUpdateWithoutTbl_applicationInput>
+}
+
+export type tbl_programUpdateOneWithoutChoice_2_applicationsNestedInput = {
+  create?: Prisma.XOR<Prisma.tbl_programCreateWithoutChoice_2_applicationsInput, Prisma.tbl_programUncheckedCreateWithoutChoice_2_applicationsInput>
+  connectOrCreate?: Prisma.tbl_programCreateOrConnectWithoutChoice_2_applicationsInput
+  upsert?: Prisma.tbl_programUpsertWithoutChoice_2_applicationsInput
+  disconnect?: Prisma.tbl_programWhereInput | boolean
+  delete?: Prisma.tbl_programWhereInput | boolean
+  connect?: Prisma.tbl_programWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.tbl_programUpdateToOneWithWhereWithoutChoice_2_applicationsInput, Prisma.tbl_programUpdateWithoutChoice_2_applicationsInput>, Prisma.tbl_programUncheckedUpdateWithoutChoice_2_applicationsInput>
+}
+
+export type tbl_programUpdateOneWithoutChoice_3_applicationsNestedInput = {
+  create?: Prisma.XOR<Prisma.tbl_programCreateWithoutChoice_3_applicationsInput, Prisma.tbl_programUncheckedCreateWithoutChoice_3_applicationsInput>
+  connectOrCreate?: Prisma.tbl_programCreateOrConnectWithoutChoice_3_applicationsInput
+  upsert?: Prisma.tbl_programUpsertWithoutChoice_3_applicationsInput
+  disconnect?: Prisma.tbl_programWhereInput | boolean
+  delete?: Prisma.tbl_programWhereInput | boolean
+  connect?: Prisma.tbl_programWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.tbl_programUpdateToOneWithWhereWithoutChoice_3_applicationsInput, Prisma.tbl_programUpdateWithoutChoice_3_applicationsInput>, Prisma.tbl_programUncheckedUpdateWithoutChoice_3_applicationsInput>
 }
 
 export type tbl_programCreateNestedOneWithoutTbl_course_recommendationInput = {
@@ -426,6 +472,8 @@ export type tbl_programCreateWithoutTbl_applicationInput = {
   program_code: string
   program_name: string
   is_active?: boolean | null
+  choice_2_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_2Input
+  choice_3_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_3Input
   tbl_course_recommendation?: Prisma.tbl_course_recommendationCreateNestedManyWithoutTbl_programInput
   tbl_program_competency?: Prisma.tbl_program_competencyCreateNestedManyWithoutTbl_programInput
   tbl_quota?: Prisma.tbl_quotaCreateNestedManyWithoutTbl_programInput
@@ -436,6 +484,8 @@ export type tbl_programUncheckedCreateWithoutTbl_applicationInput = {
   program_code: string
   program_name: string
   is_active?: boolean | null
+  choice_2_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_2Input
+  choice_3_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_3Input
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_programInput
   tbl_program_competency?: Prisma.tbl_program_competencyUncheckedCreateNestedManyWithoutTbl_programInput
   tbl_quota?: Prisma.tbl_quotaUncheckedCreateNestedManyWithoutTbl_programInput
@@ -444,6 +494,62 @@ export type tbl_programUncheckedCreateWithoutTbl_applicationInput = {
 export type tbl_programCreateOrConnectWithoutTbl_applicationInput = {
   where: Prisma.tbl_programWhereUniqueInput
   create: Prisma.XOR<Prisma.tbl_programCreateWithoutTbl_applicationInput, Prisma.tbl_programUncheckedCreateWithoutTbl_applicationInput>
+}
+
+export type tbl_programCreateWithoutChoice_2_applicationsInput = {
+  program_code: string
+  program_name: string
+  is_active?: boolean | null
+  tbl_application?: Prisma.tbl_applicationCreateNestedManyWithoutTbl_programInput
+  choice_3_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_3Input
+  tbl_course_recommendation?: Prisma.tbl_course_recommendationCreateNestedManyWithoutTbl_programInput
+  tbl_program_competency?: Prisma.tbl_program_competencyCreateNestedManyWithoutTbl_programInput
+  tbl_quota?: Prisma.tbl_quotaCreateNestedManyWithoutTbl_programInput
+}
+
+export type tbl_programUncheckedCreateWithoutChoice_2_applicationsInput = {
+  program_id?: number
+  program_code: string
+  program_name: string
+  is_active?: boolean | null
+  tbl_application?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutTbl_programInput
+  choice_3_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_3Input
+  tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_programInput
+  tbl_program_competency?: Prisma.tbl_program_competencyUncheckedCreateNestedManyWithoutTbl_programInput
+  tbl_quota?: Prisma.tbl_quotaUncheckedCreateNestedManyWithoutTbl_programInput
+}
+
+export type tbl_programCreateOrConnectWithoutChoice_2_applicationsInput = {
+  where: Prisma.tbl_programWhereUniqueInput
+  create: Prisma.XOR<Prisma.tbl_programCreateWithoutChoice_2_applicationsInput, Prisma.tbl_programUncheckedCreateWithoutChoice_2_applicationsInput>
+}
+
+export type tbl_programCreateWithoutChoice_3_applicationsInput = {
+  program_code: string
+  program_name: string
+  is_active?: boolean | null
+  tbl_application?: Prisma.tbl_applicationCreateNestedManyWithoutTbl_programInput
+  choice_2_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_2Input
+  tbl_course_recommendation?: Prisma.tbl_course_recommendationCreateNestedManyWithoutTbl_programInput
+  tbl_program_competency?: Prisma.tbl_program_competencyCreateNestedManyWithoutTbl_programInput
+  tbl_quota?: Prisma.tbl_quotaCreateNestedManyWithoutTbl_programInput
+}
+
+export type tbl_programUncheckedCreateWithoutChoice_3_applicationsInput = {
+  program_id?: number
+  program_code: string
+  program_name: string
+  is_active?: boolean | null
+  tbl_application?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutTbl_programInput
+  choice_2_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_2Input
+  tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_programInput
+  tbl_program_competency?: Prisma.tbl_program_competencyUncheckedCreateNestedManyWithoutTbl_programInput
+  tbl_quota?: Prisma.tbl_quotaUncheckedCreateNestedManyWithoutTbl_programInput
+}
+
+export type tbl_programCreateOrConnectWithoutChoice_3_applicationsInput = {
+  where: Prisma.tbl_programWhereUniqueInput
+  create: Prisma.XOR<Prisma.tbl_programCreateWithoutChoice_3_applicationsInput, Prisma.tbl_programUncheckedCreateWithoutChoice_3_applicationsInput>
 }
 
 export type tbl_programUpsertWithoutTbl_applicationInput = {
@@ -461,6 +567,8 @@ export type tbl_programUpdateWithoutTbl_applicationInput = {
   program_code?: Prisma.StringFieldUpdateOperationsInput | string
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  choice_2_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_2NestedInput
+  choice_3_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_3NestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUpdateManyWithoutTbl_programNestedInput
   tbl_program_competency?: Prisma.tbl_program_competencyUpdateManyWithoutTbl_programNestedInput
   tbl_quota?: Prisma.tbl_quotaUpdateManyWithoutTbl_programNestedInput
@@ -471,6 +579,76 @@ export type tbl_programUncheckedUpdateWithoutTbl_applicationInput = {
   program_code?: Prisma.StringFieldUpdateOperationsInput | string
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  choice_2_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_2NestedInput
+  choice_3_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_3NestedInput
+  tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_programNestedInput
+  tbl_program_competency?: Prisma.tbl_program_competencyUncheckedUpdateManyWithoutTbl_programNestedInput
+  tbl_quota?: Prisma.tbl_quotaUncheckedUpdateManyWithoutTbl_programNestedInput
+}
+
+export type tbl_programUpsertWithoutChoice_2_applicationsInput = {
+  update: Prisma.XOR<Prisma.tbl_programUpdateWithoutChoice_2_applicationsInput, Prisma.tbl_programUncheckedUpdateWithoutChoice_2_applicationsInput>
+  create: Prisma.XOR<Prisma.tbl_programCreateWithoutChoice_2_applicationsInput, Prisma.tbl_programUncheckedCreateWithoutChoice_2_applicationsInput>
+  where?: Prisma.tbl_programWhereInput
+}
+
+export type tbl_programUpdateToOneWithWhereWithoutChoice_2_applicationsInput = {
+  where?: Prisma.tbl_programWhereInput
+  data: Prisma.XOR<Prisma.tbl_programUpdateWithoutChoice_2_applicationsInput, Prisma.tbl_programUncheckedUpdateWithoutChoice_2_applicationsInput>
+}
+
+export type tbl_programUpdateWithoutChoice_2_applicationsInput = {
+  program_code?: Prisma.StringFieldUpdateOperationsInput | string
+  program_name?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  tbl_application?: Prisma.tbl_applicationUpdateManyWithoutTbl_programNestedInput
+  choice_3_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_3NestedInput
+  tbl_course_recommendation?: Prisma.tbl_course_recommendationUpdateManyWithoutTbl_programNestedInput
+  tbl_program_competency?: Prisma.tbl_program_competencyUpdateManyWithoutTbl_programNestedInput
+  tbl_quota?: Prisma.tbl_quotaUpdateManyWithoutTbl_programNestedInput
+}
+
+export type tbl_programUncheckedUpdateWithoutChoice_2_applicationsInput = {
+  program_id?: Prisma.IntFieldUpdateOperationsInput | number
+  program_code?: Prisma.StringFieldUpdateOperationsInput | string
+  program_name?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  tbl_application?: Prisma.tbl_applicationUncheckedUpdateManyWithoutTbl_programNestedInput
+  choice_3_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_3NestedInput
+  tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_programNestedInput
+  tbl_program_competency?: Prisma.tbl_program_competencyUncheckedUpdateManyWithoutTbl_programNestedInput
+  tbl_quota?: Prisma.tbl_quotaUncheckedUpdateManyWithoutTbl_programNestedInput
+}
+
+export type tbl_programUpsertWithoutChoice_3_applicationsInput = {
+  update: Prisma.XOR<Prisma.tbl_programUpdateWithoutChoice_3_applicationsInput, Prisma.tbl_programUncheckedUpdateWithoutChoice_3_applicationsInput>
+  create: Prisma.XOR<Prisma.tbl_programCreateWithoutChoice_3_applicationsInput, Prisma.tbl_programUncheckedCreateWithoutChoice_3_applicationsInput>
+  where?: Prisma.tbl_programWhereInput
+}
+
+export type tbl_programUpdateToOneWithWhereWithoutChoice_3_applicationsInput = {
+  where?: Prisma.tbl_programWhereInput
+  data: Prisma.XOR<Prisma.tbl_programUpdateWithoutChoice_3_applicationsInput, Prisma.tbl_programUncheckedUpdateWithoutChoice_3_applicationsInput>
+}
+
+export type tbl_programUpdateWithoutChoice_3_applicationsInput = {
+  program_code?: Prisma.StringFieldUpdateOperationsInput | string
+  program_name?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  tbl_application?: Prisma.tbl_applicationUpdateManyWithoutTbl_programNestedInput
+  choice_2_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_2NestedInput
+  tbl_course_recommendation?: Prisma.tbl_course_recommendationUpdateManyWithoutTbl_programNestedInput
+  tbl_program_competency?: Prisma.tbl_program_competencyUpdateManyWithoutTbl_programNestedInput
+  tbl_quota?: Prisma.tbl_quotaUpdateManyWithoutTbl_programNestedInput
+}
+
+export type tbl_programUncheckedUpdateWithoutChoice_3_applicationsInput = {
+  program_id?: Prisma.IntFieldUpdateOperationsInput | number
+  program_code?: Prisma.StringFieldUpdateOperationsInput | string
+  program_name?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  tbl_application?: Prisma.tbl_applicationUncheckedUpdateManyWithoutTbl_programNestedInput
+  choice_2_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_2NestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_programNestedInput
   tbl_program_competency?: Prisma.tbl_program_competencyUncheckedUpdateManyWithoutTbl_programNestedInput
   tbl_quota?: Prisma.tbl_quotaUncheckedUpdateManyWithoutTbl_programNestedInput
@@ -481,6 +659,8 @@ export type tbl_programCreateWithoutTbl_course_recommendationInput = {
   program_name: string
   is_active?: boolean | null
   tbl_application?: Prisma.tbl_applicationCreateNestedManyWithoutTbl_programInput
+  choice_2_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_2Input
+  choice_3_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_3Input
   tbl_program_competency?: Prisma.tbl_program_competencyCreateNestedManyWithoutTbl_programInput
   tbl_quota?: Prisma.tbl_quotaCreateNestedManyWithoutTbl_programInput
 }
@@ -491,6 +671,8 @@ export type tbl_programUncheckedCreateWithoutTbl_course_recommendationInput = {
   program_name: string
   is_active?: boolean | null
   tbl_application?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutTbl_programInput
+  choice_2_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_2Input
+  choice_3_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_3Input
   tbl_program_competency?: Prisma.tbl_program_competencyUncheckedCreateNestedManyWithoutTbl_programInput
   tbl_quota?: Prisma.tbl_quotaUncheckedCreateNestedManyWithoutTbl_programInput
 }
@@ -516,6 +698,8 @@ export type tbl_programUpdateWithoutTbl_course_recommendationInput = {
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   tbl_application?: Prisma.tbl_applicationUpdateManyWithoutTbl_programNestedInput
+  choice_2_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_2NestedInput
+  choice_3_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_3NestedInput
   tbl_program_competency?: Prisma.tbl_program_competencyUpdateManyWithoutTbl_programNestedInput
   tbl_quota?: Prisma.tbl_quotaUpdateManyWithoutTbl_programNestedInput
 }
@@ -526,6 +710,8 @@ export type tbl_programUncheckedUpdateWithoutTbl_course_recommendationInput = {
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   tbl_application?: Prisma.tbl_applicationUncheckedUpdateManyWithoutTbl_programNestedInput
+  choice_2_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_2NestedInput
+  choice_3_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_3NestedInput
   tbl_program_competency?: Prisma.tbl_program_competencyUncheckedUpdateManyWithoutTbl_programNestedInput
   tbl_quota?: Prisma.tbl_quotaUncheckedUpdateManyWithoutTbl_programNestedInput
 }
@@ -535,6 +721,8 @@ export type tbl_programCreateWithoutTbl_program_competencyInput = {
   program_name: string
   is_active?: boolean | null
   tbl_application?: Prisma.tbl_applicationCreateNestedManyWithoutTbl_programInput
+  choice_2_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_2Input
+  choice_3_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_3Input
   tbl_course_recommendation?: Prisma.tbl_course_recommendationCreateNestedManyWithoutTbl_programInput
   tbl_quota?: Prisma.tbl_quotaCreateNestedManyWithoutTbl_programInput
 }
@@ -545,6 +733,8 @@ export type tbl_programUncheckedCreateWithoutTbl_program_competencyInput = {
   program_name: string
   is_active?: boolean | null
   tbl_application?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutTbl_programInput
+  choice_2_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_2Input
+  choice_3_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_3Input
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_programInput
   tbl_quota?: Prisma.tbl_quotaUncheckedCreateNestedManyWithoutTbl_programInput
 }
@@ -570,6 +760,8 @@ export type tbl_programUpdateWithoutTbl_program_competencyInput = {
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   tbl_application?: Prisma.tbl_applicationUpdateManyWithoutTbl_programNestedInput
+  choice_2_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_2NestedInput
+  choice_3_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_3NestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUpdateManyWithoutTbl_programNestedInput
   tbl_quota?: Prisma.tbl_quotaUpdateManyWithoutTbl_programNestedInput
 }
@@ -580,6 +772,8 @@ export type tbl_programUncheckedUpdateWithoutTbl_program_competencyInput = {
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   tbl_application?: Prisma.tbl_applicationUncheckedUpdateManyWithoutTbl_programNestedInput
+  choice_2_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_2NestedInput
+  choice_3_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_3NestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_programNestedInput
   tbl_quota?: Prisma.tbl_quotaUncheckedUpdateManyWithoutTbl_programNestedInput
 }
@@ -589,6 +783,8 @@ export type tbl_programCreateWithoutTbl_quotaInput = {
   program_name: string
   is_active?: boolean | null
   tbl_application?: Prisma.tbl_applicationCreateNestedManyWithoutTbl_programInput
+  choice_2_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_2Input
+  choice_3_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_3Input
   tbl_course_recommendation?: Prisma.tbl_course_recommendationCreateNestedManyWithoutTbl_programInput
   tbl_program_competency?: Prisma.tbl_program_competencyCreateNestedManyWithoutTbl_programInput
 }
@@ -599,6 +795,8 @@ export type tbl_programUncheckedCreateWithoutTbl_quotaInput = {
   program_name: string
   is_active?: boolean | null
   tbl_application?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutTbl_programInput
+  choice_2_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_2Input
+  choice_3_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_3Input
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_programInput
   tbl_program_competency?: Prisma.tbl_program_competencyUncheckedCreateNestedManyWithoutTbl_programInput
 }
@@ -624,6 +822,8 @@ export type tbl_programUpdateWithoutTbl_quotaInput = {
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   tbl_application?: Prisma.tbl_applicationUpdateManyWithoutTbl_programNestedInput
+  choice_2_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_2NestedInput
+  choice_3_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_3NestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUpdateManyWithoutTbl_programNestedInput
   tbl_program_competency?: Prisma.tbl_program_competencyUpdateManyWithoutTbl_programNestedInput
 }
@@ -634,6 +834,8 @@ export type tbl_programUncheckedUpdateWithoutTbl_quotaInput = {
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   tbl_application?: Prisma.tbl_applicationUncheckedUpdateManyWithoutTbl_programNestedInput
+  choice_2_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_2NestedInput
+  choice_3_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_3NestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_programNestedInput
   tbl_program_competency?: Prisma.tbl_program_competencyUncheckedUpdateManyWithoutTbl_programNestedInput
 }
@@ -645,6 +847,8 @@ export type tbl_programUncheckedUpdateWithoutTbl_quotaInput = {
 
 export type Tbl_programCountOutputType = {
   tbl_application: number
+  choice_2_applications: number
+  choice_3_applications: number
   tbl_course_recommendation: number
   tbl_program_competency: number
   tbl_quota: number
@@ -652,6 +856,8 @@ export type Tbl_programCountOutputType = {
 
 export type Tbl_programCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tbl_application?: boolean | Tbl_programCountOutputTypeCountTbl_applicationArgs
+  choice_2_applications?: boolean | Tbl_programCountOutputTypeCountChoice_2_applicationsArgs
+  choice_3_applications?: boolean | Tbl_programCountOutputTypeCountChoice_3_applicationsArgs
   tbl_course_recommendation?: boolean | Tbl_programCountOutputTypeCountTbl_course_recommendationArgs
   tbl_program_competency?: boolean | Tbl_programCountOutputTypeCountTbl_program_competencyArgs
   tbl_quota?: boolean | Tbl_programCountOutputTypeCountTbl_quotaArgs
@@ -671,6 +877,20 @@ export type Tbl_programCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.
  * Tbl_programCountOutputType without action
  */
 export type Tbl_programCountOutputTypeCountTbl_applicationArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.tbl_applicationWhereInput
+}
+
+/**
+ * Tbl_programCountOutputType without action
+ */
+export type Tbl_programCountOutputTypeCountChoice_2_applicationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.tbl_applicationWhereInput
+}
+
+/**
+ * Tbl_programCountOutputType without action
+ */
+export type Tbl_programCountOutputTypeCountChoice_3_applicationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.tbl_applicationWhereInput
 }
 
@@ -702,6 +922,8 @@ export type tbl_programSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   program_name?: boolean
   is_active?: boolean
   tbl_application?: boolean | Prisma.tbl_program$tbl_applicationArgs<ExtArgs>
+  choice_2_applications?: boolean | Prisma.tbl_program$choice_2_applicationsArgs<ExtArgs>
+  choice_3_applications?: boolean | Prisma.tbl_program$choice_3_applicationsArgs<ExtArgs>
   tbl_course_recommendation?: boolean | Prisma.tbl_program$tbl_course_recommendationArgs<ExtArgs>
   tbl_program_competency?: boolean | Prisma.tbl_program$tbl_program_competencyArgs<ExtArgs>
   tbl_quota?: boolean | Prisma.tbl_program$tbl_quotaArgs<ExtArgs>
@@ -732,6 +954,8 @@ export type tbl_programSelectScalar = {
 export type tbl_programOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"program_id" | "program_code" | "program_name" | "is_active", ExtArgs["result"]["tbl_program"]>
 export type tbl_programInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tbl_application?: boolean | Prisma.tbl_program$tbl_applicationArgs<ExtArgs>
+  choice_2_applications?: boolean | Prisma.tbl_program$choice_2_applicationsArgs<ExtArgs>
+  choice_3_applications?: boolean | Prisma.tbl_program$choice_3_applicationsArgs<ExtArgs>
   tbl_course_recommendation?: boolean | Prisma.tbl_program$tbl_course_recommendationArgs<ExtArgs>
   tbl_program_competency?: boolean | Prisma.tbl_program$tbl_program_competencyArgs<ExtArgs>
   tbl_quota?: boolean | Prisma.tbl_program$tbl_quotaArgs<ExtArgs>
@@ -744,6 +968,8 @@ export type $tbl_programPayload<ExtArgs extends runtime.Types.Extensions.Interna
   name: "tbl_program"
   objects: {
     tbl_application: Prisma.$tbl_applicationPayload<ExtArgs>[]
+    choice_2_applications: Prisma.$tbl_applicationPayload<ExtArgs>[]
+    choice_3_applications: Prisma.$tbl_applicationPayload<ExtArgs>[]
     tbl_course_recommendation: Prisma.$tbl_course_recommendationPayload<ExtArgs>[]
     tbl_program_competency: Prisma.$tbl_program_competencyPayload<ExtArgs>[]
     tbl_quota: Prisma.$tbl_quotaPayload<ExtArgs>[]
@@ -1148,6 +1374,8 @@ readonly fields: tbl_programFieldRefs;
 export interface Prisma__tbl_programClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   tbl_application<T extends Prisma.tbl_program$tbl_applicationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_program$tbl_applicationArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_applicationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  choice_2_applications<T extends Prisma.tbl_program$choice_2_applicationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_program$choice_2_applicationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_applicationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  choice_3_applications<T extends Prisma.tbl_program$choice_3_applicationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_program$choice_3_applicationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_applicationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   tbl_course_recommendation<T extends Prisma.tbl_program$tbl_course_recommendationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_program$tbl_course_recommendationArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_course_recommendationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   tbl_program_competency<T extends Prisma.tbl_program$tbl_program_competencyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_program$tbl_program_competencyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_program_competencyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   tbl_quota<T extends Prisma.tbl_program$tbl_quotaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_program$tbl_quotaArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_quotaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -1580,6 +1808,54 @@ export type tbl_programDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.I
  * tbl_program.tbl_application
  */
 export type tbl_program$tbl_applicationArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the tbl_application
+   */
+  select?: Prisma.tbl_applicationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the tbl_application
+   */
+  omit?: Prisma.tbl_applicationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.tbl_applicationInclude<ExtArgs> | null
+  where?: Prisma.tbl_applicationWhereInput
+  orderBy?: Prisma.tbl_applicationOrderByWithRelationInput | Prisma.tbl_applicationOrderByWithRelationInput[]
+  cursor?: Prisma.tbl_applicationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Tbl_applicationScalarFieldEnum | Prisma.Tbl_applicationScalarFieldEnum[]
+}
+
+/**
+ * tbl_program.choice_2_applications
+ */
+export type tbl_program$choice_2_applicationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the tbl_application
+   */
+  select?: Prisma.tbl_applicationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the tbl_application
+   */
+  omit?: Prisma.tbl_applicationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.tbl_applicationInclude<ExtArgs> | null
+  where?: Prisma.tbl_applicationWhereInput
+  orderBy?: Prisma.tbl_applicationOrderByWithRelationInput | Prisma.tbl_applicationOrderByWithRelationInput[]
+  cursor?: Prisma.tbl_applicationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Tbl_applicationScalarFieldEnum | Prisma.Tbl_applicationScalarFieldEnum[]
+}
+
+/**
+ * tbl_program.choice_3_applications
+ */
+export type tbl_program$choice_3_applicationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the tbl_application
    */

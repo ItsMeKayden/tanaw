@@ -4,6 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { deleteApplicant } from "@/features/admission/actions/delete-applicant";
+import {
+  ADMISSION_STAGE_ORDER,
+  stageBadgeClass,
+} from "@/features/admission/stages";
 
 type Applicant = {
   applicant_id: number;
@@ -144,14 +148,11 @@ export default function ApplicantTable({
             >
               <option value="ALL">All Admission Stages</option>
               <option value="No Application">No Application</option>
-              <option value="Application Submitted">
-                Application Submitted
-              </option>
-              <option value="For Examination">For Examination</option>
-              <option value="Exam Completed">Exam Completed</option>
-              <option value="For Evaluation">For Evaluation</option>
-              <option value="Failed">Failed</option>
-              <option value="Enrolled">Enrolled</option>
+              {ADMISSION_STAGE_ORDER.map((stage) => (
+                <option key={stage} value={stage}>
+                  {stage}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -258,15 +259,9 @@ export default function ApplicantTable({
 
                       <td className="px-4 py-3">
                         <span
-                          className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${
-                            status === "Enrolled"
-                              ? "bg-green-100 text-green-700"
-                              : status === "Failed"
-                                ? "bg-red-100 text-red-700"
-                                : status === "For Evaluation"
-                                  ? "bg-blue-100 text-blue-700"
-                                  : "bg-muted text-muted-foreground"
-                          }`}
+                          className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium whitespace-nowrap ${stageBadgeClass(
+                            status === "No Application" ? null : status,
+                          )}`}
                         >
                           {status}
                         </span>

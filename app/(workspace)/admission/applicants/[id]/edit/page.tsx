@@ -1,17 +1,22 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-
-import { requirePermission } from "@/lib/authorization";
-import { prisma } from "@/lib/prisma";
-import EditApplicantForm from "@/components/admission/edit-applicant-form";
 import { connection } from "next/server";
 
-type EditApplicantPageProps = {
-  params: Promise<{
-    id: string;
-  }>;
-};
+import ApplicantForm, { type ExistingDocument } from "@/components/admission/applicant-form";
+import { QcuWatermark } from "@/components/admission/qcu-watermark";
+import { getApplicantFormReferenceData } from "@/features/admission/applicant-form-data";
+import type { ApplicantFormValues } from "@/features/admission/applicant-form";
+import { DOCUMENT_SLOTS, type DocumentSlotKey } from "@/features/admission/documents";
+import { requirePermission } from "@/lib/authorization";
+import { prisma } from "@/lib/prisma";
+
+type EditApplicantPageProps = Readonly<{
+  params: Promise<{ id: string }>;
+}>;
+
+const str = (value: string | number | null | undefined) =>
+  value === null || value === undefined ? "" : String(value);
 
 async function EditApplicantContent({ params }: EditApplicantPageProps) {
   await connection();
@@ -24,148 +29,113 @@ async function EditApplicantContent({ params }: EditApplicantPageProps) {
     notFound();
   }
 
-  const applicant = await prisma.tbl_applicant.findUnique({
-    where: {
-      applicant_id: applicantId,
-    },
-    select: {
-      applicant_id: true,
-      last_name: true,
-      first_name: true,
-      middle_name: true,
-      suffix: true,
-      sex: true,
-      birth_date: true,
-      email: true,
-      mobile_no: true,
-
-      tbl_application: {
-        orderBy: {
-          application_date: "desc",
-        },
-        take: 1,
-        select: {
-          application_id: true,
-          application_no: true,
-          school_id: true,
-          barangay_id: true,
-          branch_id: true,
-          program_id: true,
-
-          tbl_barangay: {
-            select: {
-              district_id: true,
+  const [applicant, referenceData] = await Promise.all([
+    prisma.tbl_applicant.findUnique({
+      where: { applicant_id: applicantId },
+      select: {
+        applicant_id: true,
+        last_name: true,
+        first_name: true,
+        middle_name: true,
+        suffix: true,
+        sex: true,
+        birth_date: true,
+        email: true,
+        mobile_no: true,
+        tbl_application: {
+          orderBy: { application_date: "desc" },
+          take: 1,
+          select: {
+            application_id: true,
+            barangay_id: true,
+            branch_id: true,
+            program_id: true,
+            program_choice_2_id: true,
+            program_choice_3_id: true,
+            school_id: true,
+            tbl_barangay: { select: { district_id: true } },
+            // Metadata only — never load file_data here.
+            tbl_application_document: {
+              select: { document_id: true, document_type: true, file_name: true, file_size: true },
             },
           },
         },
       },
-    },
-  });
+    }),
+    getApplicantFormReferenceData(),
+  ]);
 
-  if (!applicant || applicant.tbl_application.length === 0) {
+  const application = applicant?.tbl_application[0];
+
+  if (!applicant || !application) {
     notFound();
   }
 
-  const application = applicant.tbl_application[0];
-
-  const [districts, barangays, branches, programs, schools] = await Promise.all(
-    [
-      prisma.tbl_district.findMany({
-        orderBy: { district_name: "asc" },
-        select: {
-          district_id: true,
-          district_name: true,
-        },
-      }),
-
-      prisma.tbl_barangay.findMany({
-        orderBy: { barangay_name: "asc" },
-        select: {
-          barangay_id: true,
-          barangay_name: true,
-          district_id: true,
-        },
-      }),
-
-      prisma.tbl_branch.findMany({
-        where: { is_active: true },
-        orderBy: { branch_name: "asc" },
-        select: {
-          branch_id: true,
-          branch_name: true,
-          branch_code: true,
-        },
-      }),
-
-      prisma.tbl_program.findMany({
-        where: { is_active: true },
-        orderBy: { program_name: "asc" },
-        select: {
-          program_id: true,
-          program_name: true,
-          program_code: true,
-        },
-      }),
-
-      prisma.tbl_school.findMany({
-        orderBy: { school_name: "asc" },
-        select: {
-          school_id: true,
-          school_name: true,
-          school_type: true,
-          city_municipality: true,
-        },
-      }),
-    ],
-  );
-
-  const initialData = {
-    applicant_id: applicant.applicant_id,
-    application_id: application.application_id,
-
+  const initialValues: ApplicantFormValues = {
     last_name: applicant.last_name,
     first_name: applicant.first_name,
-    middle_name: applicant.middle_name ?? "",
-    suffix: applicant.suffix ?? "",
-    sex: applicant.sex ?? "",
-    birth_date: applicant.birth_date
-      ? applicant.birth_date.toISOString().slice(0, 10)
-      : "",
-    email: applicant.email ?? "",
-    mobile_no: applicant.mobile_no ?? "",
-
-    district_id: String(application.tbl_barangay?.district_id ?? ""),
-    barangay_id: String(application.barangay_id ?? ""),
-    branch_id: String(application.branch_id ?? ""),
-    program_id: String(application.program_id ?? ""),
-    school_id: String(application.school_id ?? ""),
+    middle_name: str(applicant.middle_name),
+    suffix: str(applicant.suffix),
+    sex: str(applicant.sex),
+    birth_date: applicant.birth_date?.toISOString().slice(0, 10) ?? "",
+    email: str(applicant.email),
+    mobile_no: str(applicant.mobile_no),
+    barangay_id: str(application.barangay_id),
+    branch_id: str(application.branch_id),
+    program_id: str(application.program_id),
+    program_choice_2_id: str(application.program_choice_2_id),
+    program_choice_3_id: str(application.program_choice_3_id),
+    // The saved school is picked from the list; switching to "new" starts blank.
+    school_entry_mode: application.school_id ? "existing" : "new",
+    school_id: str(application.school_id),
+    school_name: "",
+    school_type: "",
+    school_city: "",
   };
 
+  const existingDocuments: Partial<Record<DocumentSlotKey, ExistingDocument>> = {};
+  for (const slot of DOCUMENT_SLOTS) {
+    const document = application.tbl_application_document.find(
+      (doc) => doc.document_type === slot.documentType,
+    );
+    if (document) {
+      existingDocuments[slot.key] = {
+        document_id: document.document_id,
+        file_name: document.file_name,
+        file_size: document.file_size,
+      };
+    }
+  }
+
   return (
-    <div className="space-y-6 p-6">
-      <div className="space-y-3">
+    <div className="relative isolate min-h-full space-y-4 p-4 sm:p-6">
+      <QcuWatermark />
+      <div className="flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <h1 className="text-2xl font-bold">Edit Applicant</h1>
+          <p className="text-sm text-neutral-700">
+            Update the applicant&apos;s information and most recent application.
+          </p>
+        </div>
         <Link
           href={`/admission/applicants/${applicantId}`}
-          className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition-colors hover:bg-muted"
+          className="text-sm text-neutral-700 hover:text-[#191e73]"
         >
           ← Back to Applicant Profile
         </Link>
-
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Edit Applicant</h1>
-          <p className="text-sm text-muted-foreground">
-            Update the applicant's information and most recent application.
-          </p>
-        </div>
       </div>
 
-      <EditApplicantForm
-        initialData={initialData}
-        districts={districts}
-        barangays={barangays}
-        branches={branches}
-        programs={programs}
-        schools={schools}
+      <ApplicantForm
+        mode="edit"
+        initialValues={initialValues}
+        initialDistrictId={str(application.tbl_barangay?.district_id)}
+        ids={{
+          applicant_id: applicant.applicant_id,
+          application_id: application.application_id,
+        }}
+        existingDocuments={existingDocuments}
+        cancelHref={`/admission/applicants/${applicant.applicant_id}`}
+        {...referenceData}
       />
     </div>
   );

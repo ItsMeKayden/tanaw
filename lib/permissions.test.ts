@@ -16,7 +16,7 @@ const modules: ModuleName[] = [
   "dashboard",
   "map",
   "admission",
-  "course",
+  "recommendation",
   "users",
   "registrar",
   "guidance",

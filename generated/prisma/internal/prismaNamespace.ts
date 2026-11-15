@@ -421,7 +421,8 @@ export const ModelName = {
   tbl_role: 'tbl_role',
   tbl_role_permission: 'tbl_role_permission',
   tbl_school: 'tbl_school',
-  tbl_user_account: 'tbl_user_account'
+  tbl_user_account: 'tbl_user_account',
+  tbl_application_document: 'tbl_application_document'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -437,7 +438,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "tbl_admission_cycle" | "tbl_admission_stage" | "tbl_applicant" | "tbl_application" | "tbl_application_stage_log" | "tbl_barangay" | "tbl_branch" | "tbl_competency" | "tbl_course_recommendation" | "tbl_district" | "tbl_exam" | "tbl_exam_question" | "tbl_exam_result" | "tbl_import_batch" | "tbl_passing_score_setting" | "tbl_permission" | "tbl_program" | "tbl_program_competency" | "tbl_question_response" | "tbl_quota" | "tbl_role" | "tbl_role_permission" | "tbl_school" | "tbl_user_account"
+    modelProps: "user" | "tbl_admission_cycle" | "tbl_admission_stage" | "tbl_applicant" | "tbl_application" | "tbl_application_stage_log" | "tbl_barangay" | "tbl_branch" | "tbl_competency" | "tbl_course_recommendation" | "tbl_district" | "tbl_exam" | "tbl_exam_question" | "tbl_exam_result" | "tbl_import_batch" | "tbl_passing_score_setting" | "tbl_permission" | "tbl_program" | "tbl_program_competency" | "tbl_question_response" | "tbl_quota" | "tbl_role" | "tbl_role_permission" | "tbl_school" | "tbl_user_account" | "tbl_application_document"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2291,6 +2292,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    tbl_application_document: {
+      payload: Prisma.$tbl_application_documentPayload<ExtArgs>
+      fields: Prisma.tbl_application_documentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.tbl_application_documentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_application_documentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.tbl_application_documentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_application_documentPayload>
+        }
+        findFirst: {
+          args: Prisma.tbl_application_documentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_application_documentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.tbl_application_documentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_application_documentPayload>
+        }
+        findMany: {
+          args: Prisma.tbl_application_documentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_application_documentPayload>[]
+        }
+        create: {
+          args: Prisma.tbl_application_documentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_application_documentPayload>
+        }
+        createMany: {
+          args: Prisma.tbl_application_documentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.tbl_application_documentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_application_documentPayload>[]
+        }
+        delete: {
+          args: Prisma.tbl_application_documentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_application_documentPayload>
+        }
+        update: {
+          args: Prisma.tbl_application_documentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_application_documentPayload>
+        }
+        deleteMany: {
+          args: Prisma.tbl_application_documentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.tbl_application_documentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.tbl_application_documentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_application_documentPayload>[]
+        }
+        upsert: {
+          args: Prisma.tbl_application_documentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_application_documentPayload>
+        }
+        aggregate: {
+          args: Prisma.Tbl_application_documentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTbl_application_document>
+        }
+        groupBy: {
+          args: Prisma.tbl_application_documentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tbl_application_documentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.tbl_application_documentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tbl_application_documentCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2387,6 +2462,8 @@ export const Tbl_applicationScalarFieldEnum = {
   barangay_id: 'barangay_id',
   branch_id: 'branch_id',
   program_id: 'program_id',
+  program_choice_2_id: 'program_choice_2_id',
+  program_choice_3_id: 'program_choice_3_id',
   cycle_id: 'cycle_id',
   current_stage_id: 'current_stage_id',
   application_no: 'application_no',
@@ -2614,6 +2691,21 @@ export const Tbl_user_accountScalarFieldEnum = {
 export type Tbl_user_accountScalarFieldEnum = (typeof Tbl_user_accountScalarFieldEnum)[keyof typeof Tbl_user_accountScalarFieldEnum]
 
 
+export const Tbl_application_documentScalarFieldEnum = {
+  document_id: 'document_id',
+  application_id: 'application_id',
+  uploaded_by: 'uploaded_by',
+  document_type: 'document_type',
+  file_name: 'file_name',
+  mime_type: 'mime_type',
+  file_size: 'file_size',
+  file_data: 'file_data',
+  uploaded_at: 'uploaded_at'
+} as const
+
+export type Tbl_application_documentScalarFieldEnum = (typeof Tbl_application_documentScalarFieldEnum)[keyof typeof Tbl_application_documentScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2718,6 +2810,20 @@ export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
  * Reference to a field of type 'Decimal[]'
  */
 export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Bytes'
+ */
+export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
+    
+
+
+/**
+ * Reference to a field of type 'Bytes[]'
+ */
+export type ListBytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes[]'>
     
 
 
@@ -2910,6 +3016,7 @@ export type GlobalOmitConfig = {
   tbl_role_permission?: Prisma.tbl_role_permissionOmit
   tbl_school?: Prisma.tbl_schoolOmit
   tbl_user_account?: Prisma.tbl_user_accountOmit
+  tbl_application_document?: Prisma.tbl_application_documentOmit
 }
 
 /* Types for Logging */

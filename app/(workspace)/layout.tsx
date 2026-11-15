@@ -19,7 +19,9 @@ async function AuthenticatedWorkspace({ children }: { children: ReactNode }) {
       <Sidebar navigation={navigation} />
       <div className="flex min-h-[50vh] min-w-0 flex-1 flex-col sm:min-h-screen">
         <WorkspaceHeader navigation={navigation} />
-        <main className="m-2 flex-1 border border-neutral-400">{children}</main>
+        <main className="m-2 flex-1 border border-neutral-400 print:m-0 print:border-0">
+          {children}
+        </main>
       </div>
     </div>
   );
@@ -28,7 +30,7 @@ async function AuthenticatedWorkspace({ children }: { children: ReactNode }) {
 function WorkspaceFallback() {
   return (
     <div className="flex min-h-screen flex-col bg-white sm:flex-row">
-      <aside className="w-full shrink-0 border-2 border-sky-500 bg-[#bdbdbd] sm:w-[138px]" />
+      <aside className="w-full shrink-0 bg-[#0d1b8c] sm:w-[230px]" />
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="h-[58px] shrink-0 border-b border-neutral-500 bg-[#ededed]" />
         <main className="m-2 flex-1 border border-neutral-400" />
