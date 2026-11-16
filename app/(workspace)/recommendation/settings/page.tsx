@@ -38,21 +38,41 @@ async function SettingsContent() {
   );
 
   return (
-    <div className="relative isolate min-h-full space-y-4 p-4 sm:p-6">
+    <div className="relative isolate min-h-full space-y-3 p-3 sm:p-4">
       <QcuWatermark />
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Course-to-Competency Mapping</h1>
-          <p className="text-sm text-neutral-700">
-            How much each exam competency counts toward a course match.
-            {canWrite ? "" : " You have view-only access."}
-          </p>
+      <h1 className="sr-only">Course-to-competency mapping</h1>
+
+      {/* Settings row. Both are fixed for now: the data dictionary has no
+          table for an on/off flag or other scoring models. */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div
+          className="flex items-center gap-2 text-sm"
+          title="Recommendations are always on. Turning them off isn't stored anywhere yet."
+        >
+          <span
+            role="switch"
+            aria-checked="true"
+            aria-disabled="true"
+            aria-label="Enable recommendations"
+            className="relative inline-flex h-4 w-8 shrink-0 items-center rounded-full border border-green-700 bg-green-500"
+          >
+            <span className="absolute left-[17px] size-3 rounded-full bg-white shadow" />
+          </span>
+          Enable recommendations
         </div>
-        <div className="flex flex-wrap gap-2 text-xs">
-          <span className="rounded-full bg-green-600 px-3 py-1 font-medium text-white">Recommendations: ON</span>
-          <span className="rounded-full border border-neutral-500 bg-white px-3 py-1">Model: Weighted score</span>
-        </div>
+        <label className="flex items-center gap-2 text-sm" title="Weighted score is the only model available.">
+          <span className="sr-only">Scoring model</span>
+          <select
+            disabled
+            value="weighted"
+            className="h-8 rounded-sm border border-neutral-500 bg-neutral-200 px-2.5 text-sm text-black disabled:opacity-100"
+          >
+            <option value="weighted">Model: Weighted score</option>
+          </select>
+        </label>
       </div>
+
+      {!canWrite && <p className="text-sm text-neutral-700">You have view-only access.</p>}
 
       {competencies.length === 0 ? (
         <p className="rounded-xl border border-neutral-500 bg-white/90 p-6 text-center text-sm text-neutral-600">

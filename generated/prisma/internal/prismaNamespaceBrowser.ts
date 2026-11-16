@@ -76,7 +76,10 @@ export const ModelName = {
   tbl_role_permission: 'tbl_role_permission',
   tbl_school: 'tbl_school',
   tbl_user_account: 'tbl_user_account',
-  tbl_application_document: 'tbl_application_document'
+  tbl_application_document: 'tbl_application_document',
+  tbl_exam_session: 'tbl_exam_session',
+  tbl_exam_session_applicant: 'tbl_exam_session_applicant',
+  tbl_exam_subject_score: 'tbl_exam_subject_score'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -394,6 +397,42 @@ export const Tbl_application_documentScalarFieldEnum = {
 } as const
 
 export type Tbl_application_documentScalarFieldEnum = (typeof Tbl_application_documentScalarFieldEnum)[keyof typeof Tbl_application_documentScalarFieldEnum]
+
+
+export const Tbl_exam_sessionScalarFieldEnum = {
+  session_id: 'session_id',
+  exam_id: 'exam_id',
+  session_date: 'session_date',
+  start_time: 'start_time',
+  venue: 'venue',
+  room: 'room',
+  capacity: 'capacity',
+  created_by: 'created_by',
+  created_at: 'created_at'
+} as const
+
+export type Tbl_exam_sessionScalarFieldEnum = (typeof Tbl_exam_sessionScalarFieldEnum)[keyof typeof Tbl_exam_sessionScalarFieldEnum]
+
+
+export const Tbl_exam_session_applicantScalarFieldEnum = {
+  session_id: 'session_id',
+  application_id: 'application_id',
+  attendance: 'attendance',
+  marked_by: 'marked_by',
+  marked_at: 'marked_at'
+} as const
+
+export type Tbl_exam_session_applicantScalarFieldEnum = (typeof Tbl_exam_session_applicantScalarFieldEnum)[keyof typeof Tbl_exam_session_applicantScalarFieldEnum]
+
+
+export const Tbl_exam_subject_scoreScalarFieldEnum = {
+  result_id: 'result_id',
+  competency_id: 'competency_id',
+  score: 'score',
+  max_score: 'max_score'
+} as const
+
+export type Tbl_exam_subject_scoreScalarFieldEnum = (typeof Tbl_exam_subject_scoreScalarFieldEnum)[keyof typeof Tbl_exam_subject_scoreScalarFieldEnum]
 
 
 export const SortOrder = {

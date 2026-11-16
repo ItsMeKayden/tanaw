@@ -256,6 +256,7 @@ export type tbl_exam_resultWhereInput = {
   tbl_exam?: Prisma.XOR<Prisma.Tbl_examNullableScalarRelationFilter, Prisma.tbl_examWhereInput> | null
   tbl_import_batch?: Prisma.XOR<Prisma.Tbl_import_batchNullableScalarRelationFilter, Prisma.tbl_import_batchWhereInput> | null
   tbl_question_response?: Prisma.Tbl_question_responseListRelationFilter
+  tbl_exam_subject_score?: Prisma.Tbl_exam_subject_scoreListRelationFilter
 }
 
 export type tbl_exam_resultOrderByWithRelationInput = {
@@ -270,6 +271,7 @@ export type tbl_exam_resultOrderByWithRelationInput = {
   tbl_exam?: Prisma.tbl_examOrderByWithRelationInput
   tbl_import_batch?: Prisma.tbl_import_batchOrderByWithRelationInput
   tbl_question_response?: Prisma.tbl_question_responseOrderByRelationAggregateInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreOrderByRelationAggregateInput
 }
 
 export type tbl_exam_resultWhereUniqueInput = Prisma.AtLeast<{
@@ -287,6 +289,7 @@ export type tbl_exam_resultWhereUniqueInput = Prisma.AtLeast<{
   tbl_exam?: Prisma.XOR<Prisma.Tbl_examNullableScalarRelationFilter, Prisma.tbl_examWhereInput> | null
   tbl_import_batch?: Prisma.XOR<Prisma.Tbl_import_batchNullableScalarRelationFilter, Prisma.tbl_import_batchWhereInput> | null
   tbl_question_response?: Prisma.Tbl_question_responseListRelationFilter
+  tbl_exam_subject_score?: Prisma.Tbl_exam_subject_scoreListRelationFilter
 }, "result_id">
 
 export type tbl_exam_resultOrderByWithAggregationInput = {
@@ -325,6 +328,7 @@ export type tbl_exam_resultCreateInput = {
   tbl_exam?: Prisma.tbl_examCreateNestedOneWithoutTbl_exam_resultInput
   tbl_import_batch?: Prisma.tbl_import_batchCreateNestedOneWithoutTbl_exam_resultInput
   tbl_question_response?: Prisma.tbl_question_responseCreateNestedManyWithoutTbl_exam_resultInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreCreateNestedManyWithoutTbl_exam_resultInput
 }
 
 export type tbl_exam_resultUncheckedCreateInput = {
@@ -336,6 +340,7 @@ export type tbl_exam_resultUncheckedCreateInput = {
   percentage?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   result_status?: string | null
   tbl_question_response?: Prisma.tbl_question_responseUncheckedCreateNestedManyWithoutTbl_exam_resultInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUncheckedCreateNestedManyWithoutTbl_exam_resultInput
 }
 
 export type tbl_exam_resultUpdateInput = {
@@ -346,6 +351,7 @@ export type tbl_exam_resultUpdateInput = {
   tbl_exam?: Prisma.tbl_examUpdateOneWithoutTbl_exam_resultNestedInput
   tbl_import_batch?: Prisma.tbl_import_batchUpdateOneWithoutTbl_exam_resultNestedInput
   tbl_question_response?: Prisma.tbl_question_responseUpdateManyWithoutTbl_exam_resultNestedInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUpdateManyWithoutTbl_exam_resultNestedInput
 }
 
 export type tbl_exam_resultUncheckedUpdateInput = {
@@ -357,6 +363,7 @@ export type tbl_exam_resultUncheckedUpdateInput = {
   percentage?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   result_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_question_response?: Prisma.tbl_question_responseUncheckedUpdateManyWithoutTbl_exam_resultNestedInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUncheckedUpdateManyWithoutTbl_exam_resultNestedInput
 }
 
 export type tbl_exam_resultCreateManyInput = {
@@ -588,6 +595,20 @@ export type tbl_exam_resultUpdateOneRequiredWithoutTbl_question_responseNestedIn
   update?: Prisma.XOR<Prisma.XOR<Prisma.tbl_exam_resultUpdateToOneWithWhereWithoutTbl_question_responseInput, Prisma.tbl_exam_resultUpdateWithoutTbl_question_responseInput>, Prisma.tbl_exam_resultUncheckedUpdateWithoutTbl_question_responseInput>
 }
 
+export type tbl_exam_resultCreateNestedOneWithoutTbl_exam_subject_scoreInput = {
+  create?: Prisma.XOR<Prisma.tbl_exam_resultCreateWithoutTbl_exam_subject_scoreInput, Prisma.tbl_exam_resultUncheckedCreateWithoutTbl_exam_subject_scoreInput>
+  connectOrCreate?: Prisma.tbl_exam_resultCreateOrConnectWithoutTbl_exam_subject_scoreInput
+  connect?: Prisma.tbl_exam_resultWhereUniqueInput
+}
+
+export type tbl_exam_resultUpdateOneRequiredWithoutTbl_exam_subject_scoreNestedInput = {
+  create?: Prisma.XOR<Prisma.tbl_exam_resultCreateWithoutTbl_exam_subject_scoreInput, Prisma.tbl_exam_resultUncheckedCreateWithoutTbl_exam_subject_scoreInput>
+  connectOrCreate?: Prisma.tbl_exam_resultCreateOrConnectWithoutTbl_exam_subject_scoreInput
+  upsert?: Prisma.tbl_exam_resultUpsertWithoutTbl_exam_subject_scoreInput
+  connect?: Prisma.tbl_exam_resultWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.tbl_exam_resultUpdateToOneWithWhereWithoutTbl_exam_subject_scoreInput, Prisma.tbl_exam_resultUpdateWithoutTbl_exam_subject_scoreInput>, Prisma.tbl_exam_resultUncheckedUpdateWithoutTbl_exam_subject_scoreInput>
+}
+
 export type tbl_exam_resultCreateWithoutTbl_applicationInput = {
   raw_score?: number | null
   percentage?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -595,6 +616,7 @@ export type tbl_exam_resultCreateWithoutTbl_applicationInput = {
   tbl_exam?: Prisma.tbl_examCreateNestedOneWithoutTbl_exam_resultInput
   tbl_import_batch?: Prisma.tbl_import_batchCreateNestedOneWithoutTbl_exam_resultInput
   tbl_question_response?: Prisma.tbl_question_responseCreateNestedManyWithoutTbl_exam_resultInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreCreateNestedManyWithoutTbl_exam_resultInput
 }
 
 export type tbl_exam_resultUncheckedCreateWithoutTbl_applicationInput = {
@@ -605,6 +627,7 @@ export type tbl_exam_resultUncheckedCreateWithoutTbl_applicationInput = {
   percentage?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   result_status?: string | null
   tbl_question_response?: Prisma.tbl_question_responseUncheckedCreateNestedManyWithoutTbl_exam_resultInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUncheckedCreateNestedManyWithoutTbl_exam_resultInput
 }
 
 export type tbl_exam_resultCreateOrConnectWithoutTbl_applicationInput = {
@@ -653,6 +676,7 @@ export type tbl_exam_resultCreateWithoutTbl_examInput = {
   tbl_application?: Prisma.tbl_applicationCreateNestedOneWithoutTbl_exam_resultInput
   tbl_import_batch?: Prisma.tbl_import_batchCreateNestedOneWithoutTbl_exam_resultInput
   tbl_question_response?: Prisma.tbl_question_responseCreateNestedManyWithoutTbl_exam_resultInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreCreateNestedManyWithoutTbl_exam_resultInput
 }
 
 export type tbl_exam_resultUncheckedCreateWithoutTbl_examInput = {
@@ -663,6 +687,7 @@ export type tbl_exam_resultUncheckedCreateWithoutTbl_examInput = {
   percentage?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   result_status?: string | null
   tbl_question_response?: Prisma.tbl_question_responseUncheckedCreateNestedManyWithoutTbl_exam_resultInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUncheckedCreateNestedManyWithoutTbl_exam_resultInput
 }
 
 export type tbl_exam_resultCreateOrConnectWithoutTbl_examInput = {
@@ -698,6 +723,7 @@ export type tbl_exam_resultCreateWithoutTbl_import_batchInput = {
   tbl_application?: Prisma.tbl_applicationCreateNestedOneWithoutTbl_exam_resultInput
   tbl_exam?: Prisma.tbl_examCreateNestedOneWithoutTbl_exam_resultInput
   tbl_question_response?: Prisma.tbl_question_responseCreateNestedManyWithoutTbl_exam_resultInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreCreateNestedManyWithoutTbl_exam_resultInput
 }
 
 export type tbl_exam_resultUncheckedCreateWithoutTbl_import_batchInput = {
@@ -708,6 +734,7 @@ export type tbl_exam_resultUncheckedCreateWithoutTbl_import_batchInput = {
   percentage?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   result_status?: string | null
   tbl_question_response?: Prisma.tbl_question_responseUncheckedCreateNestedManyWithoutTbl_exam_resultInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUncheckedCreateNestedManyWithoutTbl_exam_resultInput
 }
 
 export type tbl_exam_resultCreateOrConnectWithoutTbl_import_batchInput = {
@@ -743,6 +770,7 @@ export type tbl_exam_resultCreateWithoutTbl_question_responseInput = {
   tbl_application?: Prisma.tbl_applicationCreateNestedOneWithoutTbl_exam_resultInput
   tbl_exam?: Prisma.tbl_examCreateNestedOneWithoutTbl_exam_resultInput
   tbl_import_batch?: Prisma.tbl_import_batchCreateNestedOneWithoutTbl_exam_resultInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreCreateNestedManyWithoutTbl_exam_resultInput
 }
 
 export type tbl_exam_resultUncheckedCreateWithoutTbl_question_responseInput = {
@@ -753,6 +781,7 @@ export type tbl_exam_resultUncheckedCreateWithoutTbl_question_responseInput = {
   raw_score?: number | null
   percentage?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   result_status?: string | null
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUncheckedCreateNestedManyWithoutTbl_exam_resultInput
 }
 
 export type tbl_exam_resultCreateOrConnectWithoutTbl_question_responseInput = {
@@ -778,6 +807,7 @@ export type tbl_exam_resultUpdateWithoutTbl_question_responseInput = {
   tbl_application?: Prisma.tbl_applicationUpdateOneWithoutTbl_exam_resultNestedInput
   tbl_exam?: Prisma.tbl_examUpdateOneWithoutTbl_exam_resultNestedInput
   tbl_import_batch?: Prisma.tbl_import_batchUpdateOneWithoutTbl_exam_resultNestedInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUpdateManyWithoutTbl_exam_resultNestedInput
 }
 
 export type tbl_exam_resultUncheckedUpdateWithoutTbl_question_responseInput = {
@@ -788,6 +818,65 @@ export type tbl_exam_resultUncheckedUpdateWithoutTbl_question_responseInput = {
   raw_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   percentage?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   result_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUncheckedUpdateManyWithoutTbl_exam_resultNestedInput
+}
+
+export type tbl_exam_resultCreateWithoutTbl_exam_subject_scoreInput = {
+  raw_score?: number | null
+  percentage?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  result_status?: string | null
+  tbl_application?: Prisma.tbl_applicationCreateNestedOneWithoutTbl_exam_resultInput
+  tbl_exam?: Prisma.tbl_examCreateNestedOneWithoutTbl_exam_resultInput
+  tbl_import_batch?: Prisma.tbl_import_batchCreateNestedOneWithoutTbl_exam_resultInput
+  tbl_question_response?: Prisma.tbl_question_responseCreateNestedManyWithoutTbl_exam_resultInput
+}
+
+export type tbl_exam_resultUncheckedCreateWithoutTbl_exam_subject_scoreInput = {
+  result_id?: number
+  application_id?: number | null
+  exam_id?: number | null
+  import_id?: number | null
+  raw_score?: number | null
+  percentage?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  result_status?: string | null
+  tbl_question_response?: Prisma.tbl_question_responseUncheckedCreateNestedManyWithoutTbl_exam_resultInput
+}
+
+export type tbl_exam_resultCreateOrConnectWithoutTbl_exam_subject_scoreInput = {
+  where: Prisma.tbl_exam_resultWhereUniqueInput
+  create: Prisma.XOR<Prisma.tbl_exam_resultCreateWithoutTbl_exam_subject_scoreInput, Prisma.tbl_exam_resultUncheckedCreateWithoutTbl_exam_subject_scoreInput>
+}
+
+export type tbl_exam_resultUpsertWithoutTbl_exam_subject_scoreInput = {
+  update: Prisma.XOR<Prisma.tbl_exam_resultUpdateWithoutTbl_exam_subject_scoreInput, Prisma.tbl_exam_resultUncheckedUpdateWithoutTbl_exam_subject_scoreInput>
+  create: Prisma.XOR<Prisma.tbl_exam_resultCreateWithoutTbl_exam_subject_scoreInput, Prisma.tbl_exam_resultUncheckedCreateWithoutTbl_exam_subject_scoreInput>
+  where?: Prisma.tbl_exam_resultWhereInput
+}
+
+export type tbl_exam_resultUpdateToOneWithWhereWithoutTbl_exam_subject_scoreInput = {
+  where?: Prisma.tbl_exam_resultWhereInput
+  data: Prisma.XOR<Prisma.tbl_exam_resultUpdateWithoutTbl_exam_subject_scoreInput, Prisma.tbl_exam_resultUncheckedUpdateWithoutTbl_exam_subject_scoreInput>
+}
+
+export type tbl_exam_resultUpdateWithoutTbl_exam_subject_scoreInput = {
+  raw_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  percentage?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  result_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tbl_application?: Prisma.tbl_applicationUpdateOneWithoutTbl_exam_resultNestedInput
+  tbl_exam?: Prisma.tbl_examUpdateOneWithoutTbl_exam_resultNestedInput
+  tbl_import_batch?: Prisma.tbl_import_batchUpdateOneWithoutTbl_exam_resultNestedInput
+  tbl_question_response?: Prisma.tbl_question_responseUpdateManyWithoutTbl_exam_resultNestedInput
+}
+
+export type tbl_exam_resultUncheckedUpdateWithoutTbl_exam_subject_scoreInput = {
+  result_id?: Prisma.IntFieldUpdateOperationsInput | number
+  application_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  exam_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  import_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  raw_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  percentage?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  result_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tbl_question_response?: Prisma.tbl_question_responseUncheckedUpdateManyWithoutTbl_exam_resultNestedInput
 }
 
 export type tbl_exam_resultCreateManyTbl_applicationInput = {
@@ -806,6 +895,7 @@ export type tbl_exam_resultUpdateWithoutTbl_applicationInput = {
   tbl_exam?: Prisma.tbl_examUpdateOneWithoutTbl_exam_resultNestedInput
   tbl_import_batch?: Prisma.tbl_import_batchUpdateOneWithoutTbl_exam_resultNestedInput
   tbl_question_response?: Prisma.tbl_question_responseUpdateManyWithoutTbl_exam_resultNestedInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUpdateManyWithoutTbl_exam_resultNestedInput
 }
 
 export type tbl_exam_resultUncheckedUpdateWithoutTbl_applicationInput = {
@@ -816,6 +906,7 @@ export type tbl_exam_resultUncheckedUpdateWithoutTbl_applicationInput = {
   percentage?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   result_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_question_response?: Prisma.tbl_question_responseUncheckedUpdateManyWithoutTbl_exam_resultNestedInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUncheckedUpdateManyWithoutTbl_exam_resultNestedInput
 }
 
 export type tbl_exam_resultUncheckedUpdateManyWithoutTbl_applicationInput = {
@@ -843,6 +934,7 @@ export type tbl_exam_resultUpdateWithoutTbl_examInput = {
   tbl_application?: Prisma.tbl_applicationUpdateOneWithoutTbl_exam_resultNestedInput
   tbl_import_batch?: Prisma.tbl_import_batchUpdateOneWithoutTbl_exam_resultNestedInput
   tbl_question_response?: Prisma.tbl_question_responseUpdateManyWithoutTbl_exam_resultNestedInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUpdateManyWithoutTbl_exam_resultNestedInput
 }
 
 export type tbl_exam_resultUncheckedUpdateWithoutTbl_examInput = {
@@ -853,6 +945,7 @@ export type tbl_exam_resultUncheckedUpdateWithoutTbl_examInput = {
   percentage?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   result_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_question_response?: Prisma.tbl_question_responseUncheckedUpdateManyWithoutTbl_exam_resultNestedInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUncheckedUpdateManyWithoutTbl_exam_resultNestedInput
 }
 
 export type tbl_exam_resultUncheckedUpdateManyWithoutTbl_examInput = {
@@ -880,6 +973,7 @@ export type tbl_exam_resultUpdateWithoutTbl_import_batchInput = {
   tbl_application?: Prisma.tbl_applicationUpdateOneWithoutTbl_exam_resultNestedInput
   tbl_exam?: Prisma.tbl_examUpdateOneWithoutTbl_exam_resultNestedInput
   tbl_question_response?: Prisma.tbl_question_responseUpdateManyWithoutTbl_exam_resultNestedInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUpdateManyWithoutTbl_exam_resultNestedInput
 }
 
 export type tbl_exam_resultUncheckedUpdateWithoutTbl_import_batchInput = {
@@ -890,6 +984,7 @@ export type tbl_exam_resultUncheckedUpdateWithoutTbl_import_batchInput = {
   percentage?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   result_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_question_response?: Prisma.tbl_question_responseUncheckedUpdateManyWithoutTbl_exam_resultNestedInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUncheckedUpdateManyWithoutTbl_exam_resultNestedInput
 }
 
 export type tbl_exam_resultUncheckedUpdateManyWithoutTbl_import_batchInput = {
@@ -908,10 +1003,12 @@ export type tbl_exam_resultUncheckedUpdateManyWithoutTbl_import_batchInput = {
 
 export type Tbl_exam_resultCountOutputType = {
   tbl_question_response: number
+  tbl_exam_subject_score: number
 }
 
 export type Tbl_exam_resultCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tbl_question_response?: boolean | Tbl_exam_resultCountOutputTypeCountTbl_question_responseArgs
+  tbl_exam_subject_score?: boolean | Tbl_exam_resultCountOutputTypeCountTbl_exam_subject_scoreArgs
 }
 
 /**
@@ -931,6 +1028,13 @@ export type Tbl_exam_resultCountOutputTypeCountTbl_question_responseArgs<ExtArgs
   where?: Prisma.tbl_question_responseWhereInput
 }
 
+/**
+ * Tbl_exam_resultCountOutputType without action
+ */
+export type Tbl_exam_resultCountOutputTypeCountTbl_exam_subject_scoreArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.tbl_exam_subject_scoreWhereInput
+}
+
 
 export type tbl_exam_resultSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   result_id?: boolean
@@ -944,6 +1048,7 @@ export type tbl_exam_resultSelect<ExtArgs extends runtime.Types.Extensions.Inter
   tbl_exam?: boolean | Prisma.tbl_exam_result$tbl_examArgs<ExtArgs>
   tbl_import_batch?: boolean | Prisma.tbl_exam_result$tbl_import_batchArgs<ExtArgs>
   tbl_question_response?: boolean | Prisma.tbl_exam_result$tbl_question_responseArgs<ExtArgs>
+  tbl_exam_subject_score?: boolean | Prisma.tbl_exam_result$tbl_exam_subject_scoreArgs<ExtArgs>
   _count?: boolean | Prisma.Tbl_exam_resultCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tbl_exam_result"]>
 
@@ -989,6 +1094,7 @@ export type tbl_exam_resultInclude<ExtArgs extends runtime.Types.Extensions.Inte
   tbl_exam?: boolean | Prisma.tbl_exam_result$tbl_examArgs<ExtArgs>
   tbl_import_batch?: boolean | Prisma.tbl_exam_result$tbl_import_batchArgs<ExtArgs>
   tbl_question_response?: boolean | Prisma.tbl_exam_result$tbl_question_responseArgs<ExtArgs>
+  tbl_exam_subject_score?: boolean | Prisma.tbl_exam_result$tbl_exam_subject_scoreArgs<ExtArgs>
   _count?: boolean | Prisma.Tbl_exam_resultCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type tbl_exam_resultIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1009,6 +1115,7 @@ export type $tbl_exam_resultPayload<ExtArgs extends runtime.Types.Extensions.Int
     tbl_exam: Prisma.$tbl_examPayload<ExtArgs> | null
     tbl_import_batch: Prisma.$tbl_import_batchPayload<ExtArgs> | null
     tbl_question_response: Prisma.$tbl_question_responsePayload<ExtArgs>[]
+    tbl_exam_subject_score: Prisma.$tbl_exam_subject_scorePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     result_id: number
@@ -1416,6 +1523,7 @@ export interface Prisma__tbl_exam_resultClient<T, Null = never, ExtArgs extends 
   tbl_exam<T extends Prisma.tbl_exam_result$tbl_examArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_exam_result$tbl_examArgs<ExtArgs>>): Prisma.Prisma__tbl_examClient<runtime.Types.Result.GetResult<Prisma.$tbl_examPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   tbl_import_batch<T extends Prisma.tbl_exam_result$tbl_import_batchArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_exam_result$tbl_import_batchArgs<ExtArgs>>): Prisma.Prisma__tbl_import_batchClient<runtime.Types.Result.GetResult<Prisma.$tbl_import_batchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   tbl_question_response<T extends Prisma.tbl_exam_result$tbl_question_responseArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_exam_result$tbl_question_responseArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_question_responsePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tbl_exam_subject_score<T extends Prisma.tbl_exam_result$tbl_exam_subject_scoreArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_exam_result$tbl_exam_subject_scoreArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_exam_subject_scorePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1931,6 +2039,30 @@ export type tbl_exam_result$tbl_question_responseArgs<ExtArgs extends runtime.Ty
   take?: number
   skip?: number
   distinct?: Prisma.Tbl_question_responseScalarFieldEnum | Prisma.Tbl_question_responseScalarFieldEnum[]
+}
+
+/**
+ * tbl_exam_result.tbl_exam_subject_score
+ */
+export type tbl_exam_result$tbl_exam_subject_scoreArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the tbl_exam_subject_score
+   */
+  select?: Prisma.tbl_exam_subject_scoreSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the tbl_exam_subject_score
+   */
+  omit?: Prisma.tbl_exam_subject_scoreOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.tbl_exam_subject_scoreInclude<ExtArgs> | null
+  where?: Prisma.tbl_exam_subject_scoreWhereInput
+  orderBy?: Prisma.tbl_exam_subject_scoreOrderByWithRelationInput | Prisma.tbl_exam_subject_scoreOrderByWithRelationInput[]
+  cursor?: Prisma.tbl_exam_subject_scoreWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Tbl_exam_subject_scoreScalarFieldEnum | Prisma.Tbl_exam_subject_scoreScalarFieldEnum[]
 }
 
 /**

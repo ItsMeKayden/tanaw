@@ -1,391 +1,326 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+
+import { ApplicantFormModal, type ApplicantFormRequest } from "@/components/admission/applicant-form-modal";
+import { Modal } from "@/components/ui/modal";
+import { Pagination } from "@/components/ui/pagination";
 import { deleteApplicant } from "@/features/admission/actions/delete-applicant";
-import {
-  ADMISSION_STAGE_ORDER,
-  stageBadgeClass,
-} from "@/features/admission/stages";
+import type { ApplicantFormReference } from "@/features/admission/actions/load-applicant";
+import { ADMISSION_STAGE_ORDER, stageBadgeClass } from "@/features/admission/stages";
 
-type Applicant = {
+export type ApplicantRow = {
   applicant_id: number;
-  first_name: string;
-  middle_name: string | null;
-  last_name: string;
-  sex: string | null;
-  birth_date: Date | null;
-  email: string | null;
-  mobile_no: string | null;
-  tbl_application: {
-    application_no: string;
-    application_date: Date;
-    tbl_admission_stage: {
-      stage_name: string;
-    } | null;
-    tbl_exam_result: {
-      result_status: string | null;
-      percentage: number | null;
-    }[];
-  }[];
+  application_no: string | null;
+  name: string;
+  course_code: string | null;
+  course_name: string | null;
+  school_name: string | null;
+  school_type: string | null;
+  stage: string | null;
+  /** Used to warn that deletion is blocked; not shown as a column. */
+  result_status: string | null;
 };
 
-type ApplicantTableProps = {
-  applicants: Applicant[];
-  canWrite: boolean;
-};
+type Feedback = { type: "success" | "error"; text: string; applicantId?: number } | null;
+type DeleteState = { row: ApplicantRow; error: string | null } | null;
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 10;
+
+const th = "border border-neutral-500 px-3 py-2 text-center font-medium";
+const td = "border border-neutral-500 px-3 py-2 text-center";
+const fieldClass =
+  "h-9 w-full rounded-md border border-neutral-500 bg-white px-3 text-sm outline-none focus:border-[#191e73] focus:ring-2 focus:ring-[#191e73]/20";
+const actionButton = "rounded-md border border-neutral-500 bg-white px-2 py-0.5 text-xs hover:bg-neutral-100";
+
+const applicantId = (row: ApplicantRow) => row.application_no ?? String(row.applicant_id).padStart(6, "0");
 
 export default function ApplicantTable({
   applicants,
   canWrite,
-}: ApplicantTableProps) {
+  formData,
+}: Readonly<{
+  applicants: ApplicantRow[];
+  canWrite: boolean;
+  /** Dropdown data for the add/edit modal (null when the user can't write). */
+  formData: ApplicantFormReference | null;
+}>) {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [stageFilter, setStageFilter] = useState("ALL");
-  const [examResultFilter, setExamResultFilter] = useState("ALL");
-  const router = useRouter();
+  const [formRequest, setFormRequest] = useState<ApplicantFormRequest | null>(null);
+  const [deleting, setDeleting] = useState<DeleteState>(null);
+  const [feedback, setFeedback] = useState<Feedback>(null);
+  const [isPending, startTransition] = useTransition();
 
-  // Filter applicants based on the search query.
-  const filteredApplicants = applicants.filter((applicant) => {
-    const query = searchQuery.trim().toLowerCase();
-
-    const fullName = [
-      applicant.first_name,
-      applicant.middle_name,
-      applicant.last_name,
-    ]
-      .filter(Boolean)
-      .join(" ");
-
-    const applicantId = String(applicant.applicant_id);
-    const formattedId = applicantId.padStart(6, "0");
-
-    const latestApplication = applicant.tbl_application[0];
-
-    const status =
-      latestApplication?.tbl_admission_stage?.stage_name ?? "No Application";
-
-    const resultStatus =
-      latestApplication?.tbl_exam_result[0]?.result_status ?? "NO_RESULT";
-
+  const query = searchQuery.trim().toLowerCase();
+  const filteredApplicants = applicants.filter((row) => {
     const matchesSearch =
-      applicantId.includes(query) ||
-      formattedId.includes(query) ||
-      fullName.toLowerCase().includes(query) ||
-      (applicant.email ?? "").toLowerCase().includes(query) ||
-      (applicant.mobile_no ?? "").toLowerCase().includes(query);
-
-    const matchesStage = stageFilter === "ALL" || status === stageFilter;
-
-    const matchesExamResult =
-      examResultFilter === "ALL" ||
-      (examResultFilter === "NO_RESULT"
-        ? resultStatus === "NO_RESULT"
-        : resultStatus.toUpperCase() === examResultFilter);
-
-    return matchesSearch && matchesStage && matchesExamResult;
+      !query ||
+      [applicantId(row), row.name, row.course_code, row.course_name, row.school_name, row.school_type]
+        .filter(Boolean)
+        .some((value) => value!.toLowerCase().includes(query));
+    const matchesStage = stageFilter === "ALL" || row.stage === stageFilter;
+    return matchesSearch && matchesStage;
   });
 
-  // Pagination based on filtered results.
-  const totalPages = Math.max(
-    1,
-    Math.ceil(filteredApplicants.length / PAGE_SIZE),
-  );
-
-  const startIndex = (currentPage - 1) * PAGE_SIZE;
-
-  const currentApplicants = filteredApplicants.slice(
-    startIndex,
-    startIndex + PAGE_SIZE,
-  );
-
+  const totalPages = Math.max(1, Math.ceil(filteredApplicants.length / PAGE_SIZE));
+  const page = Math.min(currentPage, totalPages);
+  const startIndex = (page - 1) * PAGE_SIZE;
+  const currentApplicants = filteredApplicants.slice(startIndex, startIndex + PAGE_SIZE);
   const startRecord = filteredApplicants.length === 0 ? 0 : startIndex + 1;
-
   const endRecord = Math.min(startIndex + PAGE_SIZE, filteredApplicants.length);
+
+  function openForm(request: ApplicantFormRequest) {
+    setFeedback(null);
+    setFormRequest(request);
+  }
+
+  function confirmDelete(row: ApplicantRow) {
+    startTransition(async () => {
+      const result = await deleteApplicant(row.applicant_id);
+      if (result.error) {
+        setDeleting({ row, error: result.error });
+        return;
+      }
+      setDeleting(null);
+      setFeedback({ type: "success", text: `${row.name} was deleted.` });
+      router.refresh();
+    });
+  }
 
   return (
     <div className="space-y-4">
-      {/* Search Bar, Filters, and Add Applicant Button */}
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-        <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 xl:flex xl:flex-1 xl:items-end">
-          {/* Search */}
-          <div className="flex w-full flex-col gap-1.5 xl:max-w-sm">
-            <label htmlFor="applicant-search" className="text-sm font-medium">
-              Search Applicants
-            </label>
-
+      {/* Search, status filter, and Add Applicant */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="grid w-full grid-cols-1 gap-3 sm:flex sm:flex-1 sm:items-end">
+          <label className="flex w-full flex-col gap-1 text-sm font-medium sm:max-w-sm">
+            Search applicants
             <input
-              id="applicant-search"
               type="search"
               value={searchQuery}
               onChange={(event) => {
                 setSearchQuery(event.target.value);
                 setCurrentPage(1);
               }}
-              placeholder="Search by ID, name, email, or mobile number..."
-              aria-label="Search applicants"
-              className="h-10 w-full rounded-md border bg-background px-4 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
+              placeholder="ID, name, course, or school…"
+              className={`${fieldClass} font-normal`}
             />
-          </div>
+          </label>
 
-          {/* Admission Stage Filter */}
-          <div className="flex w-full flex-col gap-1.5 xl:max-w-48">
-            <label htmlFor="stage-filter" className="text-sm font-medium">
-              Admission Stage
-            </label>
-
+          <label className="flex w-full flex-col gap-1 text-sm font-medium sm:max-w-52">
+            Status
             <select
-              id="stage-filter"
               value={stageFilter}
               onChange={(event) => {
                 setStageFilter(event.target.value);
                 setCurrentPage(1);
               }}
-              className="h-10 w-full rounded-md border bg-background px-3 text-sm"
+              className={`${fieldClass} font-normal`}
             >
-              <option value="ALL">All Admission Stages</option>
-              <option value="No Application">No Application</option>
+              <option value="ALL">All statuses</option>
               {ADMISSION_STAGE_ORDER.map((stage) => (
                 <option key={stage} value={stage}>
                   {stage}
                 </option>
               ))}
             </select>
-          </div>
-
-          {/* Exam Result Filter */}
-          <div className="flex w-full flex-col gap-1.5 xl:max-w-40">
-            <label htmlFor="exam-result-filter" className="text-sm font-medium">
-              Exam Result
-            </label>
-
-            <select
-              id="exam-result-filter"
-              value={examResultFilter}
-              onChange={(event) => {
-                setExamResultFilter(event.target.value);
-                setCurrentPage(1);
-              }}
-              className="h-10 w-full rounded-md border bg-background px-3 text-sm"
-            >
-              <option value="ALL">All Exam Results</option>
-              <option value="PASSED">Passed</option>
-              <option value="FAILED">Failed</option>
-              <option value="NO_RESULT">No Result</option>
-            </select>
-          </div>
+          </label>
         </div>
 
-        {/* Add Applicant */}
-        {canWrite && (
-          <Link
-            href="/admission/applicants/new"
-            className="inline-flex h-10 w-full shrink-0 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 xl:w-40"
+        {canWrite && formData && (
+          <button
+            type="button"
+            onClick={() => openForm({ mode: "create" })}
+            className="inline-flex h-9 w-full shrink-0 items-center justify-center rounded-md bg-[#191e73] px-4 text-sm font-semibold text-white hover:bg-[#232a99] sm:w-40"
           >
             + Add Applicant
-          </Link>
+          </button>
         )}
       </div>
 
-      {/* Applicant Table */}
-      <div className="overflow-hidden rounded-lg border">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/50">
-              <tr className="border-b text-left">
-                <th className="px-4 py-3 font-medium">Applicant ID</th>
-                <th className="px-4 py-3 font-medium">Full Name</th>
-                <th className="px-4 py-3 font-medium">Sex</th>
-                <th className="px-4 py-3 font-medium">Birth Date</th>
-                <th className="px-4 py-3 font-medium">Email</th>
-                <th className="px-4 py-3 font-medium">Mobile Number</th>
-                <th className="px-4 py-3 font-medium">Admission Stage</th>
-                <th className="px-4 py-3 font-medium">Exam Result</th>
-                <th className="px-4 py-3 text-center font-medium">Actions</th>
-              </tr>
-            </thead>
+      {feedback && (
+        <p
+          role={feedback.type === "error" ? "alert" : "status"}
+          className={`rounded-md border p-2.5 text-sm ${
+            feedback.type === "error"
+              ? "border-red-300 bg-red-50 text-red-800"
+              : "border-green-300 bg-green-50 text-green-800"
+          }`}
+        >
+          {feedback.text}
+          {feedback.applicantId && (
+            <>
+              {" "}
+              <Link href={`/admission/applicants/${feedback.applicantId}`} className="font-medium underline">
+                View profile
+              </Link>
+            </>
+          )}
+        </p>
+      )}
 
-            <tbody>
-              {currentApplicants.length > 0 ? (
-                currentApplicants.map((applicant) => {
-                  const fullName = [
-                    applicant.first_name,
-                    applicant.middle_name,
-                    applicant.last_name,
-                  ]
-                    .filter(Boolean)
-                    .join(" ");
+      {/* Applicant table */}
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse bg-white/90 text-sm">
+          <thead>
+            <tr className="bg-[#b4b7f3]">
+              <th className={th}>Applicant ID</th>
+              <th className={th}>Name</th>
+              <th className={th}>Preferred Course</th>
+              <th className={th}>Previous School</th>
+              <th className={th}>Type</th>
+              <th className={th}>Status</th>
+              <th className={th}>Actions</th>
+            </tr>
+          </thead>
 
-                  const latestApplication = applicant.tbl_application[0];
-
-                  const status =
-                    latestApplication?.tbl_admission_stage?.stage_name ??
-                    "No Application";
-
-                  const examResult = latestApplication?.tbl_exam_result[0];
-
-                  const resultStatus = examResult?.result_status ?? "--";
-                  const percentage = examResult?.percentage;
-
-                  return (
-                    <tr
-                      key={applicant.applicant_id}
-                      className="border-b last:border-0 hover:bg-muted/30"
-                    >
-                      <td className="px-4 py-3">
-                        {String(applicant.applicant_id).padStart(6, "0")}
-                      </td>
-
-                      <td className="px-4 py-3 font-medium">{fullName}</td>
-
-                      <td className="px-4 py-3">{applicant.sex || "--"}</td>
-
-                      <td className="px-4 py-3">
-                        {applicant.birth_date
-                          ? new Date(applicant.birth_date).toLocaleDateString(
-                              "en-PH",
-                            )
-                          : "--"}
-                      </td>
-
-                      <td className="px-4 py-3">{applicant.email || "--"}</td>
-
-                      <td className="px-4 py-3">
-                        {applicant.mobile_no || "--"}
-                      </td>
-
-                      <td className="px-4 py-3">
-                        <span
-                          className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium whitespace-nowrap ${stageBadgeClass(
-                            status === "No Application" ? null : status,
-                          )}`}
+          <tbody>
+            {currentApplicants.length > 0 ? (
+              currentApplicants.map((row) => (
+                <tr key={row.applicant_id} className="hover:bg-[#e3e4f8]/60">
+                  <td className={`${td} whitespace-nowrap tabular-nums`}>{applicantId(row)}</td>
+                  <td className={td}>{row.name}</td>
+                  <td className={td} title={row.course_name ?? undefined}>
+                    {row.course_code ?? "--"}
+                  </td>
+                  <td className={td}>{row.school_name ?? "--"}</td>
+                  <td className={td}>{row.school_type ?? "--"}</td>
+                  <td className={td}>
+                    {row.stage ? (
+                      <span
+                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium whitespace-nowrap ${stageBadgeClass(
+                          row.stage,
+                        )}`}
+                      >
+                        {row.stage}
+                      </span>
+                    ) : (
+                      "--"
+                    )}
+                  </td>
+                  <td className={td}>
+                    <div className="flex items-center justify-center gap-1.5">
+                      <Link href={`/admission/applicants/${row.applicant_id}`} className={actionButton}>
+                        View
+                      </Link>
+                      {canWrite && formData && row.application_no && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            openForm({
+                              mode: "edit",
+                              applicantId: row.applicant_id,
+                              subtitle: `${row.name} · ${applicantId(row)}`,
+                            })
+                          }
+                          className={actionButton}
                         >
-                          {status}
-                        </span>
-                      </td>
-
-                      <td className="px-4 py-3">
-                        <span
-                          className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${
-                            resultStatus === "PASSED"
-                              ? "bg-green-100 text-green-700"
-                              : resultStatus === "FAILED"
-                                ? "bg-red-100 text-red-700"
-                                : "bg-muted text-muted-foreground"
-                          }`}
+                          Edit
+                        </button>
+                      )}
+                      {canWrite && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFeedback(null);
+                            setDeleting({ row, error: null });
+                          }}
+                          className="rounded-md border border-red-300 bg-white px-2 py-0.5 text-xs text-red-700 hover:bg-red-50"
                         >
-                          {resultStatus}
-                          {percentage !== null && percentage !== undefined
-                            ? ` (${percentage}%)`
-                            : ""}
-                        </span>
-                      </td>
-
-                      <td className="px-4 py-3">
-                        <div className="flex items-center justify-center gap-2">
-                          <Link
-                            href={`/admission/applicants/${applicant.applicant_id}`}
-                            className="rounded-md border px-2 py-1 text-xs transition-colors hover:bg-muted"
-                          >
-                            View
-                          </Link>
-
-                          {canWrite && (
-                            <Link
-                              href={`/admission/applicants/${applicant.applicant_id}/edit`}
-                              className="rounded-md border px-2 py-1 text-xs transition-colors hover:bg-muted"
-                            >
-                              Edit
-                            </Link>
-                          )}
-
-                          {canWrite && (
-                            <button
-                              type="button"
-                              onClick={async () => {
-                                const confirmed = window.confirm(
-                                  "Are you sure you want to delete this applicant? This action cannot be undone.",
-                                );
-
-                                if (!confirmed) return;
-
-                                const result = await deleteApplicant(
-                                  applicant.applicant_id,
-                                );
-
-                                if (result.error) {
-                                  window.alert(result.error);
-                                  return;
-                                }
-
-                                window.alert("Applicant successfully deleted.");
-                                router.refresh();
-                              }}
-                              className="rounded-md border px-2 py-1 text-xs text-red-600 hover:bg-red-50"
-                            >
-                              Delete
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <td
-                    colSpan={9}
-                    className="px-4 py-10 text-center text-muted-foreground"
-                  >
-                    {searchQuery ||
-                    stageFilter !== "ALL" ||
-                    examResultFilter !== "ALL"
-                      ? "No applicants match your search or filters."
-                      : "No applicants found."}
+                          Delete
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={7} className={`${td} py-10 text-neutral-600`}>
+                  {query || stageFilter !== "ALL" ? "No applicants match your search or filter." : "No applicants found."}
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
 
-      {/* Pagination */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-muted-foreground">
-          Showing {startRecord}–{endRecord} of {filteredApplicants.length}{" "}
-          applicants
-        </p>
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        start={startRecord}
+        end={endRecord}
+        total={filteredApplicants.length}
+        noun="applicants"
+        onPageChange={setCurrentPage}
+      />
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
-            disabled={currentPage === 1}
-            className="rounded-md border px-3 py-2 text-sm hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
-          >
-            Previous
-          </button>
+      {/* Add / edit applicant */}
+      {formData && (
+        <ApplicantFormModal
+          request={formRequest}
+          reference={formData}
+          onClose={() => setFormRequest(null)}
+          onSaved={(id, mode) => {
+            setFormRequest(null);
+            setFeedback({
+              type: "success",
+              text: mode === "create" ? "Applicant added." : "Applicant updated.",
+              applicantId: id,
+            });
+          }}
+        />
+      )}
 
-          <span className="text-sm">
-            Page {currentPage} of {totalPages}
-          </span>
-
-          <button
-            type="button"
-            onClick={() =>
-              setCurrentPage((page) => Math.min(totalPages, page + 1))
-            }
-            disabled={currentPage === totalPages}
-            className="rounded-md border px-3 py-2 text-sm hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
-      </div>
+      {/* Delete applicant */}
+      <Modal
+        open={deleting !== null}
+        onOpenChange={(open) => !open && !isPending && setDeleting(null)}
+        title="Delete applicant?"
+        size="sm"
+      >
+        {deleting && (
+          <div className="space-y-4 text-sm">
+            <p>
+              <span className="font-semibold">{deleting.row.name}</span> ({applicantId(deleting.row)}), their
+              applications, stage history, and uploaded documents will be permanently deleted. This can&apos;t be
+              undone.
+            </p>
+            {deleting.row.result_status && !deleting.error && (
+              <p className="rounded-md border border-amber-300 bg-amber-50 p-2.5 text-amber-900">
+                This applicant has an exam result, so deletion will be blocked to keep their examination history.
+              </p>
+            )}
+            {deleting.error && (
+              <p role="alert" className="rounded-md border border-red-300 bg-red-50 p-2.5 text-red-800">
+                {deleting.error}
+              </p>
+            )}
+            <div className="-mx-5 -mb-4 flex justify-end gap-2 border-t border-neutral-200 bg-neutral-50 px-5 py-3">
+              <button
+                type="button"
+                onClick={() => setDeleting(null)}
+                disabled={isPending}
+                className="h-9 rounded-md border border-neutral-400 bg-white px-4 hover:bg-neutral-100 disabled:opacity-60"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => confirmDelete(deleting.row)}
+                disabled={isPending}
+                className="h-9 rounded-md bg-red-600 px-4 font-semibold text-white hover:bg-red-700 disabled:opacity-60"
+              >
+                {isPending ? "Deleting…" : "Delete"}
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

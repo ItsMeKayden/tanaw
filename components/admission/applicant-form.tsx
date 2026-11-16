@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useTransition } from "react";
 import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
@@ -10,10 +10,16 @@ import type { z } from "zod";
 
 import { createApplicant } from "@/features/admission/actions/create-applicant";
 import { updateApplicant } from "@/features/admission/actions/update-applicant";
+import { DatePicker } from "@/components/ui/date-picker";
 import {
   APPLICANT_FORM_FIELDS,
+  MAX_APPLICANT_AGE,
+  MIN_APPLICANT_AGE,
+  MOBILE_LENGTH,
   SCHOOL_TYPES,
   applicantFormSchema,
+  inputFilters,
+  isoYearsAgo,
   type ApplicantFieldErrors,
   type ApplicantFormField,
   type ApplicantFormValues,
@@ -61,7 +67,18 @@ type ApplicantFormProps = Readonly<{
   schools: School[];
   activeCycle?: string | null;
   existingDocuments?: Partial<Record<DocumentSlotKey, ExistingDocument>>;
-  cancelHref: string;
+  /** Page mode: where Cancel goes. Ignored when onCancel is given. */
+  cancelHref?: string;
+  /** Modal mode: called instead of navigating away on Cancel. */
+  onCancel?: () => void;
+  /** Modal mode: called after a successful save instead of opening the profile. */
+  onSuccess?: (applicantId: number) => void;
+  /** Modal mode: reports unsaved changes so closing the modal can confirm. */
+  onDirtyChange?: (dirty: boolean) => void;
+  /** "modal" drops the lavender panel and pins the buttons to the bottom. */
+  variant?: "page" | "modal";
+  /** Step to open on (edit mode can jump to any step, e.g. 2 = Documents). */
+  initialStep?: number;
 }>;
 
 const STEPS = [
@@ -167,6 +184,69 @@ function Field({
 }
 
 /** Applied → Exam → Result → Enrolled style progress, used for the form steps. */
+/**
+ * Compact one-row stepper for the modal: small numbered dots with the label
+ * beside them (labels of other steps hide on narrow screens).
+ */
+function CompactStepper({
+  current,
+  furthest,
+  onSelect,
+}: Readonly<{
+  current: number;
+  furthest: number;
+  onSelect: (step: number) => void;
+}>) {
+  return (
+    <nav aria-label="Application form progress" className="border-b border-neutral-200 pb-3">
+      <ol className="flex items-center gap-2">
+        {STEPS.map((label, index) => {
+          const done = index < current;
+          const active = index === current;
+          const reachable = index <= furthest && !active;
+          const isLast = index === STEPS.length - 1;
+
+          let dot = "border border-neutral-400 bg-white text-neutral-600";
+          if (done) dot = "bg-green-600 text-white";
+          else if (active) dot = "bg-[#191e73] text-white";
+
+          return (
+            <li key={label} className={`flex min-w-0 items-center gap-2 ${isLast ? "" : "flex-1"}`}>
+              <button
+                type="button"
+                onClick={() => onSelect(index)}
+                disabled={!reachable}
+                aria-current={active ? "step" : undefined}
+                aria-label={`Step ${index + 1}: ${label}${done ? " (completed)" : ""}`}
+                className="group flex min-w-0 items-center gap-1.5 rounded-full py-0.5 pr-1.5 enabled:cursor-pointer disabled:cursor-default"
+              >
+                <span
+                  className={`flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${dot}`}
+                >
+                  {done ? <Check className="size-3.5" strokeWidth={3} aria-hidden="true" /> : index + 1}
+                </span>
+                <span
+                  className={`truncate text-sm group-enabled:group-hover:underline ${
+                    active ? "font-semibold text-neutral-950" : "hidden text-neutral-600 sm:inline"
+                  }`}
+                >
+                  {label}
+                </span>
+              </button>
+              {!isLast && (
+                <span
+                  aria-hidden="true"
+                  className={`h-px min-w-3 flex-1 ${done ? "bg-green-600" : "bg-neutral-300"}`}
+                />
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  );
+}
+
 function Stepper({
   current,
   furthest,
@@ -441,11 +521,24 @@ export default function ApplicantForm({
   schools,
   activeCycle,
   existingDocuments = {},
-  cancelHref,
+  cancelHref = "/admission",
+  onCancel,
+  onSuccess,
+  onDirtyChange,
+  variant = "page",
+  initialStep = 0,
 }: ApplicantFormProps) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
-  const [step, setStep] = useState(0);
+  const scrollArea = useRef<HTMLDivElement>(null);
+  // Only edit mode may skip ahead; a new applicant starts at step 1.
+  const [step, setStep] = useState(mode === "edit" ? Math.min(Math.max(0, initialStep), STEPS.length - 1) : 0);
+
+  // A new step starts at the top of the modal's scroll area. Done before
+  // paint and without animation, so it never competes with the step fade.
+  useLayoutEffect(() => {
+    if (variant === "modal" && scrollArea.current) scrollArea.current.scrollTop = 0;
+  }, [step, variant]);
   const [furthest, setFurthest] = useState(
     mode === "edit" ? STEPS.length - 1 : 0,
   );
@@ -513,6 +606,10 @@ export default function ApplicantForm({
     Object.keys(files).length > 0 ||
     Object.values(removeDocs).some(Boolean);
 
+  useEffect(() => {
+    onDirtyChange?.(isDirty);
+  }, [isDirty, onDirtyChange]);
+
   const programLabel = (id: string | undefined) => {
     const program = programs.find((p) => String(p.program_id) === id);
     return program ? `${program.program_code} – ${program.program_name}` : "";
@@ -569,7 +666,8 @@ export default function ApplicantForm({
           formRef.current?.querySelector<HTMLElement>(`#field-${key}`) ??
           formRef.current?.querySelector<HTMLElement>(`[name="${key}"]`);
         if (element) {
-          element.focus();
+          // preventScroll: let the smooth scroll below move it, not an instant focus jump.
+          element.focus({ preventScroll: true });
           element.scrollIntoView({ block: "center", behavior: "smooth" });
           return;
         }
@@ -621,7 +719,13 @@ export default function ApplicantForm({
   function cancel() {
     if (isDirty && !window.confirm("Discard your changes and leave this form?"))
       return;
-    router.push(cancelHref);
+    if (onCancel) onCancel();
+    else router.push(cancelHref);
+  }
+
+  function finish(applicantId: number) {
+    if (onSuccess) onSuccess(applicantId);
+    else router.push(`/admission/applicants/${applicantId}`);
   }
 
   function applyServerErrors(
@@ -674,7 +778,7 @@ export default function ApplicantForm({
             applyServerErrors(result.fieldErrors, result.documentErrors);
             return;
           }
-          router.push(`/admission/applicants/${result.applicantId}`);
+          finish(result.applicantId);
         } else {
           payload.set("applicant_id", String(ids!.applicant_id));
           payload.set("application_id", String(ids!.application_id));
@@ -684,7 +788,7 @@ export default function ApplicantForm({
             applyServerErrors(result.fieldErrors, result.documentErrors);
             return;
           }
-          router.push(`/admission/applicants/${ids!.applicant_id}`);
+          finish(ids!.applicant_id);
         }
         router.refresh();
       } catch {
@@ -749,16 +853,28 @@ export default function ApplicantForm({
         if (step === STEPS.length - 1) submit();
         else goTo(step + 1);
       }}
-      className="space-y-4"
+      className={variant === "modal" ? "flex min-h-0 flex-1 flex-col" : "space-y-4"}
     >
-      {/* Stepper and the current step share one panel. */}
-      <div className={panelClass}>
-        <Stepper current={step} furthest={furthest} onSelect={goTo} />
+      {/* Stepper and the current step share one panel; in a modal it is the
+          scrolling area (no visible scrollbar) above the fixed footer. */}
+      <div
+        ref={scrollArea}
+        className={
+          variant === "modal"
+            ? "scrollbar-none min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain px-5 pt-3 pb-4"
+            : panelClass
+        }
+      >
+        {variant === "modal" ? (
+          <CompactStepper current={step} furthest={furthest} onSelect={goTo} />
+        ) : (
+          <Stepper current={step} furthest={furthest} onSelect={goTo} />
+        )}
 
         {/* (1) Personal info */}
         <section
           hidden={step !== 0}
-          className="pt-5"
+          className="pt-5 animate-in fade-in duration-150 ease-out motion-reduce:animate-none"
           aria-labelledby="step-0-title"
         >
           <h2 id="step-0-title" className="text-lg font-semibold">
@@ -777,8 +893,9 @@ export default function ApplicantForm({
             >
               <input
                 {...control("last_name")}
-                onChange={(e) => update({ last_name: e.target.value })}
+                onChange={(e) => update({ last_name: inputFilters.name(e.target.value) })}
                 maxLength={100}
+                placeholder="e.g. Dela Cruz"
                 autoComplete="family-name"
               />
             </Field>
@@ -790,8 +907,9 @@ export default function ApplicantForm({
             >
               <input
                 {...control("first_name")}
-                onChange={(e) => update({ first_name: e.target.value })}
+                onChange={(e) => update({ first_name: inputFilters.name(e.target.value) })}
                 maxLength={100}
+                placeholder="e.g. Juan"
                 autoComplete="given-name"
               />
             </Field>
@@ -802,8 +920,9 @@ export default function ApplicantForm({
             >
               <input
                 {...control("middle_name")}
-                onChange={(e) => update({ middle_name: e.target.value })}
+                onChange={(e) => update({ middle_name: inputFilters.name(e.target.value) })}
                 maxLength={100}
+                placeholder="e.g. Santos"
                 autoComplete="additional-name"
               />
             </Field>
@@ -814,9 +933,9 @@ export default function ApplicantForm({
             >
               <input
                 {...control("suffix")}
-                onChange={(e) => update({ suffix: e.target.value })}
+                onChange={(e) => update({ suffix: inputFilters.suffix(e.target.value) })}
                 maxLength={20}
-                placeholder="Jr., Sr., III"
+                placeholder="e.g. Jr., III"
                 autoComplete="honorific-suffix"
               />
             </Field>
@@ -827,47 +946,55 @@ export default function ApplicantForm({
               required
               error={errors.birth_date}
             >
-              <input
-                {...control("birth_date")}
-                onChange={(e) => update({ birth_date: e.target.value })}
-                type="date"
-                max={new Date().toISOString().slice(0, 10)}
+              <DatePicker
+                id="field-birth_date"
+                value={values.birth_date ?? ""}
+                onChange={(value) => update({ birth_date: value })}
+                onClose={() => void trigger("birth_date")}
+                // Applicants are MIN–MAX years old today.
+                min={isoYearsAgo(MAX_APPLICANT_AGE)}
+                max={isoYearsAgo(MIN_APPLICANT_AGE)}
+                defaultMonth={isoYearsAgo(18)}
+                placeholder="Select birthdate"
+                invalid={Boolean(errors.birth_date)}
+                describedBy={errors.birth_date ? "field-birth_date-error" : undefined}
+                className={inputClass(Boolean(errors.birth_date))}
               />
             </Field>
             <Field id="field-sex" label="Sex" required error={errors.sex}>
               <select
-                {...control("sex")}
+                {...control("sex", values.sex ? "" : "text-neutral-400")}
                 onChange={(e) => update({ sex: e.target.value })}
               >
-                <option value="">Select</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
+                <option value="" disabled>
+                  Select sex
+                </option>
+                <option value="Male" className="text-black">Male</option>
+                <option value="Female" className="text-black">Female</option>
               </select>
             </Field>
-            <Field id="field-email" label="Email" error={errors.email}>
+            <Field id="field-email" label="Email (Optional)" error={errors.email}>
               <input
                 {...control("email")}
-                onChange={(e) => update({ email: e.target.value })}
+                onChange={(e) => update({ email: inputFilters.email(e.target.value) })}
                 type="email"
                 maxLength={150}
-                placeholder="name@gmail.com"
+                placeholder="e.g. juan.delacruz@gmail.com"
                 autoComplete="email"
               />
             </Field>
             <Field
               id="field-mobile_no"
-              label="Mobile number"
+              label="Mobile number (Optional)"
               error={errors.mobile_no}
             >
               <input
                 {...control("mobile_no")}
-                onChange={(e) =>
-                  update({ mobile_no: e.target.value.replace(/[^\d\s-]/g, "") })
-                }
+                onChange={(e) => update({ mobile_no: inputFilters.mobile(e.target.value) })}
                 type="tel"
                 inputMode="numeric"
-                maxLength={13}
-                placeholder="09XX XXX XXXX"
+                maxLength={MOBILE_LENGTH}
+                placeholder="e.g. 09171234567"
                 autoComplete="tel"
               />
             </Field>
@@ -898,13 +1025,16 @@ export default function ApplicantForm({
                 onBlur={() =>
                   setFieldError("district_id", validateDistrict(districtId))
                 }
-                className={inputClass(Boolean(errors.district_id))}
+                className={inputClass(Boolean(errors.district_id), districtId ? "" : "text-neutral-400")}
               >
-                <option value="">Select</option>
+                <option value="" disabled>
+                  Select district
+                </option>
                 {districts.map((district) => (
                   <option
                     key={district.district_id}
                     value={district.district_id}
+                    className="text-black"
                   >
                     {district.district_name}
                   </option>
@@ -920,15 +1050,18 @@ export default function ApplicantForm({
               className="sm:col-span-1 lg:col-span-2"
             >
               <select
-                {...control("barangay_id", "", !districtId)}
+                {...control("barangay_id", values.barangay_id ? "" : "text-neutral-400", !districtId)}
                 onChange={(e) => update({ barangay_id: e.target.value })}
                 disabled={!districtId}
               >
-                <option value="">Select</option>
+                <option value="" disabled>
+                  {districtId ? "Select barangay" : "Select a district first"}
+                </option>
                 {barangays.map((barangay) => (
                   <option
                     key={barangay.barangay_id}
                     value={barangay.barangay_id}
+                    className="text-black"
                   >
                     {barangay.barangay_name}
                   </option>
@@ -941,7 +1074,7 @@ export default function ApplicantForm({
         {/* (2) Course and campus */}
         <section
           hidden={step !== 1}
-          className="pt-5"
+          className="pt-5 animate-in fade-in duration-150 ease-out motion-reduce:animate-none"
           aria-labelledby="step-1-title"
         >
           <h2 id="step-1-title" className="text-lg font-semibold">
@@ -987,8 +1120,8 @@ export default function ApplicantForm({
                       !values.program_choice_2_id
                     }
                   >
-                    <option value="">
-                      {isFirst ? "Select program" : "None"}
+                    <option value="" disabled={isFirst}>
+                      {isFirst ? "Select 1st choice program" : "None (optional)"}
                     </option>
                     {programs.map((program) => (
                       <option
@@ -1082,7 +1215,7 @@ export default function ApplicantForm({
         {/* (3) Previous school */}
         <section
           hidden={step !== 2}
-          className="pt-5"
+          className="pt-5 animate-in fade-in duration-150 ease-out motion-reduce:animate-none"
           aria-labelledby="step-2-title"
         >
           <h2 id="step-2-title" className="text-lg font-semibold">
@@ -1139,12 +1272,14 @@ export default function ApplicantForm({
                 className="sm:col-span-2"
               >
                 <select
-                  {...control("school_id", "", schools.length === 0)}
+                  {...control("school_id", values.school_id ? "" : "text-neutral-400", schools.length === 0)}
                   onChange={(e) => update({ school_id: e.target.value })}
                 >
-                  <option value="">Select school</option>
+                  <option value="" disabled>
+                    Select previous school
+                  </option>
                   {schools.map((school) => (
-                    <option key={school.school_id} value={school.school_id}>
+                    <option key={school.school_id} value={school.school_id} className="text-black">
                       {school.school_name}
                       {school.city_municipality
                         ? ` — ${school.city_municipality}`
@@ -1185,9 +1320,9 @@ export default function ApplicantForm({
               >
                 <input
                   {...control("school_name")}
-                  onChange={(e) => update({ school_name: e.target.value })}
+                  onChange={(e) => update({ school_name: inputFilters.schoolName(e.target.value) })}
                   maxLength={150}
-                  placeholder="Full school name"
+                  placeholder="e.g. Quezon City Science High School"
                 />
               </Field>
               <fieldset
@@ -1235,7 +1370,7 @@ export default function ApplicantForm({
               >
                 <input
                   {...control("school_city")}
-                  onChange={(e) => update({ school_city: e.target.value })}
+                  onChange={(e) => update({ school_city: inputFilters.place(e.target.value) })}
                   maxLength={100}
                   placeholder="e.g. Quezon City"
                 />
@@ -1289,7 +1424,7 @@ export default function ApplicantForm({
         {/* (4) Review */}
         <section
           hidden={step !== 3}
-          className="pt-5"
+          className="pt-5 animate-in fade-in duration-150 ease-out motion-reduce:animate-none"
           aria-labelledby="step-3-title"
         >
           <h2 id="step-3-title" className="text-lg font-semibold">
@@ -1458,14 +1593,20 @@ export default function ApplicantForm({
       {submitError && (
         <p
           role="alert"
-          className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-800"
+          className={`rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-800 ${
+            variant === "modal" ? "mx-5 mb-3 shrink-0" : ""
+          }`}
         >
           {submitError}
         </p>
       )}
 
-      {/* Navigation */}
-      <div className="flex items-center justify-between gap-3">
+      {/* Navigation (the modal's fixed footer; only the content above scrolls) */}
+      <div
+        className={`flex items-center justify-between gap-3 ${
+          variant === "modal" ? "shrink-0 border-t border-neutral-200 bg-neutral-50 px-5 py-3" : ""
+        }`}
+      >
         <button
           type="button"
           onClick={cancel}

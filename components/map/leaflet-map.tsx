@@ -2,7 +2,7 @@
 
 import "leaflet/dist/leaflet.css";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import L from "leaflet";
 import { GeoJSON, MapContainer, Marker, TileLayer, useMap } from "react-leaflet";
 import type { Feature, FeatureCollection, MultiLineString, MultiPolygon } from "geojson";
@@ -60,6 +60,18 @@ export default function LeafletMap({
   onSelect: (selection: Selection) => void;
   height: string;
 }>) {
+  // With cacheComponents, Next keeps visited pages mounted but hidden (React
+  // <Activity>). Hiding runs effect cleanups, so react-leaflet's MapContainer
+  // destroys its Leaflet map, but on re-show it keeps using that destroyed map
+  // ("Cannot read properties of undefined (reading 'appendChild')"). Rendering
+  // the map only while visible gives every re-show a fresh MapContainer.
+  const [visible, setVisible] = useState(false);
+  useLayoutEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- mirrors Activity visibility; must unmount the map on hide
+    setVisible(true);
+    return () => setVisible(false);
+  }, []);
+
   // Leaflet handlers are bound once per layer; read the latest callback via a ref.
   const onSelectRef = useRef(onSelect);
   useEffect(() => {
@@ -116,6 +128,10 @@ export default function LeafletMap({
     [bounds[0][0] - 0.08, bounds[0][1] - 0.08],
     [bounds[1][0] + 0.08, bounds[1][1] + 0.08],
   ];
+
+  if (!visible) {
+    return <div aria-hidden="true" className="rounded-lg bg-[#e5e5e5]" style={{ height, width: "100%" }} />;
+  }
 
   return (
     <MapContainer

@@ -239,6 +239,7 @@ export type tbl_examWhereInput = {
   tbl_admission_cycle?: Prisma.XOR<Prisma.Tbl_admission_cycleNullableScalarRelationFilter, Prisma.tbl_admission_cycleWhereInput> | null
   tbl_exam_question?: Prisma.Tbl_exam_questionListRelationFilter
   tbl_exam_result?: Prisma.Tbl_exam_resultListRelationFilter
+  tbl_exam_session?: Prisma.Tbl_exam_sessionListRelationFilter
 }
 
 export type tbl_examOrderByWithRelationInput = {
@@ -251,6 +252,7 @@ export type tbl_examOrderByWithRelationInput = {
   tbl_admission_cycle?: Prisma.tbl_admission_cycleOrderByWithRelationInput
   tbl_exam_question?: Prisma.tbl_exam_questionOrderByRelationAggregateInput
   tbl_exam_result?: Prisma.tbl_exam_resultOrderByRelationAggregateInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionOrderByRelationAggregateInput
 }
 
 export type tbl_examWhereUniqueInput = Prisma.AtLeast<{
@@ -266,6 +268,7 @@ export type tbl_examWhereUniqueInput = Prisma.AtLeast<{
   tbl_admission_cycle?: Prisma.XOR<Prisma.Tbl_admission_cycleNullableScalarRelationFilter, Prisma.tbl_admission_cycleWhereInput> | null
   tbl_exam_question?: Prisma.Tbl_exam_questionListRelationFilter
   tbl_exam_result?: Prisma.Tbl_exam_resultListRelationFilter
+  tbl_exam_session?: Prisma.Tbl_exam_sessionListRelationFilter
 }, "exam_id">
 
 export type tbl_examOrderByWithAggregationInput = {
@@ -302,6 +305,7 @@ export type tbl_examCreateInput = {
   tbl_admission_cycle?: Prisma.tbl_admission_cycleCreateNestedOneWithoutTbl_examInput
   tbl_exam_question?: Prisma.tbl_exam_questionCreateNestedManyWithoutTbl_examInput
   tbl_exam_result?: Prisma.tbl_exam_resultCreateNestedManyWithoutTbl_examInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionCreateNestedManyWithoutTbl_examInput
 }
 
 export type tbl_examUncheckedCreateInput = {
@@ -313,6 +317,7 @@ export type tbl_examUncheckedCreateInput = {
   max_score?: number | null
   tbl_exam_question?: Prisma.tbl_exam_questionUncheckedCreateNestedManyWithoutTbl_examInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_examInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedCreateNestedManyWithoutTbl_examInput
 }
 
 export type tbl_examUpdateInput = {
@@ -323,6 +328,7 @@ export type tbl_examUpdateInput = {
   tbl_admission_cycle?: Prisma.tbl_admission_cycleUpdateOneWithoutTbl_examNestedInput
   tbl_exam_question?: Prisma.tbl_exam_questionUpdateManyWithoutTbl_examNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUpdateManyWithoutTbl_examNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUpdateManyWithoutTbl_examNestedInput
 }
 
 export type tbl_examUncheckedUpdateInput = {
@@ -334,6 +340,7 @@ export type tbl_examUncheckedUpdateInput = {
   max_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   tbl_exam_question?: Prisma.tbl_exam_questionUncheckedUpdateManyWithoutTbl_examNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_examNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedUpdateManyWithoutTbl_examNestedInput
 }
 
 export type tbl_examCreateManyInput = {
@@ -417,6 +424,11 @@ export type Tbl_examNullableScalarRelationFilter = {
   isNot?: Prisma.tbl_examWhereInput | null
 }
 
+export type Tbl_examScalarRelationFilter = {
+  is?: Prisma.tbl_examWhereInput
+  isNot?: Prisma.tbl_examWhereInput
+}
+
 export type tbl_examCreateNestedManyWithoutTbl_admission_cycleInput = {
   create?: Prisma.XOR<Prisma.tbl_examCreateWithoutTbl_admission_cycleInput, Prisma.tbl_examUncheckedCreateWithoutTbl_admission_cycleInput> | Prisma.tbl_examCreateWithoutTbl_admission_cycleInput[] | Prisma.tbl_examUncheckedCreateWithoutTbl_admission_cycleInput[]
   connectOrCreate?: Prisma.tbl_examCreateOrConnectWithoutTbl_admission_cycleInput | Prisma.tbl_examCreateOrConnectWithoutTbl_admission_cycleInput[]
@@ -491,6 +503,20 @@ export type tbl_examUpdateOneWithoutTbl_exam_resultNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.tbl_examUpdateToOneWithWhereWithoutTbl_exam_resultInput, Prisma.tbl_examUpdateWithoutTbl_exam_resultInput>, Prisma.tbl_examUncheckedUpdateWithoutTbl_exam_resultInput>
 }
 
+export type tbl_examCreateNestedOneWithoutTbl_exam_sessionInput = {
+  create?: Prisma.XOR<Prisma.tbl_examCreateWithoutTbl_exam_sessionInput, Prisma.tbl_examUncheckedCreateWithoutTbl_exam_sessionInput>
+  connectOrCreate?: Prisma.tbl_examCreateOrConnectWithoutTbl_exam_sessionInput
+  connect?: Prisma.tbl_examWhereUniqueInput
+}
+
+export type tbl_examUpdateOneRequiredWithoutTbl_exam_sessionNestedInput = {
+  create?: Prisma.XOR<Prisma.tbl_examCreateWithoutTbl_exam_sessionInput, Prisma.tbl_examUncheckedCreateWithoutTbl_exam_sessionInput>
+  connectOrCreate?: Prisma.tbl_examCreateOrConnectWithoutTbl_exam_sessionInput
+  upsert?: Prisma.tbl_examUpsertWithoutTbl_exam_sessionInput
+  connect?: Prisma.tbl_examWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.tbl_examUpdateToOneWithWhereWithoutTbl_exam_sessionInput, Prisma.tbl_examUpdateWithoutTbl_exam_sessionInput>, Prisma.tbl_examUncheckedUpdateWithoutTbl_exam_sessionInput>
+}
+
 export type tbl_examCreateWithoutTbl_admission_cycleInput = {
   exam_name: string
   exam_date?: Date | string | null
@@ -498,6 +524,7 @@ export type tbl_examCreateWithoutTbl_admission_cycleInput = {
   max_score?: number | null
   tbl_exam_question?: Prisma.tbl_exam_questionCreateNestedManyWithoutTbl_examInput
   tbl_exam_result?: Prisma.tbl_exam_resultCreateNestedManyWithoutTbl_examInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionCreateNestedManyWithoutTbl_examInput
 }
 
 export type tbl_examUncheckedCreateWithoutTbl_admission_cycleInput = {
@@ -508,6 +535,7 @@ export type tbl_examUncheckedCreateWithoutTbl_admission_cycleInput = {
   max_score?: number | null
   tbl_exam_question?: Prisma.tbl_exam_questionUncheckedCreateNestedManyWithoutTbl_examInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_examInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedCreateNestedManyWithoutTbl_examInput
 }
 
 export type tbl_examCreateOrConnectWithoutTbl_admission_cycleInput = {
@@ -555,6 +583,7 @@ export type tbl_examCreateWithoutTbl_exam_questionInput = {
   max_score?: number | null
   tbl_admission_cycle?: Prisma.tbl_admission_cycleCreateNestedOneWithoutTbl_examInput
   tbl_exam_result?: Prisma.tbl_exam_resultCreateNestedManyWithoutTbl_examInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionCreateNestedManyWithoutTbl_examInput
 }
 
 export type tbl_examUncheckedCreateWithoutTbl_exam_questionInput = {
@@ -565,6 +594,7 @@ export type tbl_examUncheckedCreateWithoutTbl_exam_questionInput = {
   total_items?: number | null
   max_score?: number | null
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_examInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedCreateNestedManyWithoutTbl_examInput
 }
 
 export type tbl_examCreateOrConnectWithoutTbl_exam_questionInput = {
@@ -590,6 +620,7 @@ export type tbl_examUpdateWithoutTbl_exam_questionInput = {
   max_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   tbl_admission_cycle?: Prisma.tbl_admission_cycleUpdateOneWithoutTbl_examNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUpdateManyWithoutTbl_examNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUpdateManyWithoutTbl_examNestedInput
 }
 
 export type tbl_examUncheckedUpdateWithoutTbl_exam_questionInput = {
@@ -600,6 +631,7 @@ export type tbl_examUncheckedUpdateWithoutTbl_exam_questionInput = {
   total_items?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   max_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_examNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedUpdateManyWithoutTbl_examNestedInput
 }
 
 export type tbl_examCreateWithoutTbl_exam_resultInput = {
@@ -609,6 +641,7 @@ export type tbl_examCreateWithoutTbl_exam_resultInput = {
   max_score?: number | null
   tbl_admission_cycle?: Prisma.tbl_admission_cycleCreateNestedOneWithoutTbl_examInput
   tbl_exam_question?: Prisma.tbl_exam_questionCreateNestedManyWithoutTbl_examInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionCreateNestedManyWithoutTbl_examInput
 }
 
 export type tbl_examUncheckedCreateWithoutTbl_exam_resultInput = {
@@ -619,6 +652,7 @@ export type tbl_examUncheckedCreateWithoutTbl_exam_resultInput = {
   total_items?: number | null
   max_score?: number | null
   tbl_exam_question?: Prisma.tbl_exam_questionUncheckedCreateNestedManyWithoutTbl_examInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedCreateNestedManyWithoutTbl_examInput
 }
 
 export type tbl_examCreateOrConnectWithoutTbl_exam_resultInput = {
@@ -644,6 +678,7 @@ export type tbl_examUpdateWithoutTbl_exam_resultInput = {
   max_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   tbl_admission_cycle?: Prisma.tbl_admission_cycleUpdateOneWithoutTbl_examNestedInput
   tbl_exam_question?: Prisma.tbl_exam_questionUpdateManyWithoutTbl_examNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUpdateManyWithoutTbl_examNestedInput
 }
 
 export type tbl_examUncheckedUpdateWithoutTbl_exam_resultInput = {
@@ -654,6 +689,65 @@ export type tbl_examUncheckedUpdateWithoutTbl_exam_resultInput = {
   total_items?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   max_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   tbl_exam_question?: Prisma.tbl_exam_questionUncheckedUpdateManyWithoutTbl_examNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedUpdateManyWithoutTbl_examNestedInput
+}
+
+export type tbl_examCreateWithoutTbl_exam_sessionInput = {
+  exam_name: string
+  exam_date?: Date | string | null
+  total_items?: number | null
+  max_score?: number | null
+  tbl_admission_cycle?: Prisma.tbl_admission_cycleCreateNestedOneWithoutTbl_examInput
+  tbl_exam_question?: Prisma.tbl_exam_questionCreateNestedManyWithoutTbl_examInput
+  tbl_exam_result?: Prisma.tbl_exam_resultCreateNestedManyWithoutTbl_examInput
+}
+
+export type tbl_examUncheckedCreateWithoutTbl_exam_sessionInput = {
+  exam_id?: number
+  cycle_id?: number | null
+  exam_name: string
+  exam_date?: Date | string | null
+  total_items?: number | null
+  max_score?: number | null
+  tbl_exam_question?: Prisma.tbl_exam_questionUncheckedCreateNestedManyWithoutTbl_examInput
+  tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_examInput
+}
+
+export type tbl_examCreateOrConnectWithoutTbl_exam_sessionInput = {
+  where: Prisma.tbl_examWhereUniqueInput
+  create: Prisma.XOR<Prisma.tbl_examCreateWithoutTbl_exam_sessionInput, Prisma.tbl_examUncheckedCreateWithoutTbl_exam_sessionInput>
+}
+
+export type tbl_examUpsertWithoutTbl_exam_sessionInput = {
+  update: Prisma.XOR<Prisma.tbl_examUpdateWithoutTbl_exam_sessionInput, Prisma.tbl_examUncheckedUpdateWithoutTbl_exam_sessionInput>
+  create: Prisma.XOR<Prisma.tbl_examCreateWithoutTbl_exam_sessionInput, Prisma.tbl_examUncheckedCreateWithoutTbl_exam_sessionInput>
+  where?: Prisma.tbl_examWhereInput
+}
+
+export type tbl_examUpdateToOneWithWhereWithoutTbl_exam_sessionInput = {
+  where?: Prisma.tbl_examWhereInput
+  data: Prisma.XOR<Prisma.tbl_examUpdateWithoutTbl_exam_sessionInput, Prisma.tbl_examUncheckedUpdateWithoutTbl_exam_sessionInput>
+}
+
+export type tbl_examUpdateWithoutTbl_exam_sessionInput = {
+  exam_name?: Prisma.StringFieldUpdateOperationsInput | string
+  exam_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  total_items?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  max_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  tbl_admission_cycle?: Prisma.tbl_admission_cycleUpdateOneWithoutTbl_examNestedInput
+  tbl_exam_question?: Prisma.tbl_exam_questionUpdateManyWithoutTbl_examNestedInput
+  tbl_exam_result?: Prisma.tbl_exam_resultUpdateManyWithoutTbl_examNestedInput
+}
+
+export type tbl_examUncheckedUpdateWithoutTbl_exam_sessionInput = {
+  exam_id?: Prisma.IntFieldUpdateOperationsInput | number
+  cycle_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  exam_name?: Prisma.StringFieldUpdateOperationsInput | string
+  exam_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  total_items?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  max_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  tbl_exam_question?: Prisma.tbl_exam_questionUncheckedUpdateManyWithoutTbl_examNestedInput
+  tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_examNestedInput
 }
 
 export type tbl_examCreateManyTbl_admission_cycleInput = {
@@ -671,6 +765,7 @@ export type tbl_examUpdateWithoutTbl_admission_cycleInput = {
   max_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   tbl_exam_question?: Prisma.tbl_exam_questionUpdateManyWithoutTbl_examNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUpdateManyWithoutTbl_examNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUpdateManyWithoutTbl_examNestedInput
 }
 
 export type tbl_examUncheckedUpdateWithoutTbl_admission_cycleInput = {
@@ -681,6 +776,7 @@ export type tbl_examUncheckedUpdateWithoutTbl_admission_cycleInput = {
   max_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   tbl_exam_question?: Prisma.tbl_exam_questionUncheckedUpdateManyWithoutTbl_examNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_examNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedUpdateManyWithoutTbl_examNestedInput
 }
 
 export type tbl_examUncheckedUpdateManyWithoutTbl_admission_cycleInput = {
@@ -699,11 +795,13 @@ export type tbl_examUncheckedUpdateManyWithoutTbl_admission_cycleInput = {
 export type Tbl_examCountOutputType = {
   tbl_exam_question: number
   tbl_exam_result: number
+  tbl_exam_session: number
 }
 
 export type Tbl_examCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tbl_exam_question?: boolean | Tbl_examCountOutputTypeCountTbl_exam_questionArgs
   tbl_exam_result?: boolean | Tbl_examCountOutputTypeCountTbl_exam_resultArgs
+  tbl_exam_session?: boolean | Tbl_examCountOutputTypeCountTbl_exam_sessionArgs
 }
 
 /**
@@ -730,6 +828,13 @@ export type Tbl_examCountOutputTypeCountTbl_exam_resultArgs<ExtArgs extends runt
   where?: Prisma.tbl_exam_resultWhereInput
 }
 
+/**
+ * Tbl_examCountOutputType without action
+ */
+export type Tbl_examCountOutputTypeCountTbl_exam_sessionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.tbl_exam_sessionWhereInput
+}
+
 
 export type tbl_examSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   exam_id?: boolean
@@ -741,6 +846,7 @@ export type tbl_examSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   tbl_admission_cycle?: boolean | Prisma.tbl_exam$tbl_admission_cycleArgs<ExtArgs>
   tbl_exam_question?: boolean | Prisma.tbl_exam$tbl_exam_questionArgs<ExtArgs>
   tbl_exam_result?: boolean | Prisma.tbl_exam$tbl_exam_resultArgs<ExtArgs>
+  tbl_exam_session?: boolean | Prisma.tbl_exam$tbl_exam_sessionArgs<ExtArgs>
   _count?: boolean | Prisma.Tbl_examCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tbl_exam"]>
 
@@ -778,6 +884,7 @@ export type tbl_examInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   tbl_admission_cycle?: boolean | Prisma.tbl_exam$tbl_admission_cycleArgs<ExtArgs>
   tbl_exam_question?: boolean | Prisma.tbl_exam$tbl_exam_questionArgs<ExtArgs>
   tbl_exam_result?: boolean | Prisma.tbl_exam$tbl_exam_resultArgs<ExtArgs>
+  tbl_exam_session?: boolean | Prisma.tbl_exam$tbl_exam_sessionArgs<ExtArgs>
   _count?: boolean | Prisma.Tbl_examCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type tbl_examIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -793,6 +900,7 @@ export type $tbl_examPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     tbl_admission_cycle: Prisma.$tbl_admission_cyclePayload<ExtArgs> | null
     tbl_exam_question: Prisma.$tbl_exam_questionPayload<ExtArgs>[]
     tbl_exam_result: Prisma.$tbl_exam_resultPayload<ExtArgs>[]
+    tbl_exam_session: Prisma.$tbl_exam_sessionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     exam_id: number
@@ -1198,6 +1306,7 @@ export interface Prisma__tbl_examClient<T, Null = never, ExtArgs extends runtime
   tbl_admission_cycle<T extends Prisma.tbl_exam$tbl_admission_cycleArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_exam$tbl_admission_cycleArgs<ExtArgs>>): Prisma.Prisma__tbl_admission_cycleClient<runtime.Types.Result.GetResult<Prisma.$tbl_admission_cyclePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   tbl_exam_question<T extends Prisma.tbl_exam$tbl_exam_questionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_exam$tbl_exam_questionArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_exam_questionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   tbl_exam_result<T extends Prisma.tbl_exam$tbl_exam_resultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_exam$tbl_exam_resultArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_exam_resultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tbl_exam_session<T extends Prisma.tbl_exam$tbl_exam_sessionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_exam$tbl_exam_sessionArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_exam_sessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1698,6 +1807,30 @@ export type tbl_exam$tbl_exam_resultArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.Tbl_exam_resultScalarFieldEnum | Prisma.Tbl_exam_resultScalarFieldEnum[]
+}
+
+/**
+ * tbl_exam.tbl_exam_session
+ */
+export type tbl_exam$tbl_exam_sessionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the tbl_exam_session
+   */
+  select?: Prisma.tbl_exam_sessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the tbl_exam_session
+   */
+  omit?: Prisma.tbl_exam_sessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.tbl_exam_sessionInclude<ExtArgs> | null
+  where?: Prisma.tbl_exam_sessionWhereInput
+  orderBy?: Prisma.tbl_exam_sessionOrderByWithRelationInput | Prisma.tbl_exam_sessionOrderByWithRelationInput[]
+  cursor?: Prisma.tbl_exam_sessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Tbl_exam_sessionScalarFieldEnum | Prisma.Tbl_exam_sessionScalarFieldEnum[]
 }
 
 /**

@@ -1,4 +1,4 @@
-// Server-side aggregation for the Quota and Summary pages (imports Prisma).
+// Server-side aggregation for the Quota page (imports Prisma).
 import { prisma } from "@/lib/prisma";
 import { ADMISSION_STAGES, ADMITTED_STAGES } from "@/features/admission/stages";
 

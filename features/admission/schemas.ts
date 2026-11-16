@@ -7,22 +7,40 @@ import { z } from "zod";
 const ID_PATTERN = /^[1-9]\d*$/;
 export const MAX_REMARKS = 1000;
 
-const optionalId = (message: string) => z.string().trim().refine((v) => !v || ID_PATTERN.test(v), message);
-
 const remarks = z.string().trim().max(MAX_REMARKS, `Remarks must not exceed ${MAX_REMARKS} characters.`);
 
-/** Quota page: campus/program blank = "All". */
-export const quotaFormSchema = z.object({
-  branch_id: optionalId("Select a valid campus."),
-  program_id: optionalId("Select a valid program."),
-  quota_slots: z
+const slotsField = z
+  .string()
+  .trim()
+  .refine((v) => v === "" || /^\d+$/.test(v), "Slots must be a whole number.")
+  .refine((v) => v === "" || Number(v) <= 100_000, "Slots must not exceed 100,000.");
+
+/** Quota page: overall target + per-course slots (blank = no quota). */
+export const quotaPlanSchema = z.object({
+  overall: slotsField,
+  courses: z.array(z.object({ program_id: z.number().int().positive(), slots: slotsField })).max(500),
+});
+export type QuotaPlanValues = z.input<typeof quotaPlanSchema>;
+
+/** "New session" form on the Exam Schedule page. */
+export const examSessionSchema = z.object({
+  session_date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Choose the exam date.")
+    .refine((v) => !Number.isNaN(Date.parse(`${v}T00:00:00Z`)), "Choose a valid date."),
+  start_time: z
     .string()
     .trim()
-    .min(1, "Enter the number of slots.")
-    .regex(/^\d+$/, "Slots must be a whole number.")
-    .refine((v) => Number(v) <= 100_000, "Slots must not exceed 100,000."),
+    .refine((v) => v === "" || /^([01]\d|2[0-3]):[0-5]\d$/.test(v), "Use a valid time, e.g. 08:00."),
+  venue: z.string().trim().min(1, "Enter the venue.").max(150, "Venue must not exceed 150 characters."),
+  room: z.string().trim().max(50, "Room must not exceed 50 characters."),
+  capacity: z
+    .string()
+    .trim()
+    .regex(/^\d+$/, "Capacity must be a whole number.")
+    .refine((v) => Number(v) >= 1 && Number(v) <= 1000, "Capacity must be between 1 and 1,000."),
 });
-export type QuotaFormValues = z.input<typeof quotaFormSchema>;
+export type ExamSessionValues = z.input<typeof examSessionSchema>;
 
 /** "Update admission stage" form on the applicant profile. */
 export const stageUpdateSchema = z.object({

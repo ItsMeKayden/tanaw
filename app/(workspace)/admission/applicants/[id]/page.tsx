@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 
@@ -9,6 +8,7 @@ import { requirePermission } from "@/lib/authorization";
 import { hasPermission } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { getApplicantProfile } from "@/features/admission/applicant-profile-query";
+import { BackLink } from "@/components/ui/back-link";
 
 type ApplicantPageProps = Readonly<{
   params: Promise<{ id: string }>;
@@ -42,12 +42,7 @@ async function ApplicantProfileContent({ params }: ApplicantPageProps) {
   return (
     <div className="relative isolate min-h-full space-y-4 p-4 sm:p-6">
       <QcuWatermark />
-      <Link
-        href="/admission"
-        className="inline-flex text-sm text-neutral-700 hover:text-[#191e73] print:hidden"
-      >
-        ← Back to Applicants
-      </Link>
+      <BackLink href="/admission">Back to Applicants</BackLink>
 
       <ApplicantProfile
         applicant={applicant}

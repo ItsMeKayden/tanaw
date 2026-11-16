@@ -11,6 +11,7 @@ import { fitClass, fitLabel } from "@/features/recommendation/config";
 import { buildReasons, getApplicationRecommendation } from "@/features/recommendation/queries";
 import { requirePermission } from "@/lib/authorization";
 import { hasPermission } from "@/lib/permissions";
+import { BackLink } from "@/components/ui/back-link";
 
 type PageProps = Readonly<{ params: Promise<{ applicationId: string }> }>;
 
@@ -73,9 +74,7 @@ async function RecommendationDetailContent({ params }: PageProps) {
       <QcuWatermark />
       <AdvisoryDialog />
 
-      <Link href="/recommendation" className="inline-flex text-sm text-neutral-700 hover:text-[#191e73]">
-        ← Back to Course Recommendation
-      </Link>
+      <BackLink href="/recommendation">Back to Course Recommendation</BackLink>
 
       <div className="flex flex-col gap-4 rounded-xl border border-neutral-500 bg-white/90 p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">

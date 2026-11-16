@@ -17,7 +17,8 @@ type PageProps = Readonly<{
   searchParams: Promise<{ cycle?: string; program?: string; status?: string }>;
 }>;
 
-const cell = "border border-neutral-500 px-3 py-2";
+const cell = "border border-neutral-500 px-3 py-1.5";
+const headCell = `${cell} bg-[#c5c8f0] font-medium`;
 
 async function MapContent({ searchParams }: PageProps) {
   await connection();
@@ -38,17 +39,18 @@ async function MapContent({ searchParams }: PageProps) {
   const filterLines = describeFilters(filters);
 
   return (
-    <div className="relative isolate min-h-full space-y-4 p-4 sm:p-6">
+    <div className="relative isolate min-h-full space-y-3 p-3 sm:p-4">
       <QcuWatermark />
 
-      <div>
-        <h1 className="text-2xl font-bold">Map</h1>
-        <p className="text-sm text-neutral-700">
-          Where applicants come from. Darker areas have more applicants.
-        </p>
-      </div>
-
-      <div className="flex flex-wrap gap-3 print:hidden">
+      {/* Title and data filters share one row; map controls sit with the map. */}
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <h1 className="text-xl font-bold">Applicant map</h1>
+          <p className="text-sm text-neutral-700">
+            Where applicants come from. Darker areas have more applicants.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2 print:hidden">
         <ParamSelect
           param="cycle"
           label="School year"
@@ -68,6 +70,7 @@ async function MapContent({ searchParams }: PageProps) {
           ]}
         />
         <ParamSelect param="status" label="Status" value={filters.status} options={STATUS_OPTIONS} />
+        </div>
       </div>
 
       <MapExplorer
@@ -83,15 +86,16 @@ async function MapContent({ searchParams }: PageProps) {
         </p>
       )}
 
+      <div className="grid items-start gap-3 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
       {/* District counts — also the accessible table view of the map */}
-      <section className="rounded-xl border border-neutral-500 bg-white/90 p-4">
-        <h2 className="mb-3 font-semibold">District counts</h2>
+      <section className="rounded-xl border border-neutral-500 bg-white/90 p-3">
+        <h2 className="mb-2 font-semibold">District counts</h2>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-sm">
             <thead>
-              <tr className="bg-neutral-100 text-left">
+              <tr className="text-left">
                 {["District", "Barangays", "Applicants", "Passed", "Share"].map((h) => (
-                  <th key={h} className={`${cell} font-medium`}>
+                  <th key={h} className={headCell}>
                     {h}
                   </th>
                 ))}
@@ -114,17 +118,17 @@ async function MapContent({ searchParams }: PageProps) {
         </div>
       </section>
 
-      <section className="rounded-xl border border-neutral-500 bg-white/90 p-4">
+      <section className="rounded-xl border border-neutral-500 bg-white/90 p-3">
         <h2 className="font-semibold">Outside Quezon City</h2>
-        <p className="mb-3 text-xs text-neutral-600">
+        <p className="mb-2 text-xs text-neutral-600">
           Applicants whose previous school is outside Quezon City, by the school&apos;s city or municipality.
         </p>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-sm">
             <thead>
-              <tr className="bg-neutral-100 text-left">
+              <tr className="text-left">
                 {["City / Municipality", "Applicants", "Passed"].map((h) => (
-                  <th key={h} className={`${cell} font-medium`}>
+                  <th key={h} className={headCell}>
                     {h}
                   </th>
                 ))}
@@ -150,6 +154,7 @@ async function MapContent({ searchParams }: PageProps) {
           </table>
         </div>
       </section>
+      </div>
     </div>
   );
 }

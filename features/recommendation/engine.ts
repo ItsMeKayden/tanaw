@@ -15,12 +15,25 @@ export type CompetencyScore = {
   percent: number | null;
 };
 
-/** Per-competency scores for one exam result, from its question responses. */
+/** An exam result counts as scored when it has typed subject scores or question responses. */
+export const SCORED_RESULT = {
+  OR: [{ tbl_exam_subject_score: { some: {} } }, { tbl_question_response: { some: {} } }],
+} satisfies Prisma.tbl_exam_resultWhereInput;
+
+/**
+ * Per-competency scores for one exam result. Subject scores typed on the
+ * Exam Scores page take precedence; otherwise they come from the question
+ * responses.
+ */
 export async function getCompetencyScores(db: Db, resultId: number) {
-  const [competencies, responses] = await Promise.all([
+  const [competencies, subjectScores, responses] = await Promise.all([
     db.tbl_competency.findMany({
       orderBy: { competency_id: "asc" },
       select: { competency_id: true, competency_name: true },
+    }),
+    db.tbl_exam_subject_score.findMany({
+      where: { result_id: resultId },
+      select: { competency_id: true, score: true, max_score: true },
     }),
     db.tbl_question_response.findMany({
       where: { result_id: resultId },
@@ -31,6 +44,21 @@ export async function getCompetencyScores(db: Db, resultId: number) {
       },
     }),
   ]);
+
+  if (subjectScores.length > 0) {
+    return competencies.map<CompetencyScore>((competency) => {
+      const row = subjectScores.find((s) => s.competency_id === competency.competency_id);
+      const possible = row?.max_score ?? 0;
+      const earned = row?.score ?? 0;
+      return {
+        competency_id: competency.competency_id,
+        competency_name: competency.competency_name,
+        earned,
+        possible,
+        percent: possible > 0 ? Math.round((earned / possible) * 10_000) / 100 : null,
+      };
+    });
+  }
 
   return competencies.map<CompetencyScore>((competency) => {
     const answered = responses.filter(
@@ -78,7 +106,7 @@ export async function getProgramWeights(db: Db) {
 
 /**
  * (Re)generates tbl_course_recommendation for applications in a cycle that
- * have an exam result with question responses. Every weighted course is
+ * have a scored exam result (subject scores or question responses). Every weighted course is
  * scored and ranked (1 = best match). Returns how many applications were scored.
  */
 export async function generateRecommendations(
@@ -90,12 +118,12 @@ export async function generateRecommendations(
       where: {
         cycle_id: options.cycleId,
         ...(options.applicationIds ? { application_id: { in: options.applicationIds } } : {}),
-        tbl_exam_result: { some: { tbl_question_response: { some: {} } } },
+        tbl_exam_result: { some: SCORED_RESULT },
       },
       select: {
         application_id: true,
         tbl_exam_result: {
-          where: { tbl_question_response: { some: {} } },
+          where: SCORED_RESULT,
           orderBy: { result_id: "desc" },
           take: 1,
           select: { result_id: true },
