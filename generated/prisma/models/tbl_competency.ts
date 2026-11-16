@@ -210,6 +210,7 @@ export type tbl_competencyWhereInput = {
   description?: Prisma.StringNullableFilter<"tbl_competency"> | string | null
   tbl_exam_question?: Prisma.Tbl_exam_questionListRelationFilter
   tbl_program_competency?: Prisma.Tbl_program_competencyListRelationFilter
+  tbl_exam_subject_score?: Prisma.Tbl_exam_subject_scoreListRelationFilter
 }
 
 export type tbl_competencyOrderByWithRelationInput = {
@@ -219,6 +220,7 @@ export type tbl_competencyOrderByWithRelationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   tbl_exam_question?: Prisma.tbl_exam_questionOrderByRelationAggregateInput
   tbl_program_competency?: Prisma.tbl_program_competencyOrderByRelationAggregateInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreOrderByRelationAggregateInput
 }
 
 export type tbl_competencyWhereUniqueInput = Prisma.AtLeast<{
@@ -231,6 +233,7 @@ export type tbl_competencyWhereUniqueInput = Prisma.AtLeast<{
   description?: Prisma.StringNullableFilter<"tbl_competency"> | string | null
   tbl_exam_question?: Prisma.Tbl_exam_questionListRelationFilter
   tbl_program_competency?: Prisma.Tbl_program_competencyListRelationFilter
+  tbl_exam_subject_score?: Prisma.Tbl_exam_subject_scoreListRelationFilter
 }, "competency_id">
 
 export type tbl_competencyOrderByWithAggregationInput = {
@@ -261,6 +264,7 @@ export type tbl_competencyCreateInput = {
   description?: string | null
   tbl_exam_question?: Prisma.tbl_exam_questionCreateNestedManyWithoutTbl_competencyInput
   tbl_program_competency?: Prisma.tbl_program_competencyCreateNestedManyWithoutTbl_competencyInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreCreateNestedManyWithoutTbl_competencyInput
 }
 
 export type tbl_competencyUncheckedCreateInput = {
@@ -270,6 +274,7 @@ export type tbl_competencyUncheckedCreateInput = {
   description?: string | null
   tbl_exam_question?: Prisma.tbl_exam_questionUncheckedCreateNestedManyWithoutTbl_competencyInput
   tbl_program_competency?: Prisma.tbl_program_competencyUncheckedCreateNestedManyWithoutTbl_competencyInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUncheckedCreateNestedManyWithoutTbl_competencyInput
 }
 
 export type tbl_competencyUpdateInput = {
@@ -278,6 +283,7 @@ export type tbl_competencyUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_exam_question?: Prisma.tbl_exam_questionUpdateManyWithoutTbl_competencyNestedInput
   tbl_program_competency?: Prisma.tbl_program_competencyUpdateManyWithoutTbl_competencyNestedInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUpdateManyWithoutTbl_competencyNestedInput
 }
 
 export type tbl_competencyUncheckedUpdateInput = {
@@ -287,6 +293,7 @@ export type tbl_competencyUncheckedUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_exam_question?: Prisma.tbl_exam_questionUncheckedUpdateManyWithoutTbl_competencyNestedInput
   tbl_program_competency?: Prisma.tbl_program_competencyUncheckedUpdateManyWithoutTbl_competencyNestedInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUncheckedUpdateManyWithoutTbl_competencyNestedInput
 }
 
 export type tbl_competencyCreateManyInput = {
@@ -378,11 +385,26 @@ export type tbl_competencyUpdateOneRequiredWithoutTbl_program_competencyNestedIn
   update?: Prisma.XOR<Prisma.XOR<Prisma.tbl_competencyUpdateToOneWithWhereWithoutTbl_program_competencyInput, Prisma.tbl_competencyUpdateWithoutTbl_program_competencyInput>, Prisma.tbl_competencyUncheckedUpdateWithoutTbl_program_competencyInput>
 }
 
+export type tbl_competencyCreateNestedOneWithoutTbl_exam_subject_scoreInput = {
+  create?: Prisma.XOR<Prisma.tbl_competencyCreateWithoutTbl_exam_subject_scoreInput, Prisma.tbl_competencyUncheckedCreateWithoutTbl_exam_subject_scoreInput>
+  connectOrCreate?: Prisma.tbl_competencyCreateOrConnectWithoutTbl_exam_subject_scoreInput
+  connect?: Prisma.tbl_competencyWhereUniqueInput
+}
+
+export type tbl_competencyUpdateOneRequiredWithoutTbl_exam_subject_scoreNestedInput = {
+  create?: Prisma.XOR<Prisma.tbl_competencyCreateWithoutTbl_exam_subject_scoreInput, Prisma.tbl_competencyUncheckedCreateWithoutTbl_exam_subject_scoreInput>
+  connectOrCreate?: Prisma.tbl_competencyCreateOrConnectWithoutTbl_exam_subject_scoreInput
+  upsert?: Prisma.tbl_competencyUpsertWithoutTbl_exam_subject_scoreInput
+  connect?: Prisma.tbl_competencyWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.tbl_competencyUpdateToOneWithWhereWithoutTbl_exam_subject_scoreInput, Prisma.tbl_competencyUpdateWithoutTbl_exam_subject_scoreInput>, Prisma.tbl_competencyUncheckedUpdateWithoutTbl_exam_subject_scoreInput>
+}
+
 export type tbl_competencyCreateWithoutTbl_exam_questionInput = {
   competency_name: string
   subject_area?: string | null
   description?: string | null
   tbl_program_competency?: Prisma.tbl_program_competencyCreateNestedManyWithoutTbl_competencyInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreCreateNestedManyWithoutTbl_competencyInput
 }
 
 export type tbl_competencyUncheckedCreateWithoutTbl_exam_questionInput = {
@@ -391,6 +413,7 @@ export type tbl_competencyUncheckedCreateWithoutTbl_exam_questionInput = {
   subject_area?: string | null
   description?: string | null
   tbl_program_competency?: Prisma.tbl_program_competencyUncheckedCreateNestedManyWithoutTbl_competencyInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUncheckedCreateNestedManyWithoutTbl_competencyInput
 }
 
 export type tbl_competencyCreateOrConnectWithoutTbl_exam_questionInput = {
@@ -414,6 +437,7 @@ export type tbl_competencyUpdateWithoutTbl_exam_questionInput = {
   subject_area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_program_competency?: Prisma.tbl_program_competencyUpdateManyWithoutTbl_competencyNestedInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUpdateManyWithoutTbl_competencyNestedInput
 }
 
 export type tbl_competencyUncheckedUpdateWithoutTbl_exam_questionInput = {
@@ -422,6 +446,7 @@ export type tbl_competencyUncheckedUpdateWithoutTbl_exam_questionInput = {
   subject_area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_program_competency?: Prisma.tbl_program_competencyUncheckedUpdateManyWithoutTbl_competencyNestedInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUncheckedUpdateManyWithoutTbl_competencyNestedInput
 }
 
 export type tbl_competencyCreateWithoutTbl_program_competencyInput = {
@@ -429,6 +454,7 @@ export type tbl_competencyCreateWithoutTbl_program_competencyInput = {
   subject_area?: string | null
   description?: string | null
   tbl_exam_question?: Prisma.tbl_exam_questionCreateNestedManyWithoutTbl_competencyInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreCreateNestedManyWithoutTbl_competencyInput
 }
 
 export type tbl_competencyUncheckedCreateWithoutTbl_program_competencyInput = {
@@ -437,6 +463,7 @@ export type tbl_competencyUncheckedCreateWithoutTbl_program_competencyInput = {
   subject_area?: string | null
   description?: string | null
   tbl_exam_question?: Prisma.tbl_exam_questionUncheckedCreateNestedManyWithoutTbl_competencyInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUncheckedCreateNestedManyWithoutTbl_competencyInput
 }
 
 export type tbl_competencyCreateOrConnectWithoutTbl_program_competencyInput = {
@@ -460,6 +487,7 @@ export type tbl_competencyUpdateWithoutTbl_program_competencyInput = {
   subject_area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_exam_question?: Prisma.tbl_exam_questionUpdateManyWithoutTbl_competencyNestedInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUpdateManyWithoutTbl_competencyNestedInput
 }
 
 export type tbl_competencyUncheckedUpdateWithoutTbl_program_competencyInput = {
@@ -468,6 +496,57 @@ export type tbl_competencyUncheckedUpdateWithoutTbl_program_competencyInput = {
   subject_area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_exam_question?: Prisma.tbl_exam_questionUncheckedUpdateManyWithoutTbl_competencyNestedInput
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreUncheckedUpdateManyWithoutTbl_competencyNestedInput
+}
+
+export type tbl_competencyCreateWithoutTbl_exam_subject_scoreInput = {
+  competency_name: string
+  subject_area?: string | null
+  description?: string | null
+  tbl_exam_question?: Prisma.tbl_exam_questionCreateNestedManyWithoutTbl_competencyInput
+  tbl_program_competency?: Prisma.tbl_program_competencyCreateNestedManyWithoutTbl_competencyInput
+}
+
+export type tbl_competencyUncheckedCreateWithoutTbl_exam_subject_scoreInput = {
+  competency_id?: number
+  competency_name: string
+  subject_area?: string | null
+  description?: string | null
+  tbl_exam_question?: Prisma.tbl_exam_questionUncheckedCreateNestedManyWithoutTbl_competencyInput
+  tbl_program_competency?: Prisma.tbl_program_competencyUncheckedCreateNestedManyWithoutTbl_competencyInput
+}
+
+export type tbl_competencyCreateOrConnectWithoutTbl_exam_subject_scoreInput = {
+  where: Prisma.tbl_competencyWhereUniqueInput
+  create: Prisma.XOR<Prisma.tbl_competencyCreateWithoutTbl_exam_subject_scoreInput, Prisma.tbl_competencyUncheckedCreateWithoutTbl_exam_subject_scoreInput>
+}
+
+export type tbl_competencyUpsertWithoutTbl_exam_subject_scoreInput = {
+  update: Prisma.XOR<Prisma.tbl_competencyUpdateWithoutTbl_exam_subject_scoreInput, Prisma.tbl_competencyUncheckedUpdateWithoutTbl_exam_subject_scoreInput>
+  create: Prisma.XOR<Prisma.tbl_competencyCreateWithoutTbl_exam_subject_scoreInput, Prisma.tbl_competencyUncheckedCreateWithoutTbl_exam_subject_scoreInput>
+  where?: Prisma.tbl_competencyWhereInput
+}
+
+export type tbl_competencyUpdateToOneWithWhereWithoutTbl_exam_subject_scoreInput = {
+  where?: Prisma.tbl_competencyWhereInput
+  data: Prisma.XOR<Prisma.tbl_competencyUpdateWithoutTbl_exam_subject_scoreInput, Prisma.tbl_competencyUncheckedUpdateWithoutTbl_exam_subject_scoreInput>
+}
+
+export type tbl_competencyUpdateWithoutTbl_exam_subject_scoreInput = {
+  competency_name?: Prisma.StringFieldUpdateOperationsInput | string
+  subject_area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tbl_exam_question?: Prisma.tbl_exam_questionUpdateManyWithoutTbl_competencyNestedInput
+  tbl_program_competency?: Prisma.tbl_program_competencyUpdateManyWithoutTbl_competencyNestedInput
+}
+
+export type tbl_competencyUncheckedUpdateWithoutTbl_exam_subject_scoreInput = {
+  competency_id?: Prisma.IntFieldUpdateOperationsInput | number
+  competency_name?: Prisma.StringFieldUpdateOperationsInput | string
+  subject_area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tbl_exam_question?: Prisma.tbl_exam_questionUncheckedUpdateManyWithoutTbl_competencyNestedInput
+  tbl_program_competency?: Prisma.tbl_program_competencyUncheckedUpdateManyWithoutTbl_competencyNestedInput
 }
 
 
@@ -478,11 +557,13 @@ export type tbl_competencyUncheckedUpdateWithoutTbl_program_competencyInput = {
 export type Tbl_competencyCountOutputType = {
   tbl_exam_question: number
   tbl_program_competency: number
+  tbl_exam_subject_score: number
 }
 
 export type Tbl_competencyCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tbl_exam_question?: boolean | Tbl_competencyCountOutputTypeCountTbl_exam_questionArgs
   tbl_program_competency?: boolean | Tbl_competencyCountOutputTypeCountTbl_program_competencyArgs
+  tbl_exam_subject_score?: boolean | Tbl_competencyCountOutputTypeCountTbl_exam_subject_scoreArgs
 }
 
 /**
@@ -509,6 +590,13 @@ export type Tbl_competencyCountOutputTypeCountTbl_program_competencyArgs<ExtArgs
   where?: Prisma.tbl_program_competencyWhereInput
 }
 
+/**
+ * Tbl_competencyCountOutputType without action
+ */
+export type Tbl_competencyCountOutputTypeCountTbl_exam_subject_scoreArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.tbl_exam_subject_scoreWhereInput
+}
+
 
 export type tbl_competencySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   competency_id?: boolean
@@ -517,6 +605,7 @@ export type tbl_competencySelect<ExtArgs extends runtime.Types.Extensions.Intern
   description?: boolean
   tbl_exam_question?: boolean | Prisma.tbl_competency$tbl_exam_questionArgs<ExtArgs>
   tbl_program_competency?: boolean | Prisma.tbl_competency$tbl_program_competencyArgs<ExtArgs>
+  tbl_exam_subject_score?: boolean | Prisma.tbl_competency$tbl_exam_subject_scoreArgs<ExtArgs>
   _count?: boolean | Prisma.Tbl_competencyCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tbl_competency"]>
 
@@ -545,6 +634,7 @@ export type tbl_competencyOmit<ExtArgs extends runtime.Types.Extensions.Internal
 export type tbl_competencyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tbl_exam_question?: boolean | Prisma.tbl_competency$tbl_exam_questionArgs<ExtArgs>
   tbl_program_competency?: boolean | Prisma.tbl_competency$tbl_program_competencyArgs<ExtArgs>
+  tbl_exam_subject_score?: boolean | Prisma.tbl_competency$tbl_exam_subject_scoreArgs<ExtArgs>
   _count?: boolean | Prisma.Tbl_competencyCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type tbl_competencyIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -555,6 +645,7 @@ export type $tbl_competencyPayload<ExtArgs extends runtime.Types.Extensions.Inte
   objects: {
     tbl_exam_question: Prisma.$tbl_exam_questionPayload<ExtArgs>[]
     tbl_program_competency: Prisma.$tbl_program_competencyPayload<ExtArgs>[]
+    tbl_exam_subject_score: Prisma.$tbl_exam_subject_scorePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     competency_id: number
@@ -957,6 +1048,7 @@ export interface Prisma__tbl_competencyClient<T, Null = never, ExtArgs extends r
   readonly [Symbol.toStringTag]: "PrismaPromise"
   tbl_exam_question<T extends Prisma.tbl_competency$tbl_exam_questionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_competency$tbl_exam_questionArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_exam_questionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   tbl_program_competency<T extends Prisma.tbl_competency$tbl_program_competencyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_competency$tbl_program_competencyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_program_competencyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tbl_exam_subject_score<T extends Prisma.tbl_competency$tbl_exam_subject_scoreArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_competency$tbl_exam_subject_scoreArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_exam_subject_scorePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1428,6 +1520,30 @@ export type tbl_competency$tbl_program_competencyArgs<ExtArgs extends runtime.Ty
   take?: number
   skip?: number
   distinct?: Prisma.Tbl_program_competencyScalarFieldEnum | Prisma.Tbl_program_competencyScalarFieldEnum[]
+}
+
+/**
+ * tbl_competency.tbl_exam_subject_score
+ */
+export type tbl_competency$tbl_exam_subject_scoreArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the tbl_exam_subject_score
+   */
+  select?: Prisma.tbl_exam_subject_scoreSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the tbl_exam_subject_score
+   */
+  omit?: Prisma.tbl_exam_subject_scoreOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.tbl_exam_subject_scoreInclude<ExtArgs> | null
+  where?: Prisma.tbl_exam_subject_scoreWhereInput
+  orderBy?: Prisma.tbl_exam_subject_scoreOrderByWithRelationInput | Prisma.tbl_exam_subject_scoreOrderByWithRelationInput[]
+  cursor?: Prisma.tbl_exam_subject_scoreWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Tbl_exam_subject_scoreScalarFieldEnum | Prisma.Tbl_exam_subject_scoreScalarFieldEnum[]
 }
 
 /**

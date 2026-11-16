@@ -23,10 +23,31 @@ const PLACE_PATTERN = /^\p{L}[\p{L}\d .,'()-]*$/u;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ID_PATTERN = /^[1-9]\d*$/;
 export const MOBILE_PATTERN = /^09\d{9}$/;
+export const MOBILE_LENGTH = 11;
 
 /** Philippine mobile number, e.g. 09171234567 (spaces/dashes ignored). */
 export function normalizeMobile(value: string) {
   return value.replace(/[\s-]/g, "");
+}
+
+/**
+ * Input filters: drop characters a field can never accept while typing or
+ * pasting, so the user can't enter them in the first place. The schema still
+ * validates the full value (required, length, format).
+ */
+export const inputFilters = {
+  name: (v: string) => v.replace(/[^\p{L} .'-]/gu, "").replace(/^\s+/, ""),
+  suffix: (v: string) => v.replace(/[^\p{L} .]/gu, "").replace(/^\s+/, ""),
+  place: (v: string) => v.replace(/[^\p{L}\d .,'()-]/gu, "").replace(/^\s+/, ""),
+  schoolName: (v: string) => v.replace(/^\s+/, ""),
+  email: (v: string) => v.replace(/\s/g, ""),
+  mobile: (v: string) => v.replace(/\D/g, "").slice(0, MOBILE_LENGTH),
+};
+
+/** "YYYY-MM-DD" for today shifted back by whole years (UTC). */
+export function isoYearsAgo(years: number, from = new Date()) {
+  const date = new Date(Date.UTC(from.getUTCFullYear() - years, from.getUTCMonth(), from.getUTCDate()));
+  return date.toISOString().slice(0, 10);
 }
 
 function ageOn(birthDate: Date, today: Date) {
@@ -96,7 +117,7 @@ export const applicantFormSchema = z
       .trim()
       .refine(
         (v) => !v || MOBILE_PATTERN.test(normalizeMobile(v)),
-        "Mobile number must be 11 digits starting with 09 (e.g. 0917 123 4567).",
+        "Mobile number must be exactly 11 digits starting with 09 (e.g. 09171234567).",
       ),
     barangay_id: requiredId("Barangay is required."),
 

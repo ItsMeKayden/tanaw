@@ -2,7 +2,8 @@
  * TANAW database seeder.
  *
  *   npm run db:seed                 required + reference data (safe to re-run)
- *   npm run db:seed:demo            ...plus demo applicants, exams, quotas
+ *   npm run db:seed:demo            ...plus demo applicants, exams, quotas,
+ *                                   exam sessions/attendance, subject scores
  *   npm run db:seed:reset-demo      remove demo applicants, then re-create them
  *
  * Every step is idempotent: it only adds what is missing and never deletes

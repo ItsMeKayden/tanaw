@@ -5,6 +5,7 @@ import { MIN_MATCH, shortCompetencyName } from "@/features/recommendation/config
 import {
   getCompetencyScores,
   getProgramWeights,
+  SCORED_RESULT,
   type CompetencyScore,
 } from "@/features/recommendation/engine";
 
@@ -96,7 +97,7 @@ export async function getApplicationRecommendation(applicationId: number) {
       program_choice_2: { select: { program_id: true, program_code: true, program_name: true } },
       program_choice_3: { select: { program_id: true, program_code: true, program_name: true } },
       tbl_exam_result: {
-        where: { tbl_question_response: { some: {} } },
+        where: SCORED_RESULT,
         orderBy: { result_id: "desc" },
         take: 1,
         select: { result_id: true, raw_score: true, percentage: true, tbl_exam: { select: { max_score: true } } },

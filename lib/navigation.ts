@@ -48,7 +48,6 @@ const navigationItems: NavigationItem[] = [
         permission: enrollmentVerificationModules,
       },
       { label: "Quota", href: "/admission/quota", permission: "admission" },
-      { label: "Summary", href: "/admission/summary", permission: "admission" },
     ],
   },
   { label: "Analytics", href: "/reports", icon: "analytics", permission: "reports" },

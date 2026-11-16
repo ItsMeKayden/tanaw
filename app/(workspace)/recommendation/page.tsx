@@ -1,11 +1,13 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
+import { ArrowLeftRight, CircleCheck, ClipboardList, Clock, TriangleAlert } from "lucide-react";
 
 import { QcuWatermark } from "@/components/admission/qcu-watermark";
 import { CycleSelect } from "@/components/admission/cycle-select";
 import { AdvisoryDialog } from "@/components/recommendation/advisory-dialog";
 import { GenerateButton } from "@/components/recommendation/controls";
 import RecommendationTable from "@/components/recommendation/recommendation-table";
+import { StatCard } from "@/components/ui/stat-card";
 import { resolveCycle } from "@/features/admission/admission-stats";
 import { MIN_MATCH } from "@/features/recommendation/config";
 import { getRecommendationList } from "@/features/recommendation/queries";
@@ -62,17 +64,16 @@ async function RecommendationsContent({ searchParams }: PageProps) {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
-        {[
-          { label: "Examined applicants", value: rows.length },
-          { label: "Compatible", value: compatible },
-          { label: "Alternative suggested", value: alternative },
-          { label: "Below minimum", value: belowMinimum },
-          { label: "Not yet generated", value: pending },
-        ].map((stat) => (
-          <div key={stat.label} className="rounded-xl border border-neutral-500 bg-white/90 p-4">
-            <p className="text-sm text-neutral-800">{stat.label}</p>
-            <p className="text-3xl font-semibold tabular-nums">{stat.value}</p>
-          </div>
+        {(
+          [
+            { label: "Examined applicants", value: rows.length, icon: ClipboardList, tone: "primary" },
+            { label: "Compatible", value: compatible, icon: CircleCheck, tone: "success" },
+            { label: "Alternative suggested", value: alternative, icon: ArrowLeftRight, tone: "info" },
+            { label: "Below minimum", value: belowMinimum, icon: TriangleAlert, tone: "danger" },
+            { label: "Not yet generated", value: pending, icon: Clock, tone: "muted" },
+          ] as const
+        ).map((stat) => (
+          <StatCard key={stat.label} {...stat} />
         ))}
       </div>
 

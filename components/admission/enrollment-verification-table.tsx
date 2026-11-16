@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ExportMenu } from "@/components/reports/export-menu";
 
 import type { EnrollmentStatus } from "@/features/admission/enrollment-queries";
+import { Pagination } from "@/components/ui/pagination";
 
 export type EnrollmentRow = {
   application_id: number;
@@ -194,35 +195,15 @@ export default function EnrollmentVerificationTable({
         </table>
       </div>
 
-      {filtered.length > PAGE_SIZE && (
-        <div className="flex items-center justify-between text-sm">
-          <p className="text-neutral-600">
-            Showing {start + 1}–{Math.min(start + PAGE_SIZE, filtered.length)} of{" "}
-            {filtered.length}
-          </p>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setPage(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="rounded-full border border-neutral-500 bg-white px-4 py-1 disabled:opacity-50"
-            >
-              Previous
-            </button>
-            <span>
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              type="button"
-              onClick={() => setPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="rounded-full border border-neutral-500 bg-white px-4 py-1 disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      )}
+      <Pagination
+        page={currentPage}
+        totalPages={totalPages}
+        start={filtered.length === 0 ? 0 : start + 1}
+        end={Math.min(start + PAGE_SIZE, filtered.length)}
+        total={filtered.length}
+        noun="applicants"
+        onPageChange={setPage}
+      />
     </div>
   );
 }
