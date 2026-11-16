@@ -8,9 +8,7 @@ export type NavigationIcon =
   | "admission"
   | "analytics"
   | "recommendation"
-  | "users"
-  | "registrar"
-  | "guidance";
+  | "users";
 
 export type NavigationItem = {
   label: string;
@@ -64,9 +62,8 @@ const navigationItems: NavigationItem[] = [
     ],
   },
   { label: "Users & Roles", href: "/users-roles", icon: "users", permission: "users" },
-  { label: "Registrar", href: "/registrar", icon: "registrar", permission: "registrar" },
-  { label: "Guidance", href: "/guidance", icon: "guidance", permission: "guidance" },
 ];
+
 async function filterNavigation(
   items: NavigationItem[],
   role: UserRole,
