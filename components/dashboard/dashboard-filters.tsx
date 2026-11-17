@@ -60,10 +60,18 @@ function FilterMenu({
   const [search, setSearch] = useState("");
   const [typedYear, setTypedYear] = useState("");
 
-  const displayOptions =
-    type === "campus" || type === "course"
-      ? [{ value: "all", label: "All" }, ...options]
-      : options;
+  const displayOptions = useMemo(() => {
+    if (type === "campus" || type === "course") {
+      return [{ value: "all", label: "All" }, ...options];
+    }
+    return options;
+  }, [options, type]);
+
+  const selectedLabel = useMemo(() => {
+    if (!selected) return "All";
+    const match = displayOptions.find((option) => option.value === selected);
+    return match?.label ?? "All";
+  }, [displayOptions, selected]);
 
   const filteredOptions = useMemo(() => {
     const text = search.trim().toLowerCase();
@@ -122,9 +130,12 @@ function FilterMenu({
       <button
         type="button"
         onClick={handleToggle}
-        className="inline-flex items-center gap-2 rounded-md border border-[#cfcfcf] bg-[#f5f5f5] px-3 py-1.5 text-sm text-neutral-800 shadow-sm"
+        className="inline-flex items-center gap-2 rounded-lg border border-[#2f2f2f] bg-white/90 px-3 py-2 text-sm font-medium text-neutral-800 shadow-[0_2px_0_rgba(15,23,42,0.05)] transition hover:bg-white"
       >
         <span>{label}</span>
+        {selectedLabel ? (
+          <span className="text-neutral-700">: {selectedLabel}</span>
+        ) : null}
         <ChevronDown className="h-4 w-4 text-neutral-600" />
       </button>
 
@@ -252,7 +263,7 @@ export function DashboardFilters({
       />
       <button
         type="button"
-        className="ml-auto rounded-md border border-[#c7c7c7] bg-[#f7f7f7] px-3 py-1.5 text-sm text-neutral-700 shadow-sm"
+        className="ml-auto rounded-lg border border-[#2f2f2f] bg-white/90 px-4 py-2 text-sm font-medium text-neutral-800 shadow-[0_2px_0_rgba(15,23,42,0.05)] transition hover:bg-white"
       >
         Export
       </button>
