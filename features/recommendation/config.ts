@@ -68,6 +68,20 @@ export function fitClass(match: number | null) {
   return "bg-amber-100 text-amber-900";
 }
 
+/**
+ * Compatibility rules (advisory): competencies whose score is below the
+ * course's minimum subject score. A missing score counts as 0. Courses
+ * without rules return an empty list.
+ */
+export function unmetRules(
+  scores: ReadonlyMap<number, number>,
+  weights: readonly { competency_id: number; min_score: number | null }[],
+) {
+  return weights
+    .filter((w) => w.min_score !== null && (scores.get(w.competency_id) ?? 0) < w.min_score)
+    .map((w) => w.competency_id);
+}
+
 /** Weighted match (0–100) from competency scores and course weights. */
 export function computeMatch(
   scores: ReadonlyMap<number, number>,

@@ -2,7 +2,7 @@
 // so both the app and the seeder can use it. Relative imports on purpose
 // (the seeder runs outside Next.js).
 import type { Prisma } from "../../generated/prisma/client";
-import { computeMatch } from "./config";
+import { computeMatch, unmetRules } from "./config";
 import { ACTIVE_APPLICATION } from "../admission/archive-core";
 
 type Db = Prisma.TransactionClient;
@@ -103,7 +103,7 @@ export async function getProgramWeights(db: Db) {
       program_code: true,
       program_name: true,
       min_match: true,
-      tbl_program_competency: { select: { competency_id: true, weight: true } },
+      tbl_program_competency: { select: { competency_id: true, weight: true, min_score: true } },
     },
   });
 
@@ -115,6 +115,8 @@ export async function getProgramWeights(db: Db) {
     weights: program.tbl_program_competency.map((w) => ({
       competency_id: w.competency_id,
       weight: Number(w.weight),
+      /** Compatibility rule: minimum subject score (%), or null for none. */
+      min_score: w.min_score === null ? null : Number(w.min_score),
     })),
   }));
 }
@@ -122,7 +124,8 @@ export async function getProgramWeights(db: Db) {
 /**
  * (Re)generates tbl_course_recommendation for applications in a cycle that
  * have a scored exam result (subject scores or question responses). Every weighted course is
- * scored and ranked (1 = best match). Returns how many applications were scored.
+ * scored and ranked: courses whose subject rules the applicant meets come
+ * first, each group by match (1 = best). Returns how many applications were scored.
  * Does nothing (returns 0) while recommendations are turned off in Mapping Settings.
  */
 export async function generateRecommendations(
@@ -171,9 +174,10 @@ export async function generateRecommendations(
       .map((program) => ({
         program_id: program.program_id,
         match: computeMatch(scores, program.weights),
+        unmet: unmetRules(scores, program.weights),
       }))
-      .filter((r): r is { program_id: number; match: number } => r.match !== null)
-      .sort((a, b) => b.match - a.match);
+      .filter((r): r is { program_id: number; match: number; unmet: number[] } => r.match !== null)
+      .sort((a, b) => Number(a.unmet.length > 0) - Number(b.unmet.length > 0) || b.match - a.match);
 
     await db.tbl_course_recommendation.deleteMany({
       where: { application_id: application.application_id },
@@ -187,6 +191,7 @@ export async function generateRecommendations(
           compatibility_score: r.match,
           rank_no: index + 1,
           generated_at: generatedAt,
+          unmet_competency_ids: r.unmet,
         })),
       });
       scored++;

@@ -26,7 +26,7 @@ async function SettingsContent() {
         program_code: true,
         program_name: true,
         min_match: true,
-        tbl_program_competency: { select: { competency_id: true, weight: true } },
+        tbl_program_competency: { select: { competency_id: true, weight: true, min_score: true } },
       },
     }),
     prisma.tbl_competency.findMany({
@@ -42,6 +42,15 @@ async function SettingsContent() {
     ]),
   );
 
+  const initialRules = Object.fromEntries(
+    programs.map((p) => [
+      p.program_id,
+      Object.fromEntries(
+        p.tbl_program_competency.map((w) => [w.competency_id, w.min_score === null ? null : Number(w.min_score)]),
+      ),
+    ]),
+  );
+
   return (
     <div className="relative isolate min-h-full space-y-5 p-4 sm:p-6">
       <QcuWatermark />
@@ -49,8 +58,9 @@ async function SettingsContent() {
       <div>
         <h1 className="text-2xl font-bold">Mapping Settings</h1>
         <p className="max-w-3xl text-sm text-neutral-700">
-          How much each exam competency counts toward each course, and the minimum match a course needs. Changes
-          re-score the active school year&apos;s recommendations.
+          How much each exam competency counts toward each course, the minimum match a course needs, and its
+          compatibility rules (minimum score per subject). Changes re-score the active school year&apos;s
+          recommendations.
           {!canWrite && " You have view-only access."}
         </p>
       </div>
@@ -97,6 +107,7 @@ async function SettingsContent() {
               label: shortCompetencyName(c.competency_name),
             }))}
             initial={initial}
+            initialRules={initialRules}
             canWrite={canWrite}
           />
         </section>

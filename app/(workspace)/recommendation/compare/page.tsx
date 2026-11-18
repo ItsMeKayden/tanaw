@@ -46,15 +46,12 @@ async function CompareContent({ searchParams }: PageProps) {
     .map((id) => data.programs.find((p) => p.program_id === id))
     .filter((p): p is NonNullable<typeof p> => Boolean(p));
 
-  // Same rule as the score breakdown: a competency the course weighs requires the course's minimum match.
-  const radarRows = data.competencyScores.map((competency) => {
-    const weight = program.weights.find((w) => w.competency_id === competency.competency_id)?.weight ?? 0;
-    return {
-      label: shortCompetencyName(competency.competency_name),
-      score: competency.percent === null ? null : Math.round(competency.percent),
-      required: weight > 0 ? program.min_match : null,
-    };
-  });
+  // Same rule as the score breakdown: the course's minimum score per subject (compatibility rules).
+  const radarRows = data.competencyScores.map((competency) => ({
+    label: shortCompetencyName(competency.competency_name),
+    score: competency.percent === null ? null : Math.round(competency.percent),
+    required: program.weights.find((w) => w.competency_id === competency.competency_id)?.min_score ?? null,
+  }));
   const match = data.ranking.find((r) => r.program_id === program.program_id)?.match ?? null;
   const base = `/recommendation/compare?application=${data.application_id}`;
   const hrefs = Object.fromEntries(data.ranking.map((r) => [r.program_id, `${base}&program=${r.program_id}`]));
@@ -123,7 +120,7 @@ async function CompareContent({ searchParams }: PageProps) {
                 hrefs={hrefs}
               />
             </PendingArea>
-            <p className="mt-3 text-xs text-neutral-600">Ranked from best to weakest match. Select a course to compare.</p>
+            <p className="mt-3 text-xs text-neutral-600">Courses whose subject minimums are met come first, each by match. Select a course to compare.</p>
           </section>
         </div>
       </div>
