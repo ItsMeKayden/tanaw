@@ -8,7 +8,9 @@ export type NavigationIcon =
   | "admission"
   | "analytics"
   | "recommendation"
-  | "users";
+  | "users"
+  | "registrar"
+  | "guidance";
 
 export type NavigationItem = {
   label: string;
@@ -49,7 +51,17 @@ const navigationItems: NavigationItem[] = [
       { label: "Summary", href: "/admission/summary", permission: "admission" },
     ],
   },
-  { label: "Analytics", href: "/reports", icon: "analytics", permission: "reports" },
+  {
+    label: "Analytics",
+    icon: "analytics",
+    permission: "reports",
+    children: [
+      { label: "Overview", href: "/reports", permission: "reports" },
+      { label: "Passing Rate", href: "/reports/passing-rate", permission: "reports" },
+      { label: "Top Schools", href: "/reports/top-schools", permission: "reports" },
+      { label: "Item Analysis", href: "/reports/item-analysis", permission: "reports" },
+    ],
+  },
   {
     label: "Course Recommendation",
     icon: "recommendation",
