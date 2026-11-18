@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import Link from "next/link";
 import { connection } from "next/server";
 
 import ApplicantForm from "@/components/admission/applicant-form";
@@ -8,6 +7,8 @@ import { getApplicantFormReferenceData } from "@/features/admission/applicant-fo
 import { emptyApplicantForm } from "@/features/admission/applicant-form";
 import { requirePermission } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
+import { BackLink } from "@/components/ui/back-link";
+import { FormSkeleton } from "@/components/ui/skeletons";
 
 async function AddApplicantContent() {
   await connection();
@@ -27,16 +28,12 @@ async function AddApplicantContent() {
   return (
     <div className="relative isolate min-h-full space-y-4 p-4 sm:p-6">
       <QcuWatermark />
-      <div className="flex flex-wrap items-end justify-between gap-2">
-        <div>
-          <h1 className="text-2xl font-bold">New Applicant</h1>
-          <p className="text-sm text-neutral-700">
-            Register a new applicant and submit their admission application.
-          </p>
-        </div>
-        <Link href="/admission" className="text-sm text-neutral-700 hover:text-[#191e73]">
-          ← Back to Applicants
-        </Link>
+      <BackLink href="/admission">Back to Applicants</BackLink>
+      <div>
+        <h1 className="text-2xl font-bold">New Applicant</h1>
+        <p className="text-sm text-neutral-700">
+          Register a new applicant and submit their admission application.
+        </p>
       </div>
 
       <ApplicantForm
@@ -52,7 +49,7 @@ async function AddApplicantContent() {
 
 export default function AddApplicantPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<FormSkeleton label="applicant form" />}>
       <AddApplicantContent />
     </Suspense>
   );

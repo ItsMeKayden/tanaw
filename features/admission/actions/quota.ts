@@ -4,105 +4,64 @@ import { revalidatePath } from "next/cache";
 
 import { getAccountId, requirePermission } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
-import { quotaScopeFor } from "@/features/admission/admission-stats";
-import { quotaFormSchema } from "@/features/admission/schemas";
+import { QUOTA_SCOPES } from "@/features/admission/admission-stats";
+import { quotaPlanSchema, type QuotaPlanValues } from "@/features/admission/schemas";
 
 type ActionResult = { success: true; message: string } | { error: string };
 
-function parseOptionalId(value: unknown): number | null | "invalid" {
-  if (value === null || value === undefined || value === "") return null;
-  const id = Number(value);
-  return Number.isSafeInteger(id) && id > 0 ? id : "invalid";
-}
-
 /**
- * Creates or updates the quota for a cycle + campus + program combination
- * (campus/program null = applies to all). One quota per combination.
+ * Saves a cycle's overall target and per-course quotas (campus = all).
+ * A blank value removes that quota. Campus and campus + course quotas are
+ * left untouched.
  */
-export async function saveQuota(input: {
-  cycle_id: number;
-  branch_id: string;
-  program_id: string;
-  quota_slots: string;
-}): Promise<ActionResult> {
+export async function saveQuotaPlan(cycleIdInput: number, input: QuotaPlanValues): Promise<ActionResult> {
   const user = await requirePermission("admission", "write");
 
-  const cycleId = parseOptionalId(input.cycle_id);
-  if (!cycleId || cycleId === "invalid") return { error: "Invalid admission cycle." };
+  const cycleId = Number(cycleIdInput);
+  if (!Number.isSafeInteger(cycleId) || cycleId <= 0) return { error: "Invalid admission cycle." };
 
-  const parsed = quotaFormSchema.safeParse(input);
+  const parsed = quotaPlanSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
-  const branchId = parsed.data.branch_id ? Number(parsed.data.branch_id) : null;
-  const programId = parsed.data.program_id ? Number(parsed.data.program_id) : null;
-  const slots = Number(parsed.data.quota_slots);
+  const { overall, courses } = parsed.data;
+  const programIds = courses.map((c) => c.program_id);
+  if (new Set(programIds).size !== programIds.length) return { error: "A course is listed twice." };
 
   try {
     const accountId = getAccountId(user);
 
-    const result = await prisma.$transaction(async (tx) => {
-      const [cycle, branch, program] = await Promise.all([
+    await prisma.$transaction(async (tx) => {
+      const [cycle, programCount] = await Promise.all([
         tx.tbl_admission_cycle.findUnique({ where: { cycle_id: cycleId }, select: { cycle_id: true } }),
-        branchId
-          ? tx.tbl_branch.findUnique({ where: { branch_id: branchId }, select: { branch_id: true } })
-          : Promise.resolve(true),
-        programId
-          ? tx.tbl_program.findUnique({ where: { program_id: programId }, select: { program_id: true } })
-          : Promise.resolve(true),
+        tx.tbl_program.count({ where: { program_id: { in: programIds } } }),
       ]);
-
       if (!cycle) throw new Error("Admission cycle not found.");
-      if (!branch) throw new Error("Campus not found.");
-      if (!program) throw new Error("Program not found.");
+      if (programCount !== programIds.length) throw new Error("A course no longer exists. Reload the page.");
 
-      const data = {
-        quota_slots: slots,
-        quota_scope: quotaScopeFor(branchId, programId),
-        updated_by: accountId,
+      const upsert = async (programId: number | null, slots: string) => {
+        const where = { cycle_id: cycleId, branch_id: null, program_id: programId };
+        if (slots === "") {
+          await tx.tbl_quota.deleteMany({ where });
+          return;
+        }
+        const data = {
+          quota_slots: Number(slots),
+          quota_scope: programId ? QUOTA_SCOPES.PROGRAM : QUOTA_SCOPES.OVERALL,
+          updated_by: accountId,
+        };
+        const existing = await tx.tbl_quota.findFirst({ where, select: { quota_id: true } });
+        if (existing) await tx.tbl_quota.update({ where: { quota_id: existing.quota_id }, data });
+        else await tx.tbl_quota.create({ data: { ...data, ...where } });
       };
 
-      const existing = await tx.tbl_quota.findFirst({
-        where: { cycle_id: cycleId, branch_id: branchId, program_id: programId },
-        select: { quota_id: true },
-      });
-
-      if (existing) {
-        await tx.tbl_quota.update({ where: { quota_id: existing.quota_id }, data });
-        return "updated";
-      }
-
-      await tx.tbl_quota.create({
-        data: { ...data, cycle_id: cycleId, branch_id: branchId, program_id: programId },
-      });
-      return "created";
+      await upsert(null, overall);
+      for (const course of courses) await upsert(course.program_id, course.slots);
     });
 
     revalidatePath("/admission/quota");
-    revalidatePath("/admission/summary");
-
-    return { success: true, message: result === "created" ? "Quota added." : "Quota updated." };
+    return { success: true, message: "Quota saved." };
   } catch (error) {
     console.error("Save quota error:", error);
     return { error: error instanceof Error ? error.message : "Something went wrong." };
-  }
-}
-
-export async function deleteQuota(quotaId: number): Promise<ActionResult> {
-  await requirePermission("admission", "write");
-
-  const id = parseOptionalId(quotaId);
-  if (!id || id === "invalid") return { error: "Invalid quota." };
-
-  try {
-    const deleted = await prisma.tbl_quota.deleteMany({ where: { quota_id: id } });
-    if (deleted.count === 0) return { error: "Quota not found." };
-
-    revalidatePath("/admission/quota");
-    revalidatePath("/admission/summary");
-
-    return { success: true, message: "Quota deleted." };
-  } catch (error) {
-    console.error("Delete quota error:", error);
-    return { error: "Something went wrong while deleting the quota." };
   }
 }

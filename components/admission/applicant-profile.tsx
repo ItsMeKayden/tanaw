@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { EditApplicantButton } from "@/components/admission/applicant-form-modal";
 import { PrintButton, ProfileTabs } from "@/components/admission/profile-tabs";
 import UpdateApplicationStageForm from "@/components/admission/update-application-stage-form";
 import type { ApplicantProfileData } from "@/features/admission/applicant-profile-query";
@@ -17,6 +18,9 @@ type Stage = { stage_id: number; stage_name: string };
 type StepState = "done" | "current" | "failed" | "pending";
 
 const cardClass = "rounded-xl border border-neutral-500 bg-white/90 p-4";
+
+/** Applicant form step that holds the document uploads ("Previous school"). */
+const DOCUMENTS_STEP = 2;
 
 function formatDate(date: Date | null | undefined) {
   if (!date) return "--";
@@ -121,10 +125,13 @@ export default function ApplicantProfile({
   applicant,
   stages,
   canWrite,
+  showEnrollmentLink = true,
 }: Readonly<{
   applicant: ApplicantProfileData;
   stages: Stage[];
   canWrite: boolean;
+  /** False when the viewer can't open Enrollment Verification (e.g. Guidance). */
+  showEnrollmentLink?: boolean;
 }>) {
   const application = applicant.tbl_application[0];
   const fullName = [
@@ -158,7 +165,7 @@ export default function ApplicantProfile({
         <span className={`rounded-full px-4 py-1 text-sm font-medium ${stageBadgeClass(stageName)}`}>
           {stageName ?? "No application"}
         </span>
-        {application && ADMITTED_STAGES.includes(stageName ?? "") && (
+        {showEnrollmentLink && application && ADMITTED_STAGES.includes(stageName ?? "") && (
           <Link
             href={`/admission/enrollment-verification/${application.application_id}`}
             className="rounded-full border border-neutral-500 bg-white px-4 py-1 text-sm hover:bg-neutral-100 print:hidden"
@@ -166,13 +173,14 @@ export default function ApplicantProfile({
             Enrollment
           </Link>
         )}
-        {canWrite && (
-          <Link
-            href={`/admission/applicants/${applicant.applicant_id}/edit`}
+        {canWrite && application && (
+          <EditApplicantButton
+            applicantId={applicant.applicant_id}
+            subtitle={`${fullName} · ${application.application_no}`}
             className="rounded-full bg-[#191e73] px-5 py-1 text-sm font-medium text-white hover:bg-[#232a99] print:hidden"
           >
             Edit
-          </Link>
+          </EditApplicantButton>
         )}
         <PrintButton />
       </div>
@@ -330,12 +338,14 @@ export default function ApplicantProfile({
       <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-lg font-semibold">Documents</h2>
         {canWrite && (
-          <Link
-            href={`/admission/applicants/${applicant.applicant_id}/edit`}
+          <EditApplicantButton
+            applicantId={applicant.applicant_id}
+            subtitle={`${fullName} · ${application.application_no}`}
+            initialStep={DOCUMENTS_STEP}
             className="w-fit rounded-full border border-neutral-500 bg-white px-4 py-1 text-sm hover:bg-neutral-100 print:hidden"
           >
             Upload / replace
-          </Link>
+          </EditApplicantButton>
         )}
       </div>
       <div className="overflow-x-auto">

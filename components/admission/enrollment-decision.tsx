@@ -17,6 +17,7 @@ import {
   notEnrolledSchema,
   type EnrollmentDecisionValues,
 } from "@/features/admission/schemas";
+import { toast } from "@/components/ui/toaster";
 
 type Feedback = { type: "success" | "error"; text: string } | null;
 type ActionResult = { success: true; message: string } | { error: string };
@@ -76,9 +77,10 @@ export default function EnrollmentDecision({
       const result = await action();
       if ("error" in result) {
         setFeedback({ type: "error", text: result.error });
+        toast.error(result.error);
         return;
       }
-      setFeedback({ type: "success", text: result.message });
+      toast.success(result.message);
       reset({ remarks: "" });
       router.refresh();
     });

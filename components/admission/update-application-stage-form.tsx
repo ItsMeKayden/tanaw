@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { updateApplicationStage } from "@/features/admission/actions/update-application-stage";
 import { MAX_REMARKS, stageUpdateSchema, type StageUpdateValues } from "@/features/admission/schemas";
 import { ENROLLMENT_DECISION_STAGES } from "@/features/admission/stages";
+import { toast } from "@/components/ui/toaster";
 
 type AdmissionStage = {
   stage_id: number;
@@ -48,14 +49,13 @@ export default function UpdateApplicationStageForm({
           stage_id: Number(values.stage_id),
           remarks: values.remarks,
         });
-        setMessage({ ok: true, text: result.message });
+        toast.success(result.message);
         resetField("remarks");
         router.refresh();
       } catch (error) {
-        setMessage({
-          ok: false,
-          text: error instanceof Error ? error.message : "Failed to update admission stage.",
-        });
+        const text = error instanceof Error ? error.message : "Failed to update admission stage.";
+        setMessage({ ok: false, text });
+        toast.error(text);
       }
     });
   });

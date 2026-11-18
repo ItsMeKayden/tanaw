@@ -117,7 +117,7 @@ This runs, in order:
 
 `npm run db:seed` creates or completes:
 
-- **Access control:** the 5 roles, 16 module permissions and their default role assignments. Defaults are only applied to permissions nobody has configured yet, so access changed on the Users & Roles page is kept.
+- **Access control:** the 5 roles, 16 module permissions and their default role assignments. Defaults are only applied to permissions nobody has configured yet, so access changed on the User Management page is kept.
 - **SYSTEM_ADMIN account** (`systemadmin@tanaw.com`) using `SYSTEM_ADMIN_PASSWORD`. An existing account's password is never changed.
 - **Test accounts** (one per role) using `TEST_USER_PASSWORD`. Skipped if the variable is empty; re-running resets their passwords.
 - **Admission stages:** Application Submitted → For Examination → Exam Completed → Passed / Failed → Enrolled / Not Enrolled.

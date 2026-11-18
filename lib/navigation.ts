@@ -25,7 +25,12 @@ export type NavigationItem = {
 const enrollmentVerificationModules: ModuleName[] = ["admission", "registrar"];
 
 const navigationItems: NavigationItem[] = [
-  { label: "Dashboard", href: "/dashboard", icon: "dashboard", permission: "dashboard" },
+  {
+    label: "Dashboard",
+    href: "/dashboard",
+    icon: "dashboard",
+    permission: "dashboard",
+  },
   { label: "Map", href: "/map", icon: "map", permission: "map" },
   {
     label: "Admission",
@@ -38,8 +43,16 @@ const navigationItems: NavigationItem[] = [
         label: "Exam",
         permission: "admission",
         children: [
-          { label: "Exam Schedule", href: "/admission/exam/schedule", permission: "admission" },
-          { label: "Exam Scores", href: "/admission/exam/scores", permission: "admission" },
+          {
+            label: "Exam Schedule",
+            href: "/admission/exam/schedule",
+            permission: "admission",
+          },
+          {
+            label: "Exam Scores",
+            href: "/admission/exam/scores",
+            permission: "admission",
+          },
         ],
       },
       {
@@ -48,7 +61,11 @@ const navigationItems: NavigationItem[] = [
         permission: enrollmentVerificationModules,
       },
       { label: "Quota", href: "/admission/quota", permission: "admission" },
-      { label: "Summary", href: "/admission/summary", permission: "admission" },
+      {
+        label: "Archive History",
+        href: "/admission/archive",
+        permission: "admission",
+      },
     ],
   },
   {
@@ -67,13 +84,74 @@ const navigationItems: NavigationItem[] = [
     icon: "recommendation",
     permission: "recommendation",
     children: [
-      { label: "Recommendations", href: "/recommendation", permission: "recommendation" },
-      { label: "Score Breakdown", href: "/recommendation/breakdown", permission: "recommendation" },
-      { label: "Course Comparison", href: "/recommendation/compare", permission: "recommendation" },
-      { label: "Mapping Settings", href: "/recommendation/settings", permission: "recommendation" },
+      {
+        label: "Recommendations",
+        href: "/recommendation",
+        permission: "recommendation",
+      },
+      {
+        label: "Score Breakdown",
+        href: "/recommendation/breakdown",
+        permission: "recommendation",
+      },
+      {
+        label: "Course Comparison",
+        href: "/recommendation/compare",
+        permission: "recommendation",
+      },
+      {
+        label: "Mapping Settings",
+        href: "/recommendation/settings",
+        permission: "recommendation",
+      },
     ],
   },
-  { label: "Users & Roles", href: "/users-roles", icon: "users", permission: "users" },
+  {
+    label: "Registrar",
+    icon: "registrar",
+    permission: "registrar",
+    children: [
+      {
+        label: "Applicants",
+        href: "/registrar/applicants",
+        permission: "registrar",
+      },
+      {
+        label: "Exam Schedule",
+        href: "/registrar/exam-schedule",
+        permission: "registrar",
+      },
+    ],
+  },
+  {
+    label: "Guidance",
+    icon: "guidance",
+    permission: "guidance",
+    children: [
+      {
+        label: "Applicants",
+        href: "/guidance/applicants",
+        permission: "guidance",
+      },
+    ],
+  },
+  {
+    label: "User Management",
+    icon: "users",
+    permission: "users",
+    children: [
+      {
+        label: "User Accounts",
+        href: "/user-management/accounts",
+        permission: "users",
+      },
+      {
+        label: "Roles & Permissions",
+        href: "/user-management/roles",
+        permission: "users",
+      },
+    ],
+  },
 ];
 
 async function filterNavigation(

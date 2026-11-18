@@ -1,6 +1,7 @@
 /**
  * Demo data for local development: applicants spread across every admission
- * stage, exam results, stage history, quotas, and sample documents.
+ * stage, exam results, stage history, quotas, and sample documents. Exam
+ * sessions, attendance, and subject scores come from ./demo-exams.
  *
  * Everything here is deterministic (same data on every machine) and
  * idempotent: demo applications use the "DEMO-" application number prefix and
@@ -9,6 +10,7 @@
 import { ADMISSION_STAGES } from "../../features/admission/stages";
 import { generateRecommendations } from "../../features/recommendation/engine";
 import { log, prisma, warn } from "./client";
+import { resetDemoExamSessions, seedDemoExamSchedule, seedDemoSubjectScores } from "./demo-exams";
 
 export const DEMO_PREFIX = "DEMO-";
 const DEMO_EMAIL_DOMAIN = "@example.test";
@@ -64,7 +66,11 @@ export async function resetDemoData() {
     .map((a) => a.applicant_id)
     .filter((id): id is number => id !== null);
 
-  // Stage logs, exam results, and documents cascade with the application.
+  // Demo exam sessions hang off the exam, not an application; remove them first.
+  const demoExams = await prisma.tbl_exam.findMany({ where: { exam_name: EXAM_NAME }, select: { exam_id: true } });
+  for (const exam of demoExams) await resetDemoExamSessions(exam.exam_id);
+
+  // Stage logs, exam results, subject scores, seats, and documents cascade with the application.
   await prisma.tbl_application.deleteMany({
     where: { application_id: { in: applications.map((a) => a.application_id) } },
   });
@@ -244,6 +250,8 @@ export async function seedDemoData() {
   log("demo", `${DEMO_COUNT} demo applicants (${created} new) in ${cycle.school_year}`);
 
   await seedExamAnswers(exam.exam_id);
+  await seedDemoExamSchedule(exam.exam_id, actor?.user_id ?? null);
+  await seedDemoSubjectScores(exam.exam_id);
 
   const scored = await generateRecommendations(prisma, { cycleId: cycle.cycle_id });
   log("demo", `course recommendations generated for ${scored} applicants`);

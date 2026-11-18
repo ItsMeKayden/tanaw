@@ -1,7 +1,7 @@
 /**
  * Permission modules (tbl_permission.module_name) and the default access each
- * role gets. Single source of truth for permissions, navigation, the Users &
- * Roles page, and the seeder. No imports — safe for client and seed code.
+ * role gets. Single source of truth for permissions, navigation, the User
+ * Management page, and the seeder. No imports — safe for client and seed code.
  */
 
 export const MODULES = [
@@ -10,7 +10,7 @@ export const MODULES = [
   { key: "admission", code: "ADMISSION", label: "Admission" },
   { key: "recommendation", code: "RECOMMENDATION", label: "Course Recommendation" },
   { key: "reports", code: "REPORTS", label: "Analytics" },
-  { key: "users", code: "USERS", label: "Users & Roles" },
+  { key: "users", code: "USERS", label: "User Management" },
   { key: "registrar", code: "REGISTRAR", label: "Registrar" },
   { key: "guidance", code: "GUIDANCE", label: "Guidance" },
 ] as const;
@@ -43,7 +43,7 @@ export function moduleCode(key: ModuleName): ModuleCode {
 
 /**
  * Default role access, applied by the seeder only to permissions that have
- * no assignments yet — so changes made on the Users & Roles page persist.
+ * no assignments yet — so changes made on the User Management page persist.
  */
 export const DEFAULT_ROLE_ACCESS: Record<
   RoleName,

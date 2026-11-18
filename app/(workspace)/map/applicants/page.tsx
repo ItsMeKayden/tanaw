@@ -3,6 +3,8 @@ import Link from "next/link";
 import { connection } from "next/server";
 
 import { QcuWatermark } from "@/components/admission/qcu-watermark";
+import { BackLink } from "@/components/ui/back-link";
+import { Pagination } from "@/components/ui/pagination";
 import { ExportMenu } from "@/components/reports/export-menu";
 import { ParamSelect } from "@/components/recommendation/controls";
 import { stageBadgeClass } from "@/features/admission/stages";
@@ -15,6 +17,7 @@ import {
 } from "@/features/map/queries";
 import { requirePermission } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
+import { TablePageSkeleton } from "@/components/ui/skeletons";
 
 type PageProps = Readonly<{
   searchParams: Promise<{
@@ -71,6 +74,8 @@ async function LocationApplicantsContent({ searchParams }: PageProps) {
   return (
     <div className="relative isolate min-h-full space-y-4 p-4 sm:p-6">
       <QcuWatermark />
+
+      <BackLink href={`/map?${filterQuery(filters)}`}>Back to map</BackLink>
 
       <div>
         <h1 className="text-2xl font-bold">Applicant list per location</h1>
@@ -189,34 +194,23 @@ async function LocationApplicantsContent({ searchParams }: PageProps) {
         </table>
       </div>
 
-      <div className="flex items-center justify-between text-sm">
-        <p className="text-neutral-600">
-          Showing {start}–{Math.min(page * APPLICANTS_PAGE_SIZE, total)} of {total}
-        </p>
-        <div className="flex gap-2">
-          {page > 1 ? (
-            <Link href={pageHref(page - 1)} className="rounded-md border border-neutral-500 bg-white px-4 py-1.5 hover:bg-neutral-100">
-              &lt; Prev
-            </Link>
-          ) : (
-            <span className="rounded-md border border-neutral-300 px-4 py-1.5 text-neutral-400">&lt; Prev</span>
-          )}
-          {page < totalPages ? (
-            <Link href={pageHref(page + 1)} className="rounded-md bg-neutral-700 px-4 py-1.5 text-white hover:bg-neutral-800">
-              Next &gt;
-            </Link>
-          ) : (
-            <span className="rounded-md bg-neutral-300 px-4 py-1.5 text-white">Next &gt;</span>
-          )}
-        </div>
-      </div>
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        start={start}
+        end={Math.min(page * APPLICANTS_PAGE_SIZE, total)}
+        total={total}
+        noun="applicants"
+        prevHref={page > 1 ? pageHref(page - 1) : null}
+        nextHref={page < totalPages ? pageHref(page + 1) : null}
+      />
     </div>
   );
 }
 
 export default function LocationApplicantsPage({ searchParams }: PageProps) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<TablePageSkeleton label="applicant list" cols={7} />}>
       <LocationApplicantsContent searchParams={searchParams} />
     </Suspense>
   );

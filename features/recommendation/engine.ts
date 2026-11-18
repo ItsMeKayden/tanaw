@@ -2,7 +2,8 @@
 // so both the app and the seeder can use it. Relative imports on purpose
 // (the seeder runs outside Next.js).
 import type { Prisma } from "../../generated/prisma/client";
-import { computeMatch } from "./config";
+import { computeMatch, unmetRules } from "./config";
+import { ACTIVE_APPLICATION } from "../admission/archive-core";
 
 type Db = Prisma.TransactionClient;
 
@@ -15,12 +16,25 @@ export type CompetencyScore = {
   percent: number | null;
 };
 
-/** Per-competency scores for one exam result, from its question responses. */
+/** An exam result counts as scored when it has typed subject scores or question responses. */
+export const SCORED_RESULT = {
+  OR: [{ tbl_exam_subject_score: { some: {} } }, { tbl_question_response: { some: {} } }],
+} satisfies Prisma.tbl_exam_resultWhereInput;
+
+/**
+ * Per-competency scores for one exam result. Subject scores typed on the
+ * Exam Scores page take precedence; otherwise they come from the question
+ * responses.
+ */
 export async function getCompetencyScores(db: Db, resultId: number) {
-  const [competencies, responses] = await Promise.all([
+  const [competencies, subjectScores, responses] = await Promise.all([
     db.tbl_competency.findMany({
       orderBy: { competency_id: "asc" },
       select: { competency_id: true, competency_name: true },
+    }),
+    db.tbl_exam_subject_score.findMany({
+      where: { result_id: resultId },
+      select: { competency_id: true, score: true, max_score: true },
     }),
     db.tbl_question_response.findMany({
       where: { result_id: resultId },
@@ -31,6 +45,21 @@ export async function getCompetencyScores(db: Db, resultId: number) {
       },
     }),
   ]);
+
+  if (subjectScores.length > 0) {
+    return competencies.map<CompetencyScore>((competency) => {
+      const row = subjectScores.find((s) => s.competency_id === competency.competency_id);
+      const possible = row?.max_score ?? 0;
+      const earned = row?.score ?? 0;
+      return {
+        competency_id: competency.competency_id,
+        competency_name: competency.competency_name,
+        earned,
+        possible,
+        percent: possible > 0 ? Math.round((earned / possible) * 10_000) / 100 : null,
+      };
+    });
+  }
 
   return competencies.map<CompetencyScore>((competency) => {
     const answered = responses.filter(
@@ -53,6 +82,18 @@ export async function getCompetencyScores(db: Db, resultId: number) {
 }
 
 /** Active programs with their competency weights (programs without weights are skipped). */
+/**
+ * Whether recommendations may be generated (Mapping Settings switch). No
+ * settings row yet means enabled.
+ */
+export async function isRecommendationEnabled(db: Db) {
+  const setting = await db.tbl_recommendation_setting.findFirst({
+    orderBy: { setting_id: "asc" },
+    select: { is_enabled: true },
+  });
+  return setting?.is_enabled ?? true;
+}
+
 export async function getProgramWeights(db: Db) {
   const programs = await db.tbl_program.findMany({
     where: { is_active: true },
@@ -61,7 +102,8 @@ export async function getProgramWeights(db: Db) {
       program_id: true,
       program_code: true,
       program_name: true,
-      tbl_program_competency: { select: { competency_id: true, weight: true } },
+      min_match: true,
+      tbl_program_competency: { select: { competency_id: true, weight: true, min_score: true } },
     },
   });
 
@@ -69,33 +111,41 @@ export async function getProgramWeights(db: Db) {
     program_id: program.program_id,
     program_code: program.program_code,
     program_name: program.program_name,
+    min_match: Number(program.min_match),
     weights: program.tbl_program_competency.map((w) => ({
       competency_id: w.competency_id,
       weight: Number(w.weight),
+      /** Compatibility rule: minimum subject score (%), or null for none. */
+      min_score: w.min_score === null ? null : Number(w.min_score),
     })),
   }));
 }
 
 /**
  * (Re)generates tbl_course_recommendation for applications in a cycle that
- * have an exam result with question responses. Every weighted course is
- * scored and ranked (1 = best match). Returns how many applications were scored.
+ * have a scored exam result (subject scores or question responses). Every weighted course is
+ * scored and ranked: courses whose subject rules the applicant meets come
+ * first, each group by match (1 = best). Returns how many applications were scored.
+ * Does nothing (returns 0) while recommendations are turned off in Mapping Settings.
  */
 export async function generateRecommendations(
   db: Db,
   options: { cycleId: number; applicationIds?: number[] },
 ) {
+  if (!(await isRecommendationEnabled(db))) return 0;
+
   const [applications, programs] = await Promise.all([
     db.tbl_application.findMany({
       where: {
+        ...ACTIVE_APPLICATION,
         cycle_id: options.cycleId,
         ...(options.applicationIds ? { application_id: { in: options.applicationIds } } : {}),
-        tbl_exam_result: { some: { tbl_question_response: { some: {} } } },
+        tbl_exam_result: { some: SCORED_RESULT },
       },
       select: {
         application_id: true,
         tbl_exam_result: {
-          where: { tbl_question_response: { some: {} } },
+          where: SCORED_RESULT,
           orderBy: { result_id: "desc" },
           take: 1,
           select: { result_id: true },
@@ -124,9 +174,10 @@ export async function generateRecommendations(
       .map((program) => ({
         program_id: program.program_id,
         match: computeMatch(scores, program.weights),
+        unmet: unmetRules(scores, program.weights),
       }))
-      .filter((r): r is { program_id: number; match: number } => r.match !== null)
-      .sort((a, b) => b.match - a.match);
+      .filter((r): r is { program_id: number; match: number; unmet: number[] } => r.match !== null)
+      .sort((a, b) => Number(a.unmet.length > 0) - Number(b.unmet.length > 0) || b.match - a.match);
 
     await db.tbl_course_recommendation.deleteMany({
       where: { application_id: application.application_id },
@@ -140,6 +191,7 @@ export async function generateRecommendations(
           compatibility_score: r.match,
           rank_no: index + 1,
           generated_at: generatedAt,
+          unmet_competency_ids: r.unmet,
         })),
       });
       scored++;

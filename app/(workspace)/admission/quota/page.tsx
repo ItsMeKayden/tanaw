@@ -1,19 +1,14 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
 
-import { CycleSelect } from "@/components/admission/cycle-select";
-import QuotaManager, { type QuotaRow } from "@/components/admission/quota-manager";
+import { FilterSelect } from "@/components/admission/filter-select";
 import { QcuWatermark } from "@/components/admission/qcu-watermark";
-import {
-  QUOTA_SCOPE_LABELS,
-  countForScope,
-  getApplicationCounts,
-  quotaScopeFor,
-  resolveCycle,
-} from "@/features/admission/admission-stats";
+import { QuotaPlanner } from "@/components/admission/quota-planner";
+import { countForScope, getApplicationCounts, resolveCycle } from "@/features/admission/admission-stats";
 import { requirePermission } from "@/lib/authorization";
 import { hasPermission } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
+import { GridEditorSkeleton } from "@/components/ui/skeletons";
 
 type PageProps = Readonly<{
   searchParams: Promise<{ cycle?: string | string[] }>;
@@ -26,106 +21,68 @@ async function QuotaContent({ searchParams }: PageProps) {
 
   const { cycles, cycle } = await resolveCycle((await searchParams).cycle);
 
-  const [branches, programs] = await Promise.all([
-    prisma.tbl_branch.findMany({
-      where: { is_active: true },
-      orderBy: { branch_id: "asc" },
-      select: { branch_id: true, branch_name: true },
-    }),
+  if (!cycle) {
+    return (
+      <div className="p-4">
+        <h1 className="sr-only">Admission quota</h1>
+        <p className="rounded-md border border-neutral-500 bg-white/90 p-6 text-center text-sm text-neutral-600">
+          No admission cycle exists yet.
+        </p>
+      </div>
+    );
+  }
+
+  const [programs, quotas, counts] = await Promise.all([
     prisma.tbl_program.findMany({
       where: { is_active: true },
       orderBy: { program_code: "asc" },
       select: { program_id: true, program_code: true, program_name: true },
     }),
+    prisma.tbl_quota.findMany({
+      where: { cycle_id: cycle.cycle_id, branch_id: null },
+      select: { program_id: true, quota_slots: true },
+    }),
+    getApplicationCounts(cycle.cycle_id),
   ]);
 
-  let rows: QuotaRow[] = [];
-  let cycleEnrolled = 0;
+  const courses = programs.map((program) => {
+    const totals = countForScope(counts, null, program.program_id);
+    return {
+      ...program,
+      slots: quotas.find((q) => q.program_id === program.program_id)?.quota_slots ?? null,
+      admitted: totals.passed + totals.enrolled,
+    };
+  });
 
-  if (cycle) {
-    const [quotas, counts] = await Promise.all([
-      prisma.tbl_quota.findMany({
-        where: { cycle_id: cycle.cycle_id },
-        select: {
-          quota_id: true,
-          branch_id: true,
-          program_id: true,
-          quota_scope: true,
-          quota_slots: true,
-          tbl_branch: { select: { branch_name: true } },
-          tbl_program: { select: { program_code: true } },
-          tbl_user_account: { select: { full_name: true } },
-        },
-      }),
-      getApplicationCounts(cycle.cycle_id),
-    ]);
-
-    cycleEnrolled = countForScope(counts, null, null).enrolled;
-
-    const scopeOrder = ["OVERALL", "BRANCH", "PROGRAM", "BRANCH_PROGRAM"];
-
-    rows = quotas
-      .map((quota) => {
-        const scope = quota.quota_scope ?? quotaScopeFor(quota.branch_id, quota.program_id);
-        const totals = countForScope(counts, quota.branch_id, quota.program_id);
-        return {
-          quota_id: quota.quota_id,
-          branch_id: quota.branch_id,
-          program_id: quota.program_id,
-          scope,
-          scope_label: QUOTA_SCOPE_LABELS[scope] ?? scope,
-          branch_name: quota.tbl_branch?.branch_name ?? "All campuses",
-          program_code: quota.tbl_program?.program_code ?? "All programs",
-          slots: quota.quota_slots,
-          ...totals,
-          updated_by: quota.tbl_user_account?.full_name ?? null,
-        };
-      })
-      .sort(
-        (a, b) =>
-          scopeOrder.indexOf(a.scope) - scopeOrder.indexOf(b.scope) ||
-          a.branch_name.localeCompare(b.branch_name) ||
-          a.program_code.localeCompare(b.program_code),
-      );
-  }
+  const overallSlots = quotas.find((q) => q.program_id === null)?.quota_slots ?? null;
 
   return (
-    <div className="relative isolate min-h-full space-y-5 p-4 sm:p-6">
+    <div className="relative isolate min-h-full p-3 sm:p-4">
       <QcuWatermark />
+      <h1 className="sr-only">Admission quota, school year {cycle.school_year}</h1>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Quota</h1>
-          <p className="text-sm text-neutral-700">
-            Available slots per campus and program. Enrolled applicants fill
-            the slots; passed applicants still awaiting verification are shown
-            as pending.
-          </p>
-        </div>
-        {cycle && <CycleSelect cycles={cycles} value={cycle.cycle_id} />}
-      </div>
-
-      {cycle ? (
-        <QuotaManager
-          cycleId={cycle.cycle_id}
-          rows={rows}
-          branches={branches}
-          programs={programs}
-          canWrite={canWrite}
-          cycleEnrolled={cycleEnrolled}
-        />
-      ) : (
-        <p className="rounded-xl border border-neutral-500 bg-white/90 p-6 text-center text-sm text-neutral-600">
-          No admission cycle exists yet.
-        </p>
-      )}
+      <QuotaPlanner
+        key={cycle.cycle_id}
+        cycleId={cycle.cycle_id}
+        overallSlots={overallSlots}
+        courses={courses}
+        canWrite={canWrite}
+        schoolYearSelect={
+          <FilterSelect
+            param="cycle"
+            label="School year"
+            value={String(cycle.cycle_id)}
+            options={cycles.map((c) => ({ value: String(c.cycle_id), label: c.school_year }))}
+          />
+        }
+      />
     </div>
   );
 }
 
 export default function QuotaPage({ searchParams }: PageProps) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<GridEditorSkeleton label="quota" cols={6} />}>
       <QuotaContent searchParams={searchParams} />
     </Suspense>
   );

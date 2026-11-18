@@ -16,13 +16,27 @@ export const weightInputSchema = z
   .refine((v) => Number(v) >= 0 && Number(v) <= 100, "Must be 0–100")
   .refine((v) => hasAtMost2Decimals(Number(v)), "Max 2 decimals");
 
+/** One compatibility rule as typed: blank = no minimum, else 0–100. */
+export const ruleInputSchema = z
+  .string()
+  .trim()
+  .refine((v) => v === "" || Number.isFinite(Number(v)), "Enter a number")
+  .refine((v) => v === "" || (Number(v) >= 0 && Number(v) <= 100), "Must be 0–100")
+  .refine((v) => v === "" || hasAtMost2Decimals(Number(v)), "Max 2 decimals");
+
 /**
  * Editor form: rows["p<program_id>"]["c<competency_id>"] = "30".
  * (Prefixed keys so React Hook Form doesn't treat ids as array indexes.)
  * Each row must add up to exactly 100.
  */
 export const mappingFormSchema = z
-  .object({ rows: z.record(z.string(), z.record(z.string(), weightInputSchema)) })
+  .object({
+    rows: z.record(z.string(), z.record(z.string(), weightInputSchema)),
+    /** minMatch["p<program_id>"] = "70" (each course's minimum match %). */
+    minMatch: z.record(z.string(), weightInputSchema),
+    /** rules["p<program_id>"]["c<competency_id>"] = "75" or "" (minimum subject score). */
+    rules: z.record(z.string(), z.record(z.string(), ruleInputSchema)),
+  })
   .superRefine((value, ctx) => {
     for (const [rowKey, weights] of Object.entries(value.rows)) {
       const total = roundTo2(Object.values(weights).reduce((sum, w) => sum + (Number(w) || 0), 0));
@@ -38,6 +52,12 @@ export const mappingSaveSchema = z
   .array(
     z.object({
       program_id: z.number().int().positive(),
+      min_match: z
+        .number()
+        .min(0, "Minimum match must be between 0 and 100.")
+        .max(100, "Minimum match must be between 0 and 100.")
+        .refine(hasAtMost2Decimals, "Use at most two decimal places.")
+        .optional(),
       weights: z
         .array(
           z.object({
@@ -47,6 +67,14 @@ export const mappingSaveSchema = z
               .min(0, "Each weight must be between 0 and 100.")
               .max(100, "Each weight must be between 0 and 100.")
               .refine(hasAtMost2Decimals, "Use at most two decimal places."),
+            /** Compatibility rule (minimum subject score); null = none, undefined = unchanged. */
+            min_score: z
+              .number()
+              .min(0, "Each subject minimum must be between 0 and 100.")
+              .max(100, "Each subject minimum must be between 0 and 100.")
+              .refine(hasAtMost2Decimals, "Use at most two decimal places.")
+              .nullable()
+              .optional(),
           }),
         )
         .min(1),

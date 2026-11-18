@@ -4,7 +4,9 @@ import type { ReactNode } from "react";
 
 import { Sidebar } from "@/components/layout/sidebar";
 import { WorkspaceHeader } from "@/components/layout/workspace-header";
+import { Toaster } from "@/components/ui/toaster";
 import { requireUser } from "@/lib/authorization";
+import { getRoleLabels } from "@/features/user-management/role-labels";
 import { getNavigationItems } from "@/lib/navigation";
 
 async function AuthenticatedWorkspace({ children }: { children: ReactNode }) {
@@ -12,17 +14,22 @@ async function AuthenticatedWorkspace({ children }: { children: ReactNode }) {
 
   const user = await requireUser();
 
-  const navigation = await getNavigationItems(user.role);
+  const [navigation, roleLabels] = await Promise.all([getNavigationItems(user.role), getRoleLabels()]);
 
   return (
     <div className="flex min-h-screen flex-col bg-white text-black sm:flex-row">
       <Sidebar navigation={navigation} />
       <div className="flex min-h-[50vh] min-w-0 flex-1 flex-col sm:min-h-screen">
-        <WorkspaceHeader navigation={navigation} />
+        <WorkspaceHeader
+          navigation={navigation}
+          userName={user.name || user.email || "Account"}
+          roleLabel={roleLabels[user.role] ?? null}
+        />
         <main className="m-2 flex-1 border border-neutral-400 print:m-0 print:border-0">
           {children}
         </main>
       </div>
+      <Toaster />
     </div>
   );
 }

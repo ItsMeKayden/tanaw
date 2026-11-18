@@ -16,6 +16,9 @@ import {
 import { requireAnyPermission } from "@/lib/authorization";
 import { hasAnyPermission } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
+import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
+import { BackLink } from "@/components/ui/back-link";
+import { ProfileSkeleton } from "@/components/ui/skeletons";
 
 type PageProps = Readonly<{
   params: Promise<{ applicationId: string }>;
@@ -44,7 +47,7 @@ async function EnrollmentDetailContent({ params }: PageProps) {
   }
 
   const application = await prisma.tbl_application.findUnique({
-    where: { application_id: applicationId },
+    where: { application_id: applicationId, ...ACTIVE_APPLICATION },
     select: {
       application_id: true,
       application_no: true,
@@ -125,12 +128,7 @@ async function EnrollmentDetailContent({ params }: PageProps) {
     <div className="relative isolate min-h-full space-y-4 p-4 sm:p-6">
       <QcuWatermark />
 
-      <Link
-        href="/admission/enrollment-verification"
-        className="inline-flex text-sm text-neutral-700 hover:text-[#191e73]"
-      >
-        ← Back to Enrollment Verification
-      </Link>
+      <BackLink href="/admission/enrollment-verification">Back to Enrollment Verification</BackLink>
 
       <div className="flex flex-col gap-4 rounded-xl border border-neutral-500 bg-white/90 p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
@@ -248,7 +246,7 @@ async function EnrollmentDetailContent({ params }: PageProps) {
 
 export default function EnrollmentDetailPage({ params }: PageProps) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<ProfileSkeleton label="enrollment verification" />}>
       <EnrollmentDetailContent params={params} />
     </Suspense>
   );

@@ -1,9 +1,10 @@
 // Server-side query for the applicant profile page (imports Prisma).
 import { prisma } from "@/lib/prisma";
+import { ACTIVE_APPLICANT } from "@/features/admission/archive-core";
 
 export function getApplicantProfile(applicantId: number) {
   return prisma.tbl_applicant.findUnique({
-    where: { applicant_id: applicantId },
+    where: { applicant_id: applicantId, ...ACTIVE_APPLICANT },
     select: {
       applicant_id: true,
       last_name: true,

@@ -76,7 +76,11 @@ export const ModelName = {
   tbl_role_permission: 'tbl_role_permission',
   tbl_school: 'tbl_school',
   tbl_user_account: 'tbl_user_account',
-  tbl_application_document: 'tbl_application_document'
+  tbl_application_document: 'tbl_application_document',
+  tbl_exam_session: 'tbl_exam_session',
+  tbl_exam_session_applicant: 'tbl_exam_session_applicant',
+  tbl_exam_subject_score: 'tbl_exam_subject_score',
+  tbl_recommendation_setting: 'tbl_recommendation_setting'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -139,7 +143,9 @@ export const Tbl_applicantScalarFieldEnum = {
   sex: 'sex',
   birth_date: 'birth_date',
   email: 'email',
-  mobile_no: 'mobile_no'
+  mobile_no: 'mobile_no',
+  archived_at: 'archived_at',
+  archived_by: 'archived_by'
 } as const
 
 export type Tbl_applicantScalarFieldEnum = (typeof Tbl_applicantScalarFieldEnum)[keyof typeof Tbl_applicantScalarFieldEnum]
@@ -210,7 +216,8 @@ export const Tbl_course_recommendationScalarFieldEnum = {
   program_id: 'program_id',
   compatibility_score: 'compatibility_score',
   rank_no: 'rank_no',
-  generated_at: 'generated_at'
+  generated_at: 'generated_at',
+  unmet_competency_ids: 'unmet_competency_ids'
 } as const
 
 export type Tbl_course_recommendationScalarFieldEnum = (typeof Tbl_course_recommendationScalarFieldEnum)[keyof typeof Tbl_course_recommendationScalarFieldEnum]
@@ -301,7 +308,8 @@ export const Tbl_programScalarFieldEnum = {
   program_id: 'program_id',
   program_code: 'program_code',
   program_name: 'program_name',
-  is_active: 'is_active'
+  is_active: 'is_active',
+  min_match: 'min_match'
 } as const
 
 export type Tbl_programScalarFieldEnum = (typeof Tbl_programScalarFieldEnum)[keyof typeof Tbl_programScalarFieldEnum]
@@ -310,7 +318,8 @@ export type Tbl_programScalarFieldEnum = (typeof Tbl_programScalarFieldEnum)[key
 export const Tbl_program_competencyScalarFieldEnum = {
   program_id: 'program_id',
   competency_id: 'competency_id',
-  weight: 'weight'
+  weight: 'weight',
+  min_score: 'min_score'
 } as const
 
 export type Tbl_program_competencyScalarFieldEnum = (typeof Tbl_program_competencyScalarFieldEnum)[keyof typeof Tbl_program_competencyScalarFieldEnum]
@@ -343,6 +352,7 @@ export type Tbl_quotaScalarFieldEnum = (typeof Tbl_quotaScalarFieldEnum)[keyof t
 export const Tbl_roleScalarFieldEnum = {
   role_id: 'role_id',
   role_name: 'role_name',
+  display_name: 'display_name',
   description: 'description'
 } as const
 
@@ -394,6 +404,52 @@ export const Tbl_application_documentScalarFieldEnum = {
 } as const
 
 export type Tbl_application_documentScalarFieldEnum = (typeof Tbl_application_documentScalarFieldEnum)[keyof typeof Tbl_application_documentScalarFieldEnum]
+
+
+export const Tbl_exam_sessionScalarFieldEnum = {
+  session_id: 'session_id',
+  exam_id: 'exam_id',
+  session_date: 'session_date',
+  start_time: 'start_time',
+  venue: 'venue',
+  room: 'room',
+  capacity: 'capacity',
+  created_by: 'created_by',
+  created_at: 'created_at'
+} as const
+
+export type Tbl_exam_sessionScalarFieldEnum = (typeof Tbl_exam_sessionScalarFieldEnum)[keyof typeof Tbl_exam_sessionScalarFieldEnum]
+
+
+export const Tbl_exam_session_applicantScalarFieldEnum = {
+  session_id: 'session_id',
+  application_id: 'application_id',
+  attendance: 'attendance',
+  marked_by: 'marked_by',
+  marked_at: 'marked_at'
+} as const
+
+export type Tbl_exam_session_applicantScalarFieldEnum = (typeof Tbl_exam_session_applicantScalarFieldEnum)[keyof typeof Tbl_exam_session_applicantScalarFieldEnum]
+
+
+export const Tbl_exam_subject_scoreScalarFieldEnum = {
+  result_id: 'result_id',
+  competency_id: 'competency_id',
+  score: 'score',
+  max_score: 'max_score'
+} as const
+
+export type Tbl_exam_subject_scoreScalarFieldEnum = (typeof Tbl_exam_subject_scoreScalarFieldEnum)[keyof typeof Tbl_exam_subject_scoreScalarFieldEnum]
+
+
+export const Tbl_recommendation_settingScalarFieldEnum = {
+  setting_id: 'setting_id',
+  is_enabled: 'is_enabled',
+  updated_by: 'updated_by',
+  updated_at: 'updated_at'
+} as const
+
+export type Tbl_recommendation_settingScalarFieldEnum = (typeof Tbl_recommendation_settingScalarFieldEnum)[keyof typeof Tbl_recommendation_settingScalarFieldEnum]
 
 
 export const SortOrder = {

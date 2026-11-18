@@ -1,17 +1,12 @@
-import { connection } from "next/server";
+import { Suspense } from "react";
 
-import { ModulePlaceholder } from "@/components/layout/module-placeholder";
-import { requirePermission } from "@/lib/authorization";
+import { ExamScheduleView, type ExamScheduleSearchParams } from "@/components/admission/views/exam-schedule-view";
+import { ExamScheduleSkeleton } from "@/components/ui/skeletons";
 
-export default async function ExamSchedulePage() {
-  await connection();
-
-  await requirePermission("admission", "read");
-
+export default function ExamSchedulePage({ searchParams }: Readonly<{ searchParams: ExamScheduleSearchParams }>) {
   return (
-    <ModulePlaceholder
-      title="Exam Schedule"
-      description="Manage and view scheduled admission examinations."
-    />
+    <Suspense fallback={<ExamScheduleSkeleton />}>
+      <ExamScheduleView searchParams={searchParams} module="admission" />
+    </Suspense>
   );
 }

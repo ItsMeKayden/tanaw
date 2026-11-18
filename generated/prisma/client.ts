@@ -171,3 +171,23 @@ export type tbl_user_account = Prisma.tbl_user_accountModel
  * 
  */
 export type tbl_application_document = Prisma.tbl_application_documentModel
+/**
+ * Model tbl_exam_session
+ * 
+ */
+export type tbl_exam_session = Prisma.tbl_exam_sessionModel
+/**
+ * Model tbl_exam_session_applicant
+ * 
+ */
+export type tbl_exam_session_applicant = Prisma.tbl_exam_session_applicantModel
+/**
+ * Model tbl_exam_subject_score
+ * 
+ */
+export type tbl_exam_subject_score = Prisma.tbl_exam_subject_scoreModel
+/**
+ * Model tbl_recommendation_setting
+ * 
+ */
+export type tbl_recommendation_setting = Prisma.tbl_recommendation_settingModel

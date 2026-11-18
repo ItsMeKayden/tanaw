@@ -249,6 +249,10 @@ export type tbl_user_accountWhereInput = {
   tbl_quota?: Prisma.Tbl_quotaListRelationFilter
   tbl_application_stage_log?: Prisma.Tbl_application_stage_logListRelationFilter
   tbl_application_document?: Prisma.Tbl_application_documentListRelationFilter
+  tbl_exam_session?: Prisma.Tbl_exam_sessionListRelationFilter
+  tbl_exam_session_applicant?: Prisma.Tbl_exam_session_applicantListRelationFilter
+  archived_applicants?: Prisma.Tbl_applicantListRelationFilter
+  recommendation_settings?: Prisma.Tbl_recommendation_settingListRelationFilter
   tbl_role?: Prisma.XOR<Prisma.Tbl_roleNullableScalarRelationFilter, Prisma.tbl_roleWhereInput> | null
 }
 
@@ -266,6 +270,10 @@ export type tbl_user_accountOrderByWithRelationInput = {
   tbl_quota?: Prisma.tbl_quotaOrderByRelationAggregateInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logOrderByRelationAggregateInput
   tbl_application_document?: Prisma.tbl_application_documentOrderByRelationAggregateInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionOrderByRelationAggregateInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantOrderByRelationAggregateInput
+  archived_applicants?: Prisma.tbl_applicantOrderByRelationAggregateInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingOrderByRelationAggregateInput
   tbl_role?: Prisma.tbl_roleOrderByWithRelationInput
 }
 
@@ -286,6 +294,10 @@ export type tbl_user_accountWhereUniqueInput = Prisma.AtLeast<{
   tbl_quota?: Prisma.Tbl_quotaListRelationFilter
   tbl_application_stage_log?: Prisma.Tbl_application_stage_logListRelationFilter
   tbl_application_document?: Prisma.Tbl_application_documentListRelationFilter
+  tbl_exam_session?: Prisma.Tbl_exam_sessionListRelationFilter
+  tbl_exam_session_applicant?: Prisma.Tbl_exam_session_applicantListRelationFilter
+  archived_applicants?: Prisma.Tbl_applicantListRelationFilter
+  recommendation_settings?: Prisma.Tbl_recommendation_settingListRelationFilter
   tbl_role?: Prisma.XOR<Prisma.Tbl_roleNullableScalarRelationFilter, Prisma.tbl_roleWhereInput> | null
 }, "user_id" | "username">
 
@@ -331,6 +343,10 @@ export type tbl_user_accountCreateInput = {
   tbl_quota?: Prisma.tbl_quotaCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_document?: Prisma.tbl_application_documentCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
   tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
 }
 
@@ -348,6 +364,10 @@ export type tbl_user_accountUncheckedCreateInput = {
   tbl_quota?: Prisma.tbl_quotaUncheckedCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_document?: Prisma.tbl_application_documentUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
 }
 
 export type tbl_user_accountUpdateInput = {
@@ -362,6 +382,10 @@ export type tbl_user_accountUpdateInput = {
   tbl_quota?: Prisma.tbl_quotaUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_document?: Prisma.tbl_application_documentUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
   tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
 }
 
@@ -379,6 +403,10 @@ export type tbl_user_accountUncheckedUpdateInput = {
   tbl_quota?: Prisma.tbl_quotaUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_document?: Prisma.tbl_application_documentUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
 }
 
 export type tbl_user_accountCreateManyInput = {
@@ -468,6 +496,22 @@ export type tbl_user_accountMinOrderByAggregateInput = {
 export type tbl_user_accountSumOrderByAggregateInput = {
   user_id?: Prisma.SortOrder
   role_id?: Prisma.SortOrder
+}
+
+export type tbl_user_accountCreateNestedOneWithoutArchived_applicantsInput = {
+  create?: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutArchived_applicantsInput, Prisma.tbl_user_accountUncheckedCreateWithoutArchived_applicantsInput>
+  connectOrCreate?: Prisma.tbl_user_accountCreateOrConnectWithoutArchived_applicantsInput
+  connect?: Prisma.tbl_user_accountWhereUniqueInput
+}
+
+export type tbl_user_accountUpdateOneWithoutArchived_applicantsNestedInput = {
+  create?: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutArchived_applicantsInput, Prisma.tbl_user_accountUncheckedCreateWithoutArchived_applicantsInput>
+  connectOrCreate?: Prisma.tbl_user_accountCreateOrConnectWithoutArchived_applicantsInput
+  upsert?: Prisma.tbl_user_accountUpsertWithoutArchived_applicantsInput
+  disconnect?: Prisma.tbl_user_accountWhereInput | boolean
+  delete?: Prisma.tbl_user_accountWhereInput | boolean
+  connect?: Prisma.tbl_user_accountWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.tbl_user_accountUpdateToOneWithWhereWithoutArchived_applicantsInput, Prisma.tbl_user_accountUpdateWithoutArchived_applicantsInput>, Prisma.tbl_user_accountUncheckedUpdateWithoutArchived_applicantsInput>
 }
 
 export type tbl_user_accountCreateNestedOneWithoutTbl_application_stage_logInput = {
@@ -592,6 +636,144 @@ export type tbl_user_accountUpdateOneWithoutTbl_application_documentNestedInput 
   update?: Prisma.XOR<Prisma.XOR<Prisma.tbl_user_accountUpdateToOneWithWhereWithoutTbl_application_documentInput, Prisma.tbl_user_accountUpdateWithoutTbl_application_documentInput>, Prisma.tbl_user_accountUncheckedUpdateWithoutTbl_application_documentInput>
 }
 
+export type tbl_user_accountCreateNestedOneWithoutTbl_exam_sessionInput = {
+  create?: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutTbl_exam_sessionInput, Prisma.tbl_user_accountUncheckedCreateWithoutTbl_exam_sessionInput>
+  connectOrCreate?: Prisma.tbl_user_accountCreateOrConnectWithoutTbl_exam_sessionInput
+  connect?: Prisma.tbl_user_accountWhereUniqueInput
+}
+
+export type tbl_user_accountUpdateOneWithoutTbl_exam_sessionNestedInput = {
+  create?: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutTbl_exam_sessionInput, Prisma.tbl_user_accountUncheckedCreateWithoutTbl_exam_sessionInput>
+  connectOrCreate?: Prisma.tbl_user_accountCreateOrConnectWithoutTbl_exam_sessionInput
+  upsert?: Prisma.tbl_user_accountUpsertWithoutTbl_exam_sessionInput
+  disconnect?: Prisma.tbl_user_accountWhereInput | boolean
+  delete?: Prisma.tbl_user_accountWhereInput | boolean
+  connect?: Prisma.tbl_user_accountWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.tbl_user_accountUpdateToOneWithWhereWithoutTbl_exam_sessionInput, Prisma.tbl_user_accountUpdateWithoutTbl_exam_sessionInput>, Prisma.tbl_user_accountUncheckedUpdateWithoutTbl_exam_sessionInput>
+}
+
+export type tbl_user_accountCreateNestedOneWithoutTbl_exam_session_applicantInput = {
+  create?: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutTbl_exam_session_applicantInput, Prisma.tbl_user_accountUncheckedCreateWithoutTbl_exam_session_applicantInput>
+  connectOrCreate?: Prisma.tbl_user_accountCreateOrConnectWithoutTbl_exam_session_applicantInput
+  connect?: Prisma.tbl_user_accountWhereUniqueInput
+}
+
+export type tbl_user_accountUpdateOneWithoutTbl_exam_session_applicantNestedInput = {
+  create?: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutTbl_exam_session_applicantInput, Prisma.tbl_user_accountUncheckedCreateWithoutTbl_exam_session_applicantInput>
+  connectOrCreate?: Prisma.tbl_user_accountCreateOrConnectWithoutTbl_exam_session_applicantInput
+  upsert?: Prisma.tbl_user_accountUpsertWithoutTbl_exam_session_applicantInput
+  disconnect?: Prisma.tbl_user_accountWhereInput | boolean
+  delete?: Prisma.tbl_user_accountWhereInput | boolean
+  connect?: Prisma.tbl_user_accountWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.tbl_user_accountUpdateToOneWithWhereWithoutTbl_exam_session_applicantInput, Prisma.tbl_user_accountUpdateWithoutTbl_exam_session_applicantInput>, Prisma.tbl_user_accountUncheckedUpdateWithoutTbl_exam_session_applicantInput>
+}
+
+export type tbl_user_accountCreateNestedOneWithoutRecommendation_settingsInput = {
+  create?: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutRecommendation_settingsInput, Prisma.tbl_user_accountUncheckedCreateWithoutRecommendation_settingsInput>
+  connectOrCreate?: Prisma.tbl_user_accountCreateOrConnectWithoutRecommendation_settingsInput
+  connect?: Prisma.tbl_user_accountWhereUniqueInput
+}
+
+export type tbl_user_accountUpdateOneWithoutRecommendation_settingsNestedInput = {
+  create?: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutRecommendation_settingsInput, Prisma.tbl_user_accountUncheckedCreateWithoutRecommendation_settingsInput>
+  connectOrCreate?: Prisma.tbl_user_accountCreateOrConnectWithoutRecommendation_settingsInput
+  upsert?: Prisma.tbl_user_accountUpsertWithoutRecommendation_settingsInput
+  disconnect?: Prisma.tbl_user_accountWhereInput | boolean
+  delete?: Prisma.tbl_user_accountWhereInput | boolean
+  connect?: Prisma.tbl_user_accountWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.tbl_user_accountUpdateToOneWithWhereWithoutRecommendation_settingsInput, Prisma.tbl_user_accountUpdateWithoutRecommendation_settingsInput>, Prisma.tbl_user_accountUncheckedUpdateWithoutRecommendation_settingsInput>
+}
+
+export type tbl_user_accountCreateWithoutArchived_applicantsInput = {
+  username: string
+  password_hash: string
+  full_name: string
+  email: string
+  is_active?: boolean | null
+  created_at?: Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchCreateNestedManyWithoutTbl_user_accountInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingCreateNestedManyWithoutTbl_user_accountInput
+  tbl_quota?: Prisma.tbl_quotaCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_document?: Prisma.tbl_application_documentCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantCreateNestedManyWithoutTbl_user_accountInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
+  tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
+}
+
+export type tbl_user_accountUncheckedCreateWithoutArchived_applicantsInput = {
+  user_id?: number
+  role_id?: number | null
+  username: string
+  password_hash: string
+  full_name: string
+  email: string
+  is_active?: boolean | null
+  created_at?: Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_quota?: Prisma.tbl_quotaUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_document?: Prisma.tbl_application_documentUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
+}
+
+export type tbl_user_accountCreateOrConnectWithoutArchived_applicantsInput = {
+  where: Prisma.tbl_user_accountWhereUniqueInput
+  create: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutArchived_applicantsInput, Prisma.tbl_user_accountUncheckedCreateWithoutArchived_applicantsInput>
+}
+
+export type tbl_user_accountUpsertWithoutArchived_applicantsInput = {
+  update: Prisma.XOR<Prisma.tbl_user_accountUpdateWithoutArchived_applicantsInput, Prisma.tbl_user_accountUncheckedUpdateWithoutArchived_applicantsInput>
+  create: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutArchived_applicantsInput, Prisma.tbl_user_accountUncheckedCreateWithoutArchived_applicantsInput>
+  where?: Prisma.tbl_user_accountWhereInput
+}
+
+export type tbl_user_accountUpdateToOneWithWhereWithoutArchived_applicantsInput = {
+  where?: Prisma.tbl_user_accountWhereInput
+  data: Prisma.XOR<Prisma.tbl_user_accountUpdateWithoutArchived_applicantsInput, Prisma.tbl_user_accountUncheckedUpdateWithoutArchived_applicantsInput>
+}
+
+export type tbl_user_accountUpdateWithoutArchived_applicantsInput = {
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  password_hash?: Prisma.StringFieldUpdateOperationsInput | string
+  full_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_quota?: Prisma.tbl_quotaUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_document?: Prisma.tbl_application_documentUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUpdateManyWithoutTbl_user_accountNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
+}
+
+export type tbl_user_accountUncheckedUpdateWithoutArchived_applicantsInput = {
+  user_id?: Prisma.IntFieldUpdateOperationsInput | number
+  role_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  password_hash?: Prisma.StringFieldUpdateOperationsInput | string
+  full_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_quota?: Prisma.tbl_quotaUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_document?: Prisma.tbl_application_documentUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+}
+
 export type tbl_user_accountCreateWithoutTbl_application_stage_logInput = {
   username: string
   password_hash: string
@@ -603,6 +785,10 @@ export type tbl_user_accountCreateWithoutTbl_application_stage_logInput = {
   tbl_passing_score_setting?: Prisma.tbl_passing_score_settingCreateNestedManyWithoutTbl_user_accountInput
   tbl_quota?: Prisma.tbl_quotaCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_document?: Prisma.tbl_application_documentCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
   tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
 }
 
@@ -619,6 +805,10 @@ export type tbl_user_accountUncheckedCreateWithoutTbl_application_stage_logInput
   tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
   tbl_quota?: Prisma.tbl_quotaUncheckedCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_document?: Prisma.tbl_application_documentUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
 }
 
 export type tbl_user_accountCreateOrConnectWithoutTbl_application_stage_logInput = {
@@ -648,6 +838,10 @@ export type tbl_user_accountUpdateWithoutTbl_application_stage_logInput = {
   tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUpdateManyWithoutTbl_user_accountNestedInput
   tbl_quota?: Prisma.tbl_quotaUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_document?: Prisma.tbl_application_documentUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
   tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
 }
 
@@ -664,6 +858,10 @@ export type tbl_user_accountUncheckedUpdateWithoutTbl_application_stage_logInput
   tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   tbl_quota?: Prisma.tbl_quotaUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_document?: Prisma.tbl_application_documentUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
 }
 
 export type tbl_user_accountCreateWithoutTbl_import_batchInput = {
@@ -677,6 +875,10 @@ export type tbl_user_accountCreateWithoutTbl_import_batchInput = {
   tbl_quota?: Prisma.tbl_quotaCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_document?: Prisma.tbl_application_documentCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
   tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
 }
 
@@ -693,6 +895,10 @@ export type tbl_user_accountUncheckedCreateWithoutTbl_import_batchInput = {
   tbl_quota?: Prisma.tbl_quotaUncheckedCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_document?: Prisma.tbl_application_documentUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
 }
 
 export type tbl_user_accountCreateOrConnectWithoutTbl_import_batchInput = {
@@ -722,6 +928,10 @@ export type tbl_user_accountUpdateWithoutTbl_import_batchInput = {
   tbl_quota?: Prisma.tbl_quotaUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_document?: Prisma.tbl_application_documentUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
   tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
 }
 
@@ -738,6 +948,10 @@ export type tbl_user_accountUncheckedUpdateWithoutTbl_import_batchInput = {
   tbl_quota?: Prisma.tbl_quotaUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_document?: Prisma.tbl_application_documentUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
 }
 
 export type tbl_user_accountCreateWithoutTbl_passing_score_settingInput = {
@@ -751,6 +965,10 @@ export type tbl_user_accountCreateWithoutTbl_passing_score_settingInput = {
   tbl_quota?: Prisma.tbl_quotaCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_document?: Prisma.tbl_application_documentCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
   tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
 }
 
@@ -767,6 +985,10 @@ export type tbl_user_accountUncheckedCreateWithoutTbl_passing_score_settingInput
   tbl_quota?: Prisma.tbl_quotaUncheckedCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_document?: Prisma.tbl_application_documentUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
 }
 
 export type tbl_user_accountCreateOrConnectWithoutTbl_passing_score_settingInput = {
@@ -796,6 +1018,10 @@ export type tbl_user_accountUpdateWithoutTbl_passing_score_settingInput = {
   tbl_quota?: Prisma.tbl_quotaUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_document?: Prisma.tbl_application_documentUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
   tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
 }
 
@@ -812,6 +1038,10 @@ export type tbl_user_accountUncheckedUpdateWithoutTbl_passing_score_settingInput
   tbl_quota?: Prisma.tbl_quotaUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_document?: Prisma.tbl_application_documentUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
 }
 
 export type tbl_user_accountCreateWithoutTbl_quotaInput = {
@@ -825,6 +1055,10 @@ export type tbl_user_accountCreateWithoutTbl_quotaInput = {
   tbl_passing_score_setting?: Prisma.tbl_passing_score_settingCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_document?: Prisma.tbl_application_documentCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
   tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
 }
 
@@ -841,6 +1075,10 @@ export type tbl_user_accountUncheckedCreateWithoutTbl_quotaInput = {
   tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_document?: Prisma.tbl_application_documentUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
 }
 
 export type tbl_user_accountCreateOrConnectWithoutTbl_quotaInput = {
@@ -870,6 +1108,10 @@ export type tbl_user_accountUpdateWithoutTbl_quotaInput = {
   tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_document?: Prisma.tbl_application_documentUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
   tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
 }
 
@@ -886,6 +1128,10 @@ export type tbl_user_accountUncheckedUpdateWithoutTbl_quotaInput = {
   tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_document?: Prisma.tbl_application_documentUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
 }
 
 export type tbl_user_accountCreateWithoutTbl_roleInput = {
@@ -900,6 +1146,10 @@ export type tbl_user_accountCreateWithoutTbl_roleInput = {
   tbl_quota?: Prisma.tbl_quotaCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_document?: Prisma.tbl_application_documentCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
 }
 
 export type tbl_user_accountUncheckedCreateWithoutTbl_roleInput = {
@@ -915,6 +1165,10 @@ export type tbl_user_accountUncheckedCreateWithoutTbl_roleInput = {
   tbl_quota?: Prisma.tbl_quotaUncheckedCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_document?: Prisma.tbl_application_documentUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
 }
 
 export type tbl_user_accountCreateOrConnectWithoutTbl_roleInput = {
@@ -968,6 +1222,10 @@ export type tbl_user_accountCreateWithoutTbl_application_documentInput = {
   tbl_passing_score_setting?: Prisma.tbl_passing_score_settingCreateNestedManyWithoutTbl_user_accountInput
   tbl_quota?: Prisma.tbl_quotaCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
   tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
 }
 
@@ -984,6 +1242,10 @@ export type tbl_user_accountUncheckedCreateWithoutTbl_application_documentInput 
   tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
   tbl_quota?: Prisma.tbl_quotaUncheckedCreateNestedManyWithoutTbl_user_accountInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
 }
 
 export type tbl_user_accountCreateOrConnectWithoutTbl_application_documentInput = {
@@ -1013,6 +1275,10 @@ export type tbl_user_accountUpdateWithoutTbl_application_documentInput = {
   tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUpdateManyWithoutTbl_user_accountNestedInput
   tbl_quota?: Prisma.tbl_quotaUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
   tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
 }
 
@@ -1029,6 +1295,280 @@ export type tbl_user_accountUncheckedUpdateWithoutTbl_application_documentInput 
   tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   tbl_quota?: Prisma.tbl_quotaUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+}
+
+export type tbl_user_accountCreateWithoutTbl_exam_sessionInput = {
+  username: string
+  password_hash: string
+  full_name: string
+  email: string
+  is_active?: boolean | null
+  created_at?: Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchCreateNestedManyWithoutTbl_user_accountInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingCreateNestedManyWithoutTbl_user_accountInput
+  tbl_quota?: Prisma.tbl_quotaCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_document?: Prisma.tbl_application_documentCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
+  tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
+}
+
+export type tbl_user_accountUncheckedCreateWithoutTbl_exam_sessionInput = {
+  user_id?: number
+  role_id?: number | null
+  username: string
+  password_hash: string
+  full_name: string
+  email: string
+  is_active?: boolean | null
+  created_at?: Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_quota?: Prisma.tbl_quotaUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_document?: Prisma.tbl_application_documentUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
+}
+
+export type tbl_user_accountCreateOrConnectWithoutTbl_exam_sessionInput = {
+  where: Prisma.tbl_user_accountWhereUniqueInput
+  create: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutTbl_exam_sessionInput, Prisma.tbl_user_accountUncheckedCreateWithoutTbl_exam_sessionInput>
+}
+
+export type tbl_user_accountUpsertWithoutTbl_exam_sessionInput = {
+  update: Prisma.XOR<Prisma.tbl_user_accountUpdateWithoutTbl_exam_sessionInput, Prisma.tbl_user_accountUncheckedUpdateWithoutTbl_exam_sessionInput>
+  create: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutTbl_exam_sessionInput, Prisma.tbl_user_accountUncheckedCreateWithoutTbl_exam_sessionInput>
+  where?: Prisma.tbl_user_accountWhereInput
+}
+
+export type tbl_user_accountUpdateToOneWithWhereWithoutTbl_exam_sessionInput = {
+  where?: Prisma.tbl_user_accountWhereInput
+  data: Prisma.XOR<Prisma.tbl_user_accountUpdateWithoutTbl_exam_sessionInput, Prisma.tbl_user_accountUncheckedUpdateWithoutTbl_exam_sessionInput>
+}
+
+export type tbl_user_accountUpdateWithoutTbl_exam_sessionInput = {
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  password_hash?: Prisma.StringFieldUpdateOperationsInput | string
+  full_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_quota?: Prisma.tbl_quotaUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_document?: Prisma.tbl_application_documentUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
+}
+
+export type tbl_user_accountUncheckedUpdateWithoutTbl_exam_sessionInput = {
+  user_id?: Prisma.IntFieldUpdateOperationsInput | number
+  role_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  password_hash?: Prisma.StringFieldUpdateOperationsInput | string
+  full_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_quota?: Prisma.tbl_quotaUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_document?: Prisma.tbl_application_documentUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+}
+
+export type tbl_user_accountCreateWithoutTbl_exam_session_applicantInput = {
+  username: string
+  password_hash: string
+  full_name: string
+  email: string
+  is_active?: boolean | null
+  created_at?: Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchCreateNestedManyWithoutTbl_user_accountInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingCreateNestedManyWithoutTbl_user_accountInput
+  tbl_quota?: Prisma.tbl_quotaCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_document?: Prisma.tbl_application_documentCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
+  tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
+}
+
+export type tbl_user_accountUncheckedCreateWithoutTbl_exam_session_applicantInput = {
+  user_id?: number
+  role_id?: number | null
+  username: string
+  password_hash: string
+  full_name: string
+  email: string
+  is_active?: boolean | null
+  created_at?: Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_quota?: Prisma.tbl_quotaUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_document?: Prisma.tbl_application_documentUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
+}
+
+export type tbl_user_accountCreateOrConnectWithoutTbl_exam_session_applicantInput = {
+  where: Prisma.tbl_user_accountWhereUniqueInput
+  create: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutTbl_exam_session_applicantInput, Prisma.tbl_user_accountUncheckedCreateWithoutTbl_exam_session_applicantInput>
+}
+
+export type tbl_user_accountUpsertWithoutTbl_exam_session_applicantInput = {
+  update: Prisma.XOR<Prisma.tbl_user_accountUpdateWithoutTbl_exam_session_applicantInput, Prisma.tbl_user_accountUncheckedUpdateWithoutTbl_exam_session_applicantInput>
+  create: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutTbl_exam_session_applicantInput, Prisma.tbl_user_accountUncheckedCreateWithoutTbl_exam_session_applicantInput>
+  where?: Prisma.tbl_user_accountWhereInput
+}
+
+export type tbl_user_accountUpdateToOneWithWhereWithoutTbl_exam_session_applicantInput = {
+  where?: Prisma.tbl_user_accountWhereInput
+  data: Prisma.XOR<Prisma.tbl_user_accountUpdateWithoutTbl_exam_session_applicantInput, Prisma.tbl_user_accountUncheckedUpdateWithoutTbl_exam_session_applicantInput>
+}
+
+export type tbl_user_accountUpdateWithoutTbl_exam_session_applicantInput = {
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  password_hash?: Prisma.StringFieldUpdateOperationsInput | string
+  full_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_quota?: Prisma.tbl_quotaUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_document?: Prisma.tbl_application_documentUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
+}
+
+export type tbl_user_accountUncheckedUpdateWithoutTbl_exam_session_applicantInput = {
+  user_id?: Prisma.IntFieldUpdateOperationsInput | number
+  role_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  password_hash?: Prisma.StringFieldUpdateOperationsInput | string
+  full_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_quota?: Prisma.tbl_quotaUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_document?: Prisma.tbl_application_documentUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+}
+
+export type tbl_user_accountCreateWithoutRecommendation_settingsInput = {
+  username: string
+  password_hash: string
+  full_name: string
+  email: string
+  is_active?: boolean | null
+  created_at?: Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchCreateNestedManyWithoutTbl_user_accountInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingCreateNestedManyWithoutTbl_user_accountInput
+  tbl_quota?: Prisma.tbl_quotaCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_document?: Prisma.tbl_application_documentCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
+  tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
+}
+
+export type tbl_user_accountUncheckedCreateWithoutRecommendation_settingsInput = {
+  user_id?: number
+  role_id?: number | null
+  username: string
+  password_hash: string
+  full_name: string
+  email: string
+  is_active?: boolean | null
+  created_at?: Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_quota?: Prisma.tbl_quotaUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_document?: Prisma.tbl_application_documentUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
+}
+
+export type tbl_user_accountCreateOrConnectWithoutRecommendation_settingsInput = {
+  where: Prisma.tbl_user_accountWhereUniqueInput
+  create: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutRecommendation_settingsInput, Prisma.tbl_user_accountUncheckedCreateWithoutRecommendation_settingsInput>
+}
+
+export type tbl_user_accountUpsertWithoutRecommendation_settingsInput = {
+  update: Prisma.XOR<Prisma.tbl_user_accountUpdateWithoutRecommendation_settingsInput, Prisma.tbl_user_accountUncheckedUpdateWithoutRecommendation_settingsInput>
+  create: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutRecommendation_settingsInput, Prisma.tbl_user_accountUncheckedCreateWithoutRecommendation_settingsInput>
+  where?: Prisma.tbl_user_accountWhereInput
+}
+
+export type tbl_user_accountUpdateToOneWithWhereWithoutRecommendation_settingsInput = {
+  where?: Prisma.tbl_user_accountWhereInput
+  data: Prisma.XOR<Prisma.tbl_user_accountUpdateWithoutRecommendation_settingsInput, Prisma.tbl_user_accountUncheckedUpdateWithoutRecommendation_settingsInput>
+}
+
+export type tbl_user_accountUpdateWithoutRecommendation_settingsInput = {
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  password_hash?: Prisma.StringFieldUpdateOperationsInput | string
+  full_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_quota?: Prisma.tbl_quotaUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_document?: Prisma.tbl_application_documentUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
+  tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
+}
+
+export type tbl_user_accountUncheckedUpdateWithoutRecommendation_settingsInput = {
+  user_id?: Prisma.IntFieldUpdateOperationsInput | number
+  role_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  password_hash?: Prisma.StringFieldUpdateOperationsInput | string
+  full_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_quota?: Prisma.tbl_quotaUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_document?: Prisma.tbl_application_documentUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
 }
 
 export type tbl_user_accountCreateManyTbl_roleInput = {
@@ -1053,6 +1593,10 @@ export type tbl_user_accountUpdateWithoutTbl_roleInput = {
   tbl_quota?: Prisma.tbl_quotaUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_document?: Prisma.tbl_application_documentUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
 }
 
 export type tbl_user_accountUncheckedUpdateWithoutTbl_roleInput = {
@@ -1068,6 +1612,10 @@ export type tbl_user_accountUncheckedUpdateWithoutTbl_roleInput = {
   tbl_quota?: Prisma.tbl_quotaUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   tbl_application_document?: Prisma.tbl_application_documentUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
 }
 
 export type tbl_user_accountUncheckedUpdateManyWithoutTbl_roleInput = {
@@ -1091,6 +1639,10 @@ export type Tbl_user_accountCountOutputType = {
   tbl_quota: number
   tbl_application_stage_log: number
   tbl_application_document: number
+  tbl_exam_session: number
+  tbl_exam_session_applicant: number
+  archived_applicants: number
+  recommendation_settings: number
 }
 
 export type Tbl_user_accountCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1099,6 +1651,10 @@ export type Tbl_user_accountCountOutputTypeSelect<ExtArgs extends runtime.Types.
   tbl_quota?: boolean | Tbl_user_accountCountOutputTypeCountTbl_quotaArgs
   tbl_application_stage_log?: boolean | Tbl_user_accountCountOutputTypeCountTbl_application_stage_logArgs
   tbl_application_document?: boolean | Tbl_user_accountCountOutputTypeCountTbl_application_documentArgs
+  tbl_exam_session?: boolean | Tbl_user_accountCountOutputTypeCountTbl_exam_sessionArgs
+  tbl_exam_session_applicant?: boolean | Tbl_user_accountCountOutputTypeCountTbl_exam_session_applicantArgs
+  archived_applicants?: boolean | Tbl_user_accountCountOutputTypeCountArchived_applicantsArgs
+  recommendation_settings?: boolean | Tbl_user_accountCountOutputTypeCountRecommendation_settingsArgs
 }
 
 /**
@@ -1146,6 +1702,34 @@ export type Tbl_user_accountCountOutputTypeCountTbl_application_documentArgs<Ext
   where?: Prisma.tbl_application_documentWhereInput
 }
 
+/**
+ * Tbl_user_accountCountOutputType without action
+ */
+export type Tbl_user_accountCountOutputTypeCountTbl_exam_sessionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.tbl_exam_sessionWhereInput
+}
+
+/**
+ * Tbl_user_accountCountOutputType without action
+ */
+export type Tbl_user_accountCountOutputTypeCountTbl_exam_session_applicantArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.tbl_exam_session_applicantWhereInput
+}
+
+/**
+ * Tbl_user_accountCountOutputType without action
+ */
+export type Tbl_user_accountCountOutputTypeCountArchived_applicantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.tbl_applicantWhereInput
+}
+
+/**
+ * Tbl_user_accountCountOutputType without action
+ */
+export type Tbl_user_accountCountOutputTypeCountRecommendation_settingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.tbl_recommendation_settingWhereInput
+}
+
 
 export type tbl_user_accountSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   user_id?: boolean
@@ -1161,6 +1745,10 @@ export type tbl_user_accountSelect<ExtArgs extends runtime.Types.Extensions.Inte
   tbl_quota?: boolean | Prisma.tbl_user_account$tbl_quotaArgs<ExtArgs>
   tbl_application_stage_log?: boolean | Prisma.tbl_user_account$tbl_application_stage_logArgs<ExtArgs>
   tbl_application_document?: boolean | Prisma.tbl_user_account$tbl_application_documentArgs<ExtArgs>
+  tbl_exam_session?: boolean | Prisma.tbl_user_account$tbl_exam_sessionArgs<ExtArgs>
+  tbl_exam_session_applicant?: boolean | Prisma.tbl_user_account$tbl_exam_session_applicantArgs<ExtArgs>
+  archived_applicants?: boolean | Prisma.tbl_user_account$archived_applicantsArgs<ExtArgs>
+  recommendation_settings?: boolean | Prisma.tbl_user_account$recommendation_settingsArgs<ExtArgs>
   tbl_role?: boolean | Prisma.tbl_user_account$tbl_roleArgs<ExtArgs>
   _count?: boolean | Prisma.Tbl_user_accountCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tbl_user_account"]>
@@ -1207,6 +1795,10 @@ export type tbl_user_accountInclude<ExtArgs extends runtime.Types.Extensions.Int
   tbl_quota?: boolean | Prisma.tbl_user_account$tbl_quotaArgs<ExtArgs>
   tbl_application_stage_log?: boolean | Prisma.tbl_user_account$tbl_application_stage_logArgs<ExtArgs>
   tbl_application_document?: boolean | Prisma.tbl_user_account$tbl_application_documentArgs<ExtArgs>
+  tbl_exam_session?: boolean | Prisma.tbl_user_account$tbl_exam_sessionArgs<ExtArgs>
+  tbl_exam_session_applicant?: boolean | Prisma.tbl_user_account$tbl_exam_session_applicantArgs<ExtArgs>
+  archived_applicants?: boolean | Prisma.tbl_user_account$archived_applicantsArgs<ExtArgs>
+  recommendation_settings?: boolean | Prisma.tbl_user_account$recommendation_settingsArgs<ExtArgs>
   tbl_role?: boolean | Prisma.tbl_user_account$tbl_roleArgs<ExtArgs>
   _count?: boolean | Prisma.Tbl_user_accountCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -1225,6 +1817,10 @@ export type $tbl_user_accountPayload<ExtArgs extends runtime.Types.Extensions.In
     tbl_quota: Prisma.$tbl_quotaPayload<ExtArgs>[]
     tbl_application_stage_log: Prisma.$tbl_application_stage_logPayload<ExtArgs>[]
     tbl_application_document: Prisma.$tbl_application_documentPayload<ExtArgs>[]
+    tbl_exam_session: Prisma.$tbl_exam_sessionPayload<ExtArgs>[]
+    tbl_exam_session_applicant: Prisma.$tbl_exam_session_applicantPayload<ExtArgs>[]
+    archived_applicants: Prisma.$tbl_applicantPayload<ExtArgs>[]
+    recommendation_settings: Prisma.$tbl_recommendation_settingPayload<ExtArgs>[]
     tbl_role: Prisma.$tbl_rolePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1635,6 +2231,10 @@ export interface Prisma__tbl_user_accountClient<T, Null = never, ExtArgs extends
   tbl_quota<T extends Prisma.tbl_user_account$tbl_quotaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_user_account$tbl_quotaArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_quotaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   tbl_application_stage_log<T extends Prisma.tbl_user_account$tbl_application_stage_logArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_user_account$tbl_application_stage_logArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_application_stage_logPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   tbl_application_document<T extends Prisma.tbl_user_account$tbl_application_documentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_user_account$tbl_application_documentArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_application_documentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tbl_exam_session<T extends Prisma.tbl_user_account$tbl_exam_sessionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_user_account$tbl_exam_sessionArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_exam_sessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tbl_exam_session_applicant<T extends Prisma.tbl_user_account$tbl_exam_session_applicantArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_user_account$tbl_exam_session_applicantArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_exam_session_applicantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  archived_applicants<T extends Prisma.tbl_user_account$archived_applicantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_user_account$archived_applicantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_applicantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  recommendation_settings<T extends Prisma.tbl_user_account$recommendation_settingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_user_account$recommendation_settingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_recommendation_settingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   tbl_role<T extends Prisma.tbl_user_account$tbl_roleArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_user_account$tbl_roleArgs<ExtArgs>>): Prisma.Prisma__tbl_roleClient<runtime.Types.Result.GetResult<Prisma.$tbl_rolePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2191,6 +2791,102 @@ export type tbl_user_account$tbl_application_documentArgs<ExtArgs extends runtim
   take?: number
   skip?: number
   distinct?: Prisma.Tbl_application_documentScalarFieldEnum | Prisma.Tbl_application_documentScalarFieldEnum[]
+}
+
+/**
+ * tbl_user_account.tbl_exam_session
+ */
+export type tbl_user_account$tbl_exam_sessionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the tbl_exam_session
+   */
+  select?: Prisma.tbl_exam_sessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the tbl_exam_session
+   */
+  omit?: Prisma.tbl_exam_sessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.tbl_exam_sessionInclude<ExtArgs> | null
+  where?: Prisma.tbl_exam_sessionWhereInput
+  orderBy?: Prisma.tbl_exam_sessionOrderByWithRelationInput | Prisma.tbl_exam_sessionOrderByWithRelationInput[]
+  cursor?: Prisma.tbl_exam_sessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Tbl_exam_sessionScalarFieldEnum | Prisma.Tbl_exam_sessionScalarFieldEnum[]
+}
+
+/**
+ * tbl_user_account.tbl_exam_session_applicant
+ */
+export type tbl_user_account$tbl_exam_session_applicantArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the tbl_exam_session_applicant
+   */
+  select?: Prisma.tbl_exam_session_applicantSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the tbl_exam_session_applicant
+   */
+  omit?: Prisma.tbl_exam_session_applicantOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.tbl_exam_session_applicantInclude<ExtArgs> | null
+  where?: Prisma.tbl_exam_session_applicantWhereInput
+  orderBy?: Prisma.tbl_exam_session_applicantOrderByWithRelationInput | Prisma.tbl_exam_session_applicantOrderByWithRelationInput[]
+  cursor?: Prisma.tbl_exam_session_applicantWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Tbl_exam_session_applicantScalarFieldEnum | Prisma.Tbl_exam_session_applicantScalarFieldEnum[]
+}
+
+/**
+ * tbl_user_account.archived_applicants
+ */
+export type tbl_user_account$archived_applicantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the tbl_applicant
+   */
+  select?: Prisma.tbl_applicantSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the tbl_applicant
+   */
+  omit?: Prisma.tbl_applicantOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.tbl_applicantInclude<ExtArgs> | null
+  where?: Prisma.tbl_applicantWhereInput
+  orderBy?: Prisma.tbl_applicantOrderByWithRelationInput | Prisma.tbl_applicantOrderByWithRelationInput[]
+  cursor?: Prisma.tbl_applicantWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Tbl_applicantScalarFieldEnum | Prisma.Tbl_applicantScalarFieldEnum[]
+}
+
+/**
+ * tbl_user_account.recommendation_settings
+ */
+export type tbl_user_account$recommendation_settingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the tbl_recommendation_setting
+   */
+  select?: Prisma.tbl_recommendation_settingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the tbl_recommendation_setting
+   */
+  omit?: Prisma.tbl_recommendation_settingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.tbl_recommendation_settingInclude<ExtArgs> | null
+  where?: Prisma.tbl_recommendation_settingWhereInput
+  orderBy?: Prisma.tbl_recommendation_settingOrderByWithRelationInput | Prisma.tbl_recommendation_settingOrderByWithRelationInput[]
+  cursor?: Prisma.tbl_recommendation_settingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Tbl_recommendation_settingScalarFieldEnum | Prisma.Tbl_recommendation_settingScalarFieldEnum[]
 }
 
 /**

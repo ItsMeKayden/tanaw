@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function RegistrarPage() {
-  redirect("/dashboard");
+  redirect("/registrar/applicants");
 }

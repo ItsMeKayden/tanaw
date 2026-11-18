@@ -30,30 +30,35 @@ export type Tbl_program_competencyAvgAggregateOutputType = {
   program_id: number | null
   competency_id: number | null
   weight: runtime.Decimal | null
+  min_score: runtime.Decimal | null
 }
 
 export type Tbl_program_competencySumAggregateOutputType = {
   program_id: number | null
   competency_id: number | null
   weight: runtime.Decimal | null
+  min_score: runtime.Decimal | null
 }
 
 export type Tbl_program_competencyMinAggregateOutputType = {
   program_id: number | null
   competency_id: number | null
   weight: runtime.Decimal | null
+  min_score: runtime.Decimal | null
 }
 
 export type Tbl_program_competencyMaxAggregateOutputType = {
   program_id: number | null
   competency_id: number | null
   weight: runtime.Decimal | null
+  min_score: runtime.Decimal | null
 }
 
 export type Tbl_program_competencyCountAggregateOutputType = {
   program_id: number
   competency_id: number
   weight: number
+  min_score: number
   _all: number
 }
 
@@ -62,30 +67,35 @@ export type Tbl_program_competencyAvgAggregateInputType = {
   program_id?: true
   competency_id?: true
   weight?: true
+  min_score?: true
 }
 
 export type Tbl_program_competencySumAggregateInputType = {
   program_id?: true
   competency_id?: true
   weight?: true
+  min_score?: true
 }
 
 export type Tbl_program_competencyMinAggregateInputType = {
   program_id?: true
   competency_id?: true
   weight?: true
+  min_score?: true
 }
 
 export type Tbl_program_competencyMaxAggregateInputType = {
   program_id?: true
   competency_id?: true
   weight?: true
+  min_score?: true
 }
 
 export type Tbl_program_competencyCountAggregateInputType = {
   program_id?: true
   competency_id?: true
   weight?: true
+  min_score?: true
   _all?: true
 }
 
@@ -179,6 +189,7 @@ export type Tbl_program_competencyGroupByOutputType = {
   program_id: number
   competency_id: number
   weight: runtime.Decimal
+  min_score: runtime.Decimal | null
   _count: Tbl_program_competencyCountAggregateOutputType | null
   _avg: Tbl_program_competencyAvgAggregateOutputType | null
   _sum: Tbl_program_competencySumAggregateOutputType | null
@@ -208,6 +219,7 @@ export type tbl_program_competencyWhereInput = {
   program_id?: Prisma.IntFilter<"tbl_program_competency"> | number
   competency_id?: Prisma.IntFilter<"tbl_program_competency"> | number
   weight?: Prisma.DecimalFilter<"tbl_program_competency"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: Prisma.DecimalNullableFilter<"tbl_program_competency"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   tbl_competency?: Prisma.XOR<Prisma.Tbl_competencyScalarRelationFilter, Prisma.tbl_competencyWhereInput>
   tbl_program?: Prisma.XOR<Prisma.Tbl_programScalarRelationFilter, Prisma.tbl_programWhereInput>
 }
@@ -216,6 +228,7 @@ export type tbl_program_competencyOrderByWithRelationInput = {
   program_id?: Prisma.SortOrder
   competency_id?: Prisma.SortOrder
   weight?: Prisma.SortOrder
+  min_score?: Prisma.SortOrderInput | Prisma.SortOrder
   tbl_competency?: Prisma.tbl_competencyOrderByWithRelationInput
   tbl_program?: Prisma.tbl_programOrderByWithRelationInput
 }
@@ -228,6 +241,7 @@ export type tbl_program_competencyWhereUniqueInput = Prisma.AtLeast<{
   program_id?: Prisma.IntFilter<"tbl_program_competency"> | number
   competency_id?: Prisma.IntFilter<"tbl_program_competency"> | number
   weight?: Prisma.DecimalFilter<"tbl_program_competency"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: Prisma.DecimalNullableFilter<"tbl_program_competency"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   tbl_competency?: Prisma.XOR<Prisma.Tbl_competencyScalarRelationFilter, Prisma.tbl_competencyWhereInput>
   tbl_program?: Prisma.XOR<Prisma.Tbl_programScalarRelationFilter, Prisma.tbl_programWhereInput>
 }, "program_id_competency_id">
@@ -236,6 +250,7 @@ export type tbl_program_competencyOrderByWithAggregationInput = {
   program_id?: Prisma.SortOrder
   competency_id?: Prisma.SortOrder
   weight?: Prisma.SortOrder
+  min_score?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.tbl_program_competencyCountOrderByAggregateInput
   _avg?: Prisma.tbl_program_competencyAvgOrderByAggregateInput
   _max?: Prisma.tbl_program_competencyMaxOrderByAggregateInput
@@ -250,10 +265,12 @@ export type tbl_program_competencyScalarWhereWithAggregatesInput = {
   program_id?: Prisma.IntWithAggregatesFilter<"tbl_program_competency"> | number
   competency_id?: Prisma.IntWithAggregatesFilter<"tbl_program_competency"> | number
   weight?: Prisma.DecimalWithAggregatesFilter<"tbl_program_competency"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: Prisma.DecimalNullableWithAggregatesFilter<"tbl_program_competency"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
 }
 
 export type tbl_program_competencyCreateInput = {
   weight: runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   tbl_competency: Prisma.tbl_competencyCreateNestedOneWithoutTbl_program_competencyInput
   tbl_program: Prisma.tbl_programCreateNestedOneWithoutTbl_program_competencyInput
 }
@@ -262,10 +279,12 @@ export type tbl_program_competencyUncheckedCreateInput = {
   program_id: number
   competency_id: number
   weight: runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
 }
 
 export type tbl_program_competencyUpdateInput = {
   weight?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   tbl_competency?: Prisma.tbl_competencyUpdateOneRequiredWithoutTbl_program_competencyNestedInput
   tbl_program?: Prisma.tbl_programUpdateOneRequiredWithoutTbl_program_competencyNestedInput
 }
@@ -274,22 +293,26 @@ export type tbl_program_competencyUncheckedUpdateInput = {
   program_id?: Prisma.IntFieldUpdateOperationsInput | number
   competency_id?: Prisma.IntFieldUpdateOperationsInput | number
   weight?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
 }
 
 export type tbl_program_competencyCreateManyInput = {
   program_id: number
   competency_id: number
   weight: runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
 }
 
 export type tbl_program_competencyUpdateManyMutationInput = {
   weight?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
 }
 
 export type tbl_program_competencyUncheckedUpdateManyInput = {
   program_id?: Prisma.IntFieldUpdateOperationsInput | number
   competency_id?: Prisma.IntFieldUpdateOperationsInput | number
   weight?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
 }
 
 export type Tbl_program_competencyListRelationFilter = {
@@ -311,30 +334,35 @@ export type tbl_program_competencyCountOrderByAggregateInput = {
   program_id?: Prisma.SortOrder
   competency_id?: Prisma.SortOrder
   weight?: Prisma.SortOrder
+  min_score?: Prisma.SortOrder
 }
 
 export type tbl_program_competencyAvgOrderByAggregateInput = {
   program_id?: Prisma.SortOrder
   competency_id?: Prisma.SortOrder
   weight?: Prisma.SortOrder
+  min_score?: Prisma.SortOrder
 }
 
 export type tbl_program_competencyMaxOrderByAggregateInput = {
   program_id?: Prisma.SortOrder
   competency_id?: Prisma.SortOrder
   weight?: Prisma.SortOrder
+  min_score?: Prisma.SortOrder
 }
 
 export type tbl_program_competencyMinOrderByAggregateInput = {
   program_id?: Prisma.SortOrder
   competency_id?: Prisma.SortOrder
   weight?: Prisma.SortOrder
+  min_score?: Prisma.SortOrder
 }
 
 export type tbl_program_competencySumOrderByAggregateInput = {
   program_id?: Prisma.SortOrder
   competency_id?: Prisma.SortOrder
   weight?: Prisma.SortOrder
+  min_score?: Prisma.SortOrder
 }
 
 export type tbl_program_competencyCreateNestedManyWithoutTbl_competencyInput = {
@@ -421,22 +449,16 @@ export type tbl_program_competencyUncheckedUpdateManyWithoutTbl_programNestedInp
   deleteMany?: Prisma.tbl_program_competencyScalarWhereInput | Prisma.tbl_program_competencyScalarWhereInput[]
 }
 
-export type DecimalFieldUpdateOperationsInput = {
-  set?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
-}
-
 export type tbl_program_competencyCreateWithoutTbl_competencyInput = {
   weight: runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   tbl_program: Prisma.tbl_programCreateNestedOneWithoutTbl_program_competencyInput
 }
 
 export type tbl_program_competencyUncheckedCreateWithoutTbl_competencyInput = {
   program_id: number
   weight: runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
 }
 
 export type tbl_program_competencyCreateOrConnectWithoutTbl_competencyInput = {
@@ -472,16 +494,19 @@ export type tbl_program_competencyScalarWhereInput = {
   program_id?: Prisma.IntFilter<"tbl_program_competency"> | number
   competency_id?: Prisma.IntFilter<"tbl_program_competency"> | number
   weight?: Prisma.DecimalFilter<"tbl_program_competency"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: Prisma.DecimalNullableFilter<"tbl_program_competency"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
 }
 
 export type tbl_program_competencyCreateWithoutTbl_programInput = {
   weight: runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   tbl_competency: Prisma.tbl_competencyCreateNestedOneWithoutTbl_program_competencyInput
 }
 
 export type tbl_program_competencyUncheckedCreateWithoutTbl_programInput = {
   competency_id: number
   weight: runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
 }
 
 export type tbl_program_competencyCreateOrConnectWithoutTbl_programInput = {
@@ -513,41 +538,49 @@ export type tbl_program_competencyUpdateManyWithWhereWithoutTbl_programInput = {
 export type tbl_program_competencyCreateManyTbl_competencyInput = {
   program_id: number
   weight: runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
 }
 
 export type tbl_program_competencyUpdateWithoutTbl_competencyInput = {
   weight?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   tbl_program?: Prisma.tbl_programUpdateOneRequiredWithoutTbl_program_competencyNestedInput
 }
 
 export type tbl_program_competencyUncheckedUpdateWithoutTbl_competencyInput = {
   program_id?: Prisma.IntFieldUpdateOperationsInput | number
   weight?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
 }
 
 export type tbl_program_competencyUncheckedUpdateManyWithoutTbl_competencyInput = {
   program_id?: Prisma.IntFieldUpdateOperationsInput | number
   weight?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
 }
 
 export type tbl_program_competencyCreateManyTbl_programInput = {
   competency_id: number
   weight: runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
 }
 
 export type tbl_program_competencyUpdateWithoutTbl_programInput = {
   weight?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   tbl_competency?: Prisma.tbl_competencyUpdateOneRequiredWithoutTbl_program_competencyNestedInput
 }
 
 export type tbl_program_competencyUncheckedUpdateWithoutTbl_programInput = {
   competency_id?: Prisma.IntFieldUpdateOperationsInput | number
   weight?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
 }
 
 export type tbl_program_competencyUncheckedUpdateManyWithoutTbl_programInput = {
   competency_id?: Prisma.IntFieldUpdateOperationsInput | number
   weight?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  min_score?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
 }
 
 
@@ -556,6 +589,7 @@ export type tbl_program_competencySelect<ExtArgs extends runtime.Types.Extension
   program_id?: boolean
   competency_id?: boolean
   weight?: boolean
+  min_score?: boolean
   tbl_competency?: boolean | Prisma.tbl_competencyDefaultArgs<ExtArgs>
   tbl_program?: boolean | Prisma.tbl_programDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tbl_program_competency"]>
@@ -564,6 +598,7 @@ export type tbl_program_competencySelectCreateManyAndReturn<ExtArgs extends runt
   program_id?: boolean
   competency_id?: boolean
   weight?: boolean
+  min_score?: boolean
   tbl_competency?: boolean | Prisma.tbl_competencyDefaultArgs<ExtArgs>
   tbl_program?: boolean | Prisma.tbl_programDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tbl_program_competency"]>
@@ -572,6 +607,7 @@ export type tbl_program_competencySelectUpdateManyAndReturn<ExtArgs extends runt
   program_id?: boolean
   competency_id?: boolean
   weight?: boolean
+  min_score?: boolean
   tbl_competency?: boolean | Prisma.tbl_competencyDefaultArgs<ExtArgs>
   tbl_program?: boolean | Prisma.tbl_programDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tbl_program_competency"]>
@@ -580,9 +616,10 @@ export type tbl_program_competencySelectScalar = {
   program_id?: boolean
   competency_id?: boolean
   weight?: boolean
+  min_score?: boolean
 }
 
-export type tbl_program_competencyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"program_id" | "competency_id" | "weight", ExtArgs["result"]["tbl_program_competency"]>
+export type tbl_program_competencyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"program_id" | "competency_id" | "weight" | "min_score", ExtArgs["result"]["tbl_program_competency"]>
 export type tbl_program_competencyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tbl_competency?: boolean | Prisma.tbl_competencyDefaultArgs<ExtArgs>
   tbl_program?: boolean | Prisma.tbl_programDefaultArgs<ExtArgs>
@@ -606,6 +643,7 @@ export type $tbl_program_competencyPayload<ExtArgs extends runtime.Types.Extensi
     program_id: number
     competency_id: number
     weight: runtime.Decimal
+    min_score: runtime.Decimal | null
   }, ExtArgs["result"]["tbl_program_competency"]>
   composites: {}
 }
@@ -1034,6 +1072,7 @@ export interface tbl_program_competencyFieldRefs {
   readonly program_id: Prisma.FieldRef<"tbl_program_competency", 'Int'>
   readonly competency_id: Prisma.FieldRef<"tbl_program_competency", 'Int'>
   readonly weight: Prisma.FieldRef<"tbl_program_competency", 'Decimal'>
+  readonly min_score: Prisma.FieldRef<"tbl_program_competency", 'Decimal'>
 }
     
 

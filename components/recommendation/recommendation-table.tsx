@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Search } from "lucide-react";
 
 import type { RecommendationRow, RecommendationStatus } from "@/features/recommendation/queries";
+import { Pagination } from "@/components/ui/pagination";
 
 type Filter = "ALL" | Exclude<RecommendationStatus, "NOT_GENERATED">;
 
@@ -16,6 +18,9 @@ const FILTERS: { value: Filter; label: string }[] = [
 
 const PAGE_SIZE = 10;
 const cell = "border border-neutral-500 px-3 py-2";
+const headCell = `${cell} bg-[#b4b7f3] text-left font-medium whitespace-nowrap`;
+const fieldClass =
+  "h-9 rounded-full border border-neutral-500 bg-white text-sm outline-none focus:border-[#191e73] focus:ring-2 focus:ring-[#191e73]/20";
 
 function ResultBadge({ status }: Readonly<{ status: RecommendationStatus }>) {
   if (status === "COMPATIBLE") {
@@ -28,6 +33,33 @@ function ResultBadge({ status }: Readonly<{ status: RecommendationStatus }>) {
     return <span className="rounded-full bg-neutral-500 px-2.5 py-0.5 text-xs font-medium whitespace-nowrap text-white" title="Below the minimum match for every course, including the preferred one">Below minimum</span>;
   }
   return <span className="rounded-full bg-neutral-200 px-2.5 py-0.5 text-xs whitespace-nowrap text-neutral-700">Not generated</span>;
+}
+
+/** Course code with its match % on one line and an optional note below. */
+function CourseMatch({
+  course,
+  match,
+  note,
+  warning = false,
+}: Readonly<{
+  course: { code: string; name: string } | null;
+  match: number | null;
+  note: string | null;
+  /** Show the note as an advisory warning (subject minimums not met). */
+  warning?: boolean;
+}>) {
+  if (!course) return <span className="text-neutral-500">--</span>;
+  return (
+    <div title={course.name}>
+      <div className="flex items-baseline justify-between gap-2">
+        <span className="font-medium">{course.code}</span>
+        {match !== null && <span className="tabular-nums">{match}%</span>}
+      </div>
+      {note && (
+        <span className={`block text-xs ${warning ? "font-medium text-red-700" : "text-neutral-500"}`}>{note}</span>
+      )}
+    </div>
+  );
 }
 
 export default function RecommendationTable({
@@ -68,57 +100,72 @@ export default function RecommendationTable({
                 setFilter(option.value);
                 setPage(1);
               }}
-              className={`rounded-full border px-4 py-1 text-sm transition-colors ${
+              className={`h-9 rounded-full border px-4 text-sm whitespace-nowrap transition-colors ${
                 filter === option.value
-                  ? "border-neutral-600 bg-neutral-500 text-white"
+                  ? "border-[#191e73] bg-[#191e73] font-semibold text-white"
                   : "border-neutral-500 bg-white hover:bg-neutral-100"
               }`}
             >
               {option.label}
             </button>
           ))}
-          <input
-            type="search"
-            value={query}
-            onChange={(event) => {
-              setQuery(event.target.value);
-              setPage(1);
-            }}
-            placeholder="Search applicant"
-            aria-label="Search applicants"
-            className="h-8 w-full rounded-full border border-neutral-500 bg-white px-4 text-sm outline-none focus:border-[#191e73] sm:w-52"
-          />
         </div>
 
-        <label className="flex items-center gap-2 rounded-lg border border-neutral-500 bg-white px-3 py-1.5 text-sm">
-          <span className="text-neutral-700">Course:</span>
-          <select
-            value={course}
-            onChange={(event) => {
-              setCourse(event.target.value);
-              setPage(1);
-            }}
-            className="bg-transparent font-medium outline-none"
-          >
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <label className="relative block w-full sm:w-64">
+            <span className="sr-only">Search applicants</span>
+            <Search
+              className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-neutral-500"
+              aria-hidden="true"
+            />
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => {
+                setQuery(event.target.value);
+                setPage(1);
+              }}
+              placeholder="Search name or application no."
+              className={`${fieldClass} w-full pr-4 pl-9`}
+            />
+          </label>
+          <label className="flex items-center gap-2 text-sm">
+            <span className="text-neutral-700">Course</span>
+            <select
+              value={course}
+              onChange={(event) => {
+                setCourse(event.target.value);
+                setPage(1);
+              }}
+              className={`${fieldClass} px-3 font-medium`}
+            >
             <option value="ALL">All</option>
             {courses.map((c) => (
               <option key={c.code} value={c.code}>
                 {c.code}
               </option>
             ))}
-          </select>
-        </label>
+            </select>
+          </label>
+        </div>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse bg-white/90 text-sm">
+        <table className="w-full min-w-[760px] table-fixed border-collapse bg-white/90 text-sm">
+          <colgroup>
+            <col className="w-[30%]" />
+            <col className="w-[11%]" />
+            <col className="w-[20%]" />
+            <col className="w-[20%]" />
+            <col className="w-[19%]" />
+          </colgroup>
           <thead>
-            <tr className="bg-neutral-100 text-left">
-              {["Applicant", "Score", "Preferred course", "Recommended course", "Match", "Result"].map((heading) => (
-                <th key={heading} className={`${cell} font-medium`}>
-                  {heading}
-                </th>
-              ))}
+            <tr>
+              <th className={headCell}>Applicant</th>
+              <th className={`${headCell} text-right`}>Exam score</th>
+              <th className={headCell}>Preferred course</th>
+              <th className={headCell}>Recommended course</th>
+              <th className={headCell}>Result</th>
             </tr>
           </thead>
           <tbody>
@@ -134,26 +181,29 @@ export default function RecommendationTable({
                     </Link>
                     <span className="block text-xs text-neutral-600">{row.application_no}</span>
                   </td>
-                  <td className={`${cell} tabular-nums`}>
+                  <td className={`${cell} text-right tabular-nums`}>
                     {row.exam_percentage === null ? "--" : `${row.exam_percentage}%`}
                   </td>
                   <td className={cell}>
-                    {row.preferred ? (
-                      <span title={row.preferred.name}>
-                        {row.preferred.code}
-                        {row.preferred_match !== null && (
-                          <span className="ml-1 text-xs text-neutral-600 tabular-nums">({row.preferred_match}%)</span>
-                        )}
-                      </span>
-                    ) : (
-                      "--"
-                    )}
+                    <CourseMatch
+                      course={row.preferred}
+                      match={row.preferred_match}
+                      warning={row.shortfalls.length > 0}
+                      note={
+                        !row.preferred
+                          ? null
+                          : row.shortfalls.length > 0
+                            ? `Below min.: ${row.shortfalls.map((f) => (f.min === null ? f.label : `${f.label} ${f.min}%`)).join(", ")}`
+                            : `min. ${row.min_match}%`
+                      }
+                    />
                   </td>
                   <td className={cell}>
-                    {row.recommended ? <span title={row.recommended.name}>{row.recommended.code}</span> : "--"}
-                  </td>
-                  <td className={`${cell} tabular-nums`}>
-                    {row.recommended_match === null ? "--" : `${row.recommended_match}%`}
+                    <CourseMatch
+                      course={row.recommended}
+                      match={row.recommended_match}
+                      note={row.recommended && row.recommended.id === row.preferred?.id ? "Same as preferred" : null}
+                    />
                   </td>
                   <td className={cell}>
                     <ResultBadge status={row.status} />
@@ -162,7 +212,7 @@ export default function RecommendationTable({
               ))
             ) : (
               <tr>
-                <td colSpan={6} className={`${cell} py-10 text-center text-neutral-600`}>
+                <td colSpan={5} className={`${cell} py-10 text-center text-neutral-600`}>
                   {rows.length === 0
                     ? "No applicants have taken the exam in this school year."
                     : "No applicants match this filter."}
@@ -173,34 +223,15 @@ export default function RecommendationTable({
         </table>
       </div>
 
-      {filtered.length > PAGE_SIZE && (
-        <div className="flex items-center justify-between text-sm">
-          <p className="text-neutral-600">
-            Showing {start + 1}–{Math.min(start + PAGE_SIZE, filtered.length)} of {filtered.length}
-          </p>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setPage(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="rounded-full border border-neutral-500 bg-white px-4 py-1 disabled:opacity-50"
-            >
-              Previous
-            </button>
-            <span>
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              type="button"
-              onClick={() => setPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="rounded-full border border-neutral-500 bg-white px-4 py-1 disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      )}
+      <Pagination
+        page={currentPage}
+        totalPages={totalPages}
+        start={filtered.length === 0 ? 0 : start + 1}
+        end={Math.min(start + PAGE_SIZE, filtered.length)}
+        total={filtered.length}
+        noun="applicants"
+        onPageChange={setPage}
+      />
     </div>
   );
 }

@@ -31,6 +31,7 @@ export type Tbl_course_recommendationAvgAggregateOutputType = {
   program_id: number | null
   compatibility_score: runtime.Decimal | null
   rank_no: number | null
+  unmet_competency_ids: number | null
 }
 
 export type Tbl_course_recommendationSumAggregateOutputType = {
@@ -38,6 +39,7 @@ export type Tbl_course_recommendationSumAggregateOutputType = {
   program_id: number | null
   compatibility_score: runtime.Decimal | null
   rank_no: number | null
+  unmet_competency_ids: number[]
 }
 
 export type Tbl_course_recommendationMinAggregateOutputType = {
@@ -62,6 +64,7 @@ export type Tbl_course_recommendationCountAggregateOutputType = {
   compatibility_score: number
   rank_no: number
   generated_at: number
+  unmet_competency_ids: number
   _all: number
 }
 
@@ -71,6 +74,7 @@ export type Tbl_course_recommendationAvgAggregateInputType = {
   program_id?: true
   compatibility_score?: true
   rank_no?: true
+  unmet_competency_ids?: true
 }
 
 export type Tbl_course_recommendationSumAggregateInputType = {
@@ -78,6 +82,7 @@ export type Tbl_course_recommendationSumAggregateInputType = {
   program_id?: true
   compatibility_score?: true
   rank_no?: true
+  unmet_competency_ids?: true
 }
 
 export type Tbl_course_recommendationMinAggregateInputType = {
@@ -102,6 +107,7 @@ export type Tbl_course_recommendationCountAggregateInputType = {
   compatibility_score?: true
   rank_no?: true
   generated_at?: true
+  unmet_competency_ids?: true
   _all?: true
 }
 
@@ -197,6 +203,7 @@ export type Tbl_course_recommendationGroupByOutputType = {
   compatibility_score: runtime.Decimal | null
   rank_no: number | null
   generated_at: Date | null
+  unmet_competency_ids: number[]
   _count: Tbl_course_recommendationCountAggregateOutputType | null
   _avg: Tbl_course_recommendationAvgAggregateOutputType | null
   _sum: Tbl_course_recommendationSumAggregateOutputType | null
@@ -228,6 +235,7 @@ export type tbl_course_recommendationWhereInput = {
   compatibility_score?: Prisma.DecimalNullableFilter<"tbl_course_recommendation"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: Prisma.IntNullableFilter<"tbl_course_recommendation"> | number | null
   generated_at?: Prisma.DateTimeNullableFilter<"tbl_course_recommendation"> | Date | string | null
+  unmet_competency_ids?: Prisma.IntNullableListFilter<"tbl_course_recommendation">
   tbl_application?: Prisma.XOR<Prisma.Tbl_applicationScalarRelationFilter, Prisma.tbl_applicationWhereInput>
   tbl_program?: Prisma.XOR<Prisma.Tbl_programScalarRelationFilter, Prisma.tbl_programWhereInput>
 }
@@ -238,6 +246,7 @@ export type tbl_course_recommendationOrderByWithRelationInput = {
   compatibility_score?: Prisma.SortOrderInput | Prisma.SortOrder
   rank_no?: Prisma.SortOrderInput | Prisma.SortOrder
   generated_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  unmet_competency_ids?: Prisma.SortOrder
   tbl_application?: Prisma.tbl_applicationOrderByWithRelationInput
   tbl_program?: Prisma.tbl_programOrderByWithRelationInput
 }
@@ -252,6 +261,7 @@ export type tbl_course_recommendationWhereUniqueInput = Prisma.AtLeast<{
   compatibility_score?: Prisma.DecimalNullableFilter<"tbl_course_recommendation"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: Prisma.IntNullableFilter<"tbl_course_recommendation"> | number | null
   generated_at?: Prisma.DateTimeNullableFilter<"tbl_course_recommendation"> | Date | string | null
+  unmet_competency_ids?: Prisma.IntNullableListFilter<"tbl_course_recommendation">
   tbl_application?: Prisma.XOR<Prisma.Tbl_applicationScalarRelationFilter, Prisma.tbl_applicationWhereInput>
   tbl_program?: Prisma.XOR<Prisma.Tbl_programScalarRelationFilter, Prisma.tbl_programWhereInput>
 }, "application_id_program_id">
@@ -262,6 +272,7 @@ export type tbl_course_recommendationOrderByWithAggregationInput = {
   compatibility_score?: Prisma.SortOrderInput | Prisma.SortOrder
   rank_no?: Prisma.SortOrderInput | Prisma.SortOrder
   generated_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  unmet_competency_ids?: Prisma.SortOrder
   _count?: Prisma.tbl_course_recommendationCountOrderByAggregateInput
   _avg?: Prisma.tbl_course_recommendationAvgOrderByAggregateInput
   _max?: Prisma.tbl_course_recommendationMaxOrderByAggregateInput
@@ -278,12 +289,14 @@ export type tbl_course_recommendationScalarWhereWithAggregatesInput = {
   compatibility_score?: Prisma.DecimalNullableWithAggregatesFilter<"tbl_course_recommendation"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: Prisma.IntNullableWithAggregatesFilter<"tbl_course_recommendation"> | number | null
   generated_at?: Prisma.DateTimeNullableWithAggregatesFilter<"tbl_course_recommendation"> | Date | string | null
+  unmet_competency_ids?: Prisma.IntNullableListFilter<"tbl_course_recommendation">
 }
 
 export type tbl_course_recommendationCreateInput = {
   compatibility_score?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: number | null
   generated_at?: Date | string | null
+  unmet_competency_ids?: Prisma.tbl_course_recommendationCreateunmet_competency_idsInput | number[]
   tbl_application: Prisma.tbl_applicationCreateNestedOneWithoutTbl_course_recommendationInput
   tbl_program: Prisma.tbl_programCreateNestedOneWithoutTbl_course_recommendationInput
 }
@@ -294,12 +307,14 @@ export type tbl_course_recommendationUncheckedCreateInput = {
   compatibility_score?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: number | null
   generated_at?: Date | string | null
+  unmet_competency_ids?: Prisma.tbl_course_recommendationCreateunmet_competency_idsInput | number[]
 }
 
 export type tbl_course_recommendationUpdateInput = {
   compatibility_score?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  unmet_competency_ids?: Prisma.tbl_course_recommendationUpdateunmet_competency_idsInput | number[]
   tbl_application?: Prisma.tbl_applicationUpdateOneRequiredWithoutTbl_course_recommendationNestedInput
   tbl_program?: Prisma.tbl_programUpdateOneRequiredWithoutTbl_course_recommendationNestedInput
 }
@@ -310,6 +325,7 @@ export type tbl_course_recommendationUncheckedUpdateInput = {
   compatibility_score?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  unmet_competency_ids?: Prisma.tbl_course_recommendationUpdateunmet_competency_idsInput | number[]
 }
 
 export type tbl_course_recommendationCreateManyInput = {
@@ -318,12 +334,14 @@ export type tbl_course_recommendationCreateManyInput = {
   compatibility_score?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: number | null
   generated_at?: Date | string | null
+  unmet_competency_ids?: Prisma.tbl_course_recommendationCreateunmet_competency_idsInput | number[]
 }
 
 export type tbl_course_recommendationUpdateManyMutationInput = {
   compatibility_score?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  unmet_competency_ids?: Prisma.tbl_course_recommendationUpdateunmet_competency_idsInput | number[]
 }
 
 export type tbl_course_recommendationUncheckedUpdateManyInput = {
@@ -332,6 +350,7 @@ export type tbl_course_recommendationUncheckedUpdateManyInput = {
   compatibility_score?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  unmet_competency_ids?: Prisma.tbl_course_recommendationUpdateunmet_competency_idsInput | number[]
 }
 
 export type Tbl_course_recommendationListRelationFilter = {
@@ -342,6 +361,14 @@ export type Tbl_course_recommendationListRelationFilter = {
 
 export type tbl_course_recommendationOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type IntNullableListFilter<$PrismaModel = never> = {
+  equals?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
+  has?: number | Prisma.IntFieldRefInput<$PrismaModel> | null
+  hasEvery?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  hasSome?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  isEmpty?: boolean
 }
 
 export type tbl_course_recommendationApplication_idProgram_idCompoundUniqueInput = {
@@ -355,6 +382,7 @@ export type tbl_course_recommendationCountOrderByAggregateInput = {
   compatibility_score?: Prisma.SortOrder
   rank_no?: Prisma.SortOrder
   generated_at?: Prisma.SortOrder
+  unmet_competency_ids?: Prisma.SortOrder
 }
 
 export type tbl_course_recommendationAvgOrderByAggregateInput = {
@@ -362,6 +390,7 @@ export type tbl_course_recommendationAvgOrderByAggregateInput = {
   program_id?: Prisma.SortOrder
   compatibility_score?: Prisma.SortOrder
   rank_no?: Prisma.SortOrder
+  unmet_competency_ids?: Prisma.SortOrder
 }
 
 export type tbl_course_recommendationMaxOrderByAggregateInput = {
@@ -385,6 +414,7 @@ export type tbl_course_recommendationSumOrderByAggregateInput = {
   program_id?: Prisma.SortOrder
   compatibility_score?: Prisma.SortOrder
   rank_no?: Prisma.SortOrder
+  unmet_competency_ids?: Prisma.SortOrder
 }
 
 export type tbl_course_recommendationCreateNestedManyWithoutTbl_applicationInput = {
@@ -429,12 +459,21 @@ export type tbl_course_recommendationUncheckedUpdateManyWithoutTbl_applicationNe
   deleteMany?: Prisma.tbl_course_recommendationScalarWhereInput | Prisma.tbl_course_recommendationScalarWhereInput[]
 }
 
+export type tbl_course_recommendationCreateunmet_competency_idsInput = {
+  set: number[]
+}
+
 export type NullableDecimalFieldUpdateOperationsInput = {
   set?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
   decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
   multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
   divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
+export type tbl_course_recommendationUpdateunmet_competency_idsInput = {
+  set?: number[]
+  push?: number | number[]
 }
 
 export type tbl_course_recommendationCreateNestedManyWithoutTbl_programInput = {
@@ -483,6 +522,7 @@ export type tbl_course_recommendationCreateWithoutTbl_applicationInput = {
   compatibility_score?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: number | null
   generated_at?: Date | string | null
+  unmet_competency_ids?: Prisma.tbl_course_recommendationCreateunmet_competency_idsInput | number[]
   tbl_program: Prisma.tbl_programCreateNestedOneWithoutTbl_course_recommendationInput
 }
 
@@ -491,6 +531,7 @@ export type tbl_course_recommendationUncheckedCreateWithoutTbl_applicationInput 
   compatibility_score?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: number | null
   generated_at?: Date | string | null
+  unmet_competency_ids?: Prisma.tbl_course_recommendationCreateunmet_competency_idsInput | number[]
 }
 
 export type tbl_course_recommendationCreateOrConnectWithoutTbl_applicationInput = {
@@ -528,12 +569,14 @@ export type tbl_course_recommendationScalarWhereInput = {
   compatibility_score?: Prisma.DecimalNullableFilter<"tbl_course_recommendation"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: Prisma.IntNullableFilter<"tbl_course_recommendation"> | number | null
   generated_at?: Prisma.DateTimeNullableFilter<"tbl_course_recommendation"> | Date | string | null
+  unmet_competency_ids?: Prisma.IntNullableListFilter<"tbl_course_recommendation">
 }
 
 export type tbl_course_recommendationCreateWithoutTbl_programInput = {
   compatibility_score?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: number | null
   generated_at?: Date | string | null
+  unmet_competency_ids?: Prisma.tbl_course_recommendationCreateunmet_competency_idsInput | number[]
   tbl_application: Prisma.tbl_applicationCreateNestedOneWithoutTbl_course_recommendationInput
 }
 
@@ -542,6 +585,7 @@ export type tbl_course_recommendationUncheckedCreateWithoutTbl_programInput = {
   compatibility_score?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: number | null
   generated_at?: Date | string | null
+  unmet_competency_ids?: Prisma.tbl_course_recommendationCreateunmet_competency_idsInput | number[]
 }
 
 export type tbl_course_recommendationCreateOrConnectWithoutTbl_programInput = {
@@ -575,12 +619,14 @@ export type tbl_course_recommendationCreateManyTbl_applicationInput = {
   compatibility_score?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: number | null
   generated_at?: Date | string | null
+  unmet_competency_ids?: Prisma.tbl_course_recommendationCreateunmet_competency_idsInput | number[]
 }
 
 export type tbl_course_recommendationUpdateWithoutTbl_applicationInput = {
   compatibility_score?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  unmet_competency_ids?: Prisma.tbl_course_recommendationUpdateunmet_competency_idsInput | number[]
   tbl_program?: Prisma.tbl_programUpdateOneRequiredWithoutTbl_course_recommendationNestedInput
 }
 
@@ -589,6 +635,7 @@ export type tbl_course_recommendationUncheckedUpdateWithoutTbl_applicationInput 
   compatibility_score?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  unmet_competency_ids?: Prisma.tbl_course_recommendationUpdateunmet_competency_idsInput | number[]
 }
 
 export type tbl_course_recommendationUncheckedUpdateManyWithoutTbl_applicationInput = {
@@ -596,6 +643,7 @@ export type tbl_course_recommendationUncheckedUpdateManyWithoutTbl_applicationIn
   compatibility_score?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  unmet_competency_ids?: Prisma.tbl_course_recommendationUpdateunmet_competency_idsInput | number[]
 }
 
 export type tbl_course_recommendationCreateManyTbl_programInput = {
@@ -603,12 +651,14 @@ export type tbl_course_recommendationCreateManyTbl_programInput = {
   compatibility_score?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: number | null
   generated_at?: Date | string | null
+  unmet_competency_ids?: Prisma.tbl_course_recommendationCreateunmet_competency_idsInput | number[]
 }
 
 export type tbl_course_recommendationUpdateWithoutTbl_programInput = {
   compatibility_score?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  unmet_competency_ids?: Prisma.tbl_course_recommendationUpdateunmet_competency_idsInput | number[]
   tbl_application?: Prisma.tbl_applicationUpdateOneRequiredWithoutTbl_course_recommendationNestedInput
 }
 
@@ -617,6 +667,7 @@ export type tbl_course_recommendationUncheckedUpdateWithoutTbl_programInput = {
   compatibility_score?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  unmet_competency_ids?: Prisma.tbl_course_recommendationUpdateunmet_competency_idsInput | number[]
 }
 
 export type tbl_course_recommendationUncheckedUpdateManyWithoutTbl_programInput = {
@@ -624,6 +675,7 @@ export type tbl_course_recommendationUncheckedUpdateManyWithoutTbl_programInput 
   compatibility_score?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   rank_no?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  unmet_competency_ids?: Prisma.tbl_course_recommendationUpdateunmet_competency_idsInput | number[]
 }
 
 
@@ -634,6 +686,7 @@ export type tbl_course_recommendationSelect<ExtArgs extends runtime.Types.Extens
   compatibility_score?: boolean
   rank_no?: boolean
   generated_at?: boolean
+  unmet_competency_ids?: boolean
   tbl_application?: boolean | Prisma.tbl_applicationDefaultArgs<ExtArgs>
   tbl_program?: boolean | Prisma.tbl_programDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tbl_course_recommendation"]>
@@ -644,6 +697,7 @@ export type tbl_course_recommendationSelectCreateManyAndReturn<ExtArgs extends r
   compatibility_score?: boolean
   rank_no?: boolean
   generated_at?: boolean
+  unmet_competency_ids?: boolean
   tbl_application?: boolean | Prisma.tbl_applicationDefaultArgs<ExtArgs>
   tbl_program?: boolean | Prisma.tbl_programDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tbl_course_recommendation"]>
@@ -654,6 +708,7 @@ export type tbl_course_recommendationSelectUpdateManyAndReturn<ExtArgs extends r
   compatibility_score?: boolean
   rank_no?: boolean
   generated_at?: boolean
+  unmet_competency_ids?: boolean
   tbl_application?: boolean | Prisma.tbl_applicationDefaultArgs<ExtArgs>
   tbl_program?: boolean | Prisma.tbl_programDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tbl_course_recommendation"]>
@@ -664,9 +719,10 @@ export type tbl_course_recommendationSelectScalar = {
   compatibility_score?: boolean
   rank_no?: boolean
   generated_at?: boolean
+  unmet_competency_ids?: boolean
 }
 
-export type tbl_course_recommendationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"application_id" | "program_id" | "compatibility_score" | "rank_no" | "generated_at", ExtArgs["result"]["tbl_course_recommendation"]>
+export type tbl_course_recommendationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"application_id" | "program_id" | "compatibility_score" | "rank_no" | "generated_at" | "unmet_competency_ids", ExtArgs["result"]["tbl_course_recommendation"]>
 export type tbl_course_recommendationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tbl_application?: boolean | Prisma.tbl_applicationDefaultArgs<ExtArgs>
   tbl_program?: boolean | Prisma.tbl_programDefaultArgs<ExtArgs>
@@ -692,6 +748,7 @@ export type $tbl_course_recommendationPayload<ExtArgs extends runtime.Types.Exte
     compatibility_score: runtime.Decimal | null
     rank_no: number | null
     generated_at: Date | null
+    unmet_competency_ids: number[]
   }, ExtArgs["result"]["tbl_course_recommendation"]>
   composites: {}
 }
@@ -1122,6 +1179,7 @@ export interface tbl_course_recommendationFieldRefs {
   readonly compatibility_score: Prisma.FieldRef<"tbl_course_recommendation", 'Decimal'>
   readonly rank_no: Prisma.FieldRef<"tbl_course_recommendation", 'Int'>
   readonly generated_at: Prisma.FieldRef<"tbl_course_recommendation", 'DateTime'>
+  readonly unmet_competency_ids: Prisma.FieldRef<"tbl_course_recommendation", 'Int[]'>
 }
     
 

@@ -422,7 +422,11 @@ export const ModelName = {
   tbl_role_permission: 'tbl_role_permission',
   tbl_school: 'tbl_school',
   tbl_user_account: 'tbl_user_account',
-  tbl_application_document: 'tbl_application_document'
+  tbl_application_document: 'tbl_application_document',
+  tbl_exam_session: 'tbl_exam_session',
+  tbl_exam_session_applicant: 'tbl_exam_session_applicant',
+  tbl_exam_subject_score: 'tbl_exam_subject_score',
+  tbl_recommendation_setting: 'tbl_recommendation_setting'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -438,7 +442,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "tbl_admission_cycle" | "tbl_admission_stage" | "tbl_applicant" | "tbl_application" | "tbl_application_stage_log" | "tbl_barangay" | "tbl_branch" | "tbl_competency" | "tbl_course_recommendation" | "tbl_district" | "tbl_exam" | "tbl_exam_question" | "tbl_exam_result" | "tbl_import_batch" | "tbl_passing_score_setting" | "tbl_permission" | "tbl_program" | "tbl_program_competency" | "tbl_question_response" | "tbl_quota" | "tbl_role" | "tbl_role_permission" | "tbl_school" | "tbl_user_account" | "tbl_application_document"
+    modelProps: "user" | "tbl_admission_cycle" | "tbl_admission_stage" | "tbl_applicant" | "tbl_application" | "tbl_application_stage_log" | "tbl_barangay" | "tbl_branch" | "tbl_competency" | "tbl_course_recommendation" | "tbl_district" | "tbl_exam" | "tbl_exam_question" | "tbl_exam_result" | "tbl_import_batch" | "tbl_passing_score_setting" | "tbl_permission" | "tbl_program" | "tbl_program_competency" | "tbl_question_response" | "tbl_quota" | "tbl_role" | "tbl_role_permission" | "tbl_school" | "tbl_user_account" | "tbl_application_document" | "tbl_exam_session" | "tbl_exam_session_applicant" | "tbl_exam_subject_score" | "tbl_recommendation_setting"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2366,6 +2370,302 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    tbl_exam_session: {
+      payload: Prisma.$tbl_exam_sessionPayload<ExtArgs>
+      fields: Prisma.tbl_exam_sessionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.tbl_exam_sessionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_sessionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.tbl_exam_sessionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_sessionPayload>
+        }
+        findFirst: {
+          args: Prisma.tbl_exam_sessionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_sessionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.tbl_exam_sessionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_sessionPayload>
+        }
+        findMany: {
+          args: Prisma.tbl_exam_sessionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_sessionPayload>[]
+        }
+        create: {
+          args: Prisma.tbl_exam_sessionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_sessionPayload>
+        }
+        createMany: {
+          args: Prisma.tbl_exam_sessionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.tbl_exam_sessionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_sessionPayload>[]
+        }
+        delete: {
+          args: Prisma.tbl_exam_sessionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_sessionPayload>
+        }
+        update: {
+          args: Prisma.tbl_exam_sessionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_sessionPayload>
+        }
+        deleteMany: {
+          args: Prisma.tbl_exam_sessionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.tbl_exam_sessionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.tbl_exam_sessionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_sessionPayload>[]
+        }
+        upsert: {
+          args: Prisma.tbl_exam_sessionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_sessionPayload>
+        }
+        aggregate: {
+          args: Prisma.Tbl_exam_sessionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTbl_exam_session>
+        }
+        groupBy: {
+          args: Prisma.tbl_exam_sessionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tbl_exam_sessionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.tbl_exam_sessionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tbl_exam_sessionCountAggregateOutputType> | number
+        }
+      }
+    }
+    tbl_exam_session_applicant: {
+      payload: Prisma.$tbl_exam_session_applicantPayload<ExtArgs>
+      fields: Prisma.tbl_exam_session_applicantFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.tbl_exam_session_applicantFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_session_applicantPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.tbl_exam_session_applicantFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_session_applicantPayload>
+        }
+        findFirst: {
+          args: Prisma.tbl_exam_session_applicantFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_session_applicantPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.tbl_exam_session_applicantFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_session_applicantPayload>
+        }
+        findMany: {
+          args: Prisma.tbl_exam_session_applicantFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_session_applicantPayload>[]
+        }
+        create: {
+          args: Prisma.tbl_exam_session_applicantCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_session_applicantPayload>
+        }
+        createMany: {
+          args: Prisma.tbl_exam_session_applicantCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.tbl_exam_session_applicantCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_session_applicantPayload>[]
+        }
+        delete: {
+          args: Prisma.tbl_exam_session_applicantDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_session_applicantPayload>
+        }
+        update: {
+          args: Prisma.tbl_exam_session_applicantUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_session_applicantPayload>
+        }
+        deleteMany: {
+          args: Prisma.tbl_exam_session_applicantDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.tbl_exam_session_applicantUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.tbl_exam_session_applicantUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_session_applicantPayload>[]
+        }
+        upsert: {
+          args: Prisma.tbl_exam_session_applicantUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_session_applicantPayload>
+        }
+        aggregate: {
+          args: Prisma.Tbl_exam_session_applicantAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTbl_exam_session_applicant>
+        }
+        groupBy: {
+          args: Prisma.tbl_exam_session_applicantGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tbl_exam_session_applicantGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.tbl_exam_session_applicantCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tbl_exam_session_applicantCountAggregateOutputType> | number
+        }
+      }
+    }
+    tbl_exam_subject_score: {
+      payload: Prisma.$tbl_exam_subject_scorePayload<ExtArgs>
+      fields: Prisma.tbl_exam_subject_scoreFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.tbl_exam_subject_scoreFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_subject_scorePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.tbl_exam_subject_scoreFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_subject_scorePayload>
+        }
+        findFirst: {
+          args: Prisma.tbl_exam_subject_scoreFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_subject_scorePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.tbl_exam_subject_scoreFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_subject_scorePayload>
+        }
+        findMany: {
+          args: Prisma.tbl_exam_subject_scoreFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_subject_scorePayload>[]
+        }
+        create: {
+          args: Prisma.tbl_exam_subject_scoreCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_subject_scorePayload>
+        }
+        createMany: {
+          args: Prisma.tbl_exam_subject_scoreCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.tbl_exam_subject_scoreCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_subject_scorePayload>[]
+        }
+        delete: {
+          args: Prisma.tbl_exam_subject_scoreDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_subject_scorePayload>
+        }
+        update: {
+          args: Prisma.tbl_exam_subject_scoreUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_subject_scorePayload>
+        }
+        deleteMany: {
+          args: Prisma.tbl_exam_subject_scoreDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.tbl_exam_subject_scoreUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.tbl_exam_subject_scoreUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_subject_scorePayload>[]
+        }
+        upsert: {
+          args: Prisma.tbl_exam_subject_scoreUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_exam_subject_scorePayload>
+        }
+        aggregate: {
+          args: Prisma.Tbl_exam_subject_scoreAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTbl_exam_subject_score>
+        }
+        groupBy: {
+          args: Prisma.tbl_exam_subject_scoreGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tbl_exam_subject_scoreGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.tbl_exam_subject_scoreCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tbl_exam_subject_scoreCountAggregateOutputType> | number
+        }
+      }
+    }
+    tbl_recommendation_setting: {
+      payload: Prisma.$tbl_recommendation_settingPayload<ExtArgs>
+      fields: Prisma.tbl_recommendation_settingFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.tbl_recommendation_settingFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_recommendation_settingPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.tbl_recommendation_settingFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_recommendation_settingPayload>
+        }
+        findFirst: {
+          args: Prisma.tbl_recommendation_settingFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_recommendation_settingPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.tbl_recommendation_settingFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_recommendation_settingPayload>
+        }
+        findMany: {
+          args: Prisma.tbl_recommendation_settingFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_recommendation_settingPayload>[]
+        }
+        create: {
+          args: Prisma.tbl_recommendation_settingCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_recommendation_settingPayload>
+        }
+        createMany: {
+          args: Prisma.tbl_recommendation_settingCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.tbl_recommendation_settingCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_recommendation_settingPayload>[]
+        }
+        delete: {
+          args: Prisma.tbl_recommendation_settingDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_recommendation_settingPayload>
+        }
+        update: {
+          args: Prisma.tbl_recommendation_settingUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_recommendation_settingPayload>
+        }
+        deleteMany: {
+          args: Prisma.tbl_recommendation_settingDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.tbl_recommendation_settingUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.tbl_recommendation_settingUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_recommendation_settingPayload>[]
+        }
+        upsert: {
+          args: Prisma.tbl_recommendation_settingUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_recommendation_settingPayload>
+        }
+        aggregate: {
+          args: Prisma.Tbl_recommendation_settingAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTbl_recommendation_setting>
+        }
+        groupBy: {
+          args: Prisma.tbl_recommendation_settingGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tbl_recommendation_settingGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.tbl_recommendation_settingCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tbl_recommendation_settingCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2449,7 +2749,9 @@ export const Tbl_applicantScalarFieldEnum = {
   sex: 'sex',
   birth_date: 'birth_date',
   email: 'email',
-  mobile_no: 'mobile_no'
+  mobile_no: 'mobile_no',
+  archived_at: 'archived_at',
+  archived_by: 'archived_by'
 } as const
 
 export type Tbl_applicantScalarFieldEnum = (typeof Tbl_applicantScalarFieldEnum)[keyof typeof Tbl_applicantScalarFieldEnum]
@@ -2520,7 +2822,8 @@ export const Tbl_course_recommendationScalarFieldEnum = {
   program_id: 'program_id',
   compatibility_score: 'compatibility_score',
   rank_no: 'rank_no',
-  generated_at: 'generated_at'
+  generated_at: 'generated_at',
+  unmet_competency_ids: 'unmet_competency_ids'
 } as const
 
 export type Tbl_course_recommendationScalarFieldEnum = (typeof Tbl_course_recommendationScalarFieldEnum)[keyof typeof Tbl_course_recommendationScalarFieldEnum]
@@ -2611,7 +2914,8 @@ export const Tbl_programScalarFieldEnum = {
   program_id: 'program_id',
   program_code: 'program_code',
   program_name: 'program_name',
-  is_active: 'is_active'
+  is_active: 'is_active',
+  min_match: 'min_match'
 } as const
 
 export type Tbl_programScalarFieldEnum = (typeof Tbl_programScalarFieldEnum)[keyof typeof Tbl_programScalarFieldEnum]
@@ -2620,7 +2924,8 @@ export type Tbl_programScalarFieldEnum = (typeof Tbl_programScalarFieldEnum)[key
 export const Tbl_program_competencyScalarFieldEnum = {
   program_id: 'program_id',
   competency_id: 'competency_id',
-  weight: 'weight'
+  weight: 'weight',
+  min_score: 'min_score'
 } as const
 
 export type Tbl_program_competencyScalarFieldEnum = (typeof Tbl_program_competencyScalarFieldEnum)[keyof typeof Tbl_program_competencyScalarFieldEnum]
@@ -2653,6 +2958,7 @@ export type Tbl_quotaScalarFieldEnum = (typeof Tbl_quotaScalarFieldEnum)[keyof t
 export const Tbl_roleScalarFieldEnum = {
   role_id: 'role_id',
   role_name: 'role_name',
+  display_name: 'display_name',
   description: 'description'
 } as const
 
@@ -2704,6 +3010,52 @@ export const Tbl_application_documentScalarFieldEnum = {
 } as const
 
 export type Tbl_application_documentScalarFieldEnum = (typeof Tbl_application_documentScalarFieldEnum)[keyof typeof Tbl_application_documentScalarFieldEnum]
+
+
+export const Tbl_exam_sessionScalarFieldEnum = {
+  session_id: 'session_id',
+  exam_id: 'exam_id',
+  session_date: 'session_date',
+  start_time: 'start_time',
+  venue: 'venue',
+  room: 'room',
+  capacity: 'capacity',
+  created_by: 'created_by',
+  created_at: 'created_at'
+} as const
+
+export type Tbl_exam_sessionScalarFieldEnum = (typeof Tbl_exam_sessionScalarFieldEnum)[keyof typeof Tbl_exam_sessionScalarFieldEnum]
+
+
+export const Tbl_exam_session_applicantScalarFieldEnum = {
+  session_id: 'session_id',
+  application_id: 'application_id',
+  attendance: 'attendance',
+  marked_by: 'marked_by',
+  marked_at: 'marked_at'
+} as const
+
+export type Tbl_exam_session_applicantScalarFieldEnum = (typeof Tbl_exam_session_applicantScalarFieldEnum)[keyof typeof Tbl_exam_session_applicantScalarFieldEnum]
+
+
+export const Tbl_exam_subject_scoreScalarFieldEnum = {
+  result_id: 'result_id',
+  competency_id: 'competency_id',
+  score: 'score',
+  max_score: 'max_score'
+} as const
+
+export type Tbl_exam_subject_scoreScalarFieldEnum = (typeof Tbl_exam_subject_scoreScalarFieldEnum)[keyof typeof Tbl_exam_subject_scoreScalarFieldEnum]
+
+
+export const Tbl_recommendation_settingScalarFieldEnum = {
+  setting_id: 'setting_id',
+  is_enabled: 'is_enabled',
+  updated_by: 'updated_by',
+  updated_at: 'updated_at'
+} as const
+
+export type Tbl_recommendation_settingScalarFieldEnum = (typeof Tbl_recommendation_settingScalarFieldEnum)[keyof typeof Tbl_recommendation_settingScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -3017,6 +3369,10 @@ export type GlobalOmitConfig = {
   tbl_school?: Prisma.tbl_schoolOmit
   tbl_user_account?: Prisma.tbl_user_accountOmit
   tbl_application_document?: Prisma.tbl_application_documentOmit
+  tbl_exam_session?: Prisma.tbl_exam_sessionOmit
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantOmit
+  tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreOmit
+  tbl_recommendation_setting?: Prisma.tbl_recommendation_settingOmit
 }
 
 /* Types for Logging */

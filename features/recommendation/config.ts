@@ -40,9 +40,10 @@ export const DEFAULT_PROGRAM_WEIGHTS: Record<string, [number, number, number, nu
 export const FALLBACK_WEIGHTS: [number, number, number, number, number] = [20, 20, 20, 20, 20];
 
 /**
- * Minimum match for a course to count as "Compatible". The data dictionary
- * has no per-course threshold, so one value applies to every course; it is
- * also the required score per competency in the score breakdown.
+ * Default minimum match (tbl_program.min_match) for a course to count as
+ * "Compatible"; each course's value is edited on Mapping Settings. The
+ * course's minimum is also the required score per weighted competency in the
+ * score breakdown. Also the Moderate-fit threshold for fitLabel/fitClass.
  */
 export const MIN_MATCH = 70;
 
@@ -65,6 +66,20 @@ export function fitClass(match: number | null) {
   if (match >= STRONG_FIT) return "bg-green-600 text-white";
   if (match >= MIN_MATCH) return "bg-[#e3e4f8] text-[#191e73]";
   return "bg-amber-100 text-amber-900";
+}
+
+/**
+ * Compatibility rules (advisory): competencies whose score is below the
+ * course's minimum subject score. A missing score counts as 0. Courses
+ * without rules return an empty list.
+ */
+export function unmetRules(
+  scores: ReadonlyMap<number, number>,
+  weights: readonly { competency_id: number; min_score: number | null }[],
+) {
+  return weights
+    .filter((w) => w.min_score !== null && (scores.get(w.competency_id) ?? 0) < w.min_score)
+    .map((w) => w.competency_id);
 }
 
 /** Weighted match (0–100) from competency scores and course weights. */
