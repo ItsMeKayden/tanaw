@@ -1058,13 +1058,7 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 							<Link href="/admission" className="mt-4 inline-flex rounded-md border border-neutral-400 bg-[#f6f6f6] px-3 py-2 text-sm text-neutral-800 shadow-sm transition hover:bg-[#efefef]">
 								View additional applicants
 							</Link>
-						) : (
-							<div className="mt-4 inline-flex items-center gap-2 rounded-md border border-neutral-200 bg-neutral-50 px-3 py-2 text-[10px] font-medium text-neutral-500">
-								<span>Page</span>
-								<span className="rounded border border-neutral-300 bg-white px-1.5 py-0.5 text-neutral-700">{currentPage}</span>
-								<span>of {totalPages}</span>
-							</div>
-						)}
+						) : null}
 					</div>
 				</div>
 			</div>
