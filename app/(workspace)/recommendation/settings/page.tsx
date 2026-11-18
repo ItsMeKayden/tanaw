@@ -2,18 +2,22 @@ import { Suspense } from "react";
 import { connection } from "next/server";
 
 import { QcuWatermark } from "@/components/admission/qcu-watermark";
+import { RecommendationSwitch } from "@/components/recommendation/controls";
 import MappingEditor from "@/components/recommendation/mapping-editor";
-import { MIN_MATCH, shortCompetencyName } from "@/features/recommendation/config";
+import { shortCompetencyName } from "@/features/recommendation/config";
+import { getRecommendationSettings } from "@/features/recommendation/queries";
 import { requirePermission } from "@/lib/authorization";
 import { hasPermission } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
+import { GridEditorSkeleton } from "@/components/ui/skeletons";
 
 async function SettingsContent() {
   await connection();
   const user = await requirePermission("recommendation", "read");
-  const canWrite = await hasPermission(user.role, "recommendation", "write");
 
-  const [programs, competencies] = await Promise.all([
+  const [canWrite, settings, programs, competencies] = await Promise.all([
+    hasPermission(user.role, "recommendation", "write"),
+    getRecommendationSettings(),
     prisma.tbl_program.findMany({
       where: { is_active: true },
       orderBy: { program_name: "asc" },
@@ -21,6 +25,7 @@ async function SettingsContent() {
         program_id: true,
         program_code: true,
         program_name: true,
+        min_match: true,
         tbl_program_competency: { select: { competency_id: true, weight: true } },
       },
     }),
@@ -38,62 +43,63 @@ async function SettingsContent() {
   );
 
   return (
-    <div className="relative isolate min-h-full space-y-3 p-3 sm:p-4">
+    <div className="relative isolate min-h-full space-y-5 p-4 sm:p-6">
       <QcuWatermark />
-      <h1 className="sr-only">Course-to-competency mapping</h1>
 
-      {/* Settings row. Both are fixed for now: the data dictionary has no
-          table for an on/off flag or other scoring models. */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div
-          className="flex items-center gap-2 text-sm"
-          title="Recommendations are always on. Turning them off isn't stored anywhere yet."
-        >
-          <span
-            role="switch"
-            aria-checked="true"
-            aria-disabled="true"
-            aria-label="Enable recommendations"
-            className="relative inline-flex h-4 w-8 shrink-0 items-center rounded-full border border-green-700 bg-green-500"
-          >
-            <span className="absolute left-[17px] size-3 rounded-full bg-white shadow" />
-          </span>
-          Enable recommendations
-        </div>
-        <label className="flex items-center gap-2 text-sm" title="Weighted score is the only model available.">
-          <span className="sr-only">Scoring model</span>
-          <select
-            disabled
-            value="weighted"
-            className="h-8 rounded-sm border border-neutral-500 bg-neutral-200 px-2.5 text-sm text-black disabled:opacity-100"
-          >
-            <option value="weighted">Model: Weighted score</option>
-          </select>
-        </label>
+      <div>
+        <h1 className="text-2xl font-bold">Mapping Settings</h1>
+        <p className="max-w-3xl text-sm text-neutral-700">
+          How much each exam competency counts toward each course, and the minimum match a course needs. Changes
+          re-score the active school year&apos;s recommendations.
+          {!canWrite && " You have view-only access."}
+        </p>
       </div>
 
-      {!canWrite && <p className="text-sm text-neutral-700">You have view-only access.</p>}
+      <section
+        aria-label="Recommendation settings"
+        className="grid gap-4 rounded-xl border border-neutral-500 bg-white/90 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
+      >
+        <RecommendationSwitch enabled={settings.enabled} canWrite={canWrite} />
+        <div className="text-sm sm:text-right">
+          <p>
+            <span className="text-neutral-600">Scoring model:</span>{" "}
+            <span className="font-medium">Weighted score</span>
+          </p>
+          <p className="text-xs text-neutral-600">Course match = Σ (competency score × weight) ÷ 100</p>
+          {settings.updated_at && (
+            <p className="mt-1 text-xs text-neutral-500">
+              Switch last changed {new Date(settings.updated_at).toLocaleString("en-PH")}
+              {settings.updated_by ? ` by ${settings.updated_by}` : ""}
+            </p>
+          )}
+        </div>
+      </section>
 
       {competencies.length === 0 ? (
         <p className="rounded-xl border border-neutral-500 bg-white/90 p-6 text-center text-sm text-neutral-600">
           No competencies are set up. Run <code>npm run db:seed</code> to add them.
         </p>
       ) : (
-        <MappingEditor
-          programs={programs.map((p) => ({
-            program_id: p.program_id,
-            program_code: p.program_code,
-            program_name: p.program_name,
-          }))}
-          competencies={competencies.map((c) => ({
-            competency_id: c.competency_id,
-            name: c.competency_name,
-            label: shortCompetencyName(c.competency_name),
-          }))}
-          initial={initial}
-          minMatch={MIN_MATCH}
-          canWrite={canWrite}
-        />
+        <section aria-labelledby="mapping-heading" className="space-y-3">
+          <h2 id="mapping-heading" className="text-lg font-semibold">
+            Course-to-competency mapping
+          </h2>
+          <MappingEditor
+            programs={programs.map((p) => ({
+              program_id: p.program_id,
+              program_code: p.program_code,
+              program_name: p.program_name,
+              min_match: Number(p.min_match),
+            }))}
+            competencies={competencies.map((c) => ({
+              competency_id: c.competency_id,
+              name: c.competency_name,
+              label: shortCompetencyName(c.competency_name),
+            }))}
+            initial={initial}
+            canWrite={canWrite}
+          />
+        </section>
       )}
     </div>
   );
@@ -101,7 +107,7 @@ async function SettingsContent() {
 
 export default function SettingsPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<GridEditorSkeleton label="mapping settings" cols={8} banner />}>
       <SettingsContent />
     </Suspense>
   );

@@ -40,9 +40,10 @@ export const DEFAULT_PROGRAM_WEIGHTS: Record<string, [number, number, number, nu
 export const FALLBACK_WEIGHTS: [number, number, number, number, number] = [20, 20, 20, 20, 20];
 
 /**
- * Minimum match for a course to count as "Compatible". The data dictionary
- * has no per-course threshold, so one value applies to every course; it is
- * also the required score per competency in the score breakdown.
+ * Default minimum match (tbl_program.min_match) for a course to count as
+ * "Compatible"; each course's value is edited on Mapping Settings. The
+ * course's minimum is also the required score per weighted competency in the
+ * score breakdown. Also the Moderate-fit threshold for fitLabel/fitClass.
  */
 export const MIN_MATCH = 70;
 

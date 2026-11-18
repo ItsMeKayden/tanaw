@@ -37,18 +37,21 @@ export type Tbl_roleSumAggregateOutputType = {
 export type Tbl_roleMinAggregateOutputType = {
   role_id: number | null
   role_name: string | null
+  display_name: string | null
   description: string | null
 }
 
 export type Tbl_roleMaxAggregateOutputType = {
   role_id: number | null
   role_name: string | null
+  display_name: string | null
   description: string | null
 }
 
 export type Tbl_roleCountAggregateOutputType = {
   role_id: number
   role_name: number
+  display_name: number
   description: number
   _all: number
 }
@@ -65,18 +68,21 @@ export type Tbl_roleSumAggregateInputType = {
 export type Tbl_roleMinAggregateInputType = {
   role_id?: true
   role_name?: true
+  display_name?: true
   description?: true
 }
 
 export type Tbl_roleMaxAggregateInputType = {
   role_id?: true
   role_name?: true
+  display_name?: true
   description?: true
 }
 
 export type Tbl_roleCountAggregateInputType = {
   role_id?: true
   role_name?: true
+  display_name?: true
   description?: true
   _all?: true
 }
@@ -170,6 +176,7 @@ export type tbl_roleGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 export type Tbl_roleGroupByOutputType = {
   role_id: number
   role_name: string
+  display_name: string | null
   description: string | null
   _count: Tbl_roleCountAggregateOutputType | null
   _avg: Tbl_roleAvgAggregateOutputType | null
@@ -199,6 +206,7 @@ export type tbl_roleWhereInput = {
   NOT?: Prisma.tbl_roleWhereInput | Prisma.tbl_roleWhereInput[]
   role_id?: Prisma.IntFilter<"tbl_role"> | number
   role_name?: Prisma.StringFilter<"tbl_role"> | string
+  display_name?: Prisma.StringNullableFilter<"tbl_role"> | string | null
   description?: Prisma.StringNullableFilter<"tbl_role"> | string | null
   tbl_role_permission?: Prisma.Tbl_role_permissionListRelationFilter
   tbl_user_account?: Prisma.Tbl_user_accountListRelationFilter
@@ -207,6 +215,7 @@ export type tbl_roleWhereInput = {
 export type tbl_roleOrderByWithRelationInput = {
   role_id?: Prisma.SortOrder
   role_name?: Prisma.SortOrder
+  display_name?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   tbl_role_permission?: Prisma.tbl_role_permissionOrderByRelationAggregateInput
   tbl_user_account?: Prisma.tbl_user_accountOrderByRelationAggregateInput
@@ -218,6 +227,7 @@ export type tbl_roleWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.tbl_roleWhereInput | Prisma.tbl_roleWhereInput[]
   OR?: Prisma.tbl_roleWhereInput[]
   NOT?: Prisma.tbl_roleWhereInput | Prisma.tbl_roleWhereInput[]
+  display_name?: Prisma.StringNullableFilter<"tbl_role"> | string | null
   description?: Prisma.StringNullableFilter<"tbl_role"> | string | null
   tbl_role_permission?: Prisma.Tbl_role_permissionListRelationFilter
   tbl_user_account?: Prisma.Tbl_user_accountListRelationFilter
@@ -226,6 +236,7 @@ export type tbl_roleWhereUniqueInput = Prisma.AtLeast<{
 export type tbl_roleOrderByWithAggregationInput = {
   role_id?: Prisma.SortOrder
   role_name?: Prisma.SortOrder
+  display_name?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.tbl_roleCountOrderByAggregateInput
   _avg?: Prisma.tbl_roleAvgOrderByAggregateInput
@@ -240,11 +251,13 @@ export type tbl_roleScalarWhereWithAggregatesInput = {
   NOT?: Prisma.tbl_roleScalarWhereWithAggregatesInput | Prisma.tbl_roleScalarWhereWithAggregatesInput[]
   role_id?: Prisma.IntWithAggregatesFilter<"tbl_role"> | number
   role_name?: Prisma.StringWithAggregatesFilter<"tbl_role"> | string
+  display_name?: Prisma.StringNullableWithAggregatesFilter<"tbl_role"> | string | null
   description?: Prisma.StringNullableWithAggregatesFilter<"tbl_role"> | string | null
 }
 
 export type tbl_roleCreateInput = {
   role_name: string
+  display_name?: string | null
   description?: string | null
   tbl_role_permission?: Prisma.tbl_role_permissionCreateNestedManyWithoutTbl_roleInput
   tbl_user_account?: Prisma.tbl_user_accountCreateNestedManyWithoutTbl_roleInput
@@ -253,6 +266,7 @@ export type tbl_roleCreateInput = {
 export type tbl_roleUncheckedCreateInput = {
   role_id?: number
   role_name: string
+  display_name?: string | null
   description?: string | null
   tbl_role_permission?: Prisma.tbl_role_permissionUncheckedCreateNestedManyWithoutTbl_roleInput
   tbl_user_account?: Prisma.tbl_user_accountUncheckedCreateNestedManyWithoutTbl_roleInput
@@ -260,6 +274,7 @@ export type tbl_roleUncheckedCreateInput = {
 
 export type tbl_roleUpdateInput = {
   role_name?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_role_permission?: Prisma.tbl_role_permissionUpdateManyWithoutTbl_roleNestedInput
   tbl_user_account?: Prisma.tbl_user_accountUpdateManyWithoutTbl_roleNestedInput
@@ -268,6 +283,7 @@ export type tbl_roleUpdateInput = {
 export type tbl_roleUncheckedUpdateInput = {
   role_id?: Prisma.IntFieldUpdateOperationsInput | number
   role_name?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_role_permission?: Prisma.tbl_role_permissionUncheckedUpdateManyWithoutTbl_roleNestedInput
   tbl_user_account?: Prisma.tbl_user_accountUncheckedUpdateManyWithoutTbl_roleNestedInput
@@ -276,23 +292,27 @@ export type tbl_roleUncheckedUpdateInput = {
 export type tbl_roleCreateManyInput = {
   role_id?: number
   role_name: string
+  display_name?: string | null
   description?: string | null
 }
 
 export type tbl_roleUpdateManyMutationInput = {
   role_name?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type tbl_roleUncheckedUpdateManyInput = {
   role_id?: Prisma.IntFieldUpdateOperationsInput | number
   role_name?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type tbl_roleCountOrderByAggregateInput = {
   role_id?: Prisma.SortOrder
   role_name?: Prisma.SortOrder
+  display_name?: Prisma.SortOrder
   description?: Prisma.SortOrder
 }
 
@@ -303,12 +323,14 @@ export type tbl_roleAvgOrderByAggregateInput = {
 export type tbl_roleMaxOrderByAggregateInput = {
   role_id?: Prisma.SortOrder
   role_name?: Prisma.SortOrder
+  display_name?: Prisma.SortOrder
   description?: Prisma.SortOrder
 }
 
 export type tbl_roleMinOrderByAggregateInput = {
   role_id?: Prisma.SortOrder
   role_name?: Prisma.SortOrder
+  display_name?: Prisma.SortOrder
   description?: Prisma.SortOrder
 }
 
@@ -358,6 +380,7 @@ export type tbl_roleUpdateOneWithoutTbl_user_accountNestedInput = {
 
 export type tbl_roleCreateWithoutTbl_role_permissionInput = {
   role_name: string
+  display_name?: string | null
   description?: string | null
   tbl_user_account?: Prisma.tbl_user_accountCreateNestedManyWithoutTbl_roleInput
 }
@@ -365,6 +388,7 @@ export type tbl_roleCreateWithoutTbl_role_permissionInput = {
 export type tbl_roleUncheckedCreateWithoutTbl_role_permissionInput = {
   role_id?: number
   role_name: string
+  display_name?: string | null
   description?: string | null
   tbl_user_account?: Prisma.tbl_user_accountUncheckedCreateNestedManyWithoutTbl_roleInput
 }
@@ -387,6 +411,7 @@ export type tbl_roleUpdateToOneWithWhereWithoutTbl_role_permissionInput = {
 
 export type tbl_roleUpdateWithoutTbl_role_permissionInput = {
   role_name?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_user_account?: Prisma.tbl_user_accountUpdateManyWithoutTbl_roleNestedInput
 }
@@ -394,12 +419,14 @@ export type tbl_roleUpdateWithoutTbl_role_permissionInput = {
 export type tbl_roleUncheckedUpdateWithoutTbl_role_permissionInput = {
   role_id?: Prisma.IntFieldUpdateOperationsInput | number
   role_name?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_user_account?: Prisma.tbl_user_accountUncheckedUpdateManyWithoutTbl_roleNestedInput
 }
 
 export type tbl_roleCreateWithoutTbl_user_accountInput = {
   role_name: string
+  display_name?: string | null
   description?: string | null
   tbl_role_permission?: Prisma.tbl_role_permissionCreateNestedManyWithoutTbl_roleInput
 }
@@ -407,6 +434,7 @@ export type tbl_roleCreateWithoutTbl_user_accountInput = {
 export type tbl_roleUncheckedCreateWithoutTbl_user_accountInput = {
   role_id?: number
   role_name: string
+  display_name?: string | null
   description?: string | null
   tbl_role_permission?: Prisma.tbl_role_permissionUncheckedCreateNestedManyWithoutTbl_roleInput
 }
@@ -429,6 +457,7 @@ export type tbl_roleUpdateToOneWithWhereWithoutTbl_user_accountInput = {
 
 export type tbl_roleUpdateWithoutTbl_user_accountInput = {
   role_name?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_role_permission?: Prisma.tbl_role_permissionUpdateManyWithoutTbl_roleNestedInput
 }
@@ -436,6 +465,7 @@ export type tbl_roleUpdateWithoutTbl_user_accountInput = {
 export type tbl_roleUncheckedUpdateWithoutTbl_user_accountInput = {
   role_id?: Prisma.IntFieldUpdateOperationsInput | number
   role_name?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_role_permission?: Prisma.tbl_role_permissionUncheckedUpdateManyWithoutTbl_roleNestedInput
 }
@@ -483,6 +513,7 @@ export type Tbl_roleCountOutputTypeCountTbl_user_accountArgs<ExtArgs extends run
 export type tbl_roleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   role_id?: boolean
   role_name?: boolean
+  display_name?: boolean
   description?: boolean
   tbl_role_permission?: boolean | Prisma.tbl_role$tbl_role_permissionArgs<ExtArgs>
   tbl_user_account?: boolean | Prisma.tbl_role$tbl_user_accountArgs<ExtArgs>
@@ -492,22 +523,25 @@ export type tbl_roleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
 export type tbl_roleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   role_id?: boolean
   role_name?: boolean
+  display_name?: boolean
   description?: boolean
 }, ExtArgs["result"]["tbl_role"]>
 
 export type tbl_roleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   role_id?: boolean
   role_name?: boolean
+  display_name?: boolean
   description?: boolean
 }, ExtArgs["result"]["tbl_role"]>
 
 export type tbl_roleSelectScalar = {
   role_id?: boolean
   role_name?: boolean
+  display_name?: boolean
   description?: boolean
 }
 
-export type tbl_roleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"role_id" | "role_name" | "description", ExtArgs["result"]["tbl_role"]>
+export type tbl_roleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"role_id" | "role_name" | "display_name" | "description", ExtArgs["result"]["tbl_role"]>
 export type tbl_roleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tbl_role_permission?: boolean | Prisma.tbl_role$tbl_role_permissionArgs<ExtArgs>
   tbl_user_account?: boolean | Prisma.tbl_role$tbl_user_accountArgs<ExtArgs>
@@ -525,6 +559,7 @@ export type $tbl_rolePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     role_id: number
     role_name: string
+    display_name: string | null
     description: string | null
   }, ExtArgs["result"]["tbl_role"]>
   composites: {}
@@ -953,6 +988,7 @@ export interface Prisma__tbl_roleClient<T, Null = never, ExtArgs extends runtime
 export interface tbl_roleFieldRefs {
   readonly role_id: Prisma.FieldRef<"tbl_role", 'Int'>
   readonly role_name: Prisma.FieldRef<"tbl_role", 'String'>
+  readonly display_name: Prisma.FieldRef<"tbl_role", 'String'>
   readonly description: Prisma.FieldRef<"tbl_role", 'String'>
 }
     

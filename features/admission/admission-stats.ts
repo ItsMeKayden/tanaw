@@ -1,5 +1,6 @@
 // Server-side aggregation for the Quota page (imports Prisma).
 import { prisma } from "@/lib/prisma";
+import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
 import { ADMISSION_STAGES, ADMITTED_STAGES } from "@/features/admission/stages";
 
 export async function getCycles() {
@@ -35,7 +36,7 @@ export async function getApplicationCounts(cycleId: number): Promise<Application
   const [groups, stages] = await Promise.all([
     prisma.tbl_application.groupBy({
       by: ["branch_id", "program_id", "barangay_id", "current_stage_id"],
-      where: { cycle_id: cycleId },
+      where: { ...ACTIVE_APPLICATION, cycle_id: cycleId },
       _count: { _all: true },
     }),
     prisma.tbl_admission_stage.findMany({ select: { stage_id: true, stage_name: true } }),

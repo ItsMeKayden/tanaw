@@ -3,8 +3,10 @@
 import { revalidatePath } from "next/cache";
 
 import type { Prisma } from "@/generated/prisma/client";
-import { getAccountId, requirePermission } from "@/lib/authorization";
+import { getAccountId, requireAnyPermission } from "@/lib/authorization";
+import { EXAM_SCHEDULE_MODULES, EXAM_SCHEDULE_PATHS } from "@/features/admission/access";
 import { prisma } from "@/lib/prisma";
+import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
 import { ensureCycleExam } from "@/features/admission/exam";
 import { ATTENDANCE } from "@/features/admission/exam-scoring";
 import { examSessionSchema, type ExamSessionValues } from "@/features/admission/schemas";
@@ -19,7 +21,7 @@ function validId(value: unknown) {
 }
 
 function revalidate() {
-  revalidatePath("/admission/exam/schedule");
+  for (const path of EXAM_SCHEDULE_PATHS) revalidatePath(path);
   revalidatePath("/admission/exam/scores");
 }
 
@@ -38,7 +40,7 @@ async function stageIds(db: Db) {
 }
 
 export async function createExamSession(cycleIdInput: number, input: ExamSessionValues): Promise<ActionResult> {
-  const user = await requirePermission("admission", "write");
+  const user = await requireAnyPermission(EXAM_SCHEDULE_MODULES, "write");
 
   const cycleId = validId(cycleIdInput);
   if (!cycleId) return { error: "Invalid admission cycle." };
@@ -73,7 +75,7 @@ export async function createExamSession(cycleIdInput: number, input: ExamSession
 }
 
 export async function deleteExamSession(sessionIdInput: number): Promise<ActionResult> {
-  await requirePermission("admission", "write");
+  await requireAnyPermission(EXAM_SCHEDULE_MODULES, "write");
 
   const sessionId = validId(sessionIdInput);
   if (!sessionId) return { error: "Invalid exam session." };
@@ -93,7 +95,7 @@ export async function deleteExamSession(sessionIdInput: number): Promise<ActionR
  * "For Examination" stage, earliest application first, up to capacity.
  */
 export async function fillSessionSeats(sessionIdInput: number): Promise<ActionResult> {
-  await requirePermission("admission", "write");
+  await requireAnyPermission(EXAM_SCHEDULE_MODULES, "write");
 
   const sessionId = validId(sessionIdInput);
   if (!sessionId) return { error: "Invalid exam session." };
@@ -105,7 +107,7 @@ export async function fillSessionSeats(sessionIdInput: number): Promise<ActionRe
         select: {
           capacity: true,
           tbl_exam: { select: { cycle_id: true } },
-          _count: { select: { tbl_exam_session_applicant: true } },
+          _count: { select: { tbl_exam_session_applicant: { where: { tbl_application: ACTIVE_APPLICATION } } } },
         },
       });
       if (!session) throw new Error("Exam session not found.");
@@ -118,6 +120,7 @@ export async function fillSessionSeats(sessionIdInput: number): Promise<ActionRe
 
       const applicants = await tx.tbl_application.findMany({
         where: {
+          ...ACTIVE_APPLICATION,
           cycle_id: session.tbl_exam.cycle_id,
           current_stage_id: forExamination,
           tbl_exam_session_applicant: { is: null },
@@ -146,7 +149,7 @@ export async function fillSessionSeats(sessionIdInput: number): Promise<ActionRe
 }
 
 export async function removeFromSession(sessionIdInput: number, applicationIdInput: number): Promise<ActionResult> {
-  await requirePermission("admission", "write");
+  await requireAnyPermission(EXAM_SCHEDULE_MODULES, "write");
 
   const sessionId = validId(sessionIdInput);
   const applicationId = validId(applicationIdInput);
@@ -173,7 +176,7 @@ export async function saveAttendance(
   sessionIdInput: number,
   entries: { application_id: number; present: boolean }[],
 ): Promise<ActionResult> {
-  const user = await requirePermission("admission", "write");
+  const user = await requireAnyPermission(EXAM_SCHEDULE_MODULES, "write");
 
   const sessionId = validId(sessionIdInput);
   if (!sessionId) return { error: "Invalid exam session." };

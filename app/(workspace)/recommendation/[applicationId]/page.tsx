@@ -12,6 +12,7 @@ import { buildReasons, getApplicationRecommendation } from "@/features/recommend
 import { requirePermission } from "@/lib/authorization";
 import { hasPermission } from "@/lib/permissions";
 import { BackLink } from "@/components/ui/back-link";
+import { ProfileSkeleton } from "@/components/ui/skeletons";
 
 type PageProps = Readonly<{ params: Promise<{ applicationId: string }> }>;
 
@@ -182,7 +183,7 @@ async function RecommendationDetailContent({ params }: PageProps) {
 
 export default function RecommendationDetailPage({ params }: PageProps) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<ProfileSkeleton label="recommendation" />}>
       <RecommendationDetailContent params={params} />
     </Suspense>
   );

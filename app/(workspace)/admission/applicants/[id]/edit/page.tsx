@@ -8,6 +8,7 @@ import { getApplicantEditData } from "@/features/admission/applicant-edit-data";
 import { getApplicantFormReferenceData } from "@/features/admission/applicant-form-data";
 import { requirePermission } from "@/lib/authorization";
 import { BackLink } from "@/components/ui/back-link";
+import { FormSkeleton } from "@/components/ui/skeletons";
 
 type EditApplicantPageProps = Readonly<{
   params: Promise<{ id: string }>;
@@ -59,7 +60,7 @@ async function EditApplicantContent({ params }: EditApplicantPageProps) {
 
 export default function EditApplicantPage({ params }: EditApplicantPageProps) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<FormSkeleton label="applicant form" />}>
       <EditApplicantContent params={params} />
     </Suspense>
   );

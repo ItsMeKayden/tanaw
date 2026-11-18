@@ -1,13 +1,14 @@
 import type { NextRequest } from "next/server";
 
 import { auth } from "@/auth";
+import { APPLICANT_VIEW_MODULES } from "@/features/admission/access";
 import { ALLOWED_DOCUMENT_TYPES } from "@/features/admission/documents";
 import { hasAnyPermission } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 
 /**
- * Serves an uploaded application document. Only users who can read the
- * Admission or Registrar module may view documents.
+ * Serves an uploaded application document. Only users who can view
+ * applicants (Admission, Registrar or Guidance) may view documents.
  */
 export async function GET(
   _request: NextRequest,
@@ -21,7 +22,7 @@ export async function GET(
 
   const allowed = await hasAnyPermission(
     session.user.role,
-    ["admission", "registrar"],
+    APPLICANT_VIEW_MODULES,
     "read",
   );
 

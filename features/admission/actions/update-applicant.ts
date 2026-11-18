@@ -2,8 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 
-import { getAccountId, requirePermission } from "@/lib/authorization";
+import { getAccountId, requireAnyPermission } from "@/lib/authorization";
+import { APPLICANT_BASE_PATH, APPLICANT_EDIT_MODULES, APPLICANT_LIST_PATHS } from "@/features/admission/access";
 import { prisma } from "@/lib/prisma";
+import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
 import {
   assertReferencesExist,
   parseApplicantForm,
@@ -24,7 +26,7 @@ function parseId(value: unknown): number | null {
 export async function updateApplicant(
   formData: FormData,
 ): Promise<{ success: true } | ApplicantActionError> {
-  const user = await requirePermission("admission", "write");
+  const user = await requireAnyPermission(APPLICANT_EDIT_MODULES, "write");
 
   const applicantId = parseId(formData.get("applicant_id"));
   const applicationId = parseId(formData.get("application_id"));
@@ -45,7 +47,7 @@ export async function updateApplicant(
     await prisma.$transaction(
       async (tx) => {
         const existing = await tx.tbl_application.findFirst({
-          where: { application_id: applicationId, applicant_id: applicantId },
+          where: { application_id: applicationId, applicant_id: applicantId, ...ACTIVE_APPLICATION },
           select: { application_id: true },
         });
 
@@ -76,8 +78,8 @@ export async function updateApplicant(
       },
     );
 
-    revalidatePath("/admission");
-    revalidatePath(`/admission/applicants/${applicantId}`);
+    for (const path of APPLICANT_LIST_PATHS) revalidatePath(path);
+    for (const base of Object.values(APPLICANT_BASE_PATH)) revalidatePath(`${base}/${applicantId}`);
 
     return { success: true };
   } catch (error) {

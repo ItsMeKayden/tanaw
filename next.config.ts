@@ -10,6 +10,12 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "11mb",
     },
   },
+  async redirects() {
+    return [
+      // The Users & Roles module was renamed to User Management.
+      { source: "/users-roles", destination: "/user-management/accounts", permanent: true },
+    ];
+  },
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {

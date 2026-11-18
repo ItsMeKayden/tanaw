@@ -1,6 +1,7 @@
 // Server-side data for the Map module (imports Prisma).
 import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
 import { resolveCycle } from "@/features/admission/admission-stats";
 import { formatFullName } from "@/features/admission/enrollment-queries";
 import { ADMISSION_STAGE_ORDER, ADMITTED_STAGES } from "@/features/admission/stages";
@@ -51,7 +52,7 @@ export async function resolveMapFilters(params: RawParams) {
 export type MapFilters = Awaited<ReturnType<typeof resolveMapFilters>>;
 
 export function applicationWhere(filters: MapFilters): Prisma.tbl_applicationWhereInput {
-  const where: Prisma.tbl_applicationWhereInput = { cycle_id: filters.cycle?.cycle_id ?? -1 };
+  const where: Prisma.tbl_applicationWhereInput = { ...ACTIVE_APPLICATION, cycle_id: filters.cycle?.cycle_id ?? -1 };
   if (filters.program) where.program_id = filters.program.program_id;
   if (filters.status === "ADMITTED") {
     where.tbl_admission_stage = { stage_name: { in: [...ADMITTED_STAGES] } };

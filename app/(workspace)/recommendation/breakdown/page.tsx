@@ -5,9 +5,11 @@ import { connection } from "next/server";
 import { QcuWatermark } from "@/components/admission/qcu-watermark";
 import { ScoreVsRequirementChart } from "@/components/recommendation/charts";
 import { ParamSelect } from "@/components/recommendation/controls";
-import { MIN_MATCH, shortCompetencyName } from "@/features/recommendation/config";
+import { PendingArea, PendingProvider } from "@/components/ui/pending-navigation";
+import { shortCompetencyName } from "@/features/recommendation/config";
 import { resolveSelection } from "@/features/recommendation/selection";
 import { requirePermission } from "@/lib/authorization";
+import { ChartPageSkeleton } from "@/components/ui/skeletons";
 
 type PageProps = Readonly<{
   searchParams: Promise<{ application?: string; program?: string; cycle?: string }>;
@@ -25,7 +27,7 @@ async function BreakdownContent({ searchParams }: PageProps) {
     data && program
       ? data.competencyScores.map((competency) => {
           const weight = program.weights.find((w) => w.competency_id === competency.competency_id)?.weight ?? 0;
-          const required = weight > 0 ? MIN_MATCH : null;
+          const required = weight > 0 ? program.min_match : null;
           let result = "Not weighted";
           if (required !== null) {
             if (competency.percent === null) result = "No answers";
@@ -49,7 +51,8 @@ async function BreakdownContent({ searchParams }: PageProps) {
         <h1 className="text-2xl font-bold">Score Breakdown</h1>
         <p className="text-sm text-neutral-700">
           Applicant competency scores against a course&apos;s requirement. Competencies the
-          course weighs require at least {MIN_MATCH}%.
+          course weighs require at least the course&apos;s minimum match
+          {program ? ` (${program.program_code}: ${program.min_match}%)` : ""}.
         </p>
       </div>
 
@@ -62,7 +65,7 @@ async function BreakdownContent({ searchParams }: PageProps) {
           .
         </p>
       ) : (
-        <>
+        <PendingProvider>
           <div className="flex flex-wrap gap-3">
             <ParamSelect
               param="application"
@@ -93,12 +96,14 @@ async function BreakdownContent({ searchParams }: PageProps) {
               <h2 className="mb-3 font-semibold">
                 Applicant score vs. {program.program_code} requirement (%)
               </h2>
-              <ScoreVsRequirementChart rows={rows} />
+              <PendingArea>
+                <ScoreVsRequirementChart rows={rows} />
+              </PendingArea>
             </section>
 
             <section className="rounded-xl border border-neutral-500 bg-white/90 p-4">
               <h2 className="mb-3 font-semibold">Breakdown</h2>
-              <div className="overflow-x-auto">
+              <PendingArea className="overflow-x-auto">
                 <table className="w-full border-collapse text-sm">
                   <thead>
                     <tr className="bg-neutral-100 text-left">
@@ -134,7 +139,7 @@ async function BreakdownContent({ searchParams }: PageProps) {
                     ))}
                   </tbody>
                 </table>
-              </div>
+              </PendingArea>
               <p className="mt-3 text-sm text-neutral-700">
                 {program.program_code} match:{" "}
                 <span className="font-semibold">
@@ -143,7 +148,7 @@ async function BreakdownContent({ searchParams }: PageProps) {
               </p>
             </section>
           </div>
-        </>
+        </PendingProvider>
       )}
     </div>
   );
@@ -151,7 +156,7 @@ async function BreakdownContent({ searchParams }: PageProps) {
 
 export default function BreakdownPage({ searchParams }: PageProps) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<ChartPageSkeleton label="score breakdown" />}>
       <BreakdownContent searchParams={searchParams} />
     </Suspense>
   );

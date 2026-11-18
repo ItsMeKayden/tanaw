@@ -12,6 +12,8 @@ import { ADMISSION_STAGES, EXAM_RESULT_PASSED } from "@/features/admission/stage
 import { requirePermission } from "@/lib/authorization";
 import { hasPermission } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
+import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
+import { GridEditorSkeleton } from "@/components/ui/skeletons";
 
 type PageProps = Readonly<{
   searchParams: Promise<{ cycle?: string | string[] }>;
@@ -51,6 +53,7 @@ async function ScoresContent({ searchParams }: PageProps) {
     getPassingRule(cycle.cycle_id),
     prisma.tbl_application.findMany({
       where: {
+        ...ACTIVE_APPLICATION,
         cycle_id: cycle.cycle_id,
         OR: [
           { tbl_admission_stage: { stage_name: { in: EXAM_STAGES } } },
@@ -159,7 +162,7 @@ async function ScoresContent({ searchParams }: PageProps) {
 
 export default function ExamScoresPage({ searchParams }: PageProps) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<GridEditorSkeleton label="exam scores" cols={8} rows={8} />}>
       <ScoresContent searchParams={searchParams} />
     </Suspense>
   );

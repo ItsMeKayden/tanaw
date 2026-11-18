@@ -3,6 +3,7 @@ import type { ExistingDocument } from "@/components/admission/applicant-form";
 import type { ApplicantFormValues } from "@/features/admission/applicant-form";
 import { DOCUMENT_SLOTS, type DocumentSlotKey } from "@/features/admission/documents";
 import { prisma } from "@/lib/prisma";
+import { ACTIVE_APPLICANT } from "@/features/admission/archive-core";
 
 const str = (value: string | number | null | undefined) =>
   value === null || value === undefined ? "" : String(value);
@@ -17,7 +18,7 @@ export type ApplicantEditData = {
 /** Form values for an applicant and their most recent application, or null. */
 export async function getApplicantEditData(applicantId: number): Promise<ApplicantEditData | null> {
   const applicant = await prisma.tbl_applicant.findUnique({
-    where: { applicant_id: applicantId },
+    where: { applicant_id: applicantId, ...ACTIVE_APPLICANT },
     select: {
       applicant_id: true,
       last_name: true,

@@ -2,7 +2,8 @@
 
 import { getApplicantEditData, type ApplicantEditData } from "@/features/admission/applicant-edit-data";
 import { getApplicantFormReferenceData } from "@/features/admission/applicant-form-data";
-import { requirePermission } from "@/lib/authorization";
+import { requireAnyPermission } from "@/lib/authorization";
+import { APPLICANT_EDIT_MODULES } from "@/features/admission/access";
 import { prisma } from "@/lib/prisma";
 
 export type ApplicantFormReference = {
@@ -18,7 +19,7 @@ export async function loadApplicantForm(input: {
   applicantId?: number;
   withReference: boolean;
 }): Promise<{ edit: ApplicantEditData | null; reference: ApplicantFormReference | null } | { error: string }> {
-  await requirePermission("admission", "write");
+  await requireAnyPermission(APPLICANT_EDIT_MODULES, "write");
 
   const applicantId = input?.applicantId === undefined ? null : Number(input.applicantId);
   if (applicantId !== null && (!Number.isSafeInteger(applicantId) || applicantId <= 0)) {

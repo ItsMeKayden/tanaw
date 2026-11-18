@@ -28,10 +28,12 @@ export type AggregateTbl_program = {
 
 export type Tbl_programAvgAggregateOutputType = {
   program_id: number | null
+  min_match: runtime.Decimal | null
 }
 
 export type Tbl_programSumAggregateOutputType = {
   program_id: number | null
+  min_match: runtime.Decimal | null
 }
 
 export type Tbl_programMinAggregateOutputType = {
@@ -39,6 +41,7 @@ export type Tbl_programMinAggregateOutputType = {
   program_code: string | null
   program_name: string | null
   is_active: boolean | null
+  min_match: runtime.Decimal | null
 }
 
 export type Tbl_programMaxAggregateOutputType = {
@@ -46,6 +49,7 @@ export type Tbl_programMaxAggregateOutputType = {
   program_code: string | null
   program_name: string | null
   is_active: boolean | null
+  min_match: runtime.Decimal | null
 }
 
 export type Tbl_programCountAggregateOutputType = {
@@ -53,16 +57,19 @@ export type Tbl_programCountAggregateOutputType = {
   program_code: number
   program_name: number
   is_active: number
+  min_match: number
   _all: number
 }
 
 
 export type Tbl_programAvgAggregateInputType = {
   program_id?: true
+  min_match?: true
 }
 
 export type Tbl_programSumAggregateInputType = {
   program_id?: true
+  min_match?: true
 }
 
 export type Tbl_programMinAggregateInputType = {
@@ -70,6 +77,7 @@ export type Tbl_programMinAggregateInputType = {
   program_code?: true
   program_name?: true
   is_active?: true
+  min_match?: true
 }
 
 export type Tbl_programMaxAggregateInputType = {
@@ -77,6 +85,7 @@ export type Tbl_programMaxAggregateInputType = {
   program_code?: true
   program_name?: true
   is_active?: true
+  min_match?: true
 }
 
 export type Tbl_programCountAggregateInputType = {
@@ -84,6 +93,7 @@ export type Tbl_programCountAggregateInputType = {
   program_code?: true
   program_name?: true
   is_active?: true
+  min_match?: true
   _all?: true
 }
 
@@ -178,6 +188,7 @@ export type Tbl_programGroupByOutputType = {
   program_code: string
   program_name: string
   is_active: boolean | null
+  min_match: runtime.Decimal
   _count: Tbl_programCountAggregateOutputType | null
   _avg: Tbl_programAvgAggregateOutputType | null
   _sum: Tbl_programSumAggregateOutputType | null
@@ -208,6 +219,7 @@ export type tbl_programWhereInput = {
   program_code?: Prisma.StringFilter<"tbl_program"> | string
   program_name?: Prisma.StringFilter<"tbl_program"> | string
   is_active?: Prisma.BoolNullableFilter<"tbl_program"> | boolean | null
+  min_match?: Prisma.DecimalFilter<"tbl_program"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.Tbl_applicationListRelationFilter
   choice_2_applications?: Prisma.Tbl_applicationListRelationFilter
   choice_3_applications?: Prisma.Tbl_applicationListRelationFilter
@@ -221,6 +233,7 @@ export type tbl_programOrderByWithRelationInput = {
   program_code?: Prisma.SortOrder
   program_name?: Prisma.SortOrder
   is_active?: Prisma.SortOrderInput | Prisma.SortOrder
+  min_match?: Prisma.SortOrder
   tbl_application?: Prisma.tbl_applicationOrderByRelationAggregateInput
   choice_2_applications?: Prisma.tbl_applicationOrderByRelationAggregateInput
   choice_3_applications?: Prisma.tbl_applicationOrderByRelationAggregateInput
@@ -237,6 +250,7 @@ export type tbl_programWhereUniqueInput = Prisma.AtLeast<{
   program_code?: Prisma.StringFilter<"tbl_program"> | string
   program_name?: Prisma.StringFilter<"tbl_program"> | string
   is_active?: Prisma.BoolNullableFilter<"tbl_program"> | boolean | null
+  min_match?: Prisma.DecimalFilter<"tbl_program"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.Tbl_applicationListRelationFilter
   choice_2_applications?: Prisma.Tbl_applicationListRelationFilter
   choice_3_applications?: Prisma.Tbl_applicationListRelationFilter
@@ -250,6 +264,7 @@ export type tbl_programOrderByWithAggregationInput = {
   program_code?: Prisma.SortOrder
   program_name?: Prisma.SortOrder
   is_active?: Prisma.SortOrderInput | Prisma.SortOrder
+  min_match?: Prisma.SortOrder
   _count?: Prisma.tbl_programCountOrderByAggregateInput
   _avg?: Prisma.tbl_programAvgOrderByAggregateInput
   _max?: Prisma.tbl_programMaxOrderByAggregateInput
@@ -265,12 +280,14 @@ export type tbl_programScalarWhereWithAggregatesInput = {
   program_code?: Prisma.StringWithAggregatesFilter<"tbl_program"> | string
   program_name?: Prisma.StringWithAggregatesFilter<"tbl_program"> | string
   is_active?: Prisma.BoolNullableWithAggregatesFilter<"tbl_program"> | boolean | null
+  min_match?: Prisma.DecimalWithAggregatesFilter<"tbl_program"> | runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
 export type tbl_programCreateInput = {
   program_code: string
   program_name: string
   is_active?: boolean | null
+  min_match?: runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationCreateNestedManyWithoutTbl_programInput
   choice_2_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_2Input
   choice_3_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_3Input
@@ -284,6 +301,7 @@ export type tbl_programUncheckedCreateInput = {
   program_code: string
   program_name: string
   is_active?: boolean | null
+  min_match?: runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutTbl_programInput
   choice_2_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_2Input
   choice_3_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_3Input
@@ -296,6 +314,7 @@ export type tbl_programUpdateInput = {
   program_code?: Prisma.StringFieldUpdateOperationsInput | string
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  min_match?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationUpdateManyWithoutTbl_programNestedInput
   choice_2_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_2NestedInput
   choice_3_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_3NestedInput
@@ -309,6 +328,7 @@ export type tbl_programUncheckedUpdateInput = {
   program_code?: Prisma.StringFieldUpdateOperationsInput | string
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  min_match?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationUncheckedUpdateManyWithoutTbl_programNestedInput
   choice_2_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_2NestedInput
   choice_3_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_3NestedInput
@@ -322,12 +342,14 @@ export type tbl_programCreateManyInput = {
   program_code: string
   program_name: string
   is_active?: boolean | null
+  min_match?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
 export type tbl_programUpdateManyMutationInput = {
   program_code?: Prisma.StringFieldUpdateOperationsInput | string
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  min_match?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
 export type tbl_programUncheckedUpdateManyInput = {
@@ -335,6 +357,7 @@ export type tbl_programUncheckedUpdateManyInput = {
   program_code?: Prisma.StringFieldUpdateOperationsInput | string
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  min_match?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
 export type Tbl_programNullableScalarRelationFilter = {
@@ -352,10 +375,12 @@ export type tbl_programCountOrderByAggregateInput = {
   program_code?: Prisma.SortOrder
   program_name?: Prisma.SortOrder
   is_active?: Prisma.SortOrder
+  min_match?: Prisma.SortOrder
 }
 
 export type tbl_programAvgOrderByAggregateInput = {
   program_id?: Prisma.SortOrder
+  min_match?: Prisma.SortOrder
 }
 
 export type tbl_programMaxOrderByAggregateInput = {
@@ -363,6 +388,7 @@ export type tbl_programMaxOrderByAggregateInput = {
   program_code?: Prisma.SortOrder
   program_name?: Prisma.SortOrder
   is_active?: Prisma.SortOrder
+  min_match?: Prisma.SortOrder
 }
 
 export type tbl_programMinOrderByAggregateInput = {
@@ -370,10 +396,12 @@ export type tbl_programMinOrderByAggregateInput = {
   program_code?: Prisma.SortOrder
   program_name?: Prisma.SortOrder
   is_active?: Prisma.SortOrder
+  min_match?: Prisma.SortOrder
 }
 
 export type tbl_programSumOrderByAggregateInput = {
   program_id?: Prisma.SortOrder
+  min_match?: Prisma.SortOrder
 }
 
 export type tbl_programCreateNestedOneWithoutTbl_applicationInput = {
@@ -438,6 +466,14 @@ export type tbl_programUpdateOneRequiredWithoutTbl_course_recommendationNestedIn
   update?: Prisma.XOR<Prisma.XOR<Prisma.tbl_programUpdateToOneWithWhereWithoutTbl_course_recommendationInput, Prisma.tbl_programUpdateWithoutTbl_course_recommendationInput>, Prisma.tbl_programUncheckedUpdateWithoutTbl_course_recommendationInput>
 }
 
+export type DecimalFieldUpdateOperationsInput = {
+  set?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
 export type tbl_programCreateNestedOneWithoutTbl_program_competencyInput = {
   create?: Prisma.XOR<Prisma.tbl_programCreateWithoutTbl_program_competencyInput, Prisma.tbl_programUncheckedCreateWithoutTbl_program_competencyInput>
   connectOrCreate?: Prisma.tbl_programCreateOrConnectWithoutTbl_program_competencyInput
@@ -472,6 +508,7 @@ export type tbl_programCreateWithoutTbl_applicationInput = {
   program_code: string
   program_name: string
   is_active?: boolean | null
+  min_match?: runtime.Decimal | runtime.DecimalJsLike | number | string
   choice_2_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_2Input
   choice_3_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_3Input
   tbl_course_recommendation?: Prisma.tbl_course_recommendationCreateNestedManyWithoutTbl_programInput
@@ -484,6 +521,7 @@ export type tbl_programUncheckedCreateWithoutTbl_applicationInput = {
   program_code: string
   program_name: string
   is_active?: boolean | null
+  min_match?: runtime.Decimal | runtime.DecimalJsLike | number | string
   choice_2_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_2Input
   choice_3_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_3Input
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_programInput
@@ -500,6 +538,7 @@ export type tbl_programCreateWithoutChoice_2_applicationsInput = {
   program_code: string
   program_name: string
   is_active?: boolean | null
+  min_match?: runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationCreateNestedManyWithoutTbl_programInput
   choice_3_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_3Input
   tbl_course_recommendation?: Prisma.tbl_course_recommendationCreateNestedManyWithoutTbl_programInput
@@ -512,6 +551,7 @@ export type tbl_programUncheckedCreateWithoutChoice_2_applicationsInput = {
   program_code: string
   program_name: string
   is_active?: boolean | null
+  min_match?: runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutTbl_programInput
   choice_3_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_3Input
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_programInput
@@ -528,6 +568,7 @@ export type tbl_programCreateWithoutChoice_3_applicationsInput = {
   program_code: string
   program_name: string
   is_active?: boolean | null
+  min_match?: runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationCreateNestedManyWithoutTbl_programInput
   choice_2_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_2Input
   tbl_course_recommendation?: Prisma.tbl_course_recommendationCreateNestedManyWithoutTbl_programInput
@@ -540,6 +581,7 @@ export type tbl_programUncheckedCreateWithoutChoice_3_applicationsInput = {
   program_code: string
   program_name: string
   is_active?: boolean | null
+  min_match?: runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutTbl_programInput
   choice_2_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_2Input
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_programInput
@@ -567,6 +609,7 @@ export type tbl_programUpdateWithoutTbl_applicationInput = {
   program_code?: Prisma.StringFieldUpdateOperationsInput | string
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  min_match?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   choice_2_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_2NestedInput
   choice_3_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_3NestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUpdateManyWithoutTbl_programNestedInput
@@ -579,6 +622,7 @@ export type tbl_programUncheckedUpdateWithoutTbl_applicationInput = {
   program_code?: Prisma.StringFieldUpdateOperationsInput | string
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  min_match?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   choice_2_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_2NestedInput
   choice_3_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_3NestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_programNestedInput
@@ -601,6 +645,7 @@ export type tbl_programUpdateWithoutChoice_2_applicationsInput = {
   program_code?: Prisma.StringFieldUpdateOperationsInput | string
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  min_match?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationUpdateManyWithoutTbl_programNestedInput
   choice_3_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_3NestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUpdateManyWithoutTbl_programNestedInput
@@ -613,6 +658,7 @@ export type tbl_programUncheckedUpdateWithoutChoice_2_applicationsInput = {
   program_code?: Prisma.StringFieldUpdateOperationsInput | string
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  min_match?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationUncheckedUpdateManyWithoutTbl_programNestedInput
   choice_3_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_3NestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_programNestedInput
@@ -635,6 +681,7 @@ export type tbl_programUpdateWithoutChoice_3_applicationsInput = {
   program_code?: Prisma.StringFieldUpdateOperationsInput | string
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  min_match?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationUpdateManyWithoutTbl_programNestedInput
   choice_2_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_2NestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUpdateManyWithoutTbl_programNestedInput
@@ -647,6 +694,7 @@ export type tbl_programUncheckedUpdateWithoutChoice_3_applicationsInput = {
   program_code?: Prisma.StringFieldUpdateOperationsInput | string
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  min_match?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationUncheckedUpdateManyWithoutTbl_programNestedInput
   choice_2_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_2NestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_programNestedInput
@@ -658,6 +706,7 @@ export type tbl_programCreateWithoutTbl_course_recommendationInput = {
   program_code: string
   program_name: string
   is_active?: boolean | null
+  min_match?: runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationCreateNestedManyWithoutTbl_programInput
   choice_2_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_2Input
   choice_3_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_3Input
@@ -670,6 +719,7 @@ export type tbl_programUncheckedCreateWithoutTbl_course_recommendationInput = {
   program_code: string
   program_name: string
   is_active?: boolean | null
+  min_match?: runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutTbl_programInput
   choice_2_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_2Input
   choice_3_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_3Input
@@ -697,6 +747,7 @@ export type tbl_programUpdateWithoutTbl_course_recommendationInput = {
   program_code?: Prisma.StringFieldUpdateOperationsInput | string
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  min_match?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationUpdateManyWithoutTbl_programNestedInput
   choice_2_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_2NestedInput
   choice_3_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_3NestedInput
@@ -709,6 +760,7 @@ export type tbl_programUncheckedUpdateWithoutTbl_course_recommendationInput = {
   program_code?: Prisma.StringFieldUpdateOperationsInput | string
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  min_match?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationUncheckedUpdateManyWithoutTbl_programNestedInput
   choice_2_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_2NestedInput
   choice_3_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_3NestedInput
@@ -720,6 +772,7 @@ export type tbl_programCreateWithoutTbl_program_competencyInput = {
   program_code: string
   program_name: string
   is_active?: boolean | null
+  min_match?: runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationCreateNestedManyWithoutTbl_programInput
   choice_2_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_2Input
   choice_3_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_3Input
@@ -732,6 +785,7 @@ export type tbl_programUncheckedCreateWithoutTbl_program_competencyInput = {
   program_code: string
   program_name: string
   is_active?: boolean | null
+  min_match?: runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutTbl_programInput
   choice_2_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_2Input
   choice_3_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_3Input
@@ -759,6 +813,7 @@ export type tbl_programUpdateWithoutTbl_program_competencyInput = {
   program_code?: Prisma.StringFieldUpdateOperationsInput | string
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  min_match?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationUpdateManyWithoutTbl_programNestedInput
   choice_2_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_2NestedInput
   choice_3_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_3NestedInput
@@ -771,6 +826,7 @@ export type tbl_programUncheckedUpdateWithoutTbl_program_competencyInput = {
   program_code?: Prisma.StringFieldUpdateOperationsInput | string
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  min_match?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationUncheckedUpdateManyWithoutTbl_programNestedInput
   choice_2_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_2NestedInput
   choice_3_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_3NestedInput
@@ -782,6 +838,7 @@ export type tbl_programCreateWithoutTbl_quotaInput = {
   program_code: string
   program_name: string
   is_active?: boolean | null
+  min_match?: runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationCreateNestedManyWithoutTbl_programInput
   choice_2_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_2Input
   choice_3_applications?: Prisma.tbl_applicationCreateNestedManyWithoutProgram_choice_3Input
@@ -794,6 +851,7 @@ export type tbl_programUncheckedCreateWithoutTbl_quotaInput = {
   program_code: string
   program_name: string
   is_active?: boolean | null
+  min_match?: runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutTbl_programInput
   choice_2_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_2Input
   choice_3_applications?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutProgram_choice_3Input
@@ -821,6 +879,7 @@ export type tbl_programUpdateWithoutTbl_quotaInput = {
   program_code?: Prisma.StringFieldUpdateOperationsInput | string
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  min_match?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationUpdateManyWithoutTbl_programNestedInput
   choice_2_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_2NestedInput
   choice_3_applications?: Prisma.tbl_applicationUpdateManyWithoutProgram_choice_3NestedInput
@@ -833,6 +892,7 @@ export type tbl_programUncheckedUpdateWithoutTbl_quotaInput = {
   program_code?: Prisma.StringFieldUpdateOperationsInput | string
   program_name?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  min_match?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   tbl_application?: Prisma.tbl_applicationUncheckedUpdateManyWithoutTbl_programNestedInput
   choice_2_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_2NestedInput
   choice_3_applications?: Prisma.tbl_applicationUncheckedUpdateManyWithoutProgram_choice_3NestedInput
@@ -921,6 +981,7 @@ export type tbl_programSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   program_code?: boolean
   program_name?: boolean
   is_active?: boolean
+  min_match?: boolean
   tbl_application?: boolean | Prisma.tbl_program$tbl_applicationArgs<ExtArgs>
   choice_2_applications?: boolean | Prisma.tbl_program$choice_2_applicationsArgs<ExtArgs>
   choice_3_applications?: boolean | Prisma.tbl_program$choice_3_applicationsArgs<ExtArgs>
@@ -935,6 +996,7 @@ export type tbl_programSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   program_code?: boolean
   program_name?: boolean
   is_active?: boolean
+  min_match?: boolean
 }, ExtArgs["result"]["tbl_program"]>
 
 export type tbl_programSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -942,6 +1004,7 @@ export type tbl_programSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   program_code?: boolean
   program_name?: boolean
   is_active?: boolean
+  min_match?: boolean
 }, ExtArgs["result"]["tbl_program"]>
 
 export type tbl_programSelectScalar = {
@@ -949,9 +1012,10 @@ export type tbl_programSelectScalar = {
   program_code?: boolean
   program_name?: boolean
   is_active?: boolean
+  min_match?: boolean
 }
 
-export type tbl_programOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"program_id" | "program_code" | "program_name" | "is_active", ExtArgs["result"]["tbl_program"]>
+export type tbl_programOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"program_id" | "program_code" | "program_name" | "is_active" | "min_match", ExtArgs["result"]["tbl_program"]>
 export type tbl_programInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tbl_application?: boolean | Prisma.tbl_program$tbl_applicationArgs<ExtArgs>
   choice_2_applications?: boolean | Prisma.tbl_program$choice_2_applicationsArgs<ExtArgs>
@@ -979,6 +1043,7 @@ export type $tbl_programPayload<ExtArgs extends runtime.Types.Extensions.Interna
     program_code: string
     program_name: string
     is_active: boolean | null
+    min_match: runtime.Decimal
   }, ExtArgs["result"]["tbl_program"]>
   composites: {}
 }
@@ -1412,6 +1477,7 @@ export interface tbl_programFieldRefs {
   readonly program_code: Prisma.FieldRef<"tbl_program", 'String'>
   readonly program_name: Prisma.FieldRef<"tbl_program", 'String'>
   readonly is_active: Prisma.FieldRef<"tbl_program", 'Boolean'>
+  readonly min_match: Prisma.FieldRef<"tbl_program", 'Decimal'>
 }
     
 

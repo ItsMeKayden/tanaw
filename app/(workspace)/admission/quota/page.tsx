@@ -8,6 +8,7 @@ import { countForScope, getApplicationCounts, resolveCycle } from "@/features/ad
 import { requirePermission } from "@/lib/authorization";
 import { hasPermission } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
+import { GridEditorSkeleton } from "@/components/ui/skeletons";
 
 type PageProps = Readonly<{
   searchParams: Promise<{ cycle?: string | string[] }>;
@@ -81,7 +82,7 @@ async function QuotaContent({ searchParams }: PageProps) {
 
 export default function QuotaPage({ searchParams }: PageProps) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<GridEditorSkeleton label="quota" cols={6} />}>
       <QuotaContent searchParams={searchParams} />
     </Suspense>
   );

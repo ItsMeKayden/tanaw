@@ -15,7 +15,8 @@
     "db:status": "prisma migrate status --config prisma7.config.ts",
     "db:seed:demo": "prisma db seed --config prisma7.config.ts -- --demo",
     "db:seed:reset-demo": "prisma db seed --config prisma7.config.ts -- --reset-demo --demo",
-    "db:setup": "npm run db:migrate && npm run db:generate && npm run db:seed"
+    "db:setup": "npm run db:migrate && npm run db:generate && npm run db:seed",
+    "archive:purge": "tsx scripts/purge-archive.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
@@ -30,7 +31,7 @@
     "exceljs": "^4.4.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.61.0",
-    "next": "16.4.3",
+    "next": "16.4.6",
     "next-auth": "^5.0.0-beta.32",
     "papaparse": "^5.7.1",
     "pg": "^8.23.1",
@@ -51,7 +52,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.4.3",
+    "eslint-config-next": "16.4.6",
     "prisma": "^7.10.1",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",

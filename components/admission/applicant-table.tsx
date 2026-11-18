@@ -7,9 +7,10 @@ import { useRouter } from "next/navigation";
 import { ApplicantFormModal, type ApplicantFormRequest } from "@/components/admission/applicant-form-modal";
 import { Modal } from "@/components/ui/modal";
 import { Pagination } from "@/components/ui/pagination";
-import { deleteApplicant } from "@/features/admission/actions/delete-applicant";
+import { archiveApplicant } from "@/features/admission/actions/archive-applicant";
 import type { ApplicantFormReference } from "@/features/admission/actions/load-applicant";
 import { ADMISSION_STAGE_ORDER, stageBadgeClass } from "@/features/admission/stages";
+import { toast } from "@/components/ui/toaster";
 
 export type ApplicantRow = {
   applicant_id: number;
@@ -20,12 +21,10 @@ export type ApplicantRow = {
   school_name: string | null;
   school_type: string | null;
   stage: string | null;
-  /** Used to warn that deletion is blocked; not shown as a column. */
-  result_status: string | null;
 };
 
-type Feedback = { type: "success" | "error"; text: string; applicantId?: number } | null;
-type DeleteState = { row: ApplicantRow; error: string | null } | null;
+type Feedback = { type: "success" | "error"; text: string; applicantId?: number; archived?: boolean } | null;
+type ArchiveState = { row: ApplicantRow; error: string | null } | null;
 
 const PAGE_SIZE = 10;
 
@@ -39,11 +38,18 @@ const applicantId = (row: ApplicantRow) => row.application_no ?? String(row.appl
 
 export default function ApplicantTable({
   applicants,
-  canWrite,
+  canEdit,
+  canArchive,
+  profileBase,
   formData,
 }: Readonly<{
   applicants: ApplicantRow[];
-  canWrite: boolean;
+  /** Add and edit applicants. */
+  canEdit: boolean;
+  /** Archive applicants (Admission only). */
+  canArchive: boolean;
+  /** Profile route base of the current module, e.g. /registrar/applicants. */
+  profileBase: string;
   /** Dropdown data for the add/edit modal (null when the user can't write). */
   formData: ApplicantFormReference | null;
 }>) {
@@ -52,7 +58,7 @@ export default function ApplicantTable({
   const [searchQuery, setSearchQuery] = useState("");
   const [stageFilter, setStageFilter] = useState("ALL");
   const [formRequest, setFormRequest] = useState<ApplicantFormRequest | null>(null);
-  const [deleting, setDeleting] = useState<DeleteState>(null);
+  const [archiving, setArchiving] = useState<ArchiveState>(null);
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -79,15 +85,17 @@ export default function ApplicantTable({
     setFormRequest(request);
   }
 
-  function confirmDelete(row: ApplicantRow) {
+  function confirmArchive(row: ApplicantRow) {
     startTransition(async () => {
-      const result = await deleteApplicant(row.applicant_id);
-      if (result.error) {
-        setDeleting({ row, error: result.error });
+      const result = await archiveApplicant(row.applicant_id);
+      if ("error" in result) {
+        setArchiving({ row, error: result.error });
+        toast.error(result.error);
         return;
       }
-      setDeleting(null);
-      setFeedback({ type: "success", text: `${row.name} was deleted.` });
+      setArchiving(null);
+      toast.success(`${row.name} was moved to the archive.`);
+      setFeedback({ type: "success", text: `${row.name} was moved to the archive.`, archived: true });
       router.refresh();
     });
   }
@@ -131,7 +139,7 @@ export default function ApplicantTable({
           </label>
         </div>
 
-        {canWrite && formData && (
+        {canEdit && formData && (
           <button
             type="button"
             onClick={() => openForm({ mode: "create" })}
@@ -155,8 +163,16 @@ export default function ApplicantTable({
           {feedback.applicantId && (
             <>
               {" "}
-              <Link href={`/admission/applicants/${feedback.applicantId}`} className="font-medium underline">
+              <Link href={`${profileBase}/${feedback.applicantId}`} className="font-medium underline">
                 View profile
+              </Link>
+            </>
+          )}
+          {feedback.archived && (
+            <>
+              {" "}
+              <Link href="/admission/archive" className="font-medium underline">
+                Open Archive History
               </Link>
             </>
           )}
@@ -204,10 +220,10 @@ export default function ApplicantTable({
                   </td>
                   <td className={td}>
                     <div className="flex items-center justify-center gap-1.5">
-                      <Link href={`/admission/applicants/${row.applicant_id}`} className={actionButton}>
+                      <Link href={`${profileBase}/${row.applicant_id}`} className={actionButton}>
                         View
                       </Link>
-                      {canWrite && formData && row.application_no && (
+                      {canEdit && formData && row.application_no && (
                         <button
                           type="button"
                           onClick={() =>
@@ -222,16 +238,16 @@ export default function ApplicantTable({
                           Edit
                         </button>
                       )}
-                      {canWrite && (
+                      {canArchive && (
                         <button
                           type="button"
                           onClick={() => {
                             setFeedback(null);
-                            setDeleting({ row, error: null });
+                            setArchiving({ row, error: null });
                           }}
-                          className="rounded-md border border-red-300 bg-white px-2 py-0.5 text-xs text-red-700 hover:bg-red-50"
+                          className="rounded-md border border-amber-400 bg-white px-2 py-0.5 text-xs text-amber-800 hover:bg-amber-50"
                         >
-                          Delete
+                          Archive
                         </button>
                       )}
                     </div>
@@ -267,6 +283,7 @@ export default function ApplicantTable({
           onClose={() => setFormRequest(null)}
           onSaved={(id, mode) => {
             setFormRequest(null);
+            toast.success(mode === "create" ? "Applicant added." : "Applicant updated.");
             setFeedback({
               type: "success",
               text: mode === "create" ? "Applicant added." : "Applicant updated.",
@@ -276,34 +293,33 @@ export default function ApplicantTable({
         />
       )}
 
-      {/* Delete applicant */}
+      {/* Archive applicant */}
       <Modal
-        open={deleting !== null}
-        onOpenChange={(open) => !open && !isPending && setDeleting(null)}
-        title="Delete applicant?"
+        open={archiving !== null}
+        onOpenChange={(open) => !open && !isPending && setArchiving(null)}
+        title="Archive applicant?"
         size="sm"
       >
-        {deleting && (
+        {archiving && (
           <div className="space-y-4 text-sm">
             <p>
-              <span className="font-semibold">{deleting.row.name}</span> ({applicantId(deleting.row)}), their
-              applications, stage history, and uploaded documents will be permanently deleted. This can&apos;t be
-              undone.
+              <span className="font-semibold">{archiving.row.name}</span> ({applicantId(archiving.row)}) and their
+              applications, exam records, and documents will be moved to Archive History and hidden from every
+              list, report, and map.
             </p>
-            {deleting.row.result_status && !deleting.error && (
-              <p className="rounded-md border border-amber-300 bg-amber-50 p-2.5 text-amber-900">
-                This applicant has an exam result, so deletion will be blocked to keep their examination history.
-              </p>
-            )}
-            {deleting.error && (
+            <p className="rounded-md border border-amber-300 bg-amber-50 p-2.5 text-amber-900">
+              You can recover the record from Archive History. If it isn&apos;t recovered within a year, it is
+              deleted permanently.
+            </p>
+            {archiving.error && (
               <p role="alert" className="rounded-md border border-red-300 bg-red-50 p-2.5 text-red-800">
-                {deleting.error}
+                {archiving.error}
               </p>
             )}
             <div className="-mx-5 -mb-4 flex justify-end gap-2 border-t border-neutral-200 bg-neutral-50 px-5 py-3">
               <button
                 type="button"
-                onClick={() => setDeleting(null)}
+                onClick={() => setArchiving(null)}
                 disabled={isPending}
                 className="h-9 rounded-md border border-neutral-400 bg-white px-4 hover:bg-neutral-100 disabled:opacity-60"
               >
@@ -311,11 +327,11 @@ export default function ApplicantTable({
               </button>
               <button
                 type="button"
-                onClick={() => confirmDelete(deleting.row)}
+                onClick={() => confirmArchive(archiving.row)}
                 disabled={isPending}
-                className="h-9 rounded-md bg-red-600 px-4 font-semibold text-white hover:bg-red-700 disabled:opacity-60"
+                className="h-9 rounded-md bg-amber-600 px-4 font-semibold text-white hover:bg-amber-700 disabled:opacity-60"
               >
-                {isPending ? "Deleting…" : "Delete"}
+                {isPending ? "Archiving…" : "Archive"}
               </button>
             </div>
           </div>

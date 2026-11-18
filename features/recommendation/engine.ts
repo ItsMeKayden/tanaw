@@ -3,6 +3,7 @@
 // (the seeder runs outside Next.js).
 import type { Prisma } from "../../generated/prisma/client";
 import { computeMatch } from "./config";
+import { ACTIVE_APPLICATION } from "../admission/archive-core";
 
 type Db = Prisma.TransactionClient;
 
@@ -81,6 +82,18 @@ export async function getCompetencyScores(db: Db, resultId: number) {
 }
 
 /** Active programs with their competency weights (programs without weights are skipped). */
+/**
+ * Whether recommendations may be generated (Mapping Settings switch). No
+ * settings row yet means enabled.
+ */
+export async function isRecommendationEnabled(db: Db) {
+  const setting = await db.tbl_recommendation_setting.findFirst({
+    orderBy: { setting_id: "asc" },
+    select: { is_enabled: true },
+  });
+  return setting?.is_enabled ?? true;
+}
+
 export async function getProgramWeights(db: Db) {
   const programs = await db.tbl_program.findMany({
     where: { is_active: true },
@@ -89,6 +102,7 @@ export async function getProgramWeights(db: Db) {
       program_id: true,
       program_code: true,
       program_name: true,
+      min_match: true,
       tbl_program_competency: { select: { competency_id: true, weight: true } },
     },
   });
@@ -97,6 +111,7 @@ export async function getProgramWeights(db: Db) {
     program_id: program.program_id,
     program_code: program.program_code,
     program_name: program.program_name,
+    min_match: Number(program.min_match),
     weights: program.tbl_program_competency.map((w) => ({
       competency_id: w.competency_id,
       weight: Number(w.weight),
@@ -108,14 +123,18 @@ export async function getProgramWeights(db: Db) {
  * (Re)generates tbl_course_recommendation for applications in a cycle that
  * have a scored exam result (subject scores or question responses). Every weighted course is
  * scored and ranked (1 = best match). Returns how many applications were scored.
+ * Does nothing (returns 0) while recommendations are turned off in Mapping Settings.
  */
 export async function generateRecommendations(
   db: Db,
   options: { cycleId: number; applicationIds?: number[] },
 ) {
+  if (!(await isRecommendationEnabled(db))) return 0;
+
   const [applications, programs] = await Promise.all([
     db.tbl_application.findMany({
       where: {
+        ...ACTIVE_APPLICATION,
         cycle_id: options.cycleId,
         ...(options.applicationIds ? { application_id: { in: options.applicationIds } } : {}),
         tbl_exam_result: { some: SCORED_RESULT },
