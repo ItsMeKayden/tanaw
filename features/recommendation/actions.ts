@@ -106,11 +106,15 @@ export async function saveMapping(rawRows: MappingSaveInput): Promise<ActionResu
                   competency_id: Number(w.competency_id),
                 },
               },
-              update: { weight: Number(w.weight) },
+              update: {
+                weight: Number(w.weight),
+                ...(w.min_score !== undefined ? { min_score: w.min_score } : {}),
+              },
               create: {
                 program_id: Number(row.program_id),
                 competency_id: Number(w.competency_id),
                 weight: Number(w.weight),
+                min_score: w.min_score ?? null,
               },
             });
           }
@@ -133,7 +137,7 @@ export async function saveMapping(rawRows: MappingSaveInput): Promise<ActionResu
   }
 }
 
-/** Restores the default weights for every active course. */
+/** Restores the default weights and minimum match for every active course and clears its subject minimums. */
 export async function resetMapping(): Promise<ActionResult> {
   await requirePermission("recommendation", "write");
 
@@ -149,7 +153,8 @@ export async function resetMapping(): Promise<ActionResult> {
       min_match: MIN_MATCH,
       weights: COMPETENCIES.flatMap((competency, index) => {
         const match = competencies.find((c) => c.competency_name === competency.name);
-        return match ? [{ competency_id: match.competency_id, weight: defaults[index] }] : [];
+        // Defaults have no compatibility rules (subject minimums are cleared).
+        return match ? [{ competency_id: match.competency_id, weight: defaults[index], min_score: null }] : [];
       }),
     };
   });
