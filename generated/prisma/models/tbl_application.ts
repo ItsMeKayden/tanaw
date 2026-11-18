@@ -753,14 +753,6 @@ export type tbl_applicationUncheckedUpdateManyWithoutTbl_applicantNestedInput = 
   deleteMany?: Prisma.tbl_applicationScalarWhereInput | Prisma.tbl_applicationScalarWhereInput[]
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type tbl_applicationCreateNestedOneWithoutTbl_application_stage_logInput = {
   create?: Prisma.XOR<Prisma.tbl_applicationCreateWithoutTbl_application_stage_logInput, Prisma.tbl_applicationUncheckedCreateWithoutTbl_application_stage_logInput>
   connectOrCreate?: Prisma.tbl_applicationCreateOrConnectWithoutTbl_application_stage_logInput

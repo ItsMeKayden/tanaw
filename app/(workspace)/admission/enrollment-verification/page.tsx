@@ -7,6 +7,7 @@ import { QcuWatermark } from "@/components/admission/qcu-watermark";
 import { StatCard } from "@/components/ui/stat-card";
 import { getAdmittedApplications } from "@/features/admission/enrollment-queries";
 import { requireAnyPermission } from "@/lib/authorization";
+import { TablePageSkeleton } from "@/components/ui/skeletons";
 
 function percent(part: number, whole: number) {
   return whole === 0 ? 0 : Math.round((part / whole) * 100);
@@ -58,7 +59,7 @@ async function EnrollmentVerificationContent() {
 
 export default function EnrollmentVerificationPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<TablePageSkeleton label="enrollment verification" stats={3} cols={7} />}>
       <EnrollmentVerificationContent />
     </Suspense>
   );

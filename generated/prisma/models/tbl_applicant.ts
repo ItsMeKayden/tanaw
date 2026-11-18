@@ -28,10 +28,12 @@ export type AggregateTbl_applicant = {
 
 export type Tbl_applicantAvgAggregateOutputType = {
   applicant_id: number | null
+  archived_by: number | null
 }
 
 export type Tbl_applicantSumAggregateOutputType = {
   applicant_id: number | null
+  archived_by: number | null
 }
 
 export type Tbl_applicantMinAggregateOutputType = {
@@ -44,6 +46,8 @@ export type Tbl_applicantMinAggregateOutputType = {
   birth_date: Date | null
   email: string | null
   mobile_no: string | null
+  archived_at: Date | null
+  archived_by: number | null
 }
 
 export type Tbl_applicantMaxAggregateOutputType = {
@@ -56,6 +60,8 @@ export type Tbl_applicantMaxAggregateOutputType = {
   birth_date: Date | null
   email: string | null
   mobile_no: string | null
+  archived_at: Date | null
+  archived_by: number | null
 }
 
 export type Tbl_applicantCountAggregateOutputType = {
@@ -68,16 +74,20 @@ export type Tbl_applicantCountAggregateOutputType = {
   birth_date: number
   email: number
   mobile_no: number
+  archived_at: number
+  archived_by: number
   _all: number
 }
 
 
 export type Tbl_applicantAvgAggregateInputType = {
   applicant_id?: true
+  archived_by?: true
 }
 
 export type Tbl_applicantSumAggregateInputType = {
   applicant_id?: true
+  archived_by?: true
 }
 
 export type Tbl_applicantMinAggregateInputType = {
@@ -90,6 +100,8 @@ export type Tbl_applicantMinAggregateInputType = {
   birth_date?: true
   email?: true
   mobile_no?: true
+  archived_at?: true
+  archived_by?: true
 }
 
 export type Tbl_applicantMaxAggregateInputType = {
@@ -102,6 +114,8 @@ export type Tbl_applicantMaxAggregateInputType = {
   birth_date?: true
   email?: true
   mobile_no?: true
+  archived_at?: true
+  archived_by?: true
 }
 
 export type Tbl_applicantCountAggregateInputType = {
@@ -114,6 +128,8 @@ export type Tbl_applicantCountAggregateInputType = {
   birth_date?: true
   email?: true
   mobile_no?: true
+  archived_at?: true
+  archived_by?: true
   _all?: true
 }
 
@@ -213,6 +229,8 @@ export type Tbl_applicantGroupByOutputType = {
   birth_date: Date | null
   email: string | null
   mobile_no: string | null
+  archived_at: Date | null
+  archived_by: number | null
   _count: Tbl_applicantCountAggregateOutputType | null
   _avg: Tbl_applicantAvgAggregateOutputType | null
   _sum: Tbl_applicantSumAggregateOutputType | null
@@ -248,7 +266,10 @@ export type tbl_applicantWhereInput = {
   birth_date?: Prisma.DateTimeNullableFilter<"tbl_applicant"> | Date | string | null
   email?: Prisma.StringNullableFilter<"tbl_applicant"> | string | null
   mobile_no?: Prisma.StringNullableFilter<"tbl_applicant"> | string | null
+  archived_at?: Prisma.DateTimeNullableFilter<"tbl_applicant"> | Date | string | null
+  archived_by?: Prisma.IntNullableFilter<"tbl_applicant"> | number | null
   tbl_application?: Prisma.Tbl_applicationListRelationFilter
+  archived_by_user?: Prisma.XOR<Prisma.Tbl_user_accountNullableScalarRelationFilter, Prisma.tbl_user_accountWhereInput> | null
 }
 
 export type tbl_applicantOrderByWithRelationInput = {
@@ -261,7 +282,10 @@ export type tbl_applicantOrderByWithRelationInput = {
   birth_date?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   mobile_no?: Prisma.SortOrderInput | Prisma.SortOrder
+  archived_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  archived_by?: Prisma.SortOrderInput | Prisma.SortOrder
   tbl_application?: Prisma.tbl_applicationOrderByRelationAggregateInput
+  archived_by_user?: Prisma.tbl_user_accountOrderByWithRelationInput
 }
 
 export type tbl_applicantWhereUniqueInput = Prisma.AtLeast<{
@@ -277,7 +301,10 @@ export type tbl_applicantWhereUniqueInput = Prisma.AtLeast<{
   birth_date?: Prisma.DateTimeNullableFilter<"tbl_applicant"> | Date | string | null
   email?: Prisma.StringNullableFilter<"tbl_applicant"> | string | null
   mobile_no?: Prisma.StringNullableFilter<"tbl_applicant"> | string | null
+  archived_at?: Prisma.DateTimeNullableFilter<"tbl_applicant"> | Date | string | null
+  archived_by?: Prisma.IntNullableFilter<"tbl_applicant"> | number | null
   tbl_application?: Prisma.Tbl_applicationListRelationFilter
+  archived_by_user?: Prisma.XOR<Prisma.Tbl_user_accountNullableScalarRelationFilter, Prisma.tbl_user_accountWhereInput> | null
 }, "applicant_id">
 
 export type tbl_applicantOrderByWithAggregationInput = {
@@ -290,6 +317,8 @@ export type tbl_applicantOrderByWithAggregationInput = {
   birth_date?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   mobile_no?: Prisma.SortOrderInput | Prisma.SortOrder
+  archived_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  archived_by?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.tbl_applicantCountOrderByAggregateInput
   _avg?: Prisma.tbl_applicantAvgOrderByAggregateInput
   _max?: Prisma.tbl_applicantMaxOrderByAggregateInput
@@ -310,6 +339,8 @@ export type tbl_applicantScalarWhereWithAggregatesInput = {
   birth_date?: Prisma.DateTimeNullableWithAggregatesFilter<"tbl_applicant"> | Date | string | null
   email?: Prisma.StringNullableWithAggregatesFilter<"tbl_applicant"> | string | null
   mobile_no?: Prisma.StringNullableWithAggregatesFilter<"tbl_applicant"> | string | null
+  archived_at?: Prisma.DateTimeNullableWithAggregatesFilter<"tbl_applicant"> | Date | string | null
+  archived_by?: Prisma.IntNullableWithAggregatesFilter<"tbl_applicant"> | number | null
 }
 
 export type tbl_applicantCreateInput = {
@@ -321,7 +352,9 @@ export type tbl_applicantCreateInput = {
   birth_date?: Date | string | null
   email?: string | null
   mobile_no?: string | null
+  archived_at?: Date | string | null
   tbl_application?: Prisma.tbl_applicationCreateNestedManyWithoutTbl_applicantInput
+  archived_by_user?: Prisma.tbl_user_accountCreateNestedOneWithoutArchived_applicantsInput
 }
 
 export type tbl_applicantUncheckedCreateInput = {
@@ -334,6 +367,8 @@ export type tbl_applicantUncheckedCreateInput = {
   birth_date?: Date | string | null
   email?: string | null
   mobile_no?: string | null
+  archived_at?: Date | string | null
+  archived_by?: number | null
   tbl_application?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutTbl_applicantInput
 }
 
@@ -346,7 +381,9 @@ export type tbl_applicantUpdateInput = {
   birth_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mobile_no?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   tbl_application?: Prisma.tbl_applicationUpdateManyWithoutTbl_applicantNestedInput
+  archived_by_user?: Prisma.tbl_user_accountUpdateOneWithoutArchived_applicantsNestedInput
 }
 
 export type tbl_applicantUncheckedUpdateInput = {
@@ -359,6 +396,8 @@ export type tbl_applicantUncheckedUpdateInput = {
   birth_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mobile_no?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archived_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   tbl_application?: Prisma.tbl_applicationUncheckedUpdateManyWithoutTbl_applicantNestedInput
 }
 
@@ -372,6 +411,8 @@ export type tbl_applicantCreateManyInput = {
   birth_date?: Date | string | null
   email?: string | null
   mobile_no?: string | null
+  archived_at?: Date | string | null
+  archived_by?: number | null
 }
 
 export type tbl_applicantUpdateManyMutationInput = {
@@ -383,6 +424,7 @@ export type tbl_applicantUpdateManyMutationInput = {
   birth_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mobile_no?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type tbl_applicantUncheckedUpdateManyInput = {
@@ -395,6 +437,8 @@ export type tbl_applicantUncheckedUpdateManyInput = {
   birth_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mobile_no?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archived_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type tbl_applicantCountOrderByAggregateInput = {
@@ -407,10 +451,13 @@ export type tbl_applicantCountOrderByAggregateInput = {
   birth_date?: Prisma.SortOrder
   email?: Prisma.SortOrder
   mobile_no?: Prisma.SortOrder
+  archived_at?: Prisma.SortOrder
+  archived_by?: Prisma.SortOrder
 }
 
 export type tbl_applicantAvgOrderByAggregateInput = {
   applicant_id?: Prisma.SortOrder
+  archived_by?: Prisma.SortOrder
 }
 
 export type tbl_applicantMaxOrderByAggregateInput = {
@@ -423,6 +470,8 @@ export type tbl_applicantMaxOrderByAggregateInput = {
   birth_date?: Prisma.SortOrder
   email?: Prisma.SortOrder
   mobile_no?: Prisma.SortOrder
+  archived_at?: Prisma.SortOrder
+  archived_by?: Prisma.SortOrder
 }
 
 export type tbl_applicantMinOrderByAggregateInput = {
@@ -435,10 +484,13 @@ export type tbl_applicantMinOrderByAggregateInput = {
   birth_date?: Prisma.SortOrder
   email?: Prisma.SortOrder
   mobile_no?: Prisma.SortOrder
+  archived_at?: Prisma.SortOrder
+  archived_by?: Prisma.SortOrder
 }
 
 export type tbl_applicantSumOrderByAggregateInput = {
   applicant_id?: Prisma.SortOrder
+  archived_by?: Prisma.SortOrder
 }
 
 export type Tbl_applicantNullableScalarRelationFilter = {
@@ -446,8 +498,26 @@ export type Tbl_applicantNullableScalarRelationFilter = {
   isNot?: Prisma.tbl_applicantWhereInput | null
 }
 
+export type Tbl_applicantListRelationFilter = {
+  every?: Prisma.tbl_applicantWhereInput
+  some?: Prisma.tbl_applicantWhereInput
+  none?: Prisma.tbl_applicantWhereInput
+}
+
+export type tbl_applicantOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
+}
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type tbl_applicantCreateNestedOneWithoutTbl_applicationInput = {
@@ -466,6 +536,48 @@ export type tbl_applicantUpdateOneWithoutTbl_applicationNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.tbl_applicantUpdateToOneWithWhereWithoutTbl_applicationInput, Prisma.tbl_applicantUpdateWithoutTbl_applicationInput>, Prisma.tbl_applicantUncheckedUpdateWithoutTbl_applicationInput>
 }
 
+export type tbl_applicantCreateNestedManyWithoutArchived_by_userInput = {
+  create?: Prisma.XOR<Prisma.tbl_applicantCreateWithoutArchived_by_userInput, Prisma.tbl_applicantUncheckedCreateWithoutArchived_by_userInput> | Prisma.tbl_applicantCreateWithoutArchived_by_userInput[] | Prisma.tbl_applicantUncheckedCreateWithoutArchived_by_userInput[]
+  connectOrCreate?: Prisma.tbl_applicantCreateOrConnectWithoutArchived_by_userInput | Prisma.tbl_applicantCreateOrConnectWithoutArchived_by_userInput[]
+  createMany?: Prisma.tbl_applicantCreateManyArchived_by_userInputEnvelope
+  connect?: Prisma.tbl_applicantWhereUniqueInput | Prisma.tbl_applicantWhereUniqueInput[]
+}
+
+export type tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput = {
+  create?: Prisma.XOR<Prisma.tbl_applicantCreateWithoutArchived_by_userInput, Prisma.tbl_applicantUncheckedCreateWithoutArchived_by_userInput> | Prisma.tbl_applicantCreateWithoutArchived_by_userInput[] | Prisma.tbl_applicantUncheckedCreateWithoutArchived_by_userInput[]
+  connectOrCreate?: Prisma.tbl_applicantCreateOrConnectWithoutArchived_by_userInput | Prisma.tbl_applicantCreateOrConnectWithoutArchived_by_userInput[]
+  createMany?: Prisma.tbl_applicantCreateManyArchived_by_userInputEnvelope
+  connect?: Prisma.tbl_applicantWhereUniqueInput | Prisma.tbl_applicantWhereUniqueInput[]
+}
+
+export type tbl_applicantUpdateManyWithoutArchived_by_userNestedInput = {
+  create?: Prisma.XOR<Prisma.tbl_applicantCreateWithoutArchived_by_userInput, Prisma.tbl_applicantUncheckedCreateWithoutArchived_by_userInput> | Prisma.tbl_applicantCreateWithoutArchived_by_userInput[] | Prisma.tbl_applicantUncheckedCreateWithoutArchived_by_userInput[]
+  connectOrCreate?: Prisma.tbl_applicantCreateOrConnectWithoutArchived_by_userInput | Prisma.tbl_applicantCreateOrConnectWithoutArchived_by_userInput[]
+  upsert?: Prisma.tbl_applicantUpsertWithWhereUniqueWithoutArchived_by_userInput | Prisma.tbl_applicantUpsertWithWhereUniqueWithoutArchived_by_userInput[]
+  createMany?: Prisma.tbl_applicantCreateManyArchived_by_userInputEnvelope
+  set?: Prisma.tbl_applicantWhereUniqueInput | Prisma.tbl_applicantWhereUniqueInput[]
+  disconnect?: Prisma.tbl_applicantWhereUniqueInput | Prisma.tbl_applicantWhereUniqueInput[]
+  delete?: Prisma.tbl_applicantWhereUniqueInput | Prisma.tbl_applicantWhereUniqueInput[]
+  connect?: Prisma.tbl_applicantWhereUniqueInput | Prisma.tbl_applicantWhereUniqueInput[]
+  update?: Prisma.tbl_applicantUpdateWithWhereUniqueWithoutArchived_by_userInput | Prisma.tbl_applicantUpdateWithWhereUniqueWithoutArchived_by_userInput[]
+  updateMany?: Prisma.tbl_applicantUpdateManyWithWhereWithoutArchived_by_userInput | Prisma.tbl_applicantUpdateManyWithWhereWithoutArchived_by_userInput[]
+  deleteMany?: Prisma.tbl_applicantScalarWhereInput | Prisma.tbl_applicantScalarWhereInput[]
+}
+
+export type tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput = {
+  create?: Prisma.XOR<Prisma.tbl_applicantCreateWithoutArchived_by_userInput, Prisma.tbl_applicantUncheckedCreateWithoutArchived_by_userInput> | Prisma.tbl_applicantCreateWithoutArchived_by_userInput[] | Prisma.tbl_applicantUncheckedCreateWithoutArchived_by_userInput[]
+  connectOrCreate?: Prisma.tbl_applicantCreateOrConnectWithoutArchived_by_userInput | Prisma.tbl_applicantCreateOrConnectWithoutArchived_by_userInput[]
+  upsert?: Prisma.tbl_applicantUpsertWithWhereUniqueWithoutArchived_by_userInput | Prisma.tbl_applicantUpsertWithWhereUniqueWithoutArchived_by_userInput[]
+  createMany?: Prisma.tbl_applicantCreateManyArchived_by_userInputEnvelope
+  set?: Prisma.tbl_applicantWhereUniqueInput | Prisma.tbl_applicantWhereUniqueInput[]
+  disconnect?: Prisma.tbl_applicantWhereUniqueInput | Prisma.tbl_applicantWhereUniqueInput[]
+  delete?: Prisma.tbl_applicantWhereUniqueInput | Prisma.tbl_applicantWhereUniqueInput[]
+  connect?: Prisma.tbl_applicantWhereUniqueInput | Prisma.tbl_applicantWhereUniqueInput[]
+  update?: Prisma.tbl_applicantUpdateWithWhereUniqueWithoutArchived_by_userInput | Prisma.tbl_applicantUpdateWithWhereUniqueWithoutArchived_by_userInput[]
+  updateMany?: Prisma.tbl_applicantUpdateManyWithWhereWithoutArchived_by_userInput | Prisma.tbl_applicantUpdateManyWithWhereWithoutArchived_by_userInput[]
+  deleteMany?: Prisma.tbl_applicantScalarWhereInput | Prisma.tbl_applicantScalarWhereInput[]
+}
+
 export type tbl_applicantCreateWithoutTbl_applicationInput = {
   last_name: string
   first_name: string
@@ -475,6 +587,8 @@ export type tbl_applicantCreateWithoutTbl_applicationInput = {
   birth_date?: Date | string | null
   email?: string | null
   mobile_no?: string | null
+  archived_at?: Date | string | null
+  archived_by_user?: Prisma.tbl_user_accountCreateNestedOneWithoutArchived_applicantsInput
 }
 
 export type tbl_applicantUncheckedCreateWithoutTbl_applicationInput = {
@@ -487,6 +601,8 @@ export type tbl_applicantUncheckedCreateWithoutTbl_applicationInput = {
   birth_date?: Date | string | null
   email?: string | null
   mobile_no?: string | null
+  archived_at?: Date | string | null
+  archived_by?: number | null
 }
 
 export type tbl_applicantCreateOrConnectWithoutTbl_applicationInput = {
@@ -514,6 +630,8 @@ export type tbl_applicantUpdateWithoutTbl_applicationInput = {
   birth_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mobile_no?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archived_by_user?: Prisma.tbl_user_accountUpdateOneWithoutArchived_applicantsNestedInput
 }
 
 export type tbl_applicantUncheckedUpdateWithoutTbl_applicationInput = {
@@ -526,6 +644,131 @@ export type tbl_applicantUncheckedUpdateWithoutTbl_applicationInput = {
   birth_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mobile_no?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archived_by?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+}
+
+export type tbl_applicantCreateWithoutArchived_by_userInput = {
+  last_name: string
+  first_name: string
+  middle_name?: string | null
+  suffix?: string | null
+  sex?: string | null
+  birth_date?: Date | string | null
+  email?: string | null
+  mobile_no?: string | null
+  archived_at?: Date | string | null
+  tbl_application?: Prisma.tbl_applicationCreateNestedManyWithoutTbl_applicantInput
+}
+
+export type tbl_applicantUncheckedCreateWithoutArchived_by_userInput = {
+  applicant_id?: number
+  last_name: string
+  first_name: string
+  middle_name?: string | null
+  suffix?: string | null
+  sex?: string | null
+  birth_date?: Date | string | null
+  email?: string | null
+  mobile_no?: string | null
+  archived_at?: Date | string | null
+  tbl_application?: Prisma.tbl_applicationUncheckedCreateNestedManyWithoutTbl_applicantInput
+}
+
+export type tbl_applicantCreateOrConnectWithoutArchived_by_userInput = {
+  where: Prisma.tbl_applicantWhereUniqueInput
+  create: Prisma.XOR<Prisma.tbl_applicantCreateWithoutArchived_by_userInput, Prisma.tbl_applicantUncheckedCreateWithoutArchived_by_userInput>
+}
+
+export type tbl_applicantCreateManyArchived_by_userInputEnvelope = {
+  data: Prisma.tbl_applicantCreateManyArchived_by_userInput | Prisma.tbl_applicantCreateManyArchived_by_userInput[]
+  skipDuplicates?: boolean
+}
+
+export type tbl_applicantUpsertWithWhereUniqueWithoutArchived_by_userInput = {
+  where: Prisma.tbl_applicantWhereUniqueInput
+  update: Prisma.XOR<Prisma.tbl_applicantUpdateWithoutArchived_by_userInput, Prisma.tbl_applicantUncheckedUpdateWithoutArchived_by_userInput>
+  create: Prisma.XOR<Prisma.tbl_applicantCreateWithoutArchived_by_userInput, Prisma.tbl_applicantUncheckedCreateWithoutArchived_by_userInput>
+}
+
+export type tbl_applicantUpdateWithWhereUniqueWithoutArchived_by_userInput = {
+  where: Prisma.tbl_applicantWhereUniqueInput
+  data: Prisma.XOR<Prisma.tbl_applicantUpdateWithoutArchived_by_userInput, Prisma.tbl_applicantUncheckedUpdateWithoutArchived_by_userInput>
+}
+
+export type tbl_applicantUpdateManyWithWhereWithoutArchived_by_userInput = {
+  where: Prisma.tbl_applicantScalarWhereInput
+  data: Prisma.XOR<Prisma.tbl_applicantUpdateManyMutationInput, Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userInput>
+}
+
+export type tbl_applicantScalarWhereInput = {
+  AND?: Prisma.tbl_applicantScalarWhereInput | Prisma.tbl_applicantScalarWhereInput[]
+  OR?: Prisma.tbl_applicantScalarWhereInput[]
+  NOT?: Prisma.tbl_applicantScalarWhereInput | Prisma.tbl_applicantScalarWhereInput[]
+  applicant_id?: Prisma.IntFilter<"tbl_applicant"> | number
+  last_name?: Prisma.StringFilter<"tbl_applicant"> | string
+  first_name?: Prisma.StringFilter<"tbl_applicant"> | string
+  middle_name?: Prisma.StringNullableFilter<"tbl_applicant"> | string | null
+  suffix?: Prisma.StringNullableFilter<"tbl_applicant"> | string | null
+  sex?: Prisma.StringNullableFilter<"tbl_applicant"> | string | null
+  birth_date?: Prisma.DateTimeNullableFilter<"tbl_applicant"> | Date | string | null
+  email?: Prisma.StringNullableFilter<"tbl_applicant"> | string | null
+  mobile_no?: Prisma.StringNullableFilter<"tbl_applicant"> | string | null
+  archived_at?: Prisma.DateTimeNullableFilter<"tbl_applicant"> | Date | string | null
+  archived_by?: Prisma.IntNullableFilter<"tbl_applicant"> | number | null
+}
+
+export type tbl_applicantCreateManyArchived_by_userInput = {
+  applicant_id?: number
+  last_name: string
+  first_name: string
+  middle_name?: string | null
+  suffix?: string | null
+  sex?: string | null
+  birth_date?: Date | string | null
+  email?: string | null
+  mobile_no?: string | null
+  archived_at?: Date | string | null
+}
+
+export type tbl_applicantUpdateWithoutArchived_by_userInput = {
+  last_name?: Prisma.StringFieldUpdateOperationsInput | string
+  first_name?: Prisma.StringFieldUpdateOperationsInput | string
+  middle_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birth_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mobile_no?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tbl_application?: Prisma.tbl_applicationUpdateManyWithoutTbl_applicantNestedInput
+}
+
+export type tbl_applicantUncheckedUpdateWithoutArchived_by_userInput = {
+  applicant_id?: Prisma.IntFieldUpdateOperationsInput | number
+  last_name?: Prisma.StringFieldUpdateOperationsInput | string
+  first_name?: Prisma.StringFieldUpdateOperationsInput | string
+  middle_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birth_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mobile_no?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tbl_application?: Prisma.tbl_applicationUncheckedUpdateManyWithoutTbl_applicantNestedInput
+}
+
+export type tbl_applicantUncheckedUpdateManyWithoutArchived_by_userInput = {
+  applicant_id?: Prisma.IntFieldUpdateOperationsInput | number
+  last_name?: Prisma.StringFieldUpdateOperationsInput | string
+  first_name?: Prisma.StringFieldUpdateOperationsInput | string
+  middle_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birth_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mobile_no?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archived_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -569,7 +812,10 @@ export type tbl_applicantSelect<ExtArgs extends runtime.Types.Extensions.Interna
   birth_date?: boolean
   email?: boolean
   mobile_no?: boolean
+  archived_at?: boolean
+  archived_by?: boolean
   tbl_application?: boolean | Prisma.tbl_applicant$tbl_applicationArgs<ExtArgs>
+  archived_by_user?: boolean | Prisma.tbl_applicant$archived_by_userArgs<ExtArgs>
   _count?: boolean | Prisma.Tbl_applicantCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tbl_applicant"]>
 
@@ -583,6 +829,9 @@ export type tbl_applicantSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   birth_date?: boolean
   email?: boolean
   mobile_no?: boolean
+  archived_at?: boolean
+  archived_by?: boolean
+  archived_by_user?: boolean | Prisma.tbl_applicant$archived_by_userArgs<ExtArgs>
 }, ExtArgs["result"]["tbl_applicant"]>
 
 export type tbl_applicantSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -595,6 +844,9 @@ export type tbl_applicantSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   birth_date?: boolean
   email?: boolean
   mobile_no?: boolean
+  archived_at?: boolean
+  archived_by?: boolean
+  archived_by_user?: boolean | Prisma.tbl_applicant$archived_by_userArgs<ExtArgs>
 }, ExtArgs["result"]["tbl_applicant"]>
 
 export type tbl_applicantSelectScalar = {
@@ -607,20 +859,28 @@ export type tbl_applicantSelectScalar = {
   birth_date?: boolean
   email?: boolean
   mobile_no?: boolean
+  archived_at?: boolean
+  archived_by?: boolean
 }
 
-export type tbl_applicantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"applicant_id" | "last_name" | "first_name" | "middle_name" | "suffix" | "sex" | "birth_date" | "email" | "mobile_no", ExtArgs["result"]["tbl_applicant"]>
+export type tbl_applicantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"applicant_id" | "last_name" | "first_name" | "middle_name" | "suffix" | "sex" | "birth_date" | "email" | "mobile_no" | "archived_at" | "archived_by", ExtArgs["result"]["tbl_applicant"]>
 export type tbl_applicantInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tbl_application?: boolean | Prisma.tbl_applicant$tbl_applicationArgs<ExtArgs>
+  archived_by_user?: boolean | Prisma.tbl_applicant$archived_by_userArgs<ExtArgs>
   _count?: boolean | Prisma.Tbl_applicantCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type tbl_applicantIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type tbl_applicantIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type tbl_applicantIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  archived_by_user?: boolean | Prisma.tbl_applicant$archived_by_userArgs<ExtArgs>
+}
+export type tbl_applicantIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  archived_by_user?: boolean | Prisma.tbl_applicant$archived_by_userArgs<ExtArgs>
+}
 
 export type $tbl_applicantPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "tbl_applicant"
   objects: {
     tbl_application: Prisma.$tbl_applicationPayload<ExtArgs>[]
+    archived_by_user: Prisma.$tbl_user_accountPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     applicant_id: number
@@ -632,6 +892,8 @@ export type $tbl_applicantPayload<ExtArgs extends runtime.Types.Extensions.Inter
     birth_date: Date | null
     email: string | null
     mobile_no: string | null
+    archived_at: Date | null
+    archived_by: number | null
   }, ExtArgs["result"]["tbl_applicant"]>
   composites: {}
 }
@@ -1027,6 +1289,7 @@ readonly fields: tbl_applicantFieldRefs;
 export interface Prisma__tbl_applicantClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   tbl_application<T extends Prisma.tbl_applicant$tbl_applicationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_applicant$tbl_applicationArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_applicationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  archived_by_user<T extends Prisma.tbl_applicant$archived_by_userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_applicant$archived_by_userArgs<ExtArgs>>): Prisma.Prisma__tbl_user_accountClient<runtime.Types.Result.GetResult<Prisma.$tbl_user_accountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1065,6 +1328,8 @@ export interface tbl_applicantFieldRefs {
   readonly birth_date: Prisma.FieldRef<"tbl_applicant", 'DateTime'>
   readonly email: Prisma.FieldRef<"tbl_applicant", 'String'>
   readonly mobile_no: Prisma.FieldRef<"tbl_applicant", 'String'>
+  readonly archived_at: Prisma.FieldRef<"tbl_applicant", 'DateTime'>
+  readonly archived_by: Prisma.FieldRef<"tbl_applicant", 'Int'>
 }
     
 
@@ -1319,6 +1584,10 @@ export type tbl_applicantCreateManyAndReturnArgs<ExtArgs extends runtime.Types.E
    */
   data: Prisma.tbl_applicantCreateManyInput | Prisma.tbl_applicantCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.tbl_applicantIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1389,6 +1658,10 @@ export type tbl_applicantUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.E
    * Limit how many tbl_applicants to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.tbl_applicantIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1479,6 +1752,25 @@ export type tbl_applicant$tbl_applicationArgs<ExtArgs extends runtime.Types.Exte
   take?: number
   skip?: number
   distinct?: Prisma.Tbl_applicationScalarFieldEnum | Prisma.Tbl_applicationScalarFieldEnum[]
+}
+
+/**
+ * tbl_applicant.archived_by_user
+ */
+export type tbl_applicant$archived_by_userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the tbl_user_account
+   */
+  select?: Prisma.tbl_user_accountSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the tbl_user_account
+   */
+  omit?: Prisma.tbl_user_accountOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.tbl_user_accountInclude<ExtArgs> | null
+  where?: Prisma.tbl_user_accountWhereInput
 }
 
 /**

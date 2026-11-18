@@ -8,13 +8,13 @@ import { prisma } from "@/lib/prisma";
 import {
   rolePermissionsSchema,
   type RolePermissionsInput,
-} from "@/features/users-roles/schemas";
+} from "@/features/user-management/schemas";
 
 type ActionResult = { success: true; message: string } | { error: string };
 
 /**
  * Replaces the module access of the given roles. "WRITE" grants read and
- * write. SYSTEM_ADMIN cannot be changed, and you cannot remove Users & Roles
+ * write. SYSTEM_ADMIN cannot be changed, and you cannot remove User Management
  * write access from your own role (that would lock you out of this page).
  */
 export async function updateRolePermissions(rawInput: RolePermissionsInput): Promise<ActionResult> {
@@ -29,7 +29,7 @@ export async function updateRolePermissions(rawInput: RolePermissionsInput): Pro
       return { error: "System Admin access cannot be changed." };
     }
     if (role.role_name === user.role && role.access.USERS !== "WRITE") {
-      return { error: "You can't remove Users & Roles write access from your own role." };
+      return { error: "You can't remove User Management write access from your own role." };
     }
   }
 

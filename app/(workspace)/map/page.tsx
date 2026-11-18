@@ -12,6 +12,7 @@ import {
   STATUS_OPTIONS,
 } from "@/features/map/queries";
 import { requirePermission } from "@/lib/authorization";
+import { MapSkeleton } from "@/components/ui/skeletons";
 
 type PageProps = Readonly<{
   searchParams: Promise<{ cycle?: string; program?: string; status?: string }>;
@@ -161,7 +162,7 @@ async function MapContent({ searchParams }: PageProps) {
 
 export default function MapPage({ searchParams }: PageProps) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<MapSkeleton />}>
       <MapContent searchParams={searchParams} />
     </Suspense>
   );

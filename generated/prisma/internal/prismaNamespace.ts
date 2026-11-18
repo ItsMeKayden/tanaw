@@ -425,7 +425,8 @@ export const ModelName = {
   tbl_application_document: 'tbl_application_document',
   tbl_exam_session: 'tbl_exam_session',
   tbl_exam_session_applicant: 'tbl_exam_session_applicant',
-  tbl_exam_subject_score: 'tbl_exam_subject_score'
+  tbl_exam_subject_score: 'tbl_exam_subject_score',
+  tbl_recommendation_setting: 'tbl_recommendation_setting'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -441,7 +442,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "tbl_admission_cycle" | "tbl_admission_stage" | "tbl_applicant" | "tbl_application" | "tbl_application_stage_log" | "tbl_barangay" | "tbl_branch" | "tbl_competency" | "tbl_course_recommendation" | "tbl_district" | "tbl_exam" | "tbl_exam_question" | "tbl_exam_result" | "tbl_import_batch" | "tbl_passing_score_setting" | "tbl_permission" | "tbl_program" | "tbl_program_competency" | "tbl_question_response" | "tbl_quota" | "tbl_role" | "tbl_role_permission" | "tbl_school" | "tbl_user_account" | "tbl_application_document" | "tbl_exam_session" | "tbl_exam_session_applicant" | "tbl_exam_subject_score"
+    modelProps: "user" | "tbl_admission_cycle" | "tbl_admission_stage" | "tbl_applicant" | "tbl_application" | "tbl_application_stage_log" | "tbl_barangay" | "tbl_branch" | "tbl_competency" | "tbl_course_recommendation" | "tbl_district" | "tbl_exam" | "tbl_exam_question" | "tbl_exam_result" | "tbl_import_batch" | "tbl_passing_score_setting" | "tbl_permission" | "tbl_program" | "tbl_program_competency" | "tbl_question_response" | "tbl_quota" | "tbl_role" | "tbl_role_permission" | "tbl_school" | "tbl_user_account" | "tbl_application_document" | "tbl_exam_session" | "tbl_exam_session_applicant" | "tbl_exam_subject_score" | "tbl_recommendation_setting"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2591,6 +2592,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    tbl_recommendation_setting: {
+      payload: Prisma.$tbl_recommendation_settingPayload<ExtArgs>
+      fields: Prisma.tbl_recommendation_settingFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.tbl_recommendation_settingFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_recommendation_settingPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.tbl_recommendation_settingFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_recommendation_settingPayload>
+        }
+        findFirst: {
+          args: Prisma.tbl_recommendation_settingFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_recommendation_settingPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.tbl_recommendation_settingFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_recommendation_settingPayload>
+        }
+        findMany: {
+          args: Prisma.tbl_recommendation_settingFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_recommendation_settingPayload>[]
+        }
+        create: {
+          args: Prisma.tbl_recommendation_settingCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_recommendation_settingPayload>
+        }
+        createMany: {
+          args: Prisma.tbl_recommendation_settingCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.tbl_recommendation_settingCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_recommendation_settingPayload>[]
+        }
+        delete: {
+          args: Prisma.tbl_recommendation_settingDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_recommendation_settingPayload>
+        }
+        update: {
+          args: Prisma.tbl_recommendation_settingUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_recommendation_settingPayload>
+        }
+        deleteMany: {
+          args: Prisma.tbl_recommendation_settingDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.tbl_recommendation_settingUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.tbl_recommendation_settingUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_recommendation_settingPayload>[]
+        }
+        upsert: {
+          args: Prisma.tbl_recommendation_settingUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_recommendation_settingPayload>
+        }
+        aggregate: {
+          args: Prisma.Tbl_recommendation_settingAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTbl_recommendation_setting>
+        }
+        groupBy: {
+          args: Prisma.tbl_recommendation_settingGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tbl_recommendation_settingGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.tbl_recommendation_settingCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tbl_recommendation_settingCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2674,7 +2749,9 @@ export const Tbl_applicantScalarFieldEnum = {
   sex: 'sex',
   birth_date: 'birth_date',
   email: 'email',
-  mobile_no: 'mobile_no'
+  mobile_no: 'mobile_no',
+  archived_at: 'archived_at',
+  archived_by: 'archived_by'
 } as const
 
 export type Tbl_applicantScalarFieldEnum = (typeof Tbl_applicantScalarFieldEnum)[keyof typeof Tbl_applicantScalarFieldEnum]
@@ -2836,7 +2913,8 @@ export const Tbl_programScalarFieldEnum = {
   program_id: 'program_id',
   program_code: 'program_code',
   program_name: 'program_name',
-  is_active: 'is_active'
+  is_active: 'is_active',
+  min_match: 'min_match'
 } as const
 
 export type Tbl_programScalarFieldEnum = (typeof Tbl_programScalarFieldEnum)[keyof typeof Tbl_programScalarFieldEnum]
@@ -2878,6 +2956,7 @@ export type Tbl_quotaScalarFieldEnum = (typeof Tbl_quotaScalarFieldEnum)[keyof t
 export const Tbl_roleScalarFieldEnum = {
   role_id: 'role_id',
   role_name: 'role_name',
+  display_name: 'display_name',
   description: 'description'
 } as const
 
@@ -2965,6 +3044,16 @@ export const Tbl_exam_subject_scoreScalarFieldEnum = {
 } as const
 
 export type Tbl_exam_subject_scoreScalarFieldEnum = (typeof Tbl_exam_subject_scoreScalarFieldEnum)[keyof typeof Tbl_exam_subject_scoreScalarFieldEnum]
+
+
+export const Tbl_recommendation_settingScalarFieldEnum = {
+  setting_id: 'setting_id',
+  is_enabled: 'is_enabled',
+  updated_by: 'updated_by',
+  updated_at: 'updated_at'
+} as const
+
+export type Tbl_recommendation_settingScalarFieldEnum = (typeof Tbl_recommendation_settingScalarFieldEnum)[keyof typeof Tbl_recommendation_settingScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -3281,6 +3370,7 @@ export type GlobalOmitConfig = {
   tbl_exam_session?: Prisma.tbl_exam_sessionOmit
   tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantOmit
   tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreOmit
+  tbl_recommendation_setting?: Prisma.tbl_recommendation_settingOmit
 }
 
 /* Types for Logging */

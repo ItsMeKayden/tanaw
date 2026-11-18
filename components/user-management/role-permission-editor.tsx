@@ -2,17 +2,19 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Lock } from "lucide-react";
+import { Lock, Pencil } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { updateRolePermissions } from "@/features/users-roles/actions/update-role-permissions";
+import { RoleDetailsModal, type RoleDetails } from "@/components/user-management/role-details-modal";
+import { updateRolePermissions } from "@/features/user-management/actions/update-role-permissions";
 import {
   rolePermissionsFormSchema,
   type AccessLevel,
   type RolePermissionsFormValues,
-} from "@/features/users-roles/schemas";
-import { MODULES, ROLE_LABELS, type ModuleCode, type RoleName } from "@/lib/modules";
+} from "@/features/user-management/schemas";
+import { MODULES, type ModuleCode, type RoleName } from "@/lib/modules";
+import { toast } from "@/components/ui/toaster";
 
 type Matrix = Record<string, Record<ModuleCode, AccessLevel>>;
 
@@ -36,7 +38,7 @@ export default function RolePermissionEditor({
   canEdit,
   currentRole,
 }: Readonly<{
-  roles: { role_name: RoleName; description: string | null; accounts: number }[];
+  roles: { role_name: RoleName; label: string; description: string | null; accounts: number }[];
   initial: Matrix;
   canEdit: boolean;
   currentRole: string;
@@ -44,6 +46,7 @@ export default function RolePermissionEditor({
   const router = useRouter();
   const [feedback, setFeedback] = useState<{ ok: boolean; text: string } | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [editingRole, setEditingRole] = useState<RoleDetails | null>(null);
 
   const { register, control, handleSubmit, reset } = useForm<RolePermissionsFormValues>({
     resolver: zodResolver(rolePermissionsFormSchema),
@@ -71,7 +74,8 @@ export default function RolePermissionEditor({
           access: values.roles[role.role_name] as Record<ModuleCode, AccessLevel>,
         })),
       );
-      setFeedback("error" in result ? { ok: false, text: result.error } : { ok: true, text: result.message });
+      toast.fromResult(result);
+      setFeedback("error" in result ? { ok: false, text: result.error } : null);
       router.refresh();
     });
   });
@@ -98,8 +102,23 @@ export default function RolePermissionEditor({
                 <tr key={role.role_name} className={changed ? "bg-amber-50" : ""}>
                   <th scope="row" className={`${cell} sticky left-0 z-10 bg-white text-left font-normal`}>
                     <span className="flex items-center gap-1.5 font-semibold">
-                      {ROLE_LABELS[role.role_name]}
-                      {locked && <Lock className="size-3.5 text-neutral-500" aria-label="Locked" />}
+                      {role.label}
+                      {locked && <Lock className="size-3.5 text-neutral-500" aria-label="Access locked" />}
+                      {canEdit && (!locked || currentRole === "SYSTEM_ADMIN") && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFeedback(null);
+                            setEditingRole({ role_name: role.role_name, label: role.label, description: role.description });
+                          }}
+                          disabled={isPending}
+                          aria-label={`Edit ${role.label} name and description`}
+                          title="Edit name and description"
+                          className="ml-auto rounded p-1 text-neutral-500 hover:bg-neutral-100 hover:text-[#191e73] disabled:opacity-50"
+                        >
+                          <Pencil className="size-3.5" />
+                        </button>
+                      )}
                     </span>
                     <span className="block text-xs text-neutral-600">
                       {role.accounts} account{role.accounts === 1 ? "" : "s"}
@@ -116,7 +135,7 @@ export default function RolePermissionEditor({
                           <select
                             {...register(`roles.${role.role_name}.${m.code}`)}
                             disabled={isPending}
-                            aria-label={`${ROLE_LABELS[role.role_name]} – ${m.label}`}
+                            aria-label={`${role.label} – ${m.label}`}
                             className={`h-8 rounded-md border border-neutral-400 bg-white px-1.5 text-xs ${LEVEL_CLASS[level]}`}
                           >
                             {(Object.keys(LEVEL_LABEL) as AccessLevel[]).map((value) => (
@@ -146,7 +165,7 @@ export default function RolePermissionEditor({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs text-neutral-600">
           &ldquo;Read &amp; Write&rdquo; includes read access. System Admin always has full access.
-          {canEdit ? "" : " You have view-only access."}
+          {canEdit ? " Use the pencil next to a role to rename it or edit its description." : " You have view-only access."}
         </p>
         {canEdit && (
           <div className="flex gap-2">
@@ -185,6 +204,16 @@ export default function RolePermissionEditor({
           {feedback.text}
         </p>
       )}
+
+      <RoleDetailsModal
+        role={editingRole}
+        onClose={() => setEditingRole(null)}
+        onSaved={(message) => {
+          setEditingRole(null);
+          toast.success(message);
+          router.refresh();
+        }}
+      />
     </div>
   );
 }

@@ -48,16 +48,23 @@ model tbl_admission_stage {
 }
 
 model tbl_applicant {
-  applicant_id    Int               @id @default(autoincrement())
-  last_name       String            @db.VarChar(100)
-  first_name      String            @db.VarChar(100)
-  middle_name     String?           @db.VarChar(100)
-  suffix          String?           @db.VarChar(20)
-  sex             String?           @db.VarChar(20)
-  birth_date      DateTime?         @db.Date
-  email           String?           @db.VarChar(150)
-  mobile_no       String?           @db.VarChar(50)
-  tbl_application tbl_application[]
+  applicant_id     Int               @id @default(autoincrement())
+  last_name        String            @db.VarChar(100)
+  first_name       String            @db.VarChar(100)
+  middle_name      String?           @db.VarChar(100)
+  suffix           String?           @db.VarChar(20)
+  sex              String?           @db.VarChar(20)
+  birth_date       DateTime?         @db.Date
+  email            String?           @db.VarChar(150)
+  mobile_no        String?           @db.VarChar(50)
+  // Archived applicants are hidden everywhere except Archive History. They can
+  // be recovered; after a year in the archive they are permanently deleted.
+  archived_at      DateTime?         @db.Timestamp(6)
+  archived_by      Int?
+  tbl_application  tbl_application[]
+  archived_by_user tbl_user_account? @relation("applicant_archived_by", fields: [archived_by], references: [user_id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([archived_at])
 }
 
 model tbl_application {
@@ -225,6 +232,9 @@ model tbl_program {
   program_code              String                      @db.VarChar(50)
   program_name              String                      @db.VarChar(150)
   is_active                 Boolean?                    @default(true)
+  // Minimum course match (%) for the preferred course to count as "Compatible";
+  // also the score required on each competency the course weighs.
+  min_match                 Decimal                     @default(70) @db.Decimal(5, 2)
   tbl_application           tbl_application[]           @relation("application_program")
   choice_2_applications     tbl_application[]           @relation("application_program_choice_2")
   choice_3_applications     tbl_application[]           @relation("application_program_choice_3")
@@ -272,6 +282,8 @@ model tbl_quota {
 model tbl_role {
   role_id             Int                   @id @default(autoincrement())
   role_name           String                @unique @db.VarChar(100)
+  // Editable label shown in the app (role_name is the fixed code). Null = default label.
+  display_name        String?               @db.VarChar(100)
   description         String?
   tbl_role_permission tbl_role_permission[]
   tbl_user_account    tbl_user_account[]
@@ -310,6 +322,8 @@ model tbl_user_account {
   tbl_application_document   tbl_application_document[]
   tbl_exam_session           tbl_exam_session[]
   tbl_exam_session_applicant tbl_exam_session_applicant[]
+  archived_applicants        tbl_applicant[]              @relation("applicant_archived_by")
+  recommendation_settings    tbl_recommendation_setting[]
   tbl_role                   tbl_role?                    @relation(fields: [role_id], references: [role_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
@@ -374,4 +388,14 @@ model tbl_exam_subject_score {
   tbl_competency  tbl_competency  @relation(fields: [competency_id], references: [competency_id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([result_id, competency_id])
+}
+
+// Course Recommendation settings (single row; the first row is used).
+// is_enabled = false stops all generation (button, exam score saves, mapping saves).
+model tbl_recommendation_setting {
+  setting_id       Int               @id @default(autoincrement())
+  is_enabled       Boolean           @default(true)
+  updated_by       Int?
+  updated_at       DateTime          @default(now()) @db.Timestamp(6)
+  tbl_user_account tbl_user_account? @relation(fields: [updated_by], references: [user_id], onDelete: SetNull, onUpdate: Cascade)
 }
