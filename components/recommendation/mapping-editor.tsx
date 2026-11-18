@@ -23,12 +23,15 @@ export default function MappingEditor({
   programs,
   competencies,
   initial,
+  initialRules,
   canWrite,
 }: Readonly<{
   programs: Program[];
   competencies: Competency[];
   /** program_id → competency_id → weight */
   initial: Record<number, Record<number, number>>;
+  /** program_id → competency_id → minimum subject score (compatibility rule) */
+  initialRules: Record<number, Record<number, number | null>>;
   canWrite: boolean;
 }>) {
   const router = useRouter();
@@ -37,6 +40,17 @@ export default function MappingEditor({
 
   const toFormValues = (): MappingFormValues => ({
     minMatch: Object.fromEntries(programs.map((p) => [rowKey(p.program_id), String(p.min_match)])),
+    rules: Object.fromEntries(
+      programs.map((p) => [
+        rowKey(p.program_id),
+        Object.fromEntries(
+          competencies.map((c) => {
+            const min = initialRules[p.program_id]?.[c.competency_id];
+            return [colKey(c.competency_id), min == null ? "" : String(min)];
+          }),
+        ),
+      ]),
+    ),
     rows: Object.fromEntries(
       programs.map((p) => [
         rowKey(p.program_id),
@@ -59,11 +73,12 @@ export default function MappingEditor({
     mode: "onChange",
   });
   const rows = useWatch({ control, name: "rows" }) ?? {};
+  const ruleValues = useWatch({ control, name: "rules" }) ?? {};
 
   // After a save/reset the server sends fresh weights; resync the form.
-  const [synced, setSynced] = useState({ initial, programs });
-  if (synced.initial !== initial || synced.programs !== programs) {
-    setSynced({ initial, programs });
+  const [synced, setSynced] = useState({ initial, initialRules, programs });
+  if (synced.initial !== initial || synced.initialRules !== initialRules || synced.programs !== programs) {
+    setSynced({ initial, initialRules, programs });
     reset(toFormValues());
   }
 
@@ -80,10 +95,14 @@ export default function MappingEditor({
           programs.map((p) => ({
             program_id: p.program_id,
             min_match: Number(values.minMatch[rowKey(p.program_id)]),
-            weights: competencies.map((c) => ({
-              competency_id: c.competency_id,
-              weight: Number(values.rows[rowKey(p.program_id)][colKey(c.competency_id)]),
-            })),
+            weights: competencies.map((c) => {
+              const rule = values.rules[rowKey(p.program_id)]?.[colKey(c.competency_id)]?.trim() ?? "";
+              return {
+                competency_id: c.competency_id,
+                weight: Number(values.rows[rowKey(p.program_id)][colKey(c.competency_id)]),
+                min_score: rule === "" ? null : Number(rule),
+              };
+            }),
           })),
         );
         toast.fromResult(result);
@@ -94,12 +113,17 @@ export default function MappingEditor({
     () =>
       setFeedback({
         ok: false,
-        text: "Fix the highlighted cells: every weight and minimum match must be 0–100, and each row's weights must add up to 100%.",
+        text: "Fix the highlighted cells: weights, minimum match and subject minimums must be 0–100, and each row's weights must add up to 100%.",
       }),
   );
 
   function restoreDefaults() {
-    if (!window.confirm("Restore the default weights and minimum match for every course? Your changes will be replaced.")) return;
+    if (
+      !window.confirm(
+        "Restore the default weights and minimum match for every course and clear all subject minimums? Your changes will be replaced.",
+      )
+    )
+      return;
     setFeedback(null);
     startTransition(async () => {
       const result = await resetMapping();
@@ -192,6 +216,79 @@ export default function MappingEditor({
             })}
           </tbody>
         </table>
+      </div>
+
+      <div className="space-y-2 pt-3">
+        <div>
+          <h3 className="text-base font-semibold">Compatibility rules</h3>
+          <p className="text-xs text-neutral-600">
+            Minimum exam score per subject for each course. Leave a cell blank for no minimum. An applicant is
+            &ldquo;Compatible&rdquo; with their preferred course only when they meet every minimum and the course&apos;s
+            minimum match. Advisory only: it never changes an applicant&apos;s admission stage.
+          </p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse bg-white/90 text-sm">
+            <thead>
+              <tr>
+                <th className={`${headCell} text-left`}>Course</th>
+                {competencies.map((c) => (
+                  <th key={c.competency_id} className={headCell} title={c.name}>
+                    {c.label} min.
+                  </th>
+                ))}
+                <th className={headCell}>Rules</th>
+              </tr>
+            </thead>
+            <tbody>
+              {programs.map((program) => {
+                const ruleErrors = errors.rules?.[rowKey(program.program_id)] as
+                  | Record<string, FieldError | undefined>
+                  | undefined;
+                const ruleCount = competencies.filter(
+                  (c) => (ruleValues[rowKey(program.program_id)]?.[colKey(c.competency_id)] ?? "").trim() !== "",
+                ).length;
+                return (
+                  <tr key={program.program_id} className="hover:bg-[#e3e4f8]/50">
+                    <td className={`${cell} px-3`} title={program.program_code}>
+                      {program.program_name}
+                    </td>
+                    {competencies.map((c) => {
+                      const error = ruleErrors?.[colKey(c.competency_id)];
+                      return (
+                        <td key={c.competency_id} className={`${cell} text-center`}>
+                          <div className="inline-flex items-center gap-0.5">
+                            <input
+                              type="number"
+                              inputMode="decimal"
+                              min={0}
+                              max={100}
+                              step={1}
+                              placeholder="–"
+                              {...register(`rules.${rowKey(program.program_id)}.${colKey(c.competency_id)}`)}
+                              disabled={!canWrite || isPending}
+                              aria-label={`${program.program_code} minimum ${c.name} score`}
+                              aria-invalid={Boolean(error)}
+                              title={error?.message}
+                              className={`h-7 w-14 rounded-sm border bg-white px-1.5 text-center tabular-nums outline-none placeholder:text-neutral-400 focus:border-[#191e73] focus:ring-2 focus:ring-[#191e73]/20 disabled:border-transparent disabled:bg-transparent ${
+                                error ? "border-red-500 bg-red-50" : "border-neutral-300"
+                              }`}
+                            />
+                            <span className="text-xs text-neutral-600">%</span>
+                          </div>
+                          {error && <span className="block text-[10px] text-red-600">{error.message}</span>}
+                        </td>
+                      );
+                    })}
+                    <td className={`${cell} text-center text-xs text-neutral-600 tabular-nums`}>
+                      {ruleCount === 0 ? "None" : `${ruleCount} of ${competencies.length}`}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">

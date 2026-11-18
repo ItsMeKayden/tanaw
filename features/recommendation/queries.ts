@@ -22,33 +22,45 @@ type ProgramRef = { program_id: number; program_code: string; program_name: stri
 
 /** Applications in a cycle that took the exam, with their top recommendation. */
 export async function getRecommendationList(cycleId: number) {
-  const applications = await prisma.tbl_application.findMany({
-    where: { ...ACTIVE_APPLICATION, cycle_id: cycleId, tbl_exam_result: { some: {} } },
-    orderBy: { application_no: "asc" },
-    select: {
-      application_id: true,
-      application_no: true,
-      tbl_applicant: {
-        select: { applicant_id: true, first_name: true, middle_name: true, last_name: true, suffix: true },
-      },
-      tbl_program: { select: { program_id: true, program_code: true, program_name: true, min_match: true } },
-      tbl_exam_result: {
-        orderBy: { result_id: "desc" },
-        take: 1,
-        select: { percentage: true },
-      },
-      tbl_course_recommendation: {
-        orderBy: { rank_no: "asc" },
-        select: {
-          program_id: true,
-          compatibility_score: true,
-          rank_no: true,
-          generated_at: true,
-          tbl_program: { select: { program_id: true, program_code: true, program_name: true } },
+  const [applications, competencies, rules] = await Promise.all([
+    prisma.tbl_application.findMany({
+      where: { ...ACTIVE_APPLICATION, cycle_id: cycleId, tbl_exam_result: { some: {} } },
+      orderBy: { application_no: "asc" },
+      select: {
+        application_id: true,
+        application_no: true,
+        tbl_applicant: {
+          select: { applicant_id: true, first_name: true, middle_name: true, last_name: true, suffix: true },
+        },
+        tbl_program: { select: { program_id: true, program_code: true, program_name: true, min_match: true } },
+        tbl_exam_result: {
+          orderBy: { result_id: "desc" },
+          take: 1,
+          select: { percentage: true },
+        },
+        tbl_course_recommendation: {
+          orderBy: { rank_no: "asc" },
+          select: {
+            program_id: true,
+            compatibility_score: true,
+            rank_no: true,
+            generated_at: true,
+            unmet_competency_ids: true,
+            tbl_program: { select: { program_id: true, program_code: true, program_name: true } },
+          },
         },
       },
-    },
-  });
+    }),
+    prisma.tbl_competency.findMany({ select: { competency_id: true, competency_name: true } }),
+    // Compatibility rules (minimum subject scores) of every course.
+    prisma.tbl_program_competency.findMany({
+      where: { min_score: { not: null } },
+      select: { program_id: true, competency_id: true, min_score: true },
+    }),
+  ]);
+
+  const competencyName = new Map(competencies.map((c) => [c.competency_id, shortCompetencyName(c.competency_name)]));
+  const ruleMin = new Map(rules.map((r) => [`${r.program_id}:${r.competency_id}`, Number(r.min_score)]));
 
   return applications.map((application) => {
     const recs = application.tbl_course_recommendation;
@@ -59,9 +71,18 @@ export async function getRecommendationList(cycleId: number) {
     const exam = application.tbl_exam_result[0];
     const minMatch = preferred ? Number(preferred.min_match) : MIN_MATCH;
 
+    // Advisory: preferred-course subjects below that course's minimum score.
+    const shortfalls = preferred
+      ? (preferredRec?.unmet_competency_ids ?? []).map((id) => ({
+          label: competencyName.get(id) ?? "Subject",
+          min: ruleMin.get(`${preferred.program_id}:${id}`) ?? null,
+        }))
+      : [];
+    const meetsRules = shortfalls.length === 0;
+
     let status: RecommendationStatus = "NOT_GENERATED";
     if (top) {
-      if (preferredMatch !== null && preferredMatch >= minMatch) status = "COMPATIBLE";
+      if (preferredMatch !== null && preferredMatch >= minMatch && meetsRules) status = "COMPATIBLE";
       else if (preferred && top.program_id === preferred.program_id) status = "BELOW_MINIMUM";
       else status = "ALTERNATIVE";
     }
@@ -76,6 +97,8 @@ export async function getRecommendationList(cycleId: number) {
       preferred_match: preferredMatch,
       /** Minimum match of the preferred course. */
       min_match: minMatch,
+      /** Preferred-course subject rules the applicant does not meet (advisory). */
+      shortfalls,
       recommended: top ? { code: top.tbl_program.program_code, name: top.tbl_program.program_name, id: top.program_id } : null,
       recommended_match: top ? Number(top.compatibility_score) : null,
       generated_at: top?.generated_at?.toISOString() ?? null,
@@ -113,6 +136,7 @@ export async function getApplicationRecommendation(applicationId: number) {
           compatibility_score: true,
           rank_no: true,
           generated_at: true,
+          unmet_competency_ids: true,
           tbl_program: { select: { program_id: true, program_code: true, program_name: true } },
         },
       },
@@ -131,6 +155,8 @@ export async function getApplicationRecommendation(applicationId: number) {
     ...r.tbl_program,
     match: Number(r.compatibility_score),
     rank: r.rank_no ?? 0,
+    /** Subjects below this course's minimum score (advisory). */
+    unmet: r.unmet_competency_ids,
   }));
 
   return {
@@ -194,11 +220,29 @@ export function buildReasons(data: ApplicationRecommendation) {
   if (preferred && preferredRank) {
     if (preferredRank.program_id === top.program_id) {
       reasons.push(`The preferred course is also the best match (${top.match}%).`);
-    } else {
+    } else if (top.match >= preferredRank.match) {
       const gap = Math.round((top.match - preferredRank.match) * 10) / 10;
       reasons.push(
         `Preferred course ${preferred.program_code} matches ${preferredRank.match}% (rank ${preferredRank.rank}); ${top.program_code} is ${gap} points higher.`,
       );
+    } else {
+      reasons.push(
+        `Preferred course ${preferred.program_code} matches ${preferredRank.match}%, but ${top.program_code} (${top.match}%) is ranked first because its subject minimums are met.`,
+      );
+    }
+
+    const preferredRules = data.programs.find((p) => p.program_id === preferred.program_id)?.weights ?? [];
+    const unmet = preferredRank.unmet
+      .map((id) => {
+        const rule = preferredRules.find((w) => w.competency_id === id);
+        const score = data.competencyScores.find((c) => c.competency_id === id);
+        return score && rule?.min_score != null
+          ? `${shortCompetencyName(score.competency_name)} ${score.percent ?? 0}% (needs ${rule.min_score}%)`
+          : null;
+      })
+      .filter((text): text is string => text !== null);
+    if (unmet.length > 0) {
+      reasons.push(`Below ${preferred.program_code}'s subject minimums: ${unmet.join(", ")}. This is advisory only.`);
     }
 
     const preferredProgram = data.programs.find((p) => p.program_id === preferred.program_id);

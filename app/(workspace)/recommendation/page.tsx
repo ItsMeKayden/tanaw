@@ -56,8 +56,9 @@ async function RecommendationsContent({ searchParams }: PageProps) {
         <div className="min-w-0 max-w-3xl">
           <h1 className="text-2xl font-bold">Course Recommendation</h1>
           <p className="mt-1 text-sm text-neutral-700">
-            Compares each applicant&apos;s exam competency scores with each course&apos;s competency weights. A
-            preferred course that reaches its minimum match is &ldquo;Compatible&rdquo;.
+            Compares each applicant&apos;s exam subject scores with each course&apos;s weights and compatibility
+            rules. A preferred course is &ldquo;Compatible&rdquo; when it reaches its minimum match and every subject
+            minimum. Advisory only: results never change an applicant&apos;s admission stage.
           </p>
         </div>
         <div className="flex shrink-0 flex-wrap items-start gap-3 xl:justify-end">

@@ -40,7 +40,14 @@ function CourseMatch({
   course,
   match,
   note,
-}: Readonly<{ course: { code: string; name: string } | null; match: number | null; note: string | null }>) {
+  warning = false,
+}: Readonly<{
+  course: { code: string; name: string } | null;
+  match: number | null;
+  note: string | null;
+  /** Show the note as an advisory warning (subject minimums not met). */
+  warning?: boolean;
+}>) {
   if (!course) return <span className="text-neutral-500">--</span>;
   return (
     <div title={course.name}>
@@ -48,7 +55,9 @@ function CourseMatch({
         <span className="font-medium">{course.code}</span>
         {match !== null && <span className="tabular-nums">{match}%</span>}
       </div>
-      {note && <span className="block text-xs text-neutral-500">{note}</span>}
+      {note && (
+        <span className={`block text-xs ${warning ? "font-medium text-red-700" : "text-neutral-500"}`}>{note}</span>
+      )}
     </div>
   );
 }
@@ -179,7 +188,14 @@ export default function RecommendationTable({
                     <CourseMatch
                       course={row.preferred}
                       match={row.preferred_match}
-                      note={row.preferred ? `min. ${row.min_match}%` : null}
+                      warning={row.shortfalls.length > 0}
+                      note={
+                        !row.preferred
+                          ? null
+                          : row.shortfalls.length > 0
+                            ? `Below min.: ${row.shortfalls.map((f) => (f.min === null ? f.label : `${f.label} ${f.min}%`)).join(", ")}`
+                            : `min. ${row.min_match}%`
+                      }
                     />
                   </td>
                   <td className={cell}>

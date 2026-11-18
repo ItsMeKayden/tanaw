@@ -26,9 +26,11 @@ async function BreakdownContent({ searchParams }: PageProps) {
   const rows =
     data && program
       ? data.competencyScores.map((competency) => {
-          const weight = program.weights.find((w) => w.competency_id === competency.competency_id)?.weight ?? 0;
-          const required = weight > 0 ? program.min_match : null;
-          let result = "Not weighted";
+          const link = program.weights.find((w) => w.competency_id === competency.competency_id);
+          const weight = link?.weight ?? 0;
+          // Compatibility rule: the course's minimum score for this subject, if set.
+          const required = link?.min_score ?? null;
+          let result = weight > 0 ? "No minimum" : "Not weighted";
           if (required !== null) {
             if (competency.percent === null) result = "No answers";
             else result = competency.percent >= required ? "Meets" : "Below";
@@ -50,9 +52,8 @@ async function BreakdownContent({ searchParams }: PageProps) {
       <div>
         <h1 className="text-2xl font-bold">Score Breakdown</h1>
         <p className="text-sm text-neutral-700">
-          Applicant competency scores against a course&apos;s requirement. Competencies the
-          course weighs require at least the course&apos;s minimum match
-          {program ? ` (${program.program_code}: ${program.min_match}%)` : ""}.
+          Applicant subject scores against the course&apos;s compatibility rules (minimum score per
+          subject, set in Mapping Settings). Advisory only: it doesn&apos;t change the admission stage.
         </p>
       </div>
 

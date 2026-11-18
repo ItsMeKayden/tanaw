@@ -120,7 +120,7 @@ export function ProfileRadar({ rows, courseLabel }: Readonly<{ rows: RadarRow[];
           <svg aria-hidden="true" width="18" height="6">
             <line x1="0" y1="3" x2="18" y2="3" stroke={RADAR_REQUIRED} strokeWidth="2" strokeDasharray="5 3" />
           </svg>
-          Required ({courseLabel})
+          Subject minimum ({courseLabel})
         </li>
         <li className="flex items-center gap-1.5">
           <span aria-hidden="true" className="size-2.5 rounded-full" style={{ backgroundColor: RADAR_BELOW }} />

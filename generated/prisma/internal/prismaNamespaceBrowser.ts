@@ -216,7 +216,8 @@ export const Tbl_course_recommendationScalarFieldEnum = {
   program_id: 'program_id',
   compatibility_score: 'compatibility_score',
   rank_no: 'rank_no',
-  generated_at: 'generated_at'
+  generated_at: 'generated_at',
+  unmet_competency_ids: 'unmet_competency_ids'
 } as const
 
 export type Tbl_course_recommendationScalarFieldEnum = (typeof Tbl_course_recommendationScalarFieldEnum)[keyof typeof Tbl_course_recommendationScalarFieldEnum]
@@ -317,7 +318,8 @@ export type Tbl_programScalarFieldEnum = (typeof Tbl_programScalarFieldEnum)[key
 export const Tbl_program_competencyScalarFieldEnum = {
   program_id: 'program_id',
   competency_id: 'competency_id',
-  weight: 'weight'
+  weight: 'weight',
+  min_score: 'min_score'
 } as const
 
 export type Tbl_program_competencyScalarFieldEnum = (typeof Tbl_program_competencyScalarFieldEnum)[keyof typeof Tbl_program_competencyScalarFieldEnum]
