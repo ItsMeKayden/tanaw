@@ -1,5 +1,6 @@
 // Server-side queries for the Course Recommendation pages (imports Prisma).
 import { prisma } from "@/lib/prisma";
+import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
 import { formatFullName } from "@/features/admission/enrollment-queries";
 import { MIN_MATCH, shortCompetencyName } from "@/features/recommendation/config";
 import {
@@ -22,7 +23,7 @@ type ProgramRef = { program_id: number; program_code: string; program_name: stri
 /** Applications in a cycle that took the exam, with their top recommendation. */
 export async function getRecommendationList(cycleId: number) {
   const applications = await prisma.tbl_application.findMany({
-    where: { cycle_id: cycleId, tbl_exam_result: { some: {} } },
+    where: { ...ACTIVE_APPLICATION, cycle_id: cycleId, tbl_exam_result: { some: {} } },
     orderBy: { application_no: "asc" },
     select: {
       application_id: true,
@@ -30,7 +31,7 @@ export async function getRecommendationList(cycleId: number) {
       tbl_applicant: {
         select: { applicant_id: true, first_name: true, middle_name: true, last_name: true, suffix: true },
       },
-      tbl_program: { select: { program_id: true, program_code: true, program_name: true } },
+      tbl_program: { select: { program_id: true, program_code: true, program_name: true, min_match: true } },
       tbl_exam_result: {
         orderBy: { result_id: "desc" },
         take: 1,
@@ -56,10 +57,11 @@ export async function getRecommendationList(cycleId: number) {
     const preferredRec = preferred ? recs.find((r) => r.program_id === preferred.program_id) : undefined;
     const preferredMatch = preferredRec ? Number(preferredRec.compatibility_score) : null;
     const exam = application.tbl_exam_result[0];
+    const minMatch = preferred ? Number(preferred.min_match) : MIN_MATCH;
 
     let status: RecommendationStatus = "NOT_GENERATED";
     if (top) {
-      if (preferredMatch !== null && preferredMatch >= MIN_MATCH) status = "COMPATIBLE";
+      if (preferredMatch !== null && preferredMatch >= minMatch) status = "COMPATIBLE";
       else if (preferred && top.program_id === preferred.program_id) status = "BELOW_MINIMUM";
       else status = "ALTERNATIVE";
     }
@@ -72,6 +74,8 @@ export async function getRecommendationList(cycleId: number) {
       exam_percentage: exam?.percentage == null ? null : Number(exam.percentage),
       preferred: preferred ? { code: preferred.program_code, name: preferred.program_name, id: preferred.program_id } : null,
       preferred_match: preferredMatch,
+      /** Minimum match of the preferred course. */
+      min_match: minMatch,
       recommended: top ? { code: top.tbl_program.program_code, name: top.tbl_program.program_name, id: top.program_id } : null,
       recommended_match: top ? Number(top.compatibility_score) : null,
       generated_at: top?.generated_at?.toISOString() ?? null,
@@ -85,7 +89,7 @@ export type RecommendationRow = Awaited<ReturnType<typeof getRecommendationList>
 /** Everything the detail, breakdown, and comparison pages need for one application. */
 export async function getApplicationRecommendation(applicationId: number) {
   const application = await prisma.tbl_application.findUnique({
-    where: { application_id: applicationId },
+    where: { application_id: applicationId, ...ACTIVE_APPLICATION },
     select: {
       application_id: true,
       application_no: true,
@@ -197,8 +201,9 @@ export function buildReasons(data: ApplicationRecommendation) {
       );
     }
 
-    if (preferredRank.match < MIN_MATCH) {
-      const preferredProgram = data.programs.find((p) => p.program_id === preferred.program_id);
+    const preferredProgram = data.programs.find((p) => p.program_id === preferred.program_id);
+    const minMatch = preferredProgram?.min_match ?? MIN_MATCH;
+    if (preferredRank.match < minMatch) {
       const weakest = preferredProgram
         ? [...preferredProgram.weights]
             .filter((w) => w.weight > 0)
@@ -206,7 +211,7 @@ export function buildReasons(data: ApplicationRecommendation) {
             .sort((a, b) => (a.score?.percent ?? 0) * 1 - (b.score?.percent ?? 0) * 1)[0]
         : undefined;
       reasons.push(
-        `${preferred.program_code} is below the ${MIN_MATCH}% minimum match${
+        `${preferred.program_code} is below its ${minMatch}% minimum match${
           weakest?.score ? `, mainly because of ${shortCompetencyName(weakest.score.competency_name)} (${weakest.score.percent}%)` : ""
         }.`,
       );
@@ -223,7 +228,7 @@ export function buildReasons(data: ApplicationRecommendation) {
 /** Applications with recommendations, for the applicant pickers. */
 export async function getRecommendedApplicants(cycleId: number) {
   const applications = await prisma.tbl_application.findMany({
-    where: { cycle_id: cycleId, tbl_course_recommendation: { some: {} } },
+    where: { ...ACTIVE_APPLICATION, cycle_id: cycleId, tbl_course_recommendation: { some: {} } },
     orderBy: { application_no: "asc" },
     select: {
       application_id: true,
@@ -236,4 +241,17 @@ export async function getRecommendedApplicants(cycleId: number) {
     application_id: a.application_id,
     label: `${formatFullName(a.tbl_applicant)} (${a.application_no})`,
   }));
+}
+
+/** Course Recommendation settings (Mapping Settings page). */
+export async function getRecommendationSettings() {
+  const setting = await prisma.tbl_recommendation_setting.findFirst({
+    orderBy: { setting_id: "asc" },
+    select: { is_enabled: true, updated_at: true, tbl_user_account: { select: { full_name: true } } },
+  });
+  return {
+    enabled: setting?.is_enabled ?? true,
+    updated_at: setting?.updated_at.toISOString() ?? null,
+    updated_by: setting?.tbl_user_account?.full_name ?? null,
+  };
 }

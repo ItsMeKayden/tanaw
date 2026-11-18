@@ -17,6 +17,7 @@ import {
 } from "@/features/map/queries";
 import { requirePermission } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
+import { TablePageSkeleton } from "@/components/ui/skeletons";
 
 type PageProps = Readonly<{
   searchParams: Promise<{
@@ -209,7 +210,7 @@ async function LocationApplicantsContent({ searchParams }: PageProps) {
 
 export default function LocationApplicantsPage({ searchParams }: PageProps) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<TablePageSkeleton label="applicant list" cols={7} />}>
       <LocationApplicantsContent searchParams={searchParams} />
     </Suspense>
   );

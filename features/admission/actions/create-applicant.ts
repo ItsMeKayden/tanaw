@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 
-import { getAccountId, requirePermission } from "@/lib/authorization";
+import { getAccountId, requireAnyPermission } from "@/lib/authorization";
+import { APPLICANT_EDIT_MODULES, APPLICANT_LIST_PATHS } from "@/features/admission/access";
 import { prisma } from "@/lib/prisma";
 import {
   assertReferencesExist,
@@ -29,7 +30,7 @@ function getManilaDate() {
 export async function createApplicant(
   formData: FormData,
 ): Promise<{ success: true; applicantId: number } | ApplicantActionError> {
-  const user = await requirePermission("admission", "write");
+  const user = await requireAnyPermission(APPLICANT_EDIT_MODULES, "write");
 
   const parsed = await parseApplicantForm(formData);
   if ("error" in parsed) return parsed;
@@ -112,7 +113,7 @@ export async function createApplicant(
       },
     );
 
-    revalidatePath("/admission");
+    for (const path of APPLICANT_LIST_PATHS) revalidatePath(path);
 
     return { success: true, applicantId };
   } catch (error) {

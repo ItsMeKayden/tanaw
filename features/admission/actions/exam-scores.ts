@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import type { Prisma } from "@/generated/prisma/client";
 import { getAccountId, requirePermission } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
+import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
 import { ensureCycleExam, getExamSubjects, getPassingRule, type PassingRule } from "@/features/admission/exam";
 import { isPassing, scorePercent } from "@/features/admission/exam-scoring";
 import { ADMISSION_STAGES, EXAM_RESULT_PASSED } from "@/features/admission/stages";
@@ -120,7 +121,7 @@ export async function saveExamScores(cycleIdInput: number, rows: ScoreRowInput[]
         const maxTotal = subjects.reduce((sum, s) => sum + s.max, 0);
 
         const applications = await tx.tbl_application.findMany({
-          where: { application_id: { in: ids as number[] }, cycle_id: cycleId },
+          where: { application_id: { in: ids as number[] }, cycle_id: cycleId, ...ACTIVE_APPLICATION },
           select: {
             application_id: true,
             application_no: true,
@@ -248,7 +249,7 @@ export async function savePassingScore(cycleIdInput: number, rule: PassingRule):
         const [stages, results] = await Promise.all([
           tx.tbl_admission_stage.findMany({ select: { stage_id: true, stage_name: true } }),
           tx.tbl_exam_result.findMany({
-            where: { tbl_application: { cycle_id: cycleId }, raw_score: { not: null } },
+            where: { tbl_application: { cycle_id: cycleId, ...ACTIVE_APPLICATION }, raw_score: { not: null } },
             select: {
               result_id: true,
               raw_score: true,

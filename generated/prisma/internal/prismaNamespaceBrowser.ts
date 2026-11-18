@@ -79,7 +79,8 @@ export const ModelName = {
   tbl_application_document: 'tbl_application_document',
   tbl_exam_session: 'tbl_exam_session',
   tbl_exam_session_applicant: 'tbl_exam_session_applicant',
-  tbl_exam_subject_score: 'tbl_exam_subject_score'
+  tbl_exam_subject_score: 'tbl_exam_subject_score',
+  tbl_recommendation_setting: 'tbl_recommendation_setting'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -142,7 +143,9 @@ export const Tbl_applicantScalarFieldEnum = {
   sex: 'sex',
   birth_date: 'birth_date',
   email: 'email',
-  mobile_no: 'mobile_no'
+  mobile_no: 'mobile_no',
+  archived_at: 'archived_at',
+  archived_by: 'archived_by'
 } as const
 
 export type Tbl_applicantScalarFieldEnum = (typeof Tbl_applicantScalarFieldEnum)[keyof typeof Tbl_applicantScalarFieldEnum]
@@ -304,7 +307,8 @@ export const Tbl_programScalarFieldEnum = {
   program_id: 'program_id',
   program_code: 'program_code',
   program_name: 'program_name',
-  is_active: 'is_active'
+  is_active: 'is_active',
+  min_match: 'min_match'
 } as const
 
 export type Tbl_programScalarFieldEnum = (typeof Tbl_programScalarFieldEnum)[keyof typeof Tbl_programScalarFieldEnum]
@@ -346,6 +350,7 @@ export type Tbl_quotaScalarFieldEnum = (typeof Tbl_quotaScalarFieldEnum)[keyof t
 export const Tbl_roleScalarFieldEnum = {
   role_id: 'role_id',
   role_name: 'role_name',
+  display_name: 'display_name',
   description: 'description'
 } as const
 
@@ -433,6 +438,16 @@ export const Tbl_exam_subject_scoreScalarFieldEnum = {
 } as const
 
 export type Tbl_exam_subject_scoreScalarFieldEnum = (typeof Tbl_exam_subject_scoreScalarFieldEnum)[keyof typeof Tbl_exam_subject_scoreScalarFieldEnum]
+
+
+export const Tbl_recommendation_settingScalarFieldEnum = {
+  setting_id: 'setting_id',
+  is_enabled: 'is_enabled',
+  updated_by: 'updated_by',
+  updated_at: 'updated_at'
+} as const
+
+export type Tbl_recommendation_settingScalarFieldEnum = (typeof Tbl_recommendation_settingScalarFieldEnum)[keyof typeof Tbl_recommendation_settingScalarFieldEnum]
 
 
 export const SortOrder = {

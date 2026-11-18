@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getAccountId, requireAnyPermission } from "@/lib/authorization";
 import type { ModuleName } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
+import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
 import { ADMISSION_STAGES, EXAM_RESULT_PASSED } from "@/features/admission/stages";
 import { enrollmentDecisionSchema, notEnrolledSchema } from "@/features/admission/schemas";
 
@@ -66,7 +67,7 @@ async function transitionStage(options: {
     }
 
     const updated = await tx.tbl_application.updateMany({
-      where: { application_id: applicationId, current_stage_id: fromStage.stage_id },
+      where: { application_id: applicationId, current_stage_id: fromStage.stage_id, ...ACTIVE_APPLICATION },
       data: { current_stage_id: toStage.stage_id },
     });
 

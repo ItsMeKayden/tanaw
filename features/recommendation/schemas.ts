@@ -22,7 +22,11 @@ export const weightInputSchema = z
  * Each row must add up to exactly 100.
  */
 export const mappingFormSchema = z
-  .object({ rows: z.record(z.string(), z.record(z.string(), weightInputSchema)) })
+  .object({
+    rows: z.record(z.string(), z.record(z.string(), weightInputSchema)),
+    /** minMatch["p<program_id>"] = "70" (each course's minimum match %). */
+    minMatch: z.record(z.string(), weightInputSchema),
+  })
   .superRefine((value, ctx) => {
     for (const [rowKey, weights] of Object.entries(value.rows)) {
       const total = roundTo2(Object.values(weights).reduce((sum, w) => sum + (Number(w) || 0), 0));
@@ -38,6 +42,12 @@ export const mappingSaveSchema = z
   .array(
     z.object({
       program_id: z.number().int().positive(),
+      min_match: z
+        .number()
+        .min(0, "Minimum match must be between 0 and 100.")
+        .max(100, "Minimum match must be between 0 and 100.")
+        .refine(hasAtMost2Decimals, "Use at most two decimal places.")
+        .optional(),
       weights: z
         .array(
           z.object({

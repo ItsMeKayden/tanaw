@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import { connection } from "next/server";
 import { requirePermission } from "@/lib/authorization";
+import { OverviewSkeleton } from "@/components/ui/skeletons";
 
-export default async function AdmissionTrackerPage() {
+async function AdmissionTrackerPageContent() {
   await connection();
 
   await requirePermission("admission", "read");
@@ -13,5 +15,13 @@ export default async function AdmissionTrackerPage() {
         Monitor applicants and track their admission progress.
       </p>
     </main>
+  );
+}
+
+export default function AdmissionTrackerPage() {
+  return (
+    <Suspense fallback={<OverviewSkeleton label="admission tracker" />}>
+      <AdmissionTrackerPageContent />
+    </Suspense>
   );
 }

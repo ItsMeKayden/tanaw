@@ -16,7 +16,9 @@ import {
 import { requireAnyPermission } from "@/lib/authorization";
 import { hasAnyPermission } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
+import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
 import { BackLink } from "@/components/ui/back-link";
+import { ProfileSkeleton } from "@/components/ui/skeletons";
 
 type PageProps = Readonly<{
   params: Promise<{ applicationId: string }>;
@@ -45,7 +47,7 @@ async function EnrollmentDetailContent({ params }: PageProps) {
   }
 
   const application = await prisma.tbl_application.findUnique({
-    where: { application_id: applicationId },
+    where: { application_id: applicationId, ...ACTIVE_APPLICATION },
     select: {
       application_id: true,
       application_no: true,
@@ -244,7 +246,7 @@ async function EnrollmentDetailContent({ params }: PageProps) {
 
 export default function EnrollmentDetailPage({ params }: PageProps) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<ProfileSkeleton label="enrollment verification" />}>
       <EnrollmentDetailContent params={params} />
     </Suspense>
   );

@@ -1,6 +1,7 @@
 // Server-side queries for enrollment verification (imports Prisma; do not
 // import from client components).
 import { prisma } from "@/lib/prisma";
+import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
 import {
   ADMISSION_STAGES,
   ADMITTED_STAGES,
@@ -31,6 +32,7 @@ export function formatFullName(
 export async function getAdmittedApplications() {
   const applications = await prisma.tbl_application.findMany({
     where: {
+      ...ACTIVE_APPLICATION,
       tbl_admission_stage: { stage_name: { in: [...ADMITTED_STAGES] } },
     },
     orderBy: { application_no: "asc" },

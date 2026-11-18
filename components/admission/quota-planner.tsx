@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
 import { saveQuotaPlan } from "@/features/admission/actions/quota";
+import { toast } from "@/components/ui/toaster";
 
 export type QuotaCourse = {
   program_id: number;
@@ -88,9 +89,10 @@ export function QuotaPlanner({
       });
       if ("error" in result) {
         setFeedback({ type: "error", text: result.error });
+        toast.error(result.error);
         return;
       }
-      setFeedback({ type: "success", text: result.message });
+      toast.success(result.message);
       router.refresh();
     });
   }

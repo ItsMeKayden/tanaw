@@ -15,6 +15,7 @@ import {
   saveAttendance,
 } from "@/features/admission/actions/exam-schedule";
 import { examSessionSchema, type ExamSessionValues } from "@/features/admission/schemas";
+import { toast } from "@/components/ui/toaster";
 
 export type SessionRow = {
   session_id: number;
@@ -177,7 +178,8 @@ function AttendancePanel({
     setFeedback(null);
     startTransition(async () => {
       const result = await action();
-      setFeedback("error" in result ? { type: "error", text: result.error } : { type: "success", text: result.message });
+      toast.fromResult(result);
+      setFeedback("error" in result ? { type: "error", text: result.error } : null);
       if (!("error" in result)) {
         setTouched(false);
         router.refresh();
@@ -333,7 +335,8 @@ export function ExamSchedule({
     setFeedback(null);
     startTransition(async () => {
       const result = await deleteExamSession(session.session_id);
-      setFeedback("error" in result ? { type: "error", text: result.error } : { type: "success", text: result.message });
+      toast.fromResult(result);
+      setFeedback("error" in result ? { type: "error", text: result.error } : null);
       router.refresh();
     });
   }

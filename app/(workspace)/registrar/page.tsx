@@ -1,17 +1,5 @@
-import { connection } from "next/server";
+import { redirect } from "next/navigation";
 
-import { ModulePlaceholder } from "@/components/layout/module-placeholder";
-import { requirePermission } from "@/lib/authorization";
-
-export default async function RegistrarPage() {
-  await connection();
-
-  await requirePermission("registrar", "read");
-
-  return (
-    <ModulePlaceholder
-      title="Registrar Management"
-      description="Manage student records, academic information, and registrar transactions."
-    />
-  );
+export default function RegistrarPage() {
+  redirect("/registrar/applicants");
 }

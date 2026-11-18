@@ -162,3 +162,8 @@ export type tbl_exam_session_applicant = Prisma.tbl_exam_session_applicantModel
  * 
  */
 export type tbl_exam_subject_score = Prisma.tbl_exam_subject_scoreModel
+/**
+ * Model tbl_recommendation_setting
+ * 
+ */
+export type tbl_recommendation_setting = Prisma.tbl_recommendation_settingModel

@@ -1,7 +1,9 @@
 "use server";
 
-import { getAccountId, requirePermission } from "@/lib/authorization";
+import { getAccountId, requireAnyPermission } from "@/lib/authorization";
+import { APPLICANT_EDIT_MODULES } from "@/features/admission/access";
 import { prisma } from "@/lib/prisma";
+import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
 import { ENROLLMENT_DECISION_STAGES } from "@/features/admission/stages";
 import { stageUpdateSchema } from "@/features/admission/schemas";
 
@@ -14,7 +16,7 @@ type UpdateApplicationStageInput = {
 export async function updateApplicationStage(
   input: UpdateApplicationStageInput,
 ) {
-  const user = await requirePermission("admission", "write");
+  const user = await requireAnyPermission(APPLICANT_EDIT_MODULES, "write");
   const accountId = getAccountId(user);
 
   const { application_id, stage_id } = input;
@@ -31,7 +33,7 @@ export async function updateApplicationStage(
   const remarks = parsed.data.remarks;
 
   const application = await prisma.tbl_application.findUnique({
-    where: { application_id },
+    where: { application_id, ...ACTIVE_APPLICATION },
     select: {
       application_id: true,
       current_stage_id: true,

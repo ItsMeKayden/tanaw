@@ -22,7 +22,7 @@ const PERMISSION_TYPES: PermissionType[] = ["READ", "WRITE"];
  * Roles, module permissions, and role-permission assignments.
  *
  * Default access (lib/modules.ts) is applied only to permissions that have no
- * assignments yet, so changes made on the Users & Roles page are kept when
+ * assignments yet, so changes made on the User Management page are kept when
  * the seed runs again. SYSTEM_ADMIN always keeps full access.
  */
 export async function seedRolesAndPermissions() {
@@ -30,7 +30,8 @@ export async function seedRolesAndPermissions() {
   for (const roleName of ROLE_NAMES) {
     const record = await prisma.tbl_role.upsert({
       where: { role_name: roleName },
-      update: { description: ROLE_DESCRIPTIONS[roleName] },
+      // Descriptions are only set on create; edits from User Management are kept.
+      update: {},
       create: { role_name: roleName, description: ROLE_DESCRIPTIONS[roleName] },
     });
     roleIds.set(roleName, record.role_id);

@@ -8,6 +8,7 @@ import { emptyApplicantForm } from "@/features/admission/applicant-form";
 import { requirePermission } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
 import { BackLink } from "@/components/ui/back-link";
+import { FormSkeleton } from "@/components/ui/skeletons";
 
 async function AddApplicantContent() {
   await connection();
@@ -48,7 +49,7 @@ async function AddApplicantContent() {
 
 export default function AddApplicantPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<FormSkeleton label="applicant form" />}>
       <AddApplicantContent />
     </Suspense>
   );

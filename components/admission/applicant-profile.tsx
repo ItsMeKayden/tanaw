@@ -125,10 +125,13 @@ export default function ApplicantProfile({
   applicant,
   stages,
   canWrite,
+  showEnrollmentLink = true,
 }: Readonly<{
   applicant: ApplicantProfileData;
   stages: Stage[];
   canWrite: boolean;
+  /** False when the viewer can't open Enrollment Verification (e.g. Guidance). */
+  showEnrollmentLink?: boolean;
 }>) {
   const application = applicant.tbl_application[0];
   const fullName = [
@@ -162,7 +165,7 @@ export default function ApplicantProfile({
         <span className={`rounded-full px-4 py-1 text-sm font-medium ${stageBadgeClass(stageName)}`}>
           {stageName ?? "No application"}
         </span>
-        {application && ADMITTED_STAGES.includes(stageName ?? "") && (
+        {showEnrollmentLink && application && ADMITTED_STAGES.includes(stageName ?? "") && (
           <Link
             href={`/admission/enrollment-verification/${application.application_id}`}
             className="rounded-full border border-neutral-500 bg-white px-4 py-1 text-sm hover:bg-neutral-100 print:hidden"

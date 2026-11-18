@@ -8,6 +8,7 @@ import { Search, Upload } from "lucide-react";
 import { saveExamScores, savePassingScore } from "@/features/admission/actions/exam-scores";
 import type { ExamSubject, PassingRule } from "@/features/admission/exam";
 import { formatPassingRule, isPassing } from "@/features/admission/exam-scoring";
+import { toast } from "@/components/ui/toaster";
 
 export type ScoreRow = {
   application_id: number;
@@ -267,9 +268,10 @@ export function ExamScoreGrid({
       );
       if ("error" in result) {
         setFeedback({ type: "error", text: result.error });
+        toast.error(result.error);
         return;
       }
-      setFeedback({ type: "success", text: result.message });
+      toast.success(result.message);
       setDraft({});
       router.refresh();
     });
