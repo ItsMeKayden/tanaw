@@ -9,6 +9,8 @@ import { requireUser } from "@/lib/authorization";
 import { getRoleLabels } from "@/features/user-management/role-labels";
 import { getNavigationItems } from "@/lib/navigation";
 
+export const instant = false;
+
 async function AuthenticatedWorkspace({ children }: { children: ReactNode }) {
   await connection();
 
