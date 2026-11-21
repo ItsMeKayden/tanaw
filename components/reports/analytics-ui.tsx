@@ -4,17 +4,11 @@ import { ExportMenu } from "@/components/reports/export-menu";
 
 export function AnalyticsPage({
   title,
-  exportHref,
   children,
-}: Readonly<{ title?: string; exportHref?: string; children: ReactNode }>) {
+}: Readonly<{ title?: string; children: ReactNode }>) {
   return (
     <div className="min-h-full bg-white p-3 sm:p-5">
       {title && <h1 className="mb-3 text-xl font-bold">{title}</h1>}
-      {exportHref && (
-        <div className="mb-3 flex justify-end">
-          <ExportMenu href={exportHref} primary />
-        </div>
-      )}
       {children}
     </div>
   );
@@ -53,14 +47,20 @@ export function SelectFilter({
 
 export function FilterBar({
   action,
+  exportHref,
   children,
-}: Readonly<{ action: string; children: ReactNode }>) {
+}: Readonly<{ action: string; exportHref?: string; children: ReactNode }>) {
   return (
     <form action={action} method="get" className="mb-4 flex flex-wrap items-center gap-2">
       {children}
       <button type="submit" className="h-9 rounded-md border border-neutral-700 bg-[#eef0fa] px-3 text-sm font-semibold">
         Apply
       </button>
+      {exportHref ? (
+        <div className="ml-auto">
+          <ExportMenu href={exportHref} primary />
+        </div>
+      ) : null}
     </form>
   );
 }
@@ -117,8 +117,8 @@ export function LineChart({
   const path = coords.map((point, index) => `${index ? "L" : "M"}${point.x} ${point.y}`).join(" ");
   return (
     <div>
-      <p className="sr-only">{title}</p>
-      <svg viewBox={`0 0 ${width} ${height}`} className="h-[220px] w-full" role="img" aria-label={title}>
+      <p className="mb-1 text-center text-xs font-semibold">{title}</p>
+      <svg viewBox={`0 0 ${width} ${height}`} className="h-[260px] w-full" role="img" aria-label={title}>
         {[0, 25, 50, 75, 100].map((tick) => {
           const y = top + plotH - (tick / max) * plotH;
           return <g key={tick}><line x1={left} x2={width-right} y1={y} y2={y} stroke="#d1d5db" strokeDasharray="4 4" /><text x={left-8} y={y+3} textAnchor="end" fontSize="9" fill="#4b5563">{tick}</text></g>;
@@ -178,8 +178,8 @@ export function VerticalBars({
 export function ScoreHistogram({
   items,
   title,
-}: Readonly<{ items: { label: string; publicValue: number; privateValue: number }[]; title: string }>) {
-  const max = Math.max(1, ...items.map((item) => item.publicValue + item.privateValue));
+}: Readonly<{ items: { label: string; privateValue: number; publicValue: number }[]; title: string }>) {
+  const max = Math.max(1, ...items.map((item) => item.privateValue + item.publicValue));
   const width = 430;
   const height = 210;
   const base = 170;
@@ -197,14 +197,14 @@ export function ScoreHistogram({
         })}
         {items.map((item, index) => {
           const x = left + index * slot + 3;
-          const belowHeight = (item.publicValue / ceiling) * (base - 20);
-          const passedHeight = (item.privateValue / ceiling) * (base - 20);
+          const belowHeight = (item.privateValue / ceiling) * (base - 20);
+          const passedHeight = (item.publicValue / ceiling) * (base - 20);
           const barWidth = Math.max(20, slot - 5);
           return <g key={item.label}>
             <rect x={x} y={base - belowHeight} width={barWidth} height={belowHeight} fill="#93baf4" />
             <rect x={x} y={base - belowHeight - passedHeight} width={barWidth} height={passedHeight} fill="#1f4a9f" />
             <text x={x + barWidth / 2} y={base + 14} textAnchor="middle" fontSize="8">{item.label}</text>
-            {(item.publicValue + item.privateValue) > 0 && <text x={x + barWidth / 2} y={base - belowHeight - passedHeight - 4} textAnchor="middle" fontSize="7">{item.publicValue + item.privateValue}</text>}
+            {(item.privateValue + item.publicValue) > 0 && <text x={x + barWidth / 2} y={base - belowHeight - passedHeight - 4} textAnchor="middle" fontSize="7">{item.privateValue + item.publicValue}</text>}
           </g>;
         })}
         <text x={left + (width - left) / 2} y={height - 1} textAnchor="middle" fontSize="8">Exam score</text>

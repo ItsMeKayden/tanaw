@@ -38,7 +38,7 @@ export default async function ItemAnalysisPage({searchParams}:PageProps){
    <SelectFilter name="exam" label="Exam set" value={examId?String(examId):"all"} options={[{value:"all",label:"All"},...exams.map((e)=>({value:String(e.exam_id),label:e.exam_name}))]}/>
    <SelectFilter name="subject" label="Subject" value={subject??"all"} options={[{value:"all",label:"All"},...subjects.map((s)=>({value:s,label:s}))]}/>
   </FilterBar>
-  <div className="grid gap-5 lg:grid-cols-2">
+  <div className="grid items-start gap-5 lg:grid-cols-2">
    <AnalyticsCard title="Correct answer per question">
     <div className="rounded-xl border border-neutral-500 p-3">
      {chartItems.length?<VerticalBars title="Correct answer per question" items={chartItems.map((item)=>({label:item.label,publicValue:item.value,privateValue:0}))}/>:<p className="py-16 text-center text-sm text-neutral-500">No question response data available.</p>}
