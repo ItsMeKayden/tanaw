@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 
@@ -14,6 +14,22 @@ export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [notice, setNotice] = useState<"registered" | "reset" | null>(null);
+
+  // One-time notices from ?registered=true / ?reset=true. Read after mount
+  // (the server has no URL to match, so reading it while rendering breaks
+  // hydration), then removed from the address so a reload doesn't repeat it.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const next = params.get("reset") === "true" ? "reset" : params.get("registered") === "true" ? "registered" : null;
+    if (!next) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- the URL is only readable after mount
+    setNotice(next);
+    params.delete("reset");
+    params.delete("registered");
+    const query = params.toString();
+    window.history.replaceState(null, "", `${window.location.pathname}${query ? `?${query}` : ""}`);
+  }, []);
 
   async function handleSubmit(formData: FormData) {
     setError("");
@@ -40,16 +56,14 @@ export default function LoginPage() {
     }
   }
 
-  const search = typeof window !== "undefined" ? window.location.search : "";
-
   return (
     <AuthShell title="Sign in">
-      {search.includes("registered=true") && (
+      {notice === "registered" && (
         <p className="mb-4 border border-gray-300 p-2 text-xs text-gray-700">
           Account created successfully. You can now sign in.
         </p>
       )}
-      {search.includes("reset=true") && (
+      {notice === "reset" && (
         <p role="status" className="mb-4 border border-green-300 bg-green-50 p-2 text-xs text-green-800">
           Your password was reset. Sign in with your new password.
         </p>
