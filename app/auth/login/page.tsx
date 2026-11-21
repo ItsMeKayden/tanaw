@@ -31,7 +31,18 @@ export default function LoginPage() {
         return;
       }
 
-      router.push("/dashboard");
+      const sessionResponse = await fetch("/api/auth/session", { cache: "no-store" });
+      const session = await sessionResponse.json();
+      const role = session?.user?.role;
+
+      const target =
+        role === "GUIDANCE"
+          ? "/guidance"
+          : role === "REGISTRAR"
+            ? "/registrar"
+            : "/dashboard";
+
+      router.push(target);
       router.refresh();
     } catch {
       setError("Unable to sign in. Please try again.");
