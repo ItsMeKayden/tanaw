@@ -3,6 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Cinzel } from "next/font/google";
@@ -17,11 +19,28 @@ const cinzel = Cinzel({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
+import { AuthShell, authButtonClass, authInputClass } from "@/features/auth/components/auth-shell";
 
 export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [notice, setNotice] = useState<"registered" | "reset" | null>(null);
+
+  // One-time notices from ?registered=true / ?reset=true. Read after mount
+  // (the server has no URL to match, so reading it while rendering breaks
+  // hydration), then removed from the address so a reload doesn't repeat it.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const next = params.get("reset") === "true" ? "reset" : params.get("registered") === "true" ? "registered" : null;
+    if (!next) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- the URL is only readable after mount
+    setNotice(next);
+    params.delete("reset");
+    params.delete("registered");
+    const query = params.toString();
+    window.history.replaceState(null, "", `${window.location.pathname}${query ? `?${query}` : ""}`);
+  }, []);
 
   async function handleSubmit(formData: FormData) {
     setError("");
@@ -39,7 +58,18 @@ export default function LoginPage() {
         return;
       }
 
-      router.push("/dashboard");
+      const sessionResponse = await fetch("/api/auth/session", { cache: "no-store" });
+      const session = await sessionResponse.json();
+      const role = session?.user?.role;
+
+      const target =
+        role === "GUIDANCE"
+          ? "/guidance"
+          : role === "REGISTRAR"
+            ? "/registrar"
+            : "/dashboard";
+
+      router.push(target);
       router.refresh();
     } catch {
       setError("Unable to sign in. Please try again.");
@@ -231,7 +261,20 @@ export default function LoginPage() {
             </form>
           </div>
         </div>
-      </section>
-    </main>
+
+        {error && (
+          <p
+            role="alert"
+            className="mb-3 border border-red-300 bg-red-50 p-2 text-xs text-red-700"
+          >
+            {error}
+          </p>
+        )}
+
+        <Button type="submit" className={authButtonClass} disabled={loading}>
+          {loading ? "Signing in..." : "Sign In"}
+        </Button>
+      </form>
+    </AuthShell>
   );
 }
