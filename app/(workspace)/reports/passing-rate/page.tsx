@@ -31,8 +31,8 @@ export default async function PassingRatePage({searchParams}:PageProps){
  }));
  const populated=courses.filter((c)=>c.examined>0).sort((a,b)=>b.value-a.value).slice(0,6);
 
- return <AnalyticsPage exportHref={`/api/reports/passing-rate?cycle=${cycle?.cycle_id ?? ""}${campusId ? `&campus=${campusId}` : ""}`}>
-  <FilterBar action="/reports/passing-rate">
+ return <AnalyticsPage>
+  <FilterBar action="/reports/passing-rate" exportHref={`/api/reports/passing-rate?cycle=${cycle?.cycle_id ?? ""}${campusId ? `&campus=${campusId}` : ""}`}>
    <SelectFilter name="cycle" label="School Year" value={cycle?String(cycle.cycle_id):""} options={cycles.map((c)=>({value:String(c.cycle_id),label:c.school_year}))}/>
    <SelectFilter name="campus" label="Campus" value={campusId?String(campusId):"all"} options={[{value:"all",label:"All"},...campuses.map((c)=>({value:String(c.branch_id),label:c.branch_name}))]}/>
   </FilterBar>

@@ -129,8 +129,8 @@ export default async function ReportsPage({ searchParams }: PageProps) {
     {label:"Passed",publicValue:publicPassed,privateValue:privatePassed},
   ];
   return (
-    <AnalyticsPage exportHref={`/api/reports/overview?cycle=${cycle?.cycle_id ?? ""}${campusId ? `&campus=${campusId}` : ""}${courseId ? `&course=${courseId}` : ""}`}>
-      <FilterBar action="/reports">
+    <AnalyticsPage>
+      <FilterBar action="/reports" exportHref={`/api/reports/overview?cycle=${cycle?.cycle_id ?? ""}${campusId ? `&campus=${campusId}` : ""}${courseId ? `&course=${courseId}` : ""}`}>
         <SelectFilter name="cycle" label="School Year" value={cycle?String(cycle.cycle_id):""} options={cycles.map((c)=>({value:String(c.cycle_id),label:c.school_year}))} />
         <SelectFilter name="campus" label="Campus" value={campusId?String(campusId):"all"} options={[{value:"all",label:"All"},...campuses.map((c)=>({value:String(c.branch_id),label:c.branch_name}))]} />
         <SelectFilter name="course" label="Course" value={courseId?String(courseId):"all"} options={[{value:"all",label:"All"},...programs.map((p)=>({value:String(p.program_id),label:p.program_code}))]} />
