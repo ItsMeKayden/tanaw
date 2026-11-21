@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { Menu } from "@base-ui/react/menu";
-import { ChevronDown, LogOut } from "lucide-react";
+import { ChevronDown, KeyRound, LogOut } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 
+import { ChangePasswordModal } from "@/features/auth/components/change-password-modal";
 import type { NavigationItem } from "@/lib/navigation";
 import { findActiveHref, findTrail } from "@/lib/navigation-match";
 
@@ -48,8 +50,10 @@ function AccountAvatar() {
   );
 }
 
-/** Account name, then the avatar button whose menu holds Log out. */
+/** Account name, then the avatar button whose menu holds Change password and Log out. */
 function AccountMenu({ userName, roleLabel }: Readonly<{ userName: string; roleLabel: string | null }>) {
+  const [changingPassword, setChangingPassword] = useState(false);
+
   return (
     <div className="flex items-center gap-2.5">
       <div className="hidden min-w-0 text-right leading-tight sm:block">
@@ -80,8 +84,15 @@ function AccountMenu({ userName, roleLabel }: Readonly<{ userName: string; roleL
                 {roleLabel && <p className="text-xs text-neutral-600">{roleLabel}</p>}
               </div>
               <Menu.Item
+                onClick={() => setChangingPassword(true)}
+                className="mt-1 flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 outline-none select-none data-[highlighted]:bg-neutral-100"
+              >
+                <KeyRound className="size-4" aria-hidden="true" />
+                Change password
+              </Menu.Item>
+              <Menu.Item
                 onClick={() => signOut({ callbackUrl: "/auth/login" })}
-                className="mt-1 flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-red-700 outline-none select-none data-[highlighted]:bg-red-50"
+                className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-red-700 outline-none select-none data-[highlighted]:bg-red-50"
               >
                 <LogOut className="size-4" aria-hidden="true" />
                 Log out
@@ -90,6 +101,8 @@ function AccountMenu({ userName, roleLabel }: Readonly<{ userName: string; roleL
           </Menu.Positioner>
         </Menu.Portal>
       </Menu.Root>
+
+      <ChangePasswordModal open={changingPassword} onClose={() => setChangingPassword(false)} />
     </div>
   );
 }

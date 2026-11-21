@@ -143,6 +143,11 @@ export type tbl_school = Prisma.tbl_schoolModel
  */
 export type tbl_user_account = Prisma.tbl_user_accountModel
 /**
+ * Model tbl_password_reset_token
+ * 
+ */
+export type tbl_password_reset_token = Prisma.tbl_password_reset_tokenModel
+/**
  * Model tbl_application_document
  * 
  */

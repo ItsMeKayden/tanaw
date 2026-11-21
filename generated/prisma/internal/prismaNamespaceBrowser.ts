@@ -76,6 +76,7 @@ export const ModelName = {
   tbl_role_permission: 'tbl_role_permission',
   tbl_school: 'tbl_school',
   tbl_user_account: 'tbl_user_account',
+  tbl_password_reset_token: 'tbl_password_reset_token',
   tbl_application_document: 'tbl_application_document',
   tbl_exam_session: 'tbl_exam_session',
   tbl_exam_session_applicant: 'tbl_exam_session_applicant',
@@ -389,6 +390,18 @@ export const Tbl_user_accountScalarFieldEnum = {
 } as const
 
 export type Tbl_user_accountScalarFieldEnum = (typeof Tbl_user_accountScalarFieldEnum)[keyof typeof Tbl_user_accountScalarFieldEnum]
+
+
+export const Tbl_password_reset_tokenScalarFieldEnum = {
+  token_id: 'token_id',
+  user_id: 'user_id',
+  token_hash: 'token_hash',
+  expires_at: 'expires_at',
+  used_at: 'used_at',
+  created_at: 'created_at'
+} as const
+
+export type Tbl_password_reset_tokenScalarFieldEnum = (typeof Tbl_password_reset_tokenScalarFieldEnum)[keyof typeof Tbl_password_reset_tokenScalarFieldEnum]
 
 
 export const Tbl_application_documentScalarFieldEnum = {
