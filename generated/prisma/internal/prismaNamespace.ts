@@ -422,6 +422,7 @@ export const ModelName = {
   tbl_role_permission: 'tbl_role_permission',
   tbl_school: 'tbl_school',
   tbl_user_account: 'tbl_user_account',
+  tbl_password_reset_token: 'tbl_password_reset_token',
   tbl_application_document: 'tbl_application_document',
   tbl_exam_session: 'tbl_exam_session',
   tbl_exam_session_applicant: 'tbl_exam_session_applicant',
@@ -442,7 +443,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "tbl_admission_cycle" | "tbl_admission_stage" | "tbl_applicant" | "tbl_application" | "tbl_application_stage_log" | "tbl_barangay" | "tbl_branch" | "tbl_competency" | "tbl_course_recommendation" | "tbl_district" | "tbl_exam" | "tbl_exam_question" | "tbl_exam_result" | "tbl_import_batch" | "tbl_passing_score_setting" | "tbl_permission" | "tbl_program" | "tbl_program_competency" | "tbl_question_response" | "tbl_quota" | "tbl_role" | "tbl_role_permission" | "tbl_school" | "tbl_user_account" | "tbl_application_document" | "tbl_exam_session" | "tbl_exam_session_applicant" | "tbl_exam_subject_score" | "tbl_recommendation_setting"
+    modelProps: "user" | "tbl_admission_cycle" | "tbl_admission_stage" | "tbl_applicant" | "tbl_application" | "tbl_application_stage_log" | "tbl_barangay" | "tbl_branch" | "tbl_competency" | "tbl_course_recommendation" | "tbl_district" | "tbl_exam" | "tbl_exam_question" | "tbl_exam_result" | "tbl_import_batch" | "tbl_passing_score_setting" | "tbl_permission" | "tbl_program" | "tbl_program_competency" | "tbl_question_response" | "tbl_quota" | "tbl_role" | "tbl_role_permission" | "tbl_school" | "tbl_user_account" | "tbl_password_reset_token" | "tbl_application_document" | "tbl_exam_session" | "tbl_exam_session_applicant" | "tbl_exam_subject_score" | "tbl_recommendation_setting"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2296,6 +2297,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    tbl_password_reset_token: {
+      payload: Prisma.$tbl_password_reset_tokenPayload<ExtArgs>
+      fields: Prisma.tbl_password_reset_tokenFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.tbl_password_reset_tokenFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_password_reset_tokenPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.tbl_password_reset_tokenFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_password_reset_tokenPayload>
+        }
+        findFirst: {
+          args: Prisma.tbl_password_reset_tokenFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_password_reset_tokenPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.tbl_password_reset_tokenFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_password_reset_tokenPayload>
+        }
+        findMany: {
+          args: Prisma.tbl_password_reset_tokenFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_password_reset_tokenPayload>[]
+        }
+        create: {
+          args: Prisma.tbl_password_reset_tokenCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_password_reset_tokenPayload>
+        }
+        createMany: {
+          args: Prisma.tbl_password_reset_tokenCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.tbl_password_reset_tokenCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_password_reset_tokenPayload>[]
+        }
+        delete: {
+          args: Prisma.tbl_password_reset_tokenDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_password_reset_tokenPayload>
+        }
+        update: {
+          args: Prisma.tbl_password_reset_tokenUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_password_reset_tokenPayload>
+        }
+        deleteMany: {
+          args: Prisma.tbl_password_reset_tokenDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.tbl_password_reset_tokenUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.tbl_password_reset_tokenUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_password_reset_tokenPayload>[]
+        }
+        upsert: {
+          args: Prisma.tbl_password_reset_tokenUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_password_reset_tokenPayload>
+        }
+        aggregate: {
+          args: Prisma.Tbl_password_reset_tokenAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTbl_password_reset_token>
+        }
+        groupBy: {
+          args: Prisma.tbl_password_reset_tokenGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tbl_password_reset_tokenGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.tbl_password_reset_tokenCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tbl_password_reset_tokenCountAggregateOutputType> | number
+        }
+      }
+    }
     tbl_application_document: {
       payload: Prisma.$tbl_application_documentPayload<ExtArgs>
       fields: Prisma.tbl_application_documentFieldRefs
@@ -2997,6 +3072,18 @@ export const Tbl_user_accountScalarFieldEnum = {
 export type Tbl_user_accountScalarFieldEnum = (typeof Tbl_user_accountScalarFieldEnum)[keyof typeof Tbl_user_accountScalarFieldEnum]
 
 
+export const Tbl_password_reset_tokenScalarFieldEnum = {
+  token_id: 'token_id',
+  user_id: 'user_id',
+  token_hash: 'token_hash',
+  expires_at: 'expires_at',
+  used_at: 'used_at',
+  created_at: 'created_at'
+} as const
+
+export type Tbl_password_reset_tokenScalarFieldEnum = (typeof Tbl_password_reset_tokenScalarFieldEnum)[keyof typeof Tbl_password_reset_tokenScalarFieldEnum]
+
+
 export const Tbl_application_documentScalarFieldEnum = {
   document_id: 'document_id',
   application_id: 'application_id',
@@ -3368,6 +3455,7 @@ export type GlobalOmitConfig = {
   tbl_role_permission?: Prisma.tbl_role_permissionOmit
   tbl_school?: Prisma.tbl_schoolOmit
   tbl_user_account?: Prisma.tbl_user_accountOmit
+  tbl_password_reset_token?: Prisma.tbl_password_reset_tokenOmit
   tbl_application_document?: Prisma.tbl_application_documentOmit
   tbl_exam_session?: Prisma.tbl_exam_sessionOmit
   tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantOmit
