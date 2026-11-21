@@ -1,8 +1,8 @@
 "use client";
 
-import { ChevronDown, Search } from "lucide-react";
-import { useMemo, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
+
+import { ExportMenu } from "@/components/reports/export-menu";
 
 type FilterOption = {
   value: string;
@@ -16,205 +16,8 @@ type DashboardFiltersProps = {
   schoolYears: FilterOption[];
   campuses: FilterOption[];
   courses: FilterOption[];
+  exportHref?: string;
 };
-
-function normalizeYearInput(value: string) {
-  return value.trim().replace(/\s*-\s*/g, "-").toLowerCase();
-}
-
-function updateQueryParam(
-  current: URLSearchParams,
-  key: string,
-  value: string | null,
-) {
-  if (value === null || value === "all") {
-    current.delete(key);
-    return;
-  }
-
-  current.set(key, value);
-}
-
-type FilterMenuProps = {
-  label: string;
-  options: FilterOption[];
-  selected: string;
-  type: "school-year" | "campus" | "course";
-  open: boolean;
-  onToggle: () => void;
-  onClose: () => void;
-};
-
-function FilterMenu({
-  label,
-  options,
-  selected,
-  type,
-  open,
-  onToggle,
-  onClose,
-}: FilterMenuProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const [search, setSearch] = useState("");
-  const [typedYear, setTypedYear] = useState("");
-
-  const displayOptions = useMemo(() => {
-    if (type === "campus" || type === "course") {
-      return [{ value: "all", label: "All" }, ...options];
-    }
-    return options;
-  }, [options, type]);
-
-  const selectedLabel = useMemo(() => {
-    if (!selected) return "All";
-    const match = displayOptions.find((option) => option.value === selected);
-    return match?.label ?? "All";
-  }, [displayOptions, selected]);
-
-  const filteredOptions = useMemo(() => {
-    const text = search.trim().toLowerCase();
-    if (!text) return displayOptions;
-    return displayOptions.filter((option) => option.label.toLowerCase().includes(text));
-  }, [search, displayOptions]);
-
-  const handleToggle = () => {
-    if (open) {
-      onClose();
-      return;
-    }
-
-    setSearch("");
-    setTypedYear("");
-    onToggle();
-  };
-
-  const selectOption = (value: string) => {
-    const next = new URLSearchParams(searchParams.toString());
-
-    if (value === "all") {
-      if (type === "campus") next.delete("campus");
-      if (type === "course") next.delete("course");
-      if (type === "school-year") next.delete("cycle");
-
-      router.push(`${pathname}?${next.toString()}`);
-      onClose();
-      setSearch("");
-      return;
-    }
-
-    if (type === "school-year") updateQueryParam(next, "cycle", value);
-    if (type === "campus") updateQueryParam(next, "campus", value);
-    if (type === "course") updateQueryParam(next, "course", value);
-
-    router.push(`${pathname}?${next.toString()}`);
-    onClose();
-    setSearch("");
-  };
-
-  const applySchoolYear = () => {
-    const match = options.find(
-      (option) =>
-        normalizeYearInput(option.label) === normalizeYearInput(typedYear),
-    );
-
-    if (match) {
-      selectOption(match.value);
-      setTypedYear("");
-    }
-  };
-
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={handleToggle}
-        className="inline-flex items-center gap-2 rounded-lg border border-[#2f2f2f] bg-white/90 px-3 py-2 text-sm font-medium text-neutral-800 shadow-[0_2px_0_rgba(15,23,42,0.05)] transition hover:bg-white"
-      >
-        <span>{label}</span>
-        {selectedLabel ? (
-          <span className="text-neutral-700">: {selectedLabel}</span>
-        ) : null}
-        <ChevronDown className="h-4 w-4 text-neutral-600" />
-      </button>
-
-      {open && (
-        <div className="absolute left-0 top-full z-30 mt-2 w-[320px] rounded-xl border border-[#c8c8c8] bg-[#d9d9d9] p-3 shadow-lg">
-          {type === "school-year" && (
-            <div className="space-y-3">
-              <div className="rounded-lg border border-[#c5c5c5] bg-[#eaeaea] p-2">
-                <div className="mb-2 flex items-center gap-2 text-neutral-500">
-                  <Search className="h-4 w-4" />
-                  <span className="text-xs uppercase tracking-[0.08em] text-neutral-500">
-                    School year
-                  </span>
-                </div>
-                <input
-                  value={typedYear}
-                  onChange={(event) => setTypedYear(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      event.preventDefault();
-                      applySchoolYear();
-                    }
-                  }}
-                  placeholder="2024 - 2025"
-                  className="w-full border-0 bg-transparent text-[15px] text-neutral-700 outline-none placeholder:text-neutral-500"
-                />
-              </div>
-
-              <button
-                type="button"
-                onClick={applySchoolYear}
-                className="w-full rounded-md border border-[#c5c5c5] bg-[#ececec] px-3 py-2 text-sm font-medium text-neutral-700 shadow-sm"
-              >
-                Apply
-              </button>
-            </div>
-          )}
-
-          {(type === "campus" || type === "course") && (
-            <div className="space-y-2">
-              {filteredOptions.map((option) => {
-                const checked =
-                  option.value === "all"
-                    ? !selected
-                    : selected === option.value;
-
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => selectOption(option.value)}
-                    className={[
-                      "flex w-full items-center gap-3 rounded-md border px-2 py-2 text-left text-sm transition-colors",
-                      checked
-                        ? "border-[#0d1b8c] bg-[#dfe1ff] text-[#1f2a7c]"
-                        : "border-transparent bg-[#d9d9d9] text-neutral-700 hover:bg-[#d0d0d0]",
-                    ].join(" ")}
-                  >
-                    <span
-                      className={[
-                        "flex h-4 w-4 shrink-0 items-center justify-center rounded-[3px] border text-[10px] leading-none",
-                        checked
-                          ? "border-[#0d1b8c] bg-[#0d1b8c] text-white"
-                          : "border-[#4b4b4b] bg-[#efefef] text-transparent",
-                      ].join(" ")}
-                    >
-                      {checked ? "✓" : ""}
-                    </span>
-                    <span>{option.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
 
 export function DashboardFilters({
   selectedSchoolYear,
@@ -223,50 +26,75 @@ export function DashboardFilters({
   schoolYears,
   campuses,
   courses,
+  exportHref,
 }: DashboardFiltersProps) {
-  const [openMenu, setOpenMenu] = useState<"school-year" | "campus" | "course" | null>(null);
-
-  const toggleMenu = (menu: "school-year" | "campus" | "course") => {
-    setOpenMenu((current) => (current === menu ? null : menu));
-  };
-
-  const closeAllMenus = () => setOpenMenu(null);
+  const pathname = usePathname();
 
   return (
-    <div className="mb-5 flex flex-wrap items-center gap-2">
-      <FilterMenu
-        label="School Year"
-        type="school-year"
-        selected={selectedSchoolYear}
-        options={schoolYears}
-        open={openMenu === "school-year"}
-        onToggle={() => toggleMenu("school-year")}
-        onClose={closeAllMenus}
-      />
-      <FilterMenu
-        label="Campus"
-        type="campus"
-        selected={selectedCampus}
-        options={campuses}
-        open={openMenu === "campus"}
-        onToggle={() => toggleMenu("campus")}
-        onClose={closeAllMenus}
-      />
-      <FilterMenu
-        label="Course"
-        type="course"
-        selected={selectedCourse}
-        options={courses}
-        open={openMenu === "course"}
-        onToggle={() => toggleMenu("course")}
-        onClose={closeAllMenus}
-      />
+    <form
+      action={pathname}
+      method="get"
+      className="mb-5 flex flex-wrap items-center gap-2"
+    >
+      <label className="inline-flex h-9 items-center gap-2 rounded-md border border-neutral-700 bg-white px-3 text-sm">
+        <span>School Year</span>
+        <select
+          name="cycle"
+          defaultValue={selectedSchoolYear}
+          className="border-0 bg-transparent pr-1 outline-none"
+        >
+          {schoolYears.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <label className="inline-flex h-9 items-center gap-2 rounded-md border border-neutral-700 bg-white px-3 text-sm">
+        <span>Campus</span>
+        <select
+          name="campus"
+          defaultValue={selectedCampus || "all"}
+          className="border-0 bg-transparent pr-1 outline-none"
+        >
+          <option value="all">All</option>
+          {campuses.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <label className="inline-flex h-9 items-center gap-2 rounded-md border border-neutral-700 bg-white px-3 text-sm">
+        <span>Course</span>
+        <select
+          name="course"
+          defaultValue={selectedCourse || "all"}
+          className="border-0 bg-transparent pr-1 outline-none"
+        >
+          <option value="all">All</option>
+          {courses.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </label>
+
       <button
-        type="button"
-        className="ml-auto rounded-lg border border-[#2f2f2f] bg-white/90 px-4 py-2 text-sm font-medium text-neutral-800 shadow-[0_2px_0_rgba(15,23,42,0.05)] transition hover:bg-white"
+        type="submit"
+        className="h-9 rounded-md border border-neutral-700 bg-[#eef0fa] px-3 text-sm font-semibold"
       >
-        Export
+        Apply
       </button>
-    </div>
+
+      {exportHref ? (
+        <div className="ml-auto">
+          <ExportMenu href={exportHref} />
+        </div>
+      ) : null}
+    </form>
   );
 }

@@ -27,9 +27,9 @@ export default async function PassingRatePage({searchParams}:PageProps){
    prisma.tbl_exam_result.count({where:{tbl_application:{...base,program_id:p.program_id}}}),
    prisma.tbl_exam_result.count({where:{tbl_application:{...base,program_id:p.program_id},result_status:EXAM_RESULT_PASSED}}),
   ]);
-  return {label:p.program_code,value:pct(t,e)};
+  return {label:p.program_code,value:pct(t,e),examined:e};
  }));
- const populated=courses.filter((c)=>c.value>0).sort((a,b)=>b.value-a.value).slice(0,6);
+ const populated=courses.filter((c)=>c.examined>0).sort((a,b)=>b.value-a.value).slice(0,6);
 
  return <AnalyticsPage exportHref={`/api/reports/passing-rate?cycle=${cycle?.cycle_id ?? ""}${campusId ? `&campus=${campusId}` : ""}`}>
   <FilterBar action="/reports/passing-rate">

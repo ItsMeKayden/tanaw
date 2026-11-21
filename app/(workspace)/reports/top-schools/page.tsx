@@ -28,6 +28,7 @@ export default async function TopSchoolsPage({searchParams}:PageProps){
 
  return <AnalyticsPage>
   <FilterBar action="/reports/top-schools">
+   <input type="hidden" name="type" value={type ?? "all"} />
    <div className="flex rounded-full border border-neutral-500 p-1">
     {[{v:"all",l:"All"},{v:"Public",l:"Public"},{v:"Private",l:"Private"}].map((item)=><a key={item.v} href={`/reports/top-schools?type=${item.v}${cycle?`&cycle=${cycle.cycle_id}`:""}`} className={`rounded-full px-5 py-1.5 text-sm ${params.type===item.v||(item.v==="all"&&!params.type)?"bg-[#191e73] text-white":"bg-transparent"}`}>{item.l}</a>)}
    </div>

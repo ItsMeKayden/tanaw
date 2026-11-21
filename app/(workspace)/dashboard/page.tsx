@@ -263,6 +263,7 @@ async function DashboardContent({ searchParams }: PageProps) {
 					schoolYears={schoolYears}
 					campuses={campusOptions}
 					courses={courseOptions}
+					exportHref={`/api/reports/overview?cycle=${selectedCycleId ?? ""}${selectedCampusId ? `&campus=${selectedCampusId}` : ""}${selectedCourseId ? `&course=${selectedCourseId}` : ""}`}
 				/>
 
 				<div className="grid gap-3 md:grid-cols-5">
@@ -652,6 +653,7 @@ async function GuidanceDashboard({ searchParams }: PageProps) {
 					schoolYears={schoolYears}
 					campuses={campusOptions}
 					courses={courseOptions}
+					exportHref={`/api/reports/overview?cycle=${selectedCycleId ?? ""}${selectedCampusId ? `&campus=${selectedCampusId}` : ""}${selectedCourseId ? `&course=${selectedCourseId}` : ""}`}
 				/>
 
 				<div className="grid gap-3 md:grid-cols-4">
@@ -939,6 +941,7 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 					schoolYears={schoolYears}
 					campuses={campusOptions}
 					courses={courseOptions}
+					exportHref={`/api/reports/overview?cycle=${selectedCycleId ?? ""}${selectedCampusId ? `&campus=${selectedCampusId}` : ""}${selectedCourseId ? `&course=${selectedCourseId}` : ""}`}
 				/>
 
 				<div className="grid gap-3 md:grid-cols-4">
