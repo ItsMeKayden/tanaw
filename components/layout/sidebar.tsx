@@ -7,9 +7,7 @@ import { usePathname } from "next/navigation";
 import {
   ChartColumn,
   ChevronRight,
-  ClipboardList,
   GraduationCap,
-  HeartHandshake,
   LayoutGrid,
   MapPinned,
   School,
@@ -28,8 +26,6 @@ const icons: Record<NavigationIcon, LucideIcon> = {
   analytics: ChartColumn,
   recommendation: GraduationCap,
   users: UserRound,
-  registrar: ClipboardList,
-  guidance: HeartHandshake,
 };
 
 export function Sidebar({ navigation }: Readonly<{ navigation: NavigationItem[] }>) {
