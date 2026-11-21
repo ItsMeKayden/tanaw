@@ -2,8 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
@@ -19,7 +17,6 @@ const cinzel = Cinzel({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
-import { AuthShell, authButtonClass, authInputClass } from "@/features/auth/components/auth-shell";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -189,12 +186,16 @@ export default function LoginPage() {
               Sign in
             </h2>
 
-            {typeof window !== "undefined" &&
-              window.location.search.includes("registered=true") && (
-                <p className="mb-4 rounded-md border border-emerald-200 bg-emerald-50 p-2.5 text-xs text-emerald-800">
-                  Account created successfully. You can now sign in.
-                </p>
-              )}
+            {notice === "registered" && (
+              <p className="mb-4 rounded-md border border-emerald-200 bg-emerald-50 p-2.5 text-xs text-emerald-800">
+                Account created successfully. You can now sign in.
+              </p>
+            )}
+            {notice === "reset" && (
+              <p role="status" className="mb-4 rounded-md border border-emerald-200 bg-emerald-50 p-2.5 text-xs text-emerald-800">
+                Your password was reset. Sign in with your new password.
+              </p>
+            )}
 
             <form action={handleSubmit} className="space-y-4">
               <div>
@@ -252,29 +253,16 @@ export default function LoginPage() {
 
               <div className="pt-2 text-center">
                 <Link
-                  href="#"
+                  href="/auth/forgot-password"
                   className="text-xs font-medium text-[#2541f5] hover:underline"
                 >
-                  Forget password?
+                  Forgot password?
                 </Link>
               </div>
             </form>
           </div>
         </div>
-
-        {error && (
-          <p
-            role="alert"
-            className="mb-3 border border-red-300 bg-red-50 p-2 text-xs text-red-700"
-          >
-            {error}
-          </p>
-        )}
-
-        <Button type="submit" className={authButtonClass} disabled={loading}>
-          {loading ? "Signing in..." : "Sign In"}
-        </Button>
-      </form>
-    </AuthShell>
+      </section>
+    </main>
   );
 }
