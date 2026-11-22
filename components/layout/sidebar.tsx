@@ -65,7 +65,7 @@ export function Sidebar({ navigation }: Readonly<{ navigation: NavigationItem[] 
       <>
         {Icon && <Icon aria-hidden="true" className="size-[18px] shrink-0" strokeWidth={2} />}
         <span className="flex-1 truncate text-left">{item.label}</span>
-        {(hasChildren || isActive) && (
+        {hasChildren && (
           <ChevronRight
             aria-hidden="true"
             className={`size-4 shrink-0 opacity-80 transition-transform ${isOpen ? "rotate-90" : ""}`}
