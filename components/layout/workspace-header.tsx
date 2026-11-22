@@ -123,7 +123,7 @@ export function WorkspaceHeader({
     findTrail(navigation, findActiveHref(navigation, pathname)) ?? ["Dashboard"];
 
   return (
-    <header className="flex h-[58px] shrink-0 items-center justify-between border-b border-neutral-500 bg-[#ededed] px-3 print:hidden">
+    <header className="flex h-[58px] shrink-0 items-center justify-between border-b border-neutral-500 bg-[#D5D3FC] px-3 print:hidden">
       <nav aria-label="Breadcrumb">
         <ol className="flex flex-wrap items-center gap-2 text-sm">
           {breadcrumb.map((label, index) => (

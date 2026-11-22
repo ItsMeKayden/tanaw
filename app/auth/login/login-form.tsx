@@ -24,6 +24,8 @@ export function LoginForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [notice, setNotice] = useState<"registered" | "reset" | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   // One-time notices from ?registered=true / ?reset=true. Read after mount
   // (the server has no URL to match, so reading it while rendering breaks
@@ -40,18 +42,19 @@ export function LoginForm() {
     window.history.replaceState(null, "", `${window.location.pathname}${query ? `?${query}` : ""}`);
   }, []);
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit() {
     setError("");
     setLoading(true);
 
     try {
       const result = await signIn("credentials", {
-        email: formData.get("email"),
-        password: formData.get("password"),
+        email,
+        password,
         redirect: false,
       });
 
       if (result?.error) {
+        setPassword("");
         setError("Invalid email or password.");
         return;
       }
@@ -70,16 +73,16 @@ export function LoginForm() {
   }
 
   return (
-    <main className="grid min-h-screen lg:grid-cols-[57%_43%]">
+    <main className="grid min-h-screen lg:grid-cols-[60%_40%]">
       {/* Left side: Full background gate photo with royal blue gradient overlay */}
-      <section className="relative flex min-h-[500px] flex-col items-center justify-center overflow-hidden bg-[#101763] px-6 py-12 text-center text-white lg:min-h-screen lg:px-12">
+      <section className="relative flex min-h-[500px] flex-col items-center justify-center overflow-hidden bg-[#101763] px-6 py-12 text-center text-white lg:min-h-screen lg:px-12 lg:rounded-r-[22px] lg:shadow-[10px_0_30px_rgba(11,14,54,0.12)]">
         {/* Full background gate image covering entire left side */}
         <div className="pointer-events-none absolute inset-0 z-0 select-none">
           <Image
             src={qcuGate}
             alt="Quezon City University Gate"
             fill
-            sizes="(min-width: 1024px) 57vw, 100vw"
+            sizes="(min-width: 1024px) 60vw, 100vw"
             priority
             className="object-cover object-center opacity-80 mix-blend-luminosity"
           />
@@ -149,7 +152,7 @@ export function LoginForm() {
                 </svg>
 
                 {/* Symmetrically Centered QCU Seal within the Q's counter */}
-                <div className="absolute inset-0 m-auto flex size-[46px] sm:size-[52px] items-center justify-center overflow-hidden rounded-full bg-white p-0.5 shadow-sm">
+                <div className="absolute inset-0 m-auto right-0.5 flex size-[44px] sm:size-[52px] items-center justify-center overflow-hidden rounded-full bg-white p-0.5 shadow-sm">
                   <Image
                     src={qcuLogo}
                     alt="QCU Seal"
@@ -203,6 +206,8 @@ export function LoginForm() {
                   id="email"
                   name="email"
                   type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
                   autoComplete="email"
                   placeholder="name@qcu.edu.ph"
                   className="h-10 rounded-md border-gray-300 bg-white px-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#2541f5] focus:ring-2 focus:ring-[#2541f5]/20"
@@ -221,6 +226,8 @@ export function LoginForm() {
                   id="password"
                   name="password"
                   type="password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
                   autoComplete="current-password"
                   placeholder="******"
                   className="h-10 rounded-md border-gray-300 bg-white px-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#2541f5] focus:ring-2 focus:ring-[#2541f5]/20"
