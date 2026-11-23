@@ -81,9 +81,14 @@ const navigationItems: NavigationItem[] = [
   },
   {
     label: "Analytics",
-    href: "/reports",
     icon: "analytics",
     permission: "reports",
+    children: [
+      { label: "Overview", href: "/reports", permission: "reports" },
+      { label: "Passing Rate", href: "/reports/passing-rate", permission: "reports" },
+      { label: "Top Schools", href: "/reports/top-schools", permission: "reports" },
+      { label: "Item Analysis", href: "/reports/item-analysis", permission: "reports" },
+    ],
   },
   {
     label: "Course Recommendation",
@@ -135,6 +140,7 @@ const navigationItems: NavigationItem[] = [
     ],
   },
 ];
+
 async function filterNavigation(
   items: NavigationItem[],
   role: UserRole,

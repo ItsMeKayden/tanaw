@@ -34,8 +34,8 @@ export default function ForgotPasswordPage() {
           <p className="mb-3 text-xs text-neutral-600">
             Enter the email you sign in with and we&apos;ll send you a link to choose a new password.
           </p>
-          <div className="mb-[22px]">
-            <Label htmlFor="email" className="mb-0.5 block text-xs font-normal text-black">
+          <div className="mb-4">
+            <Label htmlFor="email" className="mb-1.5 block text-xs font-semibold text-gray-700">
               Email
             </Label>
             <Input

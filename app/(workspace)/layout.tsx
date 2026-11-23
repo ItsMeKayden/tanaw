@@ -9,6 +9,8 @@ import { requireUser } from "@/lib/authorization";
 import { getRoleLabels } from "@/features/user-management/role-labels";
 import { getNavigationItems } from "@/lib/navigation";
 
+export const instant = false;
+
 async function AuthenticatedWorkspace({ children }: { children: ReactNode }) {
   await connection();
 
@@ -25,7 +27,7 @@ async function AuthenticatedWorkspace({ children }: { children: ReactNode }) {
           userName={user.name || user.email || "Account"}
           roleLabel={roleLabels[user.role] ?? null}
         />
-        <main className="m-2 flex-1 border border-neutral-400 print:m-0 print:border-0">
+        <main className="m-2 flex-1 rounded-sm  border border-neutral-400 print:m-0 print:border-0">
           {children}
         </main>
       </div>
