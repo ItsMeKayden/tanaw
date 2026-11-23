@@ -1,12 +1,68 @@
 import { connection } from "next/server";
 
 import { AnalyticsCard, AnalyticsPage, FilterBar, SelectFilter } from "@/components/reports/analytics-ui";
+import { tableStyles } from "@/components/ui/table-styles";
 import { resolveCycle } from "@/features/admission/admission-stats";
 import { EXAM_RESULT_PASSED } from "@/features/admission/stages";
 import { requirePermission } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
 
 type PageProps=Readonly<{searchParams:Promise<{cycle?:string;type?:string}>}>;
+
+const RANK_BADGES = ["bg-[#191e73] text-white", "bg-[#3a41a8] text-white", "bg-[#6b71c9] text-white"];
+
+/** Ranked schools with a bar showing each count against the top one. */
+function RankTable({ rows, unit, empty }: Readonly<{ rows: { name: string; value: number }[]; unit: string; empty: string }>) {
+  const max = Math.max(1, ...rows.map((row) => row.value));
+  return (
+    <div className={tableStyles.wrap}>
+      <table className="w-full border-collapse text-sm">
+        <thead>
+          <tr className={tableStyles.headRow}>
+            <th className={`${tableStyles.th} w-14`}>Rank</th>
+            <th className={tableStyles.th}>School</th>
+            <th className={`${tableStyles.th} w-28 text-right`}>{unit}</th>
+          </tr>
+        </thead>
+        <tbody className={tableStyles.body}>
+          {rows.length === 0 ? (
+            <tr>
+              <td colSpan={3} className={tableStyles.empty}>
+                {empty}
+              </td>
+            </tr>
+          ) : (
+            rows.map((row, index) => (
+              <tr key={`${row.name}-${index}`} className={tableStyles.row}>
+                <td className={tableStyles.td}>
+                  <span
+                    className={`inline-flex size-7 items-center justify-center rounded-full text-xs font-bold ${
+                      RANK_BADGES[index] ?? "bg-neutral-100 text-neutral-700"
+                    }`}
+                  >
+                    {index + 1}
+                  </span>
+                </td>
+                <td className={tableStyles.td}>
+                  <span className="block font-medium text-neutral-900">{row.name}</span>
+                  <span className="mt-1.5 block h-1.5 overflow-hidden rounded-full bg-neutral-100" aria-hidden="true">
+                    <span
+                      className="block h-full rounded-full bg-[#191e73]/70"
+                      style={{ width: `${(row.value / max) * 100}%` }}
+                    />
+                  </span>
+                </td>
+                <td className={`${tableStyles.td} text-right text-base font-semibold tabular-nums`}>
+                  {row.value.toLocaleString("en-US")}
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
 export default async function TopSchoolsPage({searchParams}:PageProps){
  await connection(); await requirePermission("reports","read");
@@ -36,10 +92,10 @@ export default async function TopSchoolsPage({searchParams}:PageProps){
   </FilterBar>
   <div className="grid gap-5 lg:grid-cols-2">
    <AnalyticsCard title="Most applicants">
-    <div className="space-y-2">{(most.length?most:[{school_name:"No applicant data",applicants:0}]).map((row,index)=><div key={`${row.school_name}-${index}`} className="rounded-sm bg-[#dde1f6] px-3 py-3 text-sm">{row.school_name} - [{row.applicants} applicant{row.applicants===1?"":"s"}]</div>)}</div>
+    <RankTable unit="Applicants" empty="No applicant data yet." rows={most.map((row)=>({name:row.school_name,value:row.applicants}))}/>
    </AnalyticsCard>
    <AnalyticsCard title="Most successful examiners">
-    <div className="space-y-2">{(successful.length?successful:[{school_name:"No successful examiner data",passed:0}]).map((row,index)=><div key={`${row.school_name}-${index}`} className="rounded-sm bg-[#dde1f6] px-3 py-3 text-sm">{row.school_name} - [{row.passed} successful examiner{row.passed===1?"":"s"}]</div>)}</div>
+    <RankTable unit="Passed" empty="No successful examiner data yet." rows={successful.filter((row)=>row.passed>0).map((row)=>({name:row.school_name,value:row.passed}))}/>
    </AnalyticsCard>
   </div>
  </AnalyticsPage>

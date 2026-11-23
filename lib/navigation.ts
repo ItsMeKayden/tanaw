@@ -44,7 +44,6 @@ const navigationItems: NavigationItem[] = [
       { label: "Applicant", href: "/admission", permission: "admission" },
       { label: "Applicant", href: "/registrar/applicants", permission: "registrar" },
       { label: "Applicant", href: "/guidance/applicants", permission: "guidance" },
-      { label: "Tracker", href: "/admission/tracker", permission: "admission" },
       {
         label: "Exam",
         permission: ["admission", "registrar"],
@@ -71,6 +70,7 @@ const navigationItems: NavigationItem[] = [
         href: "/admission/enrollment-verification",
         permission: enrollmentVerificationModules,
       },
+      { label: "Additional Applicants", href: "/admission/additional-applicants", permission: "admission" },
       { label: "Quota", href: "/admission/quota", permission: "admission" },
       {
         label: "Archive History",

@@ -24,6 +24,7 @@ const EXAM_STAGES = [
   ADMISSION_STAGES.FOR_EXAMINATION,
   ADMISSION_STAGES.EXAM_COMPLETED,
   ADMISSION_STAGES.PASSED,
+  ADMISSION_STAGES.QUALIFIED,
   ADMISSION_STAGES.FAILED,
   ADMISSION_STAGES.ENROLLED,
   ADMISSION_STAGES.NOT_ENROLLED,
@@ -126,6 +127,7 @@ async function ScoresContent({ searchParams }: PageProps) {
   // Shown in the grid's filter row, next to search and the applicants filter.
   const yearFilter = (
     <FilterSelect
+      key="school-year"
       param="cycle"
       label="School year"
       value={String(cycle.cycle_id)}

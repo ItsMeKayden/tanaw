@@ -7,6 +7,7 @@ import { auth } from "@/auth";
 import { QcuWatermark } from "@/components/admission/qcu-watermark";
 import { DashboardFilters } from "@/components/dashboard/dashboard-filters";
 import { OverviewSkeleton } from "@/components/ui/skeletons";
+import { tableStyles } from "@/components/ui/table-styles";
 import { resolveCycle } from "@/features/admission/admission-stats";
 import { ADMISSION_STAGES, EXAM_RESULT_PASSED } from "@/features/admission/stages";
 import { requirePermission } from "@/lib/authorization";
@@ -994,29 +995,29 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 						</div>
 					</div>
 
-					<div className="overflow-hidden rounded-lg border border-neutral-300 bg-white/80">
-						<table className="w-full text-left text-sm text-neutral-700">
-							<thead className="bg-[#eef0ff] text-neutral-700">
-								<tr>
-									<th className="px-3 py-2 font-semibold">Applicant ID</th>
-									<th className="px-3 py-2 font-semibold">Name</th>
-									<th className="px-3 py-2 font-semibold">Course</th>
-									<th className="px-3 py-2 font-semibold">Action needed</th>
-									<th className="px-3 py-2 font-semibold">Status</th>
+					<div className={tableStyles.wrap}>
+						<table className="w-full border-collapse text-sm">
+							<thead>
+								<tr className={tableStyles.headRow}>
+									<th className={tableStyles.th}>Applicant ID</th>
+									<th className={tableStyles.th}>Name</th>
+									<th className={tableStyles.th}>Course</th>
+									<th className={tableStyles.th}>Action needed</th>
+									<th className={tableStyles.th}>Status</th>
 								</tr>
 							</thead>
-							<tbody>
+							<tbody className={tableStyles.body}>
 								{queue.length ? queue.map((applicant, index) => (
-									<tr key={`${applicant.applicantId}-${index}`} className="border-t border-neutral-200">
-										<td className="px-3 py-2">{applicant.applicantId}</td>
-										<td className="px-3 py-2">{applicant.name}</td>
-										<td className="px-3 py-2">{applicant.course}</td>
-										<td className="px-3 py-2">{applicant.action}</td>
-										<td className="px-3 py-2">{applicant.status}</td>
+									<tr key={`${applicant.applicantId}-${index}`} className={tableStyles.row}>
+										<td className={`${tableStyles.td} tabular-nums`}>{applicant.applicantId}</td>
+										<td className={`${tableStyles.td} font-medium`}>{applicant.name}</td>
+										<td className={tableStyles.td}>{applicant.course}</td>
+										<td className={tableStyles.td}>{applicant.action}</td>
+										<td className={tableStyles.td}>{applicant.status}</td>
 									</tr>
 								)) : (
 									<tr>
-										<td colSpan={5} className="px-3 py-4 text-center text-neutral-600">No data available</td>
+										<td colSpan={5} className={tableStyles.empty}>No data available</td>
 									</tr>
 								)}
 							</tbody>

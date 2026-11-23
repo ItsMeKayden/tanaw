@@ -61,7 +61,7 @@ function TopList({ title, items }: Readonly<{ title: string; items: { name: stri
   );
 }
 
-const card = "rounded-xl border border-neutral-500 bg-white/95 p-3";
+const card = "rounded-xl border border-neutral-300 bg-white/95 p-3 shadow-sm";
 
 export default function MapExplorer({
   overview,
@@ -110,7 +110,7 @@ export default function MapExplorer({
   }
 
   return (
-    <div className="grid items-start gap-3 xl:grid-cols-[minmax(0,1fr)_19rem]">
+    <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_20rem]">
       {/* Map with its own controls bar and a floating legend */}
       <figure className={`${card} space-y-2 p-2`}>
         <div className="flex flex-wrap items-center justify-between gap-2 px-1 pt-1">
@@ -206,7 +206,7 @@ export default function MapExplorer({
       </figure>
 
       {/* Side panel: selected area, top lists, actions */}
-      <aside className="grid content-start gap-3 sm:grid-cols-2 xl:grid-cols-1" aria-live="polite">
+      <aside className="grid content-start gap-3 sm:grid-cols-2 xl:flex xl:flex-col" aria-live="polite">
         <section className={card}>
           <div className="flex items-start justify-between gap-2">
             <p className="text-sm font-semibold text-[#191e73]">{title}</p>
@@ -252,12 +252,17 @@ export default function MapExplorer({
           </Link>
         </section>
 
-        {!selectedBarangay && (
-          <section className={`${card} space-y-3`}>
-            <TopList title="Top previous schools" items={selectedDistrict?.topSchools ?? overview.topSchools} />
-            <TopList title="Top preferred courses" items={selectedDistrict?.topCourses ?? overview.topCourses} />
-          </section>
-        )}
+        <section className={`${card} space-y-3 xl:flex-1`}>
+          <p className="text-xs text-neutral-500">
+            {selectedDistrict ? `In ${selectedDistrict.name}` : "All of Quezon City"}
+          </p>
+          <TopList title="Top previous schools" items={selectedDistrict?.topSchools ?? overview.topSchools} />
+          <TopList title="Top preferred courses" items={selectedDistrict?.topCourses ?? overview.topCourses} />
+          {(selectedDistrict?.topSchools ?? overview.topSchools).length === 0 &&
+            (selectedDistrict?.topCourses ?? overview.topCourses).length === 0 && (
+              <p className="text-xs text-neutral-600">No applicants for these filters.</p>
+            )}
+        </section>
       </aside>
     </div>
   );
