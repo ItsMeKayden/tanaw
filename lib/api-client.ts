@@ -6,7 +6,6 @@ type RecoveryHandler = (userId: string) => Promise<boolean>;
 
 type ApiRequestOptions = {
   userId: string;
-  backup?: () => void;
 };
 
 let recoveryHandler: RecoveryHandler | null = null;
@@ -35,15 +34,13 @@ async function postWithCsrf(url: string, init: RequestInit) {
 export async function apiPost(
   url: string,
   init: RequestInit,
-  { userId, backup }: ApiRequestOptions,
+  { userId }: ApiRequestOptions,
 ) {
   // Hold new API work while an expired session is being reauthenticated.
   if (recoveryPromise) await recoveryPromise;
 
   const response = await postWithCsrf(url, init);
   if (response.status !== 401) return response;
-
-  backup?.();
 
   if (!recoveryPromise) {
     const handler = recoveryHandler;

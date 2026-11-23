@@ -5,7 +5,6 @@ import { prisma } from "@/lib/prisma";
 import {
   SESSION_MAX_AGE_MS,
   SESSION_MAX_AGE_SECONDS,
-  SESSION_IDLE_TIMEOUT_MS,
 } from "@/lib/session-policy";
 import bcrypt from "bcryptjs";
 
@@ -111,12 +110,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (typeof token.sessionId !== "string") return null;
 
       const now = new Date();
-      const idleCutoff = new Date(now.getTime() - SESSION_IDLE_TIMEOUT_MS);
       const { count } = await prisma.tbl_auth_session.updateMany({
         where: {
           session_id: token.sessionId,
           expires_at: { gt: now },
-          last_activity_at: { gt: idleCutoff },
           user: { is: { is_active: true } },
         },
         data: { last_activity_at: now },
@@ -126,10 +123,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         await prisma.tbl_auth_session.deleteMany({
           where: {
             session_id: token.sessionId,
-            OR: [
-              { expires_at: { lte: now } },
-              { last_activity_at: { lte: idleCutoff } },
-            ],
+            expires_at: { lte: now },
           },
         });
         return null;

@@ -6,7 +6,6 @@ import { ChevronDown, KeyRound, LogOut } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 
-import { clearAdmissionDrafts } from "@/lib/admission-draft-storage";
 import { ChangePasswordModal } from "@/features/auth/components/change-password-modal";
 import type { NavigationItem } from "@/lib/navigation";
 import { findActiveHref, findTrail } from "@/lib/navigation-match";
@@ -56,7 +55,6 @@ function AccountMenu({ userName, roleLabel }: Readonly<{ userName: string; roleL
   const [changingPassword, setChangingPassword] = useState(false);
 
   async function logout() {
-    clearAdmissionDrafts();
     await signOut({ callbackUrl: "/auth/login" });
   }
 

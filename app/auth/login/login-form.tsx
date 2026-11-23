@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getRoleLandingPath, getSafeReturnUrl } from "@/lib/auth-navigation";
-import { setAdmissionDraftOwner } from "@/lib/admission-draft-storage";
 import qcuLogo from "@/public/qcu-logo.png";
 import qcuGate from "@/public/qcu-gate.jpg";
 
@@ -63,9 +62,6 @@ export function LoginForm() {
       const sessionResponse = await fetch("/api/auth/session", { cache: "no-store" });
       const session = await sessionResponse.json();
       const role = session?.user?.role;
-      if (typeof session?.user?.id === "string") {
-        setAdmissionDraftOwner(session.user.id);
-      }
       const returnUrl = getSafeReturnUrl(
         new URLSearchParams(window.location.search).get("returnUrl"),
       );

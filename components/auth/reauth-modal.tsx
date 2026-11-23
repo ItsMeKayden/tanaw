@@ -6,7 +6,6 @@ import { getSession, signIn, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { setAdmissionDraftOwner } from "@/lib/admission-draft-storage";
 
 export function ReauthModal({
   open,
@@ -43,7 +42,6 @@ export function ReauthModal({
         setError("Sign in succeeded, but the session could not be verified.");
         return;
       }
-      setAdmissionDraftOwner(session.user.id);
       setPassword("");
       onComplete(true);
     } catch {

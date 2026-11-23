@@ -10,7 +10,6 @@ import {
   saveApplicationDocuments,
   type ApplicantActionError,
 } from "@/features/admission/applicant-form.server";
-import { getDraftStepIds } from "@/features/admission/draft-data";
 import { ADMISSION_STAGES } from "@/features/admission/stages";
 
 function getManilaDate() {
@@ -98,10 +97,6 @@ export async function createApplicantForUser(
         documents,
         [],
       );
-      await tx.tbl_admission_draft.deleteMany({
-        where: { user_id: accountId, step_id: { in: getDraftStepIds("create") } },
-      });
-
       return created.applicant_id;
     });
 

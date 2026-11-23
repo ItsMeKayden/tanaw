@@ -1,4 +1,2 @@
-export const SESSION_MAX_AGE_SECONDS = 8 * 60 * 60;
+export const SESSION_MAX_AGE_SECONDS = 4 * 60 * 60;
 export const SESSION_MAX_AGE_MS = SESSION_MAX_AGE_SECONDS * 1000;
-export const SESSION_IDLE_TIMEOUT_MS = 45 * 60 * 1000;
-export const SESSION_WARNING_MS = 2 * 60 * 1000;

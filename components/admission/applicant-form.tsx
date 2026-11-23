@@ -29,7 +29,6 @@ import {
   validateDocumentFile,
   type DocumentSlotKey,
 } from "@/features/admission/documents";
-import { useDraftAutoSave } from "@/features/admission/use-draft-auto-save";
 import { apiPost } from "@/lib/api-client";
 import { clearAdmissionFormUrl, updateAdmissionFormUrl } from "@/lib/admission-form-url";
 
@@ -569,15 +568,6 @@ export default function ApplicantForm({
 
   const values: ApplicantFormValues = { ...initialValues, ...useWatch({ control: formControl }) };
   const [districtId, setDistrictId] = useState(initialDistrictId);
-  const draft = useDraftAutoSave({
-    userId,
-    mode,
-    applicantId: ids?.applicant_id,
-    values,
-    districtId,
-    setValue: (field, value) => setValue(field, value),
-    setDistrictId,
-  });
   const [districtError, setDistrictError] = useState<string | null>(null);
   const [files, setFiles] = useState<Partial<Record<DocumentSlotKey, File>>>(
     {},
@@ -677,7 +667,6 @@ export default function ApplicantForm({
       "aria-describedby": describedBy,
       onBlur: () => {
         void trigger(field);
-        draft.saveNow();
       },
       className: inputClass(Boolean(error), extraClass),
     };
@@ -748,7 +737,6 @@ export default function ApplicantForm({
   }
 
   function finish(applicantId: number) {
-    draft.clear();
     clearAdmissionFormUrl();
     if (onSuccess) onSuccess(applicantId);
     else router.push(`/admission/applicants/${applicantId}`);
@@ -804,7 +792,7 @@ export default function ApplicantForm({
         const response = await apiPost(
           "/api/admission/applicants",
           { body: payload },
-          { userId, backup: draft.saveNow },
+          { userId },
         );
         const result = (await response.json()) as
           | { success: true; applicantId?: number }

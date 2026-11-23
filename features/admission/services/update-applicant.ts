@@ -10,7 +10,6 @@ import {
   saveApplicationDocuments,
   type ApplicantActionError,
 } from "@/features/admission/applicant-form.server";
-import { getDraftStepIds } from "@/features/admission/draft-data";
 import { prisma } from "@/lib/prisma";
 
 function parseId(value: unknown): number | null {
@@ -59,12 +58,6 @@ export async function updateApplicantForUser(
         documents,
         removeDocuments,
       );
-      await tx.tbl_admission_draft.deleteMany({
-        where: {
-          user_id: accountId,
-          step_id: { in: getDraftStepIds("edit", applicantId) },
-        },
-      });
     });
 
     for (const path of APPLICANT_LIST_PATHS) revalidatePath(path);
