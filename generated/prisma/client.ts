@@ -196,3 +196,8 @@ export type tbl_exam_subject_score = Prisma.tbl_exam_subject_scoreModel
  * 
  */
 export type tbl_recommendation_setting = Prisma.tbl_recommendation_settingModel
+/**
+ * Model tbl_audit_log
+ * 
+ */
+export type tbl_audit_log = Prisma.tbl_audit_logModel

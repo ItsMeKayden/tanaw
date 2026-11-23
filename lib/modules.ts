@@ -13,6 +13,7 @@ export const MODULES = [
   { key: "users", code: "USERS", label: "User Management" },
   { key: "registrar", code: "REGISTRAR", label: "Registrar" },
   { key: "guidance", code: "GUIDANCE", label: "Guidance" },
+  { key: "audit", code: "AUDIT", label: "Audit Log" },
 ] as const;
 
 export type ModuleName = (typeof MODULES)[number]["key"];

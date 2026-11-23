@@ -238,5 +238,6 @@ Log in with the SYSTEM_ADMIN account or a test account.
 - Commit the migration folder, `prisma/schema.prisma`, the `generated/prisma` output, and seeder changes together so others can reproduce the update.
 - Never edit or delete a migration that has already been pushed; add a new one instead.
 - Do not run `prisma migrate reset` on a database containing data you want to preserve.
+- **Audit log:** database triggers record every insert, update, delete and truncate in `tbl_audit_log` (User Management → Audit Log). A migration that creates a new table must end with `SELECT tanaw_audit_attach('"tbl_new_table"');` (or `SELECT tanaw_audit_attach_all();`), or changes to that table will not be logged. Entries are tamper-proof: once committed they cannot be edited or deleted (a retention clean-up must first run `SELECT set_config('tanaw.audit_maintenance', 'on', true);` in its transaction).
 - Do not commit `.env` or share actual passwords and secrets.
 - Each developer maintains their own local PostgreSQL database; data (accounts, applicants) is not shared through Git. Use the seeders to get the same baseline.

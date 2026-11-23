@@ -418,3 +418,36 @@ model tbl_recommendation_setting {
   updated_at       DateTime          @default(now()) @db.Timestamp(6)
   tbl_user_account tbl_user_account? @relation(fields: [updated_by], references: [user_id], onDelete: SetNull, onUpdate: Cascade)
 }
+
+// Audit log (User Management > Audit Log). Rows are written by database
+// triggers on every table (see migration 20261123120000_audit_log) and by the
+// app for sign-in events. Tamper-proof: committed entries cannot be edited or
+// deleted. One entry per record per transaction (the net change).
+// actor_* columns are copied, not linked, so entries survive account deletion.
+// record_label / refs are names resolved when the change happened.
+// action: INSERT | UPDATE | DELETE | TRUNCATE | LOGIN | LOGIN_FAILED | LOGOUT
+model tbl_audit_log {
+  audit_id       BigInt   @id @default(autoincrement())
+  occurred_at    DateTime @default(now()) @db.Timestamptz(6)
+  action         String   @db.VarChar(30)
+  table_name     String?  @db.VarChar(100)
+  record_id      String?  @db.VarChar(200)
+  record_label   String?
+  refs           Json?
+  actor_id       Int?
+  actor_name     String?  @db.VarChar(150)
+  actor_email    String?  @db.VarChar(150)
+  actor_role     String?  @db.VarChar(100)
+  user_agent     String?
+  transaction_id BigInt?
+  old_data       Json?
+  new_data       Json?
+  changed_fields String[] @default([])
+  description    String?
+
+  @@index([occurred_at])
+  @@index([table_name, record_id])
+  @@index([actor_id])
+  @@index([action])
+  @@index([transaction_id])
+}
