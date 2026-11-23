@@ -242,7 +242,6 @@ export async function saveAttendance(
     });
 
     revalidate();
-    revalidatePath("/admission/tracker");
     return {
       success: true,
       message: `Attendance saved${moved ? ` (${moved} stage update${moved === 1 ? "" : "s"})` : ""}.`,

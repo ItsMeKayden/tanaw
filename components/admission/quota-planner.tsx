@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
 import { saveQuotaPlan } from "@/features/admission/actions/quota";
+import { tableStyles } from "@/components/ui/table-styles";
 import { toast } from "@/components/ui/toaster";
 
 export type QuotaCourse = {
@@ -30,7 +31,7 @@ const toInput = (n: number | null) => (n === null ? "" : String(n));
 const parse = (v: string) => (/^\d+$/.test(v.trim()) ? Number(v.trim()) : null);
 const pct = (part: number, whole: number) => (whole > 0 ? Math.round((part / whole) * 100) : 0);
 
-const cell = "border border-neutral-500 px-3 py-1.5 text-center";
+const cell = "border border-neutral-200 px-3 py-1.5 text-center";
 
 export function QuotaPlanner({
   cycleId,
@@ -217,10 +218,10 @@ export function QuotaPlanner({
       {/* Quota tracking */}
       <section className="rounded-md border border-neutral-500 bg-white/95 p-3">
         <h2 className="mb-3 font-semibold">Quota tracking by course</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
+        <div className={tableStyles.wrap}>
+          <table className={tableStyles.grid}>
             <thead>
-              <tr className="bg-[#c5c8f0]">
+              <tr className={tableStyles.gridHeadRow}>
                 <th className={`${cell} text-left font-medium`}>Course</th>
                 {["Quota", "Admitted", "Remaining", "Filled"].map((h) => (
                   <th key={h} className={`${cell} font-medium`}>
@@ -241,7 +242,7 @@ export function QuotaPlanner({
                 const quota = quotas[i];
                 const over = quota !== null && course.admitted > quota;
                 return (
-                  <tr key={course.program_id} className="hover:bg-[#e3e4f8]/60">
+                  <tr key={course.program_id} className="hover:bg-[#f4f5fd]">
                     <td className={`${cell} text-left`} title={course.program_name}>
                       {course.program_code}
                     </td>
@@ -278,7 +279,7 @@ export function QuotaPlanner({
             </tbody>
             {courses.length > 0 && (
               <tfoot>
-                <tr className="bg-[#7f86e0] font-medium text-white">
+                <tr className="bg-[#e3e4f8] font-semibold text-[#191e73]">
                   <td className={`${cell} text-left`}>Total</td>
                   <td className={`${cell} tabular-nums`}>{anyQuota ? totalQuota : "--"}</td>
                   <td className={`${cell} tabular-nums`}>{totalAdmitted}</td>

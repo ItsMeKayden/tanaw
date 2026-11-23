@@ -8,6 +8,7 @@ import { Search, Upload } from "lucide-react";
 import { saveExamScores, savePassingScore } from "@/features/admission/actions/exam-scores";
 import type { ExamSubject, PassingRule } from "@/features/admission/exam";
 import { formatPassingRule, isPassing } from "@/features/admission/exam-scoring";
+import { tableStyles } from "@/components/ui/table-styles";
 import { toast } from "@/components/ui/toaster";
 
 export type ScoreRow = {
@@ -28,7 +29,7 @@ type Draft = Record<number, Record<number, string>>;
 
 const fieldClass =
   "h-8 rounded-sm border border-neutral-500 bg-white px-2 text-sm outline-none focus:border-[#191e73] focus:ring-2 focus:ring-[#191e73]/20";
-const cell = "border border-neutral-500 px-2 py-1 text-center";
+const cell = "border border-neutral-200 px-2 py-1 text-center";
 
 const toText = (v: number | null | undefined) => (v === null || v === undefined ? "" : String(v));
 
@@ -360,10 +361,10 @@ export function ExamScoreGrid({
         </div>
       )}
 
-      <div className="max-h-[65vh] overflow-auto">
-        <table className="w-full border-collapse bg-white/95 text-sm">
+      <div className={`${tableStyles.wrap} max-h-[65vh] overflow-y-auto`}>
+        <table className={tableStyles.grid}>
           <thead className="sticky top-0 z-10">
-            <tr className="bg-[#c5c8f0]">
+            <tr className={tableStyles.gridHeadRow}>
               <th className={`${cell} font-medium`}>Applicant ID</th>
               <th className={`${cell} text-left font-medium`}>Name</th>
               {subjects.map((s) => (
@@ -391,7 +392,7 @@ export function ExamScoreGrid({
               const total = showSaved ? row.savedTotal : result.filled === 0 ? null : result.total;
               const passed = showSaved ? row.savedPassed : result.passed;
               return (
-                <tr key={row.application_id} className={dirty ? "bg-amber-50" : "hover:bg-[#e3e4f8]/50"}>
+                <tr key={row.application_id} className={dirty ? "bg-amber-50" : "hover:bg-[#f4f5fd]"}>
                   <td className={`${cell} whitespace-nowrap tabular-nums`}>{row.application_no}</td>
                   <td className={`${cell} text-left`}>
                     {row.name}

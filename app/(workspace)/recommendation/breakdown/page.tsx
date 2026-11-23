@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { connection } from "next/server";
 
+import { tableStyles } from "@/components/ui/table-styles";
 import { QcuWatermark } from "@/components/admission/qcu-watermark";
 import { ScoreVsRequirementChart } from "@/components/recommendation/charts";
 import { ParamSelect } from "@/components/recommendation/controls";
@@ -15,7 +16,7 @@ type PageProps = Readonly<{
   searchParams: Promise<{ application?: string; program?: string; cycle?: string }>;
 }>;
 
-const cell = "border border-neutral-500 px-3 py-2";
+const cell = tableStyles.td;
 
 async function BreakdownContent({ searchParams }: PageProps) {
   await connection();
@@ -104,20 +105,20 @@ async function BreakdownContent({ searchParams }: PageProps) {
 
             <section className="rounded-xl border border-neutral-500 bg-white/90 p-4">
               <h2 className="mb-3 font-semibold">Breakdown</h2>
-              <PendingArea className="overflow-x-auto">
+              <PendingArea className={tableStyles.wrap}>
                 <table className="w-full border-collapse text-sm">
                   <thead>
-                    <tr className="bg-neutral-100 text-left">
+                    <tr className={tableStyles.headRow}>
                       {["Competency", "Weight", "Score", "Req.", "Result"].map((h) => (
-                        <th key={h} className={`${cell} font-medium`}>
+                        <th key={h} className={tableStyles.th}>
                           {h}
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className={tableStyles.body}>
                     {rows.map((row) => (
-                      <tr key={row.name}>
+                      <tr key={row.name} className={tableStyles.row}>
                         <td className={cell}>{row.name}</td>
                         <td className={`${cell} tabular-nums`}>{row.weight}%</td>
                         <td className={`${cell} tabular-nums`}>{row.score === null ? "--" : `${row.score}%`}</td>
