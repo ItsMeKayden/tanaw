@@ -167,6 +167,11 @@ export type tbl_school = Prisma.tbl_schoolModel
  */
 export type tbl_user_account = Prisma.tbl_user_accountModel
 /**
+ * Model tbl_password_reset_token
+ * 
+ */
+export type tbl_password_reset_token = Prisma.tbl_password_reset_tokenModel
+/**
  * Model tbl_application_document
  * 
  */
@@ -191,3 +196,8 @@ export type tbl_exam_subject_score = Prisma.tbl_exam_subject_scoreModel
  * 
  */
 export type tbl_recommendation_setting = Prisma.tbl_recommendation_settingModel
+/**
+ * Model tbl_audit_log
+ * 
+ */
+export type tbl_audit_log = Prisma.tbl_audit_logModel

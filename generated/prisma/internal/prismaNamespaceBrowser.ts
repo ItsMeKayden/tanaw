@@ -76,11 +76,13 @@ export const ModelName = {
   tbl_role_permission: 'tbl_role_permission',
   tbl_school: 'tbl_school',
   tbl_user_account: 'tbl_user_account',
+  tbl_password_reset_token: 'tbl_password_reset_token',
   tbl_application_document: 'tbl_application_document',
   tbl_exam_session: 'tbl_exam_session',
   tbl_exam_session_applicant: 'tbl_exam_session_applicant',
   tbl_exam_subject_score: 'tbl_exam_subject_score',
-  tbl_recommendation_setting: 'tbl_recommendation_setting'
+  tbl_recommendation_setting: 'tbl_recommendation_setting',
+  tbl_audit_log: 'tbl_audit_log'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -391,6 +393,18 @@ export const Tbl_user_accountScalarFieldEnum = {
 export type Tbl_user_accountScalarFieldEnum = (typeof Tbl_user_accountScalarFieldEnum)[keyof typeof Tbl_user_accountScalarFieldEnum]
 
 
+export const Tbl_password_reset_tokenScalarFieldEnum = {
+  token_id: 'token_id',
+  user_id: 'user_id',
+  token_hash: 'token_hash',
+  expires_at: 'expires_at',
+  used_at: 'used_at',
+  created_at: 'created_at'
+} as const
+
+export type Tbl_password_reset_tokenScalarFieldEnum = (typeof Tbl_password_reset_tokenScalarFieldEnum)[keyof typeof Tbl_password_reset_tokenScalarFieldEnum]
+
+
 export const Tbl_application_documentScalarFieldEnum = {
   document_id: 'document_id',
   application_id: 'application_id',
@@ -452,12 +466,43 @@ export const Tbl_recommendation_settingScalarFieldEnum = {
 export type Tbl_recommendation_settingScalarFieldEnum = (typeof Tbl_recommendation_settingScalarFieldEnum)[keyof typeof Tbl_recommendation_settingScalarFieldEnum]
 
 
+export const Tbl_audit_logScalarFieldEnum = {
+  audit_id: 'audit_id',
+  occurred_at: 'occurred_at',
+  action: 'action',
+  table_name: 'table_name',
+  record_id: 'record_id',
+  record_label: 'record_label',
+  refs: 'refs',
+  actor_id: 'actor_id',
+  actor_name: 'actor_name',
+  actor_email: 'actor_email',
+  actor_role: 'actor_role',
+  user_agent: 'user_agent',
+  transaction_id: 'transaction_id',
+  old_data: 'old_data',
+  new_data: 'new_data',
+  changed_fields: 'changed_fields',
+  description: 'description'
+} as const
+
+export type Tbl_audit_logScalarFieldEnum = (typeof Tbl_audit_logScalarFieldEnum)[keyof typeof Tbl_audit_logScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {
@@ -474,4 +519,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

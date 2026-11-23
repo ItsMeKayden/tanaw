@@ -7,6 +7,7 @@ import { ExportMenu } from "@/components/reports/export-menu";
 
 import type { EnrollmentStatus } from "@/features/admission/enrollment-queries";
 import { Pagination } from "@/components/ui/pagination";
+import { tableStyles } from "@/components/ui/table-styles";
 
 export type EnrollmentRow = {
   application_id: number;
@@ -44,20 +45,20 @@ function examScore(row: EnrollmentRow) {
 function EnrollmentBadge({ row }: Readonly<{ row: EnrollmentRow }>) {
   if (row.status === "ENROLLED") {
     return (
-      <span className="rounded-full bg-green-500 px-2.5 py-0.5 text-xs font-medium text-white">
+      <span className="rounded-full bg-emerald-600 px-2.5 py-0.5 text-xs font-medium text-white ring-1 ring-inset ring-emerald-600">
         Enrolled
       </span>
     );
   }
   if (row.status === "NOT_ENROLLED") {
     return (
-      <span className="rounded-full bg-neutral-500 px-2.5 py-0.5 text-xs font-medium text-white">
+      <span className="rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-medium text-neutral-600 ring-1 ring-inset ring-neutral-300">
         Not enrolled
       </span>
     );
   }
   return (
-    <span className="rounded-full bg-amber-400 px-2.5 py-0.5 text-xs font-medium text-neutral-900">
+    <span className="rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-900 ring-1 ring-inset ring-amber-300">
       Pending
     </span>
   );
@@ -87,7 +88,7 @@ export default function EnrollmentVerificationTable({
   const start = (currentPage - 1) * PAGE_SIZE;
   const pageRows = filtered.slice(start, start + PAGE_SIZE);
 
-  const cell = "border border-neutral-500 px-3 py-2";
+  const cell = tableStyles.td;
 
   return (
     <div className="space-y-4">
@@ -132,22 +133,22 @@ export default function EnrollmentVerificationTable({
         />
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse bg-white/90 text-sm">
+      <div className={tableStyles.wrap}>
+        <table className="w-full border-collapse text-sm">
           <thead>
-            <tr className="bg-neutral-100 text-left">
-              <th className={`${cell} font-medium`}>Applicant ID</th>
-              <th className={`${cell} font-medium`}>Name</th>
-              <th className={`${cell} font-medium`}>Course</th>
-              <th className={`${cell} font-medium`}>Exam score</th>
-              <th className={`${cell} font-medium`}>Enrollment</th>
-              <th className={`${cell} font-medium`}>Verified by</th>
+            <tr className={tableStyles.headRow}>
+              <th className={tableStyles.th}>Applicant ID</th>
+              <th className={tableStyles.th}>Name</th>
+              <th className={tableStyles.th}>Course</th>
+              <th className={tableStyles.th}>Exam score</th>
+              <th className={tableStyles.th}>Enrollment</th>
+              <th className={tableStyles.th}>Verified by</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className={tableStyles.body}>
             {pageRows.length > 0 ? (
               pageRows.map((row) => (
-                <tr key={row.application_id} className="hover:bg-[#e3e4f8]/60">
+                <tr key={row.application_id} className={tableStyles.row}>
                   <td className={cell}>
                     {row.applicant_id === null
                       ? "--"
@@ -184,7 +185,7 @@ export default function EnrollmentVerificationTable({
               ))
             ) : (
               <tr>
-                <td colSpan={6} className={`${cell} py-10 text-center text-neutral-600`}>
+                <td colSpan={6} className={tableStyles.empty}>
                   {filter !== "ALL" || search
                     ? "No applicants match this filter."
                     : "No passed applicants yet."}

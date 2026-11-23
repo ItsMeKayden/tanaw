@@ -4,33 +4,12 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  ChartColumn,
-  ChevronRight,
-  ClipboardList,
-  GraduationCap,
-  HeartHandshake,
-  LayoutGrid,
-  MapPinned,
-  School,
-  UserRound,
-  type LucideIcon,
-} from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 import qcuLogo from "@/app/public/qcu-logo.png";
-import type { NavigationIcon, NavigationItem } from "@/lib/navigation";
+import { navigationIcons } from "@/components/layout/navigation-icons";
+import type { NavigationItem } from "@/lib/navigation";
 import { containsHref, findActiveHref } from "@/lib/navigation-match";
-
-const icons: Record<NavigationIcon, LucideIcon> = {
-  dashboard: LayoutGrid,
-  map: MapPinned,
-  admission: School,
-  analytics: ChartColumn,
-  recommendation: GraduationCap,
-  users: UserRound,
-  registrar: ClipboardList,
-  guidance: HeartHandshake,
-};
 
 export function Sidebar({ navigation }: Readonly<{ navigation: NavigationItem[] }>) {
   const pathname = usePathname();
@@ -60,7 +39,7 @@ export function Sidebar({ navigation }: Readonly<{ navigation: NavigationItem[] 
   }
 
   function renderTopLevel(item: NavigationItem) {
-    const Icon = item.icon ? icons[item.icon] : null;
+    const Icon = item.icon ? navigationIcons[item.icon] : null;
     const isActive = containsHref(item, activeHref);
     const isOpen = expanded.includes(item.label);
     const hasChildren = Boolean(item.children?.length);
@@ -69,7 +48,7 @@ export function Sidebar({ navigation }: Readonly<{ navigation: NavigationItem[] 
       <>
         {Icon && <Icon aria-hidden="true" className="size-[18px] shrink-0" strokeWidth={2} />}
         <span className="flex-1 truncate text-left">{item.label}</span>
-        {(hasChildren || isActive) && (
+        {hasChildren && (
           <ChevronRight
             aria-hidden="true"
             className={`size-4 shrink-0 opacity-80 transition-transform ${isOpen ? "rotate-90" : ""}`}

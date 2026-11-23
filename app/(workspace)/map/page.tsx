@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
 
+import { tableStyles } from "@/components/ui/table-styles";
 import { QcuWatermark } from "@/components/admission/qcu-watermark";
 import MapExplorer from "@/components/map/map-explorer";
 import { ParamSelect } from "@/components/recommendation/controls";
@@ -18,8 +19,8 @@ type PageProps = Readonly<{
   searchParams: Promise<{ cycle?: string; program?: string; status?: string }>;
 }>;
 
-const cell = "border border-neutral-500 px-3 py-1.5";
-const headCell = `${cell} bg-[#c5c8f0] font-medium`;
+const cell = tableStyles.td;
+const headCell = tableStyles.th;
 
 async function MapContent({ searchParams }: PageProps) {
   await connection();
@@ -55,6 +56,7 @@ async function MapContent({ searchParams }: PageProps) {
         <ParamSelect
           param="cycle"
           label="School year"
+          compact
           value={String(filters.cycle.cycle_id)}
           options={filters.cycles.map((c) => ({
             value: String(c.cycle_id),
@@ -64,13 +66,14 @@ async function MapContent({ searchParams }: PageProps) {
         <ParamSelect
           param="program"
           label="Course"
+          compact
           value={filters.program ? String(filters.program.program_id) : ""}
           options={[
             { value: "", label: "All" },
             ...filters.programs.map((p) => ({ value: String(p.program_id), label: p.program_code })),
           ]}
         />
-        <ParamSelect param="status" label="Status" value={filters.status} options={STATUS_OPTIONS} />
+        <ParamSelect param="status" label="Status" value={filters.status} options={STATUS_OPTIONS} compact />
         </div>
       </div>
 
@@ -87,14 +90,15 @@ async function MapContent({ searchParams }: PageProps) {
         </p>
       )}
 
-      <div className="grid items-start gap-3 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+      <div className="grid gap-3 lg:grid-cols-2">
       {/* District counts — also the accessible table view of the map */}
-      <section className="rounded-xl border border-neutral-500 bg-white/90 p-3">
-        <h2 className="mb-2 font-semibold">District counts</h2>
-        <div className="overflow-x-auto">
+      <section className="flex flex-col rounded-xl border border-neutral-300 bg-white/95 p-3 shadow-sm">
+        <h2 className="font-semibold">District counts</h2>
+        <p className="mb-2 text-xs text-neutral-600">Applicants per Quezon City district for these filters.</p>
+        <div className={tableStyles.wrap}>
           <table className="w-full border-collapse text-sm">
             <thead>
-              <tr className="text-left">
+              <tr className={tableStyles.headRow}>
                 {["District", "Barangays", "Applicants", "Passed", "Share"].map((h) => (
                   <th key={h} className={headCell}>
                     {h}
@@ -102,9 +106,9 @@ async function MapContent({ searchParams }: PageProps) {
                 ))}
               </tr>
             </thead>
-            <tbody>
+            <tbody className={tableStyles.body}>
               {overview.districts.map((d) => (
-                <tr key={d.id}>
+                <tr key={d.id} className={tableStyles.row}>
                   <td className={cell}>{d.name}</td>
                   <td className={`${cell} tabular-nums`}>{d.barangays.length}</td>
                   <td className={`${cell} tabular-nums`}>{d.applicants}</td>
@@ -119,15 +123,15 @@ async function MapContent({ searchParams }: PageProps) {
         </div>
       </section>
 
-      <section className="rounded-xl border border-neutral-500 bg-white/90 p-3">
+      <section className="flex flex-col rounded-xl border border-neutral-300 bg-white/95 p-3 shadow-sm">
         <h2 className="font-semibold">Outside Quezon City</h2>
         <p className="mb-2 text-xs text-neutral-600">
           Applicants whose previous school is outside Quezon City, by the school&apos;s city or municipality.
         </p>
-        <div className="overflow-x-auto">
+        <div className={`${tableStyles.wrap} max-h-96 overflow-y-auto`}>
           <table className="w-full border-collapse text-sm">
             <thead>
-              <tr className="text-left">
+              <tr className={tableStyles.headRow}>
                 {["City / Municipality", "Applicants", "Passed"].map((h) => (
                   <th key={h} className={headCell}>
                     {h}
@@ -135,10 +139,10 @@ async function MapContent({ searchParams }: PageProps) {
                 ))}
               </tr>
             </thead>
-            <tbody>
+            <tbody className={tableStyles.body}>
               {overview.outside.length > 0 ? (
                 overview.outside.map((row) => (
-                  <tr key={row.city}>
+                  <tr key={row.city} className={tableStyles.row}>
                     <td className={cell}>{row.city}</td>
                     <td className={`${cell} tabular-nums`}>{row.applicants}</td>
                     <td className={`${cell} tabular-nums`}>{row.admitted}</td>
@@ -146,7 +150,7 @@ async function MapContent({ searchParams }: PageProps) {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={3} className={`${cell} py-6 text-center text-neutral-600`}>
+                  <td colSpan={3} className={tableStyles.empty}>
                     No applicants from schools outside Quezon City for these filters.
                   </td>
                 </tr>

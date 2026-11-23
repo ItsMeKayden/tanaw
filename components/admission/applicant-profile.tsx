@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { tableStyles } from "@/components/ui/table-styles";
 import { EditApplicantButton } from "@/components/admission/applicant-form-modal";
 import { PrintButton, ProfileTabs } from "@/components/admission/profile-tabs";
 import UpdateApplicationStageForm from "@/components/admission/update-application-stage-form";
@@ -348,26 +349,26 @@ export default function ApplicantProfile({
           </EditApplicantButton>
         )}
       </div>
-      <div className="overflow-x-auto">
+      <div className={tableStyles.wrap}>
         <table className="w-full border-collapse text-sm">
           <thead>
-            <tr className="bg-neutral-100 text-left">
+            <tr className={tableStyles.headRow}>
               {["Document", "File", "Uploaded"].map((heading) => (
-                <th key={heading} className="border border-neutral-400 px-3 py-2 font-medium">
+                <th key={heading} className={tableStyles.th}>
                   {heading}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody>
+          <tbody className={tableStyles.body}>
             {DOCUMENT_SLOTS.map((slot) => {
               const document = application.tbl_application_document.find(
                 (doc) => doc.document_type === slot.documentType,
               );
               return (
-                <tr key={slot.key}>
-                  <td className="border border-neutral-400 px-3 py-2">{slot.label}</td>
-                  <td className="border border-neutral-400 px-3 py-2">
+                <tr key={slot.key} className={tableStyles.row}>
+                  <td className={tableStyles.td}>{slot.label}</td>
+                  <td className={tableStyles.td}>
                     {document ? (
                       <a
                         href={`/api/documents/${document.document_id}`}
@@ -384,7 +385,7 @@ export default function ApplicantProfile({
                       <span className="text-amber-700">Missing</span>
                     )}
                   </td>
-                  <td className="border border-neutral-400 px-3 py-2">
+                  <td className={tableStyles.td}>
                     {document
                       ? `${formatDateTime(document.uploaded_at)}${document.tbl_user_account ? ` · ${document.tbl_user_account.full_name}` : ""}`
                       : "--"}
@@ -403,34 +404,34 @@ export default function ApplicantProfile({
     <section className={cardClass}>
       <h2 className="mb-3 text-lg font-semibold">Exam results</h2>
       {application.tbl_exam_result.length > 0 ? (
-        <div className="overflow-x-auto">
+        <div className={tableStyles.wrap}>
           <table className="w-full border-collapse text-sm">
             <thead>
-              <tr className="bg-neutral-100 text-left">
+              <tr className={tableStyles.headRow}>
                 {["Exam", "Date", "Score", "Percentage", "Result"].map((h) => (
-                  <th key={h} className="border border-neutral-400 px-3 py-2 font-medium">
+                  <th key={h} className={tableStyles.th}>
                     {h}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody>
+            <tbody className={tableStyles.body}>
               {application.tbl_exam_result.map((result) => (
-                <tr key={result.result_id}>
-                  <td className="border border-neutral-400 px-3 py-2">
+                <tr key={result.result_id} className={tableStyles.row}>
+                  <td className={tableStyles.td}>
                     {result.tbl_exam?.exam_name ?? "--"}
                   </td>
-                  <td className="border border-neutral-400 px-3 py-2">
+                  <td className={tableStyles.td}>
                     {formatDate(result.tbl_exam?.exam_date)}
                   </td>
-                  <td className="border border-neutral-400 px-3 py-2">
+                  <td className={tableStyles.td}>
                     {result.raw_score ?? "--"}
                     {result.tbl_exam?.max_score ? `/${result.tbl_exam.max_score}` : ""}
                   </td>
-                  <td className="border border-neutral-400 px-3 py-2">
+                  <td className={tableStyles.td}>
                     {result.percentage === null ? "--" : `${Number(result.percentage)}%`}
                   </td>
-                  <td className="border border-neutral-400 px-3 py-2">
+                  <td className={tableStyles.td}>
                     <span
                       className={
                         result.result_status === EXAM_RESULT_PASSED

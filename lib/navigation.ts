@@ -8,21 +8,25 @@ export type NavigationIcon =
   | "admission"
   | "analytics"
   | "recommendation"
-  | "users"
-  | "registrar"
-  | "guidance";
+  | "users";
 
 export type NavigationItem = {
   label: string;
   href?: string;
   icon?: NavigationIcon;
-  /** Read access to any one of these modules shows the item. */
+  /**
+   * Read access to any one of these modules shows the item. When siblings
+   * share a label, only the first one the role can read is shown, so each
+   * office gets its own view of a page under the same menu entry.
+   */
   permission: ModuleName | ModuleName[];
   children?: NavigationItem[];
 };
 
 // Enrollment verification is shared by the Admission and Registrar offices.
 const enrollmentVerificationModules: ModuleName[] = ["admission", "registrar"];
+// Offices that see (part of) the Admission menu.
+const admissionMenuModules: ModuleName[] = ["admission", "registrar", "guidance"];
 
 const navigationItems: NavigationItem[] = [
   {
@@ -35,18 +39,24 @@ const navigationItems: NavigationItem[] = [
   {
     label: "Admission",
     icon: "admission",
-    permission: enrollmentVerificationModules,
+    permission: admissionMenuModules,
     children: [
       { label: "Applicant", href: "/admission", permission: "admission" },
-      { label: "Tracker", href: "/admission/tracker", permission: "admission" },
+      { label: "Applicant", href: "/registrar/applicants", permission: "registrar" },
+      { label: "Applicant", href: "/guidance/applicants", permission: "guidance" },
       {
         label: "Exam",
-        permission: "admission",
+        permission: ["admission", "registrar"],
         children: [
           {
             label: "Exam Schedule",
             href: "/admission/exam/schedule",
             permission: "admission",
+          },
+          {
+            label: "Exam Schedule",
+            href: "/registrar/exam-schedule",
+            permission: "registrar",
           },
           {
             label: "Exam Scores",
@@ -60,6 +70,7 @@ const navigationItems: NavigationItem[] = [
         href: "/admission/enrollment-verification",
         permission: enrollmentVerificationModules,
       },
+      { label: "Additional Applicants", href: "/admission/additional-applicants", permission: "admission" },
       { label: "Quota", href: "/admission/quota", permission: "admission" },
       {
         label: "Archive History",
@@ -70,9 +81,14 @@ const navigationItems: NavigationItem[] = [
   },
   {
     label: "Analytics",
-    href: "/reports",
     icon: "analytics",
     permission: "reports",
+    children: [
+      { label: "Overview", href: "/reports", permission: "reports" },
+      { label: "Passing Rate", href: "/reports/passing-rate", permission: "reports" },
+      { label: "Top Schools", href: "/reports/top-schools", permission: "reports" },
+      { label: "Item Analysis", href: "/reports/item-analysis", permission: "reports" },
+    ],
   },
   {
     label: "Course Recommendation",
@@ -102,38 +118,9 @@ const navigationItems: NavigationItem[] = [
     ],
   },
   {
-    label: "Registrar",
-    icon: "registrar",
-    permission: "registrar",
-    children: [
-      {
-        label: "Applicants",
-        href: "/registrar/applicants",
-        permission: "registrar",
-      },
-      {
-        label: "Exam Schedule",
-        href: "/registrar/exam-schedule",
-        permission: "registrar",
-      },
-    ],
-  },
-  {
-    label: "Guidance",
-    icon: "guidance",
-    permission: "guidance",
-    children: [
-      {
-        label: "Applicants",
-        href: "/guidance/applicants",
-        permission: "guidance",
-      },
-    ],
-  },
-  {
     label: "User Management",
     icon: "users",
-    permission: "users",
+    permission: ["users", "audit"],
     children: [
       {
         label: "User Accounts",
@@ -145,9 +132,15 @@ const navigationItems: NavigationItem[] = [
         href: "/user-management/roles",
         permission: "users",
       },
+      {
+        label: "Audit Log",
+        href: "/user-management/audit-log",
+        permission: "audit",
+      },
     ],
   },
 ];
+
 async function filterNavigation(
   items: NavigationItem[],
   role: UserRole,
@@ -174,10 +167,16 @@ async function filterNavigation(
     }),
   );
 
-  return filteredItems.filter(
-    (item): item is NavigationItem =>
-      item !== null && (!item.children || item.children.length > 0),
-  );
+  const seenLabels = new Set<string>();
+  return filteredItems.filter((item): item is NavigationItem => {
+    if (item === null || (item.children && item.children.length === 0)) {
+      return false;
+    }
+    // Same-label siblings are per-office variants: keep the first allowed one.
+    if (seenLabels.has(item.label)) return false;
+    seenLabels.add(item.label);
+    return true;
+  });
 }
 
 export async function getNavigationItems(
