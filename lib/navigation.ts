@@ -115,7 +115,7 @@ const navigationItems: NavigationItem[] = [
   {
     label: "User Management",
     icon: "users",
-    permission: "users",
+    permission: ["users", "audit"],
     children: [
       {
         label: "User Accounts",
@@ -126,6 +126,11 @@ const navigationItems: NavigationItem[] = [
         label: "Roles & Permissions",
         href: "/user-management/roles",
         permission: "users",
+      },
+      {
+        label: "Audit Log",
+        href: "/user-management/audit-log",
+        permission: "audit",
       },
     ],
   },
