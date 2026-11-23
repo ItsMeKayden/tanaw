@@ -8,9 +8,10 @@ import { Modal } from "@/components/ui/modal";
 import { loadApplicantForm, type ApplicantFormReference } from "@/features/admission/actions/load-applicant";
 import { emptyApplicantForm } from "@/features/admission/applicant-form";
 import type { ApplicantEditData } from "@/features/admission/applicant-edit-data";
+import { clearAdmissionFormUrl } from "@/lib/admission-form-url";
 
 export type ApplicantFormRequest =
-  | { mode: "create" }
+  | { mode: "create"; initialStep?: number }
   | { mode: "edit"; applicantId: number; subtitle?: string; initialStep?: number };
 
 type Loaded = { edit: ApplicantEditData | null; reference: ApplicantFormReference };
@@ -20,12 +21,14 @@ type Loaded = { edit: ApplicantEditData | null; reference: ApplicantFormReferenc
  * when not given, the dropdown data. Closing with unsaved input asks first.
  */
 export function ApplicantFormModal({
+  userId,
   request,
   reference,
   onClose,
   onSaved,
 }: Readonly<{
   /** null = closed. */
+  userId: string;
   request: ApplicantFormRequest | null;
   /** Dropdown data the page already has; loaded on open when omitted. */
   reference?: ApplicantFormReference | null;
@@ -75,12 +78,14 @@ export function ApplicantFormModal({
   function close(force = false) {
     if (!force && dirty.current && !window.confirm("Discard your changes and close this form?")) return;
     dirty.current = false;
+    clearAdmissionFormUrl();
     setResult(null); // reopening reloads fresh data
     onClose();
   }
 
   function saved(applicantId: number, mode: "create" | "edit") {
     dirty.current = false;
+    clearAdmissionFormUrl();
     setResult(null);
     onSaved(applicantId, mode);
   }
@@ -111,6 +116,7 @@ export function ApplicantFormModal({
         </p>
       ) : request.mode === "edit" && loaded.edit ? (
         <ApplicantForm
+          userId={userId}
           key={requestKey}
           variant="modal"
           mode="edit"
@@ -126,9 +132,11 @@ export function ApplicantFormModal({
         />
       ) : (
         <ApplicantForm
+          userId={userId}
           key={requestKey}
           variant="modal"
           mode="create"
+          initialStep={request.initialStep}
           initialValues={emptyApplicantForm}
           activeCycle={loaded.reference.activeCycle}
           onCancel={() => close(true)}
@@ -146,12 +154,14 @@ export function ApplicantFormModal({
  * the page itself after saving.
  */
 export function EditApplicantButton({
+  userId,
   applicantId,
   subtitle,
   initialStep,
   className,
   children,
 }: Readonly<{
+  userId: string;
   applicantId: number;
   subtitle?: string;
   initialStep?: number;
@@ -166,6 +176,7 @@ export function EditApplicantButton({
         {children}
       </button>
       <ApplicantFormModal
+        userId={userId}
         request={open ? { mode: "edit", applicantId, subtitle, initialStep } : null}
         onClose={() => setOpen(false)}
         onSaved={() => setOpen(false)}

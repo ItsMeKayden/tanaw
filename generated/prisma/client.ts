@@ -167,6 +167,16 @@ export type tbl_school = Prisma.tbl_schoolModel
  */
 export type tbl_user_account = Prisma.tbl_user_accountModel
 /**
+ * Model tbl_admission_draft
+ * 
+ */
+export type tbl_admission_draft = Prisma.tbl_admission_draftModel
+/**
+ * Model tbl_auth_session
+ * 
+ */
+export type tbl_auth_session = Prisma.tbl_auth_sessionModel
+/**
  * Model tbl_password_reset_token
  * 
  */

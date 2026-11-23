@@ -6,6 +6,7 @@ import { ChevronDown, KeyRound, LogOut } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 
+import { clearAdmissionDrafts } from "@/lib/admission-draft-storage";
 import { ChangePasswordModal } from "@/features/auth/components/change-password-modal";
 import type { NavigationItem } from "@/lib/navigation";
 import { findActiveHref, findTrail } from "@/lib/navigation-match";
@@ -54,6 +55,11 @@ function AccountAvatar() {
 function AccountMenu({ userName, roleLabel }: Readonly<{ userName: string; roleLabel: string | null }>) {
   const [changingPassword, setChangingPassword] = useState(false);
 
+  async function logout() {
+    clearAdmissionDrafts();
+    await signOut({ callbackUrl: "/auth/login" });
+  }
+
   return (
     <div className="flex items-center gap-2.5">
       <div className="hidden min-w-0 text-right leading-tight sm:block">
@@ -91,7 +97,7 @@ function AccountMenu({ userName, roleLabel }: Readonly<{ userName: string; roleL
                 Change password
               </Menu.Item>
               <Menu.Item
-                onClick={() => signOut({ callbackUrl: "/auth/login" })}
+                onClick={logout}
                 className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-red-700 outline-none select-none data-[highlighted]:bg-red-50"
               >
                 <LogOut className="size-4" aria-hidden="true" />

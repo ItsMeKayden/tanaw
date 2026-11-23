@@ -11,6 +11,8 @@ import { archiveApplicant } from "@/features/admission/actions/archive-applicant
 import type { ApplicantFormReference } from "@/features/admission/actions/load-applicant";
 import { ADMISSION_STAGE_ORDER, stageBadgeClass } from "@/features/admission/stages";
 import { toast } from "@/components/ui/toaster";
+import { useSearchParams } from "next/navigation";
+import { parseAdmissionStep } from "@/lib/admission-form-url";
 
 export type ApplicantRow = {
   applicant_id: number;
@@ -37,6 +39,7 @@ const actionButton = "rounded-md border border-neutral-500 bg-white px-2 py-0.5 
 const applicantId = (row: ApplicantRow) => row.application_no ?? String(row.applicant_id).padStart(6, "0");
 
 export default function ApplicantTable({
+  userId,
   applicants,
   canEdit,
   canArchive,
@@ -44,6 +47,7 @@ export default function ApplicantTable({
   formData,
 }: Readonly<{
   applicants: ApplicantRow[];
+  userId: string;
   /** Add and edit applicants. */
   canEdit: boolean;
   /** Archive applicants (Admission only). */
@@ -54,10 +58,19 @@ export default function ApplicantTable({
   formData: ApplicantFormReference | null;
 }>) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [stageFilter, setStageFilter] = useState("ALL");
-  const [formRequest, setFormRequest] = useState<ApplicantFormRequest | null>(null);
+  const [formRequest, setFormRequest] = useState<ApplicantFormRequest | null>(() => {
+    const form = searchParams.get("admissionForm");
+    const initialStep = parseAdmissionStep(searchParams.get("step"));
+    if (form === "create") return { mode: "create", initialStep };
+    const edit = /^edit-([1-9]\d*)$/.exec(form ?? "");
+    return edit
+      ? { mode: "edit", applicantId: Number(edit[1]), initialStep }
+      : null;
+  });
   const [archiving, setArchiving] = useState<ArchiveState>(null);
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [isPending, startTransition] = useTransition();
@@ -278,6 +291,7 @@ export default function ApplicantTable({
       {/* Add / edit applicant */}
       {formData && (
         <ApplicantFormModal
+          userId={userId}
           request={formRequest}
           reference={formData}
           onClose={() => setFormRequest(null)}

@@ -47,6 +47,7 @@ export async function changePassword(input: ChangePasswordValues): Promise<Passw
       }),
       // Any reset link still in someone's inbox stops working.
       prisma.tbl_password_reset_token.deleteMany({ where: { user_id: userId } }),
+      prisma.tbl_auth_session.deleteMany({ where: { user_id: userId } }),
     ]);
 
     return { success: true, message: "Your password was changed." };

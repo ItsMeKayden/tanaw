@@ -20,6 +20,7 @@ export type NavigationItem = {
    * office gets its own view of a page under the same menu entry.
    */
   permission: ModuleName | ModuleName[];
+  requiredRole?: UserRole;
   children?: NavigationItem[];
 };
 
@@ -121,16 +122,19 @@ const navigationItems: NavigationItem[] = [
     label: "User Management",
     icon: "users",
     permission: "users",
+    requiredRole: "SYSTEM_ADMIN",
     children: [
       {
         label: "User Accounts",
         href: "/user-management/accounts",
         permission: "users",
+        requiredRole: "SYSTEM_ADMIN",
       },
       {
         label: "Roles & Permissions",
         href: "/user-management/roles",
         permission: "users",
+        requiredRole: "SYSTEM_ADMIN",
       },
     ],
   },
@@ -145,7 +149,9 @@ async function filterNavigation(
       const modules = Array.isArray(item.permission)
         ? item.permission
         : [item.permission];
-      const allowed = await hasAnyPermission(role, modules, "read");
+      const allowed = item.requiredRole
+        ? item.requiredRole === role
+        : await hasAnyPermission(role, modules, "read");
 
       if (!allowed) {
         return null;

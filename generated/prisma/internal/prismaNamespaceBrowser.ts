@@ -76,6 +76,8 @@ export const ModelName = {
   tbl_role_permission: 'tbl_role_permission',
   tbl_school: 'tbl_school',
   tbl_user_account: 'tbl_user_account',
+  tbl_admission_draft: 'tbl_admission_draft',
+  tbl_auth_session: 'tbl_auth_session',
   tbl_password_reset_token: 'tbl_password_reset_token',
   tbl_application_document: 'tbl_application_document',
   tbl_exam_session: 'tbl_exam_session',
@@ -392,6 +394,29 @@ export const Tbl_user_accountScalarFieldEnum = {
 export type Tbl_user_accountScalarFieldEnum = (typeof Tbl_user_accountScalarFieldEnum)[keyof typeof Tbl_user_accountScalarFieldEnum]
 
 
+export const Tbl_admission_draftScalarFieldEnum = {
+  draft_id: 'draft_id',
+  user_id: 'user_id',
+  step_id: 'step_id',
+  status: 'status',
+  data: 'data',
+  updated_at: 'updated_at'
+} as const
+
+export type Tbl_admission_draftScalarFieldEnum = (typeof Tbl_admission_draftScalarFieldEnum)[keyof typeof Tbl_admission_draftScalarFieldEnum]
+
+
+export const Tbl_auth_sessionScalarFieldEnum = {
+  session_id: 'session_id',
+  user_id: 'user_id',
+  created_at: 'created_at',
+  last_activity_at: 'last_activity_at',
+  expires_at: 'expires_at'
+} as const
+
+export type Tbl_auth_sessionScalarFieldEnum = (typeof Tbl_auth_sessionScalarFieldEnum)[keyof typeof Tbl_auth_sessionScalarFieldEnum]
+
+
 export const Tbl_password_reset_tokenScalarFieldEnum = {
   token_id: 'token_id',
   user_id: 'user_id',
@@ -473,6 +498,13 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -487,4 +519,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
