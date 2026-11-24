@@ -5,12 +5,14 @@ import { shortCompetencyName } from "@/features/recommendation/config";
 
 type Db = Prisma.TransactionClient;
 
-/** True when a session's end time (date + time, Asia/Manila) has passed. */
+/**
+ * True when a session's end time (date + time, Asia/Manila) has passed.
+ * With no end time, the session is finished once its whole day (Asia/Manila) has passed.
+ */
 export function isSessionFinished(sessionDate: Date, endTime: string | null): boolean {
-  if (!endTime) return false;
-  const [h, m] = endTime.split(":").map(Number);
   // Build the finish instant in Asia/Manila (the DATE column is the PH date at UTC midnight).
   const dateStr = sessionDate.toISOString().slice(0, 10);
+  const [h, m] = endTime ? endTime.split(":").map(Number) : [23, 59];
   const finishStr = `${dateStr}T${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:00+08:00`;
   return new Date(finishStr).getTime() < Date.now();
 }
