@@ -9,11 +9,16 @@ import {
 import { log, prisma, warn } from "./client";
 
 const ROLE_DESCRIPTIONS: Record<(typeof ROLE_NAMES)[number], string> = {
-  SYSTEM_ADMIN: "Full system administrator access.",
-  PRESIDENT: "Read-only access to all modules.",
-  ADMISSION: "Manages admission operations.",
-  REGISTRAR: "Manages registrar operations.",
-  GUIDANCE: "Manages guidance operations and course recommendations.",
+  SYSTEM_ADMIN:
+    "The one who manages accounts and can see the audit logs in their dashboard. Has full access to User Management only, and no access to other modules.",
+  PRESIDENT:
+    "The one who oversees all data in QCU, so they can only access 3 modules: Dashboard, Map, and Analytics & Reports. All view-only, except that they can export reports.",
+  ADMISSION:
+    "The one who handles applicants and admission operations. Can view, create, update, soft delete, and export applicant records, has full access to the Map, and can create/export custom reports from admission data. View-only access to Course Recommendation.",
+  GUIDANCE:
+    "The one who advises applicants. Can update exam results and advising notes only, has full access to Course Recommendation, and can view and export exams and course analytics.",
+  REGISTRAR:
+    "The one who handles enrollment. Can update enrollment status only, see enrolled status on the dashboard, and can view and export enrollment data and reports.",
 };
 
 const PERMISSION_TYPES: PermissionType[] = ["READ", "WRITE"];

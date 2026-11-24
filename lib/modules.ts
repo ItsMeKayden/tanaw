@@ -50,29 +50,37 @@ export const DEFAULT_ROLE_ACCESS: Record<
   RoleName,
   Partial<Record<ModuleCode, PermissionType[]>>
 > = {
-  SYSTEM_ADMIN: Object.fromEntries(MODULES.map((m) => [m.code, ["READ", "WRITE"]])),
-  PRESIDENT: Object.fromEntries(MODULES.map((m) => [m.code, ["READ"]])),
+  // Admin: Dashboard (view) + User Management (full). No access to other modules.
+  SYSTEM_ADMIN: {
+    DASHBOARD: ["READ"],
+    USERS: ["READ", "WRITE"],
+    AUDIT: ["READ", "WRITE"],
+  },
+  // President: Dashboard + Map (read/filter) + Analytics (view & export). No write.
+  PRESIDENT: {
+    DASHBOARD: ["READ"],
+    MAP: ["READ"],
+    REPORTS: ["READ"],
+  },
+  // Admission Office: Dashboard + Map (full access) + Admission (full CRUD) + Analytics (view/create/export) + Course Recommendation (view only).
   ADMISSION: {
     DASHBOARD: ["READ"],
-    MAP: ["READ"],
+    MAP: ["READ", "WRITE"],
     ADMISSION: ["READ", "WRITE"],
+    REPORTS: ["READ", "WRITE"],
     RECOMMENDATION: ["READ"],
-    USERS: ["READ"],
-    REPORTS: ["READ", "WRITE"],
   },
-  REGISTRAR: {
-    DASHBOARD: ["READ"],
-    MAP: ["READ"],
-    USERS: ["READ"],
-    REGISTRAR: ["READ", "WRITE"],
-    REPORTS: ["READ", "WRITE"],
-  },
+  // Guidance Office: Dashboard + Admission (view & update exam results/advising notes) + Analytics (view & export) + Course Recommendation (full access).
   GUIDANCE: {
     DASHBOARD: ["READ"],
-    MAP: ["READ"],
-    RECOMMENDATION: ["READ", "WRITE"],
-    USERS: ["READ"],
     GUIDANCE: ["READ", "WRITE"],
-    REPORTS: ["READ", "WRITE"],
+    REPORTS: ["READ"],
+    RECOMMENDATION: ["READ", "WRITE"],
+  },
+  // Registrar Office: Dashboard + Admission (view & update enrollment status) + Analytics (view & export).
+  REGISTRAR: {
+    DASHBOARD: ["READ"],
+    REGISTRAR: ["READ", "WRITE"],
+    REPORTS: ["READ"],
   },
 };

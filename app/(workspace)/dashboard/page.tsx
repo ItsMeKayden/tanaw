@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import { Activity, ScrollText, ShieldAlert, ShieldCheck, Users } from "lucide-react";
 
 import { connection } from "next/server";
 
@@ -10,33 +11,43 @@ import { OverviewSkeleton } from "@/components/ui/skeletons";
 import { tableStyles } from "@/components/ui/table-styles";
 import { resolveCycle } from "@/features/admission/admission-stats";
 import { ADMISSION_STAGES, EXAM_RESULT_PASSED } from "@/features/admission/stages";
+import { tableInfo } from "@/features/audit-log/labels";
+import { getAuditActivities, getAuditStats } from "@/features/audit-log/queries";
+import { getRoleLabels } from "@/features/user-management/role-labels";
 import { requirePermission } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
 
 const applicationMonthLabels = [
-	"Aug",
-	"Sep",
-	"Oct",
-	"Nov",
-	"Dec",
 	"Jan",
 	"Feb",
 	"Mar",
 	"Apr",
 	"May",
+	"Jun",
+	"Jul",
+	"Aug",
+	"Sep",
+	"Oct",
+	"Nov",
+	"Dec",
 ] as const;
 const applicationMonthMap = new Map<number, string>([
-	[0, "Aug"],
-	[1, "Sep"],
-	[2, "Oct"],
-	[3, "Nov"],
-	[4, "Dec"],
-	[5, "Jan"],
-	[6, "Feb"],
-	[7, "Mar"],
-	[8, "Apr"],
-	[9, "May"],
+	[0, "Jan"],
+	[1, "Feb"],
+	[2, "Mar"],
+	[3, "Apr"],
+	[4, "May"],
+	[5, "Jun"],
+	[6, "Jul"],
+	[7, "Aug"],
+	[8, "Sep"],
+	[9, "Oct"],
+	[10, "Nov"],
+	[11, "Dec"],
 ]);
+
+const applicationMonthChartStart = 58;
+const applicationMonthChartStep = 31.454;
 
 function formatSignedPercent(value: number) {
 	if (!Number.isFinite(value)) return "0% vs last year";
@@ -312,8 +323,8 @@ async function DashboardContent({ searchParams }: PageProps) {
 								<line x1="52" y1="135" x2="398" y2="135" stroke="#2d2d2d" strokeWidth="1.2" />
 								<line x1="52" y1="22" x2="52" y2="135" stroke="#2d2d2d" strokeWidth="1.2" />
 
-								{[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => {
-												const x = 58 + index * 37.777;
+								{[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((index) => {
+														const x = applicationMonthChartStart + index * applicationMonthChartStep;
 									return (
 										<line
 											key={`v-${index}`}
@@ -331,7 +342,7 @@ async function DashboardContent({ searchParams }: PageProps) {
 									d={applicationMonthLabels
 										.map((label, index) => {
 											const pointValue = applicantTrend[index] ?? 0;
-											const x = 58 + index * 37.777;
+											const x = applicationMonthChartStart + index * applicationMonthChartStep;
 											const y = 135 - (pointValue / chartMax) * 95;
 											return `${index === 0 ? "M" : "L"}${x} ${y}`;
 										})
@@ -345,7 +356,7 @@ async function DashboardContent({ searchParams }: PageProps) {
 
 								{applicationMonthLabels.map((label, index) => {
 									const pointValue = applicantTrend[index] ?? 0;
-									const x = 58 + index * 37.777;
+									const x = applicationMonthChartStart + index * applicationMonthChartStep;
 									const y = 135 - (pointValue / chartMax) * 95;
 									return (
 										<g key={`${label}-${index}`}>
@@ -360,7 +371,7 @@ async function DashboardContent({ searchParams }: PageProps) {
 								{applicationMonthLabels.map((label, index) => (
 									<text
 										key={label}
-										x={58 + index * 37.777}
+										x={applicationMonthChartStart + index * applicationMonthChartStep}
 										y="150"
 										fill="#4b5563"
 										fontSize="8.5"
@@ -449,14 +460,13 @@ async function DashboardContent({ searchParams }: PageProps) {
 						</div>
 						<div className="space-y-2 text-sm text-neutral-700">
 							<div>{totalQuotaSlots > 0 ? `${quotaRemaining} slots remaining` : "Quota not set"}</div>
-							<div>{Math.max(totalQuotaSlots - enrolled, 0)} slots remaining</div>
 							<div>{Math.max(passedExam - enrolled, 0)} passers not yet enrolled</div>
 						</div>
 						<Link
-							href="/admission"
+							href="/recommendation"
 							className="mt-4 inline-flex rounded-md border border-neutral-400 bg-[#f6f6f6] px-3 py-2 text-sm text-neutral-800 shadow-sm transition hover:bg-[#efefef]"
 						>
-							View additional applicants
+							View recommendation queue
 						</Link>
 					</div>
 				</div>
@@ -527,7 +537,7 @@ async function GuidanceDashboard({ searchParams }: PageProps) {
 		...(selectedCourseId ? { program_id: selectedCourseId } : {}),
 	};
 
-	const [recommendationRows, applicationsCount, quotaTotal] = await Promise.all([
+	const [recommendationRows, applicationsCount, passedCount, enrolledCount, quotaTotal] = await Promise.all([
 		prisma.tbl_application.findMany({
 			where: {
 				...whereBase,
@@ -565,6 +575,12 @@ async function GuidanceDashboard({ searchParams }: PageProps) {
 			},
 		}),
 		prisma.tbl_application.count({ where: { ...whereBase, tbl_exam_result: { some: {} } } }),
+		prisma.tbl_application.count({
+			where: { ...whereBase, tbl_exam_result: { some: { result_status: EXAM_RESULT_PASSED } } },
+		}),
+		prisma.tbl_application.count({
+			where: { ...whereBase, tbl_admission_stage: { stage_name: ADMISSION_STAGES.ENROLLED } },
+		}),
 		prisma.tbl_quota.aggregate({ where: { cycle_id: cycle.cycle_id }, _sum: { quota_slots: true } }),
 	]);
 
@@ -628,7 +644,7 @@ async function GuidanceDashboard({ searchParams }: PageProps) {
 			const priority = { "NOT_GENERATED": 0, "BELOW_MINIMUM": 1, "ALTERNATIVE": 2, "COMPATIBLE": 3 };
 			return (priority[a.status] ?? 99) - (priority[b.status] ?? 99);
 		})
-		.slice(0, 5)
+		.slice(0, 3)
 		.map((row) => {
 			const statusText = row.status === "COMPATIBLE" ? "Preferred match" : row.status === "ALTERNATIVE" ? "Alt course" : row.status === "BELOW_MINIMUM" ? "Low match" : "Pending";
 			const tone = row.status === "COMPATIBLE" ? "bg-[#d9f3e6] text-[#1f6f45]" : row.status === "ALTERNATIVE" ? "bg-[#f1d9ff] text-[#5a2a87]" : row.status === "BELOW_MINIMUM" ? "bg-[#f5d7de] text-[#8b1e3f]" : "bg-[#f7f4cf] text-[#7a6500]";
@@ -643,8 +659,8 @@ async function GuidanceDashboard({ searchParams }: PageProps) {
 		});
 
 	const totalQuotaSlots = Number(quotaTotal._sum.quota_slots ?? 0);
-	const quotaProgress = totalQuotaSlots > 0 ? Math.min((applicationsCount / totalQuotaSlots) * 100, 100) : 0;
-	const quotaRemaining = Math.max(totalQuotaSlots - applicationsCount, 0);
+	const quotaProgress = totalQuotaSlots > 0 ? Math.min((enrolledCount / totalQuotaSlots) * 100, 100) : 0;
+	const quotaRemaining = Math.max(totalQuotaSlots - enrolledCount, 0);
 	const funnel = [
 		{ label: "Applied", value: applicationsCount, width: applicationsCount ? "100%" : "0%", color: "#5c6ce6" },
 		{ label: "Examined", value: totalExamined, width: totalExamined ? `${Math.min((totalExamined / Math.max(applicationsCount, 1)) * 100, 100)}%` : "0%", color: "#7a8cf0" },
@@ -728,16 +744,33 @@ async function GuidanceDashboard({ searchParams }: PageProps) {
 					</div>
 
 					<div className="rounded-xl border border-[#2f5a8d] bg-white/80 p-3 shadow-sm">
-						<div className="mb-3 text-sm font-medium text-neutral-700">Applicants for counselling</div>
-						<div className="space-y-2">
+						<div className="mb-2 flex items-center justify-between gap-3">
+							<div className="text-sm font-medium text-neutral-700">Applicants for counselling</div>
+							<Link href="/recommendation" className="text-xs font-medium text-[#3047ba] hover:underline">Open queue</Link>
+						</div>
+						<div className="mb-3 grid grid-cols-3 gap-2">
+							<div className="rounded-md bg-[#f7f4cf] px-2 py-1.5 text-center">
+								<div className="text-lg font-bold text-[#111827]">{pending}</div>
+								<div className="text-[9px] font-medium text-neutral-600">Pending</div>
+							</div>
+							<div className="rounded-md bg-[#f4d9d7] px-2 py-1.5 text-center">
+								<div className="text-lg font-bold text-[#111827]">{belowMinimum}</div>
+								<div className="text-[9px] font-medium text-neutral-600">Low match</div>
+							</div>
+							<div className="rounded-md bg-[#e9e2ff] px-2 py-1.5 text-center">
+								<div className="text-lg font-bold text-[#111827]">{alternative}</div>
+								<div className="text-[9px] font-medium text-neutral-600">Alternative</div>
+							</div>
+						</div>
+						<div className="space-y-1.5">
 							{counselingApplicants.length > 0 ? (
 								counselingApplicants.map((applicant, index) => (
-									<div key={`${applicant.name}-${index}`} className="flex items-center justify-between gap-2 rounded-lg border border-neutral-300 bg-white/80 px-2 py-2">
+									<div key={`${applicant.name}-${index}`} className="flex items-center justify-between gap-2 rounded-md border border-neutral-200 bg-white/80 px-2 py-1.5">
 										<div className="flex min-w-0 items-center gap-2">
-											<span className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${applicant.tone}`}>{applicant.initials}</span>
-											<span className="truncate text-xs text-neutral-700">- {applicant.name}</span>
+											<span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${applicant.tone}`}>{applicant.initials}</span>
+											<span className="truncate text-xs text-neutral-700">{applicant.name}</span>
 										</div>
-										<span className={`rounded-md border px-2 py-1 text-[10px] font-medium ${applicant.badge}`}>{applicant.status}</span>
+										<span className={`shrink-0 rounded-md border px-2 py-0.5 text-[10px] font-medium ${applicant.badge}`}>{applicant.status}</span>
 									</div>
 								))
 							) : (
@@ -773,15 +806,14 @@ async function GuidanceDashboard({ searchParams }: PageProps) {
 						<div className="mb-4 text-lg font-semibold text-neutral-800">
 							Admission quota
 						</div>
-						<div className="mb-2 text-3xl font-bold text-neutral-900">{applicationsCount}</div>
+						<div className="mb-2 text-3xl font-bold text-neutral-900">{enrolledCount}</div>
 						<div className="mb-4 text-sm text-neutral-600">of {totalQuotaSlots} target students</div>
 						<div className="mb-3 h-2 overflow-hidden rounded-full bg-[#e7e7e7]">
 							<div className="h-full rounded-full bg-[#6ddeae]" style={{ width: `${quotaProgress}%` }} />
 						</div>
 						<div className="space-y-2 text-sm text-neutral-700">
 							<div>{totalQuotaSlots > 0 ? `${quotaRemaining} slots remaining` : "Quota not set"}</div>
-							<div>{Math.max(totalQuotaSlots - applicationsCount, 0)} slots remaining</div>
-							<div>{Math.max(compatible - applicationsCount, 0)} passers not yet enrolled</div>
+							<div>{Math.max(passedCount - enrolledCount, 0)} passers not yet enrolled</div>
 						</div>
 						<Link
 							href="/recommendation"
@@ -844,7 +876,7 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 		...(selectedCourseId ? { program_id: selectedCourseId } : {}),
 	};
 
-	const [actionQueue, quotaTotal, applicantsCount] = await Promise.all([
+	const [actionQueue, quotaTotal, applicantsCount, enrolledCount] = await Promise.all([
 		prisma.tbl_application.findMany({
 			where: whereBase,
 			orderBy: { application_date: "desc" },
@@ -863,6 +895,9 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 		}),
 		prisma.tbl_quota.aggregate({ where: { cycle_id: cycle.cycle_id }, _sum: { quota_slots: true } }),
 		prisma.tbl_application.count({ where: whereBase }),
+		prisma.tbl_application.count({
+			where: { ...whereBase, tbl_admission_stage: { stage_name: ADMISSION_STAGES.ENROLLED } },
+		}),
 	]);
 
 	const awaitingExamSchedule = actionQueue.filter((application) => {
@@ -920,10 +955,10 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 		.filter((item) => item.action !== "Review application" || item.status !== "Pending");
 
 	const applicantsNeedingAction = queueEntries.length;
-	const totalPages = Math.max(1, Math.ceil(applicantsNeedingAction / 10));
+	const totalPages = Math.max(1, Math.ceil(applicantsNeedingAction / 5));
 	const currentPage = Math.min(Math.max(requestedPage, 1), totalPages);
-	const pageStart = (currentPage - 1) * 10;
-	const pageEnd = pageStart + 10;
+	const pageStart = (currentPage - 1) * 5;
+	const pageEnd = pageStart + 5;
 	const queue = queueEntries.slice(pageStart, pageEnd);
 
 	const pageHref = (pageNumber: number) => {
@@ -936,8 +971,8 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 	};
 
 	const totalQuotaSlots = Number(quotaTotal._sum.quota_slots ?? 0);
-	const quotaProgress = totalQuotaSlots > 0 ? Math.min((applicantsCount / totalQuotaSlots) * 100, 100) : 0;
-	const quotaRemaining = Math.max(totalQuotaSlots - applicantsCount, 0);
+	const quotaProgress = totalQuotaSlots > 0 ? Math.min((enrolledCount / totalQuotaSlots) * 100, 100) : 0;
+	const quotaRemaining = Math.max(totalQuotaSlots - enrolledCount, 0);
 	const funnel = [
 		{ label: "Applied", value: applicantsCount, width: applicantsCount ? "100%" : "0%", color: "#5c6ce6" },
 		{ label: "Took exam", value: actionQueue.filter((app) => app.tbl_exam_result.length > 0).length, width: applicantsCount ? `${Math.min((actionQueue.filter((app) => app.tbl_exam_result.length > 0).length / applicantsCount) * 100, 100)}%` : "0%", color: "#7a8cf0" },
@@ -996,28 +1031,28 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 					</div>
 
 					<div className={tableStyles.wrap}>
-						<table className="w-full border-collapse text-sm">
+						<table className="w-full border-collapse text-xs">
 							<thead>
 								<tr className={tableStyles.headRow}>
-									<th className={tableStyles.th}>Applicant ID</th>
-									<th className={tableStyles.th}>Name</th>
-									<th className={tableStyles.th}>Course</th>
-									<th className={tableStyles.th}>Action needed</th>
-									<th className={tableStyles.th}>Status</th>
+									<th className="px-3 py-2 text-left text-[11px] font-semibold tracking-wide whitespace-nowrap text-[#191e73] uppercase">Applicant ID</th>
+									<th className="px-3 py-2 text-left text-[11px] font-semibold tracking-wide text-[#191e73] uppercase">Name</th>
+									<th className="px-3 py-2 text-left text-[11px] font-semibold tracking-wide text-[#191e73] uppercase">Course</th>
+									<th className="px-3 py-2 text-left text-[11px] font-semibold tracking-wide text-[#191e73] uppercase">Action needed</th>
+									<th className="px-3 py-2 text-left text-[11px] font-semibold tracking-wide text-[#191e73] uppercase">Status</th>
 								</tr>
 							</thead>
 							<tbody className={tableStyles.body}>
 								{queue.length ? queue.map((applicant, index) => (
 									<tr key={`${applicant.applicantId}-${index}`} className={tableStyles.row}>
-										<td className={`${tableStyles.td} tabular-nums`}>{applicant.applicantId}</td>
-										<td className={`${tableStyles.td} font-medium`}>{applicant.name}</td>
-										<td className={tableStyles.td}>{applicant.course}</td>
-										<td className={tableStyles.td}>{applicant.action}</td>
-										<td className={tableStyles.td}>{applicant.status}</td>
+										<td className="px-3 py-2 align-middle tabular-nums">{applicant.applicantId}</td>
+										<td className="px-3 py-2 align-middle font-medium">{applicant.name}</td>
+										<td className="px-3 py-2 align-middle">{applicant.course}</td>
+										<td className="px-3 py-2 align-middle">{applicant.action}</td>
+										<td className="px-3 py-2 align-middle">{applicant.status}</td>
 									</tr>
 								)) : (
 									<tr>
-										<td colSpan={5} className={tableStyles.empty}>No data available</td>
+										<td colSpan={5} className="px-3 py-8 text-center text-sm text-neutral-600">No data available</td>
 									</tr>
 								)}
 							</tbody>
@@ -1031,7 +1066,7 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 								aria-disabled={currentPage <= 1}
 								className={`flex h-8 w-8 items-center justify-center rounded-md border text-sm ${currentPage <= 1 ? "cursor-not-allowed border-neutral-200 bg-neutral-100 text-neutral-400" : "border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50"}`}
 							>
-								←
+								â†
 							</Link>
 							<div className="flex items-center gap-2 rounded-md border border-neutral-200 bg-neutral-50 px-2 py-1 text-[10px] font-medium text-neutral-600">
 								<span>Page</span>
@@ -1043,7 +1078,7 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 								aria-disabled={currentPage >= totalPages}
 								className={`flex h-8 w-8 items-center justify-center rounded-md border text-sm ${currentPage >= totalPages ? "cursor-not-allowed border-neutral-200 bg-neutral-100 text-neutral-400" : "border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50"}`}
 							>
-								→
+								â†’
 							</Link>
 						</div>
 					)}
@@ -1075,14 +1110,13 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 						<div className="mb-4 text-lg font-semibold text-neutral-800">
 							Admission quota
 						</div>
-						<div className="mb-2 text-3xl font-bold text-neutral-900">{applicantsCount}</div>
+						<div className="mb-2 text-3xl font-bold text-neutral-900">{enrolledCount}</div>
 						<div className="mb-4 text-sm text-neutral-600">of {totalQuotaSlots} target students</div>
 						<div className="mb-3 h-2 overflow-hidden rounded-full bg-[#e7e7e7]">
 							<div className="h-full rounded-full bg-[#6ddeae]" style={{ width: `${quotaProgress}%` }} />
 						</div>
 						<div className="space-y-2 text-sm text-neutral-700">
 							<div>{totalQuotaSlots > 0 ? `${quotaRemaining} slots remaining` : "Quota not set"}</div>
-							<div>{Math.max(totalQuotaSlots - applicantsCount, 0)} slots remaining</div>
 							<div>{Math.max(passedNotEnrolled, 0)} passers not yet enrolled</div>
 						</div>
 						{isAdmissionRole ? (
@@ -1097,10 +1131,234 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 	);
 }
 
+function adminTimeAgo(iso: string) {
+	const seconds = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
+	if (seconds < 60) return "just now";
+	if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+	if (seconds < 86_400) return `${Math.floor(seconds / 3600)}h ago`;
+	return new Date(iso).toLocaleDateString("en-PH", { month: "short", day: "numeric" });
+}
+
+async function AdminDashboard() {
+	await connection();
+	await requirePermission("dashboard", "read");
+
+	const [totalAccounts, activeAccounts, inactiveAccounts, roles, auditStats, auditData, roleLabels] = await Promise.all([
+		prisma.tbl_user_account.count(),
+		prisma.tbl_user_account.count({ where: { is_active: true } }),
+		prisma.tbl_user_account.count({ where: { is_active: false } }),
+		prisma.tbl_role.findMany({
+			select: {
+				role_name: true,
+				description: true,
+				_count: { select: { tbl_user_account: true } },
+			},
+			orderBy: { role_name: "asc" },
+		}),
+		getAuditStats(),
+		getAuditActivities({ page: 1 }),
+		getRoleLabels(),
+	]);
+
+	const recentActivities = auditData.activities.slice(0, 7);
+
+	return (
+		<div className="relative isolate min-h-full space-y-5 p-4 sm:p-6">
+			<QcuWatermark />
+			<div className="relative z-10">
+				<div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+					<div>
+						<h1 className="text-2xl font-bold tracking-tight text-neutral-900">Dashboard</h1>
+						<p className="text-sm text-neutral-700">Account management and audit trail overview</p>
+					</div>
+					<div className="flex flex-wrap items-center gap-2">
+						<Link
+							href="/user-management/accounts"
+							className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-400 bg-white px-3 py-1.5 text-xs font-semibold text-neutral-800 shadow-sm transition hover:bg-neutral-50"
+						>
+							<Users className="size-3.5 text-[#0d1b8c]" aria-hidden="true" />
+							User Accounts
+						</Link>
+						<Link
+							href="/user-management/roles"
+							className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-400 bg-white px-3 py-1.5 text-xs font-semibold text-neutral-800 shadow-sm transition hover:bg-neutral-50"
+						>
+							<ShieldCheck className="size-3.5 text-[#0d1b8c]" aria-hidden="true" />
+							Roles &amp; Permissions
+						</Link>
+						<Link
+							href="/user-management/audit-log"
+							className="inline-flex items-center gap-1.5 rounded-lg bg-[#0d1b8c] px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-[#1f3d8f]"
+						>
+							<ScrollText className="size-3.5" aria-hidden="true" />
+							View Full Audit Log
+						</Link>
+					</div>
+				</div>
+
+				<div className="grid gap-3 md:grid-cols-4">
+					<div className="rounded-xl border border-neutral-400 bg-white px-4 py-3 shadow-sm">
+						<div className="flex items-center justify-between text-neutral-600">
+							<span className="text-[13px] font-medium text-[#202020]">User Accounts</span>
+							<Users className="size-4 text-[#0d1b8c]" aria-hidden="true" />
+						</div>
+						<div className="mt-2 flex items-baseline justify-between">
+							<div className="text-3xl font-bold text-[#111827]">{totalAccounts}</div>
+							<div className="text-[11px] font-medium text-[#4b5563]">
+								<span className="font-semibold text-emerald-700">{activeAccounts}</span> active · {inactiveAccounts} inactive
+							</div>
+						</div>
+					</div>
+
+					<div className="rounded-xl border border-neutral-400 bg-white px-4 py-3 shadow-sm">
+						<div className="flex items-center justify-between text-neutral-600">
+							<span className="text-[13px] font-medium text-[#202020]">Changes Today</span>
+							<Activity className="size-4 text-[#0d1b8c]" aria-hidden="true" />
+						</div>
+						<div className="mt-2 flex items-baseline justify-between">
+							<div className="text-3xl font-bold text-[#111827]">{auditStats.changesToday}</div>
+							<div className="text-[11px] font-medium text-[#4b5563]">
+								{auditStats.usersToday} user{auditStats.usersToday === 1 ? "" : "s"} active today
+							</div>
+						</div>
+					</div>
+
+					<div className="rounded-xl border border-neutral-400 bg-white px-4 py-3 shadow-sm">
+						<div className="flex items-center justify-between text-neutral-600">
+							<span className="text-[13px] font-medium text-[#202020]">Changes This Week</span>
+							<ScrollText className="size-4 text-[#0d1b8c]" aria-hidden="true" />
+						</div>
+						<div className="mt-2 flex items-baseline justify-between">
+							<div className="text-3xl font-bold text-[#111827]">{auditStats.changesThisWeek}</div>
+							<div className="text-[11px] font-medium text-[#4b5563]">
+								{auditStats.totalEntries.toLocaleString()} total entries
+							</div>
+						</div>
+					</div>
+
+					<div className={`rounded-xl border bg-white px-4 py-3 shadow-sm ${auditStats.failedSignIns > 0 ? "border-amber-300 bg-amber-50/40" : "border-neutral-400"}`}>
+						<div className="flex items-center justify-between text-neutral-600">
+							<span className="text-[13px] font-medium text-[#202020]">Failed Sign-ins (7d)</span>
+							<ShieldAlert className={`size-4 ${auditStats.failedSignIns > 0 ? "text-amber-600" : "text-neutral-400"}`} aria-hidden="true" />
+						</div>
+						<div className="mt-2 flex items-baseline justify-between">
+							<div className={`text-3xl font-bold ${auditStats.failedSignIns > 0 ? "text-amber-800" : "text-[#111827]"}`}>
+								{auditStats.failedSignIns}
+							</div>
+							<div className="text-[11px] font-medium text-[#4b5563]">
+								{auditStats.failedSignIns === 0 ? "No security alerts" : "Investigate in Audit Log"}
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div className="mt-5 grid gap-4 lg:grid-cols-[1.1fr_1.9fr]">
+					<div className="flex flex-col justify-between rounded-xl border border-[#2f5a8d] bg-white/90 p-4 shadow-sm">
+						<div>
+							<div className="mb-3 flex items-center justify-between">
+								<h2 className="text-base font-semibold text-neutral-900">Accounts by Role</h2>
+								<Link href="/user-management/accounts" className="text-xs font-semibold text-[#0d1b8c] hover:underline">
+									View accounts →
+								</Link>
+							</div>
+							<div className="divide-y divide-neutral-200">
+								{roles.map((r) => {
+									const label = roleLabels[r.role_name as keyof typeof roleLabels] ?? r.role_name;
+									const count = r._count.tbl_user_account;
+									return (
+										<div key={r.role_name} className="flex items-center justify-between gap-3 py-2.5">
+											<div className="min-w-0">
+												<div className="flex items-center gap-2">
+													<span className="text-xs font-semibold text-neutral-900">{label}</span>
+													<span className="font-mono text-[10px] text-neutral-500">({r.role_name})</span>
+												</div>
+												<p className="line-clamp-1 text-[11px] text-neutral-600">{r.description ?? "No description"}</p>
+											</div>
+											<span className="shrink-0 rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-semibold text-neutral-700">
+												{count} {count === 1 ? "user" : "users"}
+											</span>
+										</div>
+									);
+								})}
+							</div>
+						</div>
+						<div className="mt-4 border-t border-neutral-200 pt-3">
+							<Link
+								href="/user-management/roles"
+								className="block text-center text-xs font-medium text-neutral-600 hover:text-neutral-900"
+							>
+								Configure Role Permissions in User Management &rarr;
+							</Link>
+						</div>
+					</div>
+
+					<div className="rounded-xl border border-[#2f5a8d] bg-white/90 p-4 shadow-sm">
+						<div className="mb-3 flex items-center justify-between">
+							<div className="flex items-center gap-2">
+								<h2 className="text-base font-semibold text-neutral-900">Recent Audit Logs</h2>
+								<span className="rounded-full bg-[#eef0ff] px-2 py-0.5 text-[11px] font-semibold text-[#3047ba]">
+									Live Log
+								</span>
+							</div>
+							<Link href="/user-management/audit-log" className="text-xs font-semibold text-[#0d1b8c] hover:underline">
+								View all logs →
+							</Link>
+						</div>
+
+						{recentActivities.length > 0 ? (
+							<div className="divide-y divide-neutral-200 text-sm">
+								{recentActivities.map((act) => {
+									const headline = act.changes[0];
+									const description = headline?.description || headline?.action || "Recorded action";
+									const moduleName = headline?.table_name ? tableInfo(headline.table_name).module : "System";
+
+									return (
+										<div key={act.key} className="flex items-start justify-between gap-3 py-2.5">
+											<div className="min-w-0 flex-1 space-y-0.5">
+												<div className="flex items-center gap-2">
+													<span className="text-xs font-medium text-neutral-900">
+														{act.actor_name ?? act.actor_email ?? "System"}
+													</span>
+													{act.actor_role && (
+														<span className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-medium text-neutral-600">
+															{act.actor_role}
+														</span>
+													)}
+													<span className="text-[11px] text-neutral-500">
+														· {adminTimeAgo(act.occurred_at)}
+													</span>
+												</div>
+												<p className="line-clamp-1 text-xs text-neutral-700">{description}</p>
+											</div>
+											<div className="flex shrink-0 items-center gap-1.5">
+												<span className="rounded-full border border-neutral-300 bg-neutral-50 px-2 py-0.5 text-[10px] font-medium text-neutral-600">
+													{moduleName}
+												</span>
+											</div>
+										</div>
+									);
+								})}
+							</div>
+						) : (
+							<div className="py-10 text-center text-sm text-neutral-500">
+								No audit activities recorded yet.
+							</div>
+						)}
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+}
+
 async function DashboardForRole(props: PageProps) {
 	await connection();
 	const session = await auth();
 	const role = session?.user?.role;
+
+	if (role === "SYSTEM_ADMIN") {
+		return <AdminDashboard />;
+	}
 
 	if (role === "GUIDANCE") {
 		return <GuidanceDashboard {...props} />;
@@ -1110,7 +1368,7 @@ async function DashboardForRole(props: PageProps) {
 		return <RegistrarDashboard {...props} />;
 	}
 
-	if (role === "PRESIDENT" || role === "SYSTEM_ADMIN") {
+	if (role === "PRESIDENT") {
 		return <DashboardContent {...props} />;
 	}
 

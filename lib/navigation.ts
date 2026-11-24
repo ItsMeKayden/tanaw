@@ -65,6 +65,11 @@ const navigationItems: NavigationItem[] = [
             href: "/admission/exam/scores",
             permission: "admission",
           },
+          {
+            label: "Exam Questions",
+            href: "/admission/exam/questions",
+            permission: "admission",
+          },
         ],
       },
       {
@@ -100,11 +105,6 @@ const navigationItems: NavigationItem[] = [
       {
         label: "Recommendations",
         href: "/recommendation",
-        permission: "recommendation",
-      },
-      {
-        label: "Score Breakdown",
-        href: "/recommendation/breakdown",
         permission: "recommendation",
       },
       {

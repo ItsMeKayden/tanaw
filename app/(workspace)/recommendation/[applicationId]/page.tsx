@@ -95,12 +95,6 @@ async function RecommendationDetailContent({ params }: PageProps) {
         </div>
         <div className="flex flex-wrap gap-2">
           <Link
-            href={`/recommendation/breakdown?${query}`}
-            className="rounded-full border border-neutral-500 bg-white px-4 py-1 text-sm hover:bg-neutral-100"
-          >
-            Score breakdown
-          </Link>
-          <Link
             href={`/recommendation/compare?${query}`}
             className="rounded-full border border-neutral-500 bg-white px-4 py-1 text-sm hover:bg-neutral-100"
           >

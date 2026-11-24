@@ -8,6 +8,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
 
+import { DiscardWarningModal } from "@/components/admission/discard-warning-modal";
 import { DatePicker } from "@/components/ui/date-picker";
 import { DocumentPreview } from "@/components/admission/document-preview";
 import {
@@ -605,6 +606,7 @@ export default function ApplicantForm({
     Partial<Record<DocumentSlotKey, string>>
   >({});
   const [submitError, setSubmitError] = useState("");
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const errors: Partial<Record<ErrorKey, string>> = {};
@@ -629,8 +631,20 @@ export default function ApplicantForm({
   );
   const isExistingSchool = values.school_entry_mode === "existing";
 
+  const hasAnyInput =
+    mode === "create" &&
+    Object.entries(values).some(
+      ([key, val]) =>
+        key !== "school_entry_mode" &&
+        val !== undefined &&
+        val !== null &&
+        val !== "",
+    );
+
   const isDirty =
     formState.isDirty ||
+    hasAnyInput ||
+    (districtId ?? "") !== (initialDistrictId ?? "") ||
     Object.keys(files).length > 0 ||
     Object.values(removeDocs).some(Boolean);
 
@@ -755,11 +769,22 @@ export default function ApplicantForm({
     setFurthest((value) => Math.max(value, target));
   }
 
-  function cancel() {
-    if (isDirty && !window.confirm("Discard your changes and leave this form?"))
-      return;
+  function performCancel() {
     if (onCancel) onCancel();
     else router.push(cancelHref);
+  }
+
+  function cancel() {
+    if (isDirty) {
+      setShowCancelModal(true);
+      return;
+    }
+    performCancel();
+  }
+
+  function confirmDiscard() {
+    setShowCancelModal(false);
+    performCancel();
   }
 
   function finish(applicantId: number) {
@@ -1020,7 +1045,7 @@ export default function ApplicantForm({
                 <option value="Female" className="text-black">Female</option>
               </select>
             </Field>
-            <Field id="field-email" label="Email (Optional)" error={errors.email}>
+            <Field id="field-email" label="Email" required error={errors.email}>
               <input
                 {...control("email")}
                 onChange={(e) => update({ email: inputFilters.email(e.target.value) })}
@@ -1127,9 +1152,8 @@ export default function ApplicantForm({
           <h2 id="step-1-title" className="text-lg font-semibold">
             Preferred course and campus
           </h2>
-          <p className="mb-4 text-sm text-neutral-700">
-            The 1st choice is the program applied to. 2nd and 3rd choices are
-            optional alternatives.
+          <p className="mb-4 text-xs text-neutral-600">
+            Fields marked * are required. The 1st choice is the program applied to. 2nd and 3rd choices are optional alternatives.
           </p>
 
           <div className="grid gap-x-6 gap-y-3 sm:grid-cols-2">
@@ -1268,9 +1292,8 @@ export default function ApplicantForm({
           <h2 id="step-2-title" className="text-lg font-semibold">
             Previous school
           </h2>
-          <p className="mb-4 text-sm text-neutral-700">
-            Pick the school from the list, or add it if it isn&apos;t listed
-            yet.
+          <p className="mb-4 text-xs text-neutral-600">
+            Fields marked * are required. Pick the school from the list, or add it if it isn&apos;t listed yet.
           </p>
 
           <div
@@ -1683,6 +1706,11 @@ export default function ApplicantForm({
           </button>
         </div>
       </div>
+      <DiscardWarningModal
+        open={showCancelModal}
+        onKeepEditing={() => setShowCancelModal(false)}
+        onDiscard={confirmDiscard}
+      />
     </form>
   );
 }

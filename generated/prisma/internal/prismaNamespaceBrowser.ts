@@ -450,6 +450,7 @@ export const Tbl_exam_sessionScalarFieldEnum = {
   exam_id: 'exam_id',
   session_date: 'session_date',
   start_time: 'start_time',
+  end_time: 'end_time',
   venue: 'venue',
   room: 'room',
   capacity: 'capacity',

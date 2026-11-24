@@ -7,7 +7,7 @@ import { getAccountId, requireAnyPermission } from "@/lib/authorization";
 import { EXAM_SCHEDULE_MODULES, EXAM_SCHEDULE_PATHS } from "@/features/admission/access";
 import { prisma } from "@/lib/prisma";
 import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
-import { ensureCycleExam } from "@/features/admission/exam";
+import { ensureCycleExam, isSessionFinished } from "@/features/admission/exam";
 import { ATTENDANCE } from "@/features/admission/exam-scoring";
 import { examSessionSchema, type ExamSessionValues } from "@/features/admission/schemas";
 import { ADMISSION_STAGES } from "@/features/admission/stages";
@@ -58,6 +58,7 @@ export async function createExamSession(cycleIdInput: number, input: ExamSession
           exam_id: exam.exam_id,
           session_date: new Date(`${data.session_date}T00:00:00.000Z`),
           start_time: data.start_time || null,
+          end_time: data.end_time || null,
           venue: data.venue,
           room: data.room || null,
           capacity: Number(data.capacity),
@@ -100,10 +101,10 @@ export async function deleteExamSession(sessionIdInput: number): Promise<ActionR
 }
 
 /**
- * Seats unscheduled applicants of the session's cycle who are in the
+ * Fills unscheduled applicants of the session's cycle who are in the
  * "For Examination" stage, earliest application first, up to capacity.
  */
-export async function fillSessionSeats(sessionIdInput: number): Promise<ActionResult> {
+export async function fillSessionSlots(sessionIdInput: number): Promise<ActionResult> {
   await requireAnyPermission(EXAM_SCHEDULE_MODULES, "write");
 
   const sessionId = validId(sessionIdInput);
@@ -165,6 +166,15 @@ export async function removeFromSession(sessionIdInput: number, applicationIdInp
   if (!sessionId || !applicationId) return { error: "Invalid applicant." };
 
   try {
+    const session = await prisma.tbl_exam_session.findUnique({
+      where: { session_id: sessionId },
+      select: { session_date: true, end_time: true },
+    });
+    if (!session) return { error: "Exam session not found." };
+    if (isSessionFinished(session.session_date, session.end_time)) {
+      return { error: "This session has ended; it is locked." };
+    }
+
     const scored = await prisma.tbl_exam_result.count({ where: { application_id: applicationId } });
     if (scored > 0) {
       return { error: "This applicant already has an exam score, so they can't be removed from the session." };
@@ -179,6 +189,32 @@ export async function removeFromSession(sessionIdInput: number, applicationIdInp
   } catch (error) {
     return failure("Remove from exam session", error);
   }
+}
+
+/**
+ * Scores require attendance, so a scored applicant can't be changed to absent
+ * (their result, stage and course recommendations would no longer match).
+ */
+function assertNoScoredMarkedAbsent(
+  entries: { application_id: number; present: boolean }[],
+  seats: {
+    application_id: number;
+    attendance: string | null;
+    tbl_application: { application_no: string; _count: { tbl_exam_result: number } };
+  }[],
+) {
+  const blocked = entries
+    .map((entry) => ({ entry, seat: seats.find((s) => s.application_id === entry.application_id)! }))
+    .filter(
+      ({ entry, seat }) =>
+        !entry.present && seat.attendance !== ATTENDANCE.ABSENT && seat.tbl_application._count.tbl_exam_result > 0,
+    )
+    .map(({ seat }) => seat.tbl_application.application_no);
+  if (blocked.length === 0) return;
+  const one = blocked.length === 1;
+  throw new Error(
+    `${blocked.join(", ")} already ${one ? "has an exam score" : "have exam scores"}, so ${one ? "it" : "they"} can't be marked absent.`,
+  );
 }
 
 /**
@@ -204,6 +240,15 @@ export async function saveAttendance(
     const accountId = getAccountId(user);
     const now = new Date();
 
+    const session = await prisma.tbl_exam_session.findUnique({
+      where: { session_id: sessionId },
+      select: { session_date: true, end_time: true },
+    });
+    if (!session) return { error: "Exam session not found." };
+    if (isSessionFinished(session.session_date, session.end_time)) {
+      return { error: "This session has ended; attendance is locked." };
+    }
+
     const moved = await prisma.$transaction(async (tx) => {
       const seats = await tx.tbl_exam_session_applicant.findMany({
         where: { session_id: sessionId, application_id: { in: entries.map((e) => e.application_id) } },
@@ -217,24 +262,7 @@ export async function saveAttendance(
       });
       if (seats.length !== entries.length) throw new Error("The applicant list changed. Reload the page.");
 
-      // Scores require attendance, so a scored applicant can't be changed to absent
-      // (their result, stage and course recommendations would no longer match).
-      const scoredToAbsent = entries
-        .map((entry) => ({ entry, seat: seats.find((s) => s.application_id === entry.application_id)! }))
-        .filter(
-          ({ entry, seat }) =>
-            !entry.present &&
-            seat.attendance !== ATTENDANCE.ABSENT &&
-            seat.tbl_application._count.tbl_exam_result > 0,
-        )
-        .map(({ seat }) => seat.tbl_application.application_no);
-      if (scoredToAbsent.length > 0) {
-        throw new Error(
-          `${scoredToAbsent.join(", ")} already ${scoredToAbsent.length === 1 ? "has an exam score" : "have exam scores"}, so ${
-            scoredToAbsent.length === 1 ? "it" : "they"
-          } can't be marked absent.`,
-        );
-      }
+      assertNoScoredMarkedAbsent(entries, seats);
 
       const { forExamination, examCompleted } = await stageIds(tx);
       let stageChanges = 0;

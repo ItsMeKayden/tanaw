@@ -1,3 +1,7 @@
+import "dotenv/config";
+
+import path from "node:path";
+
 /**
  * Demo data for the Exam Schedule and Exam Scores pages:
  *
@@ -19,6 +23,7 @@ type DemoSession = {
   key: "morning" | "afternoon" | "upcoming";
   date: string;
   time: string;
+  end_time: string;
   venue: string;
   room: string;
   capacity: number;
@@ -26,9 +31,9 @@ type DemoSession = {
 
 /** Exam day matches the demo exam's date (2026-09-12); the upcoming one is open for seating. */
 export const DEMO_SESSIONS: DemoSession[] = [
-  { key: "morning", date: "2026-09-12", time: "08:00", venue: "QCU San Bartolome Campus, Main Building", room: "201", capacity: 15 },
-  { key: "afternoon", date: "2026-09-12", time: "13:00", venue: "QCU San Bartolome Campus, Main Building", room: "202", capacity: 15 },
-  { key: "upcoming", date: "2026-12-05", time: "08:00", venue: "QCU Batasan Campus, Academic Building", room: "105", capacity: 5 },
+  { key: "morning",   date: "2026-09-12", time: "08:00", end_time: "10:00", venue: "QCU San Bartolome Campus, Main Building", room: "201", capacity: 15 },
+  { key: "afternoon", date: "2026-09-12", time: "13:00", end_time: "15:00", venue: "QCU San Bartolome Campus, Main Building", room: "202", capacity: 15 },
+  { key: "upcoming",  date: "2026-12-05", time: "08:00", end_time: "10:00", venue: "QCU Batasan Campus, Academic Building",    room: "105", capacity: 5  },
 ];
 
 const sessionWhere = (examId: number, s: DemoSession) => ({
@@ -65,7 +70,7 @@ export async function seedDemoExamSchedule(examId: number, markedBy: number | nu
       continue;
     }
     const created = await prisma.tbl_exam_session.create({
-      data: { ...sessionWhere(examId, s), start_time: s.time, capacity: s.capacity, created_by: markedBy },
+      data: { ...sessionWhere(examId, s), start_time: s.time, end_time: s.end_time, capacity: s.capacity, created_by: markedBy },
       select: { session_id: true },
     });
     sessions[s.key] = created.session_id;
@@ -192,4 +197,67 @@ export async function seedDemoSubjectScores(examId: number) {
   }
 
   log("demo", `subject scores for ${results.length} exam results (${rows} rows)`);
+}
+
+const isDirectRun =
+  Boolean(process.argv[1]) &&
+  path.resolve(process.argv[1]) === path.resolve(__filename);
+
+if (isDirectRun) {
+  const EXAM_NAME = "TANAW Admission Test";
+  const args = new Set(process.argv.slice(2));
+  const shouldReset = args.has("--reset") || args.has("--reset-demo");
+
+  async function main() {
+    console.log("Seeding demo exams...");
+
+    const cycle = await prisma.tbl_admission_cycle.findFirst({
+      where: { is_active: true },
+      orderBy: { start_date: "desc" },
+    });
+
+    if (!cycle) {
+      warn("demo", "no active admission cycle — run base seed first.");
+      return;
+    }
+
+    const exam =
+      (await prisma.tbl_exam.findFirst({
+        where: { cycle_id: cycle.cycle_id, exam_name: EXAM_NAME },
+      })) ??
+      (await prisma.tbl_exam.create({
+        data: {
+          cycle_id: cycle.cycle_id,
+          exam_name: EXAM_NAME,
+          exam_date: new Date("2026-09-12T00:00:00.000Z"),
+          total_items: 100,
+          max_score: 100,
+        },
+      }));
+
+    const actor = await prisma.tbl_user_account.findFirst({
+      where: { username: { in: ["test.admission@example.com", "systemadmin"] } },
+      orderBy: { user_id: "asc" },
+      select: { user_id: true },
+    });
+
+    if (shouldReset) {
+      console.log("Resetting demo exam sessions...");
+      await resetDemoExamSessions(exam.exam_id);
+    }
+
+    await seedDemoExamSchedule(exam.exam_id, actor?.user_id ?? null);
+    await seedDemoSubjectScores(exam.exam_id);
+
+    console.log("Demo exams done.");
+  }
+
+  main()
+    .catch((error) => {
+      console.error("Demo exam seeding failed:", error);
+      process.exitCode = 1;
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
 }
