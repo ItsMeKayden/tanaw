@@ -5,18 +5,16 @@ import { QcuWatermark } from "@/components/admission/qcu-watermark";
 import RolePermissionEditor from "@/components/user-management/role-permission-editor";
 import { getRoleLabels } from "@/features/user-management/role-labels";
 import type { AccessLevel } from "@/features/user-management/schemas";
-import { requirePermission } from "@/lib/authorization";
+import { requireRole } from "@/lib/authorization";
 import { MODULES, ROLE_NAMES, type ModuleCode, type RoleName } from "@/lib/modules";
-import { hasPermission } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { GridEditorSkeleton } from "@/components/ui/skeletons";
 
 async function RolesContent() {
   await connection();
-  const currentUser = await requirePermission("users", "read");
+  const currentUser = await requireRole(["SYSTEM_ADMIN"]);
 
-  const [canWrite, roles, assignments, roleLabels] = await Promise.all([
-    hasPermission(currentUser.role, "users", "write"),
+  const [roles, assignments, roleLabels] = await Promise.all([
     prisma.tbl_role.findMany({
       select: { role_name: true, description: true, _count: { select: { tbl_user_account: true } } },
     }),
@@ -67,7 +65,7 @@ async function RolesContent() {
         </p>
       </div>
 
-      <RolePermissionEditor roles={roleRows} initial={matrix} canEdit={canWrite} currentRole={currentUser.role} />
+      <RolePermissionEditor roles={roleRows} initial={matrix} canEdit currentRole={currentUser.role} />
     </div>
   );
 }

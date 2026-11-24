@@ -9,16 +9,18 @@ import { getApplicantFormReferenceData } from "@/features/admission/applicant-fo
 import { requirePermission } from "@/lib/authorization";
 import { BackLink } from "@/components/ui/back-link";
 import { FormSkeleton } from "@/components/ui/skeletons";
+import { parseAdmissionStep } from "@/lib/admission-form-url";
 
 type EditApplicantPageProps = Readonly<{
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ step?: string }>;
 }>;
 
-async function EditApplicantContent({ params }: EditApplicantPageProps) {
+async function EditApplicantContent({ params, searchParams }: EditApplicantPageProps) {
   await connection();
-  await requirePermission("admission", "write");
+  const user = await requirePermission("admission", "write");
 
-  const { id } = await params;
+  const [{ id }, query] = await Promise.all([params, searchParams]);
   const applicantId = Number(id);
 
   if (!Number.isSafeInteger(applicantId) || applicantId <= 0) {
@@ -46,7 +48,9 @@ async function EditApplicantContent({ params }: EditApplicantPageProps) {
       </div>
 
       <ApplicantForm
+        userId={user.id}
         mode="edit"
+        initialStep={parseAdmissionStep(query.step)}
         initialValues={data.initialValues}
         initialDistrictId={data.initialDistrictId}
         ids={data.ids}
@@ -58,10 +62,10 @@ async function EditApplicantContent({ params }: EditApplicantPageProps) {
   );
 }
 
-export default function EditApplicantPage({ params }: EditApplicantPageProps) {
+export default function EditApplicantPage({ params, searchParams }: EditApplicantPageProps) {
   return (
     <Suspense fallback={<FormSkeleton label="applicant form" />}>
-      <EditApplicantContent params={params} />
+      <EditApplicantContent params={params} searchParams={searchParams} />
     </Suspense>
   );
 }

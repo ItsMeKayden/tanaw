@@ -47,6 +47,7 @@ export async function ApplicantProfileView({
       <BackLink href={BACK[module]}>Back to Applicants</BackLink>
 
       <ApplicantProfile
+        userId={user.id}
         applicant={applicant}
         stages={stages}
         canWrite={canEdit}

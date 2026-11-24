@@ -19,11 +19,16 @@ declare module "next-auth" {
       id: string;
       role: UserRole;
     } & NonNullable<DefaultSession["user"]>;
+    lastActivityAt?: string;
+    absoluteExpiresAt?: string;
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
     role?: UserRole;
+    sessionId?: string;
+    sessionExpiresAt?: number;
+    lastActivityAt?: number;
   }
 }

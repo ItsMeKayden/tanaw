@@ -160,6 +160,9 @@ export async function resetPassword(input: ResetPasswordValues): Promise<Passwor
         where: { user_id: record.user_id },
         data: { password_hash: passwordHash },
       });
+      await tx.tbl_auth_session.deleteMany({
+        where: { user_id: record.user_id },
+      });
       await tx.tbl_password_reset_token.deleteMany({
         where: { user_id: record.user_id, token_id: { not: record.token_id } },
       });

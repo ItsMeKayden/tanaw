@@ -3,7 +3,7 @@
 import { hash } from "bcryptjs";
 import { revalidatePath } from "next/cache";
 
-import { requirePermission } from "@/lib/authorization";
+import { requireRole } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
 import { createUserSchema, type CreateUserValues } from "@/features/user-management/schemas";
 
@@ -23,21 +23,12 @@ function issuesToResult(issues: { path: PropertyKey[]; message: string }[]): Use
 }
 
 export async function createUser(input: CreateUserValues): Promise<UserActionResult> {
-  const currentUser = await requirePermission("users", "write");
+  await requireRole(["SYSTEM_ADMIN"]);
 
   const parsed = createUserSchema.safeParse(input);
   if (!parsed.success) return issuesToResult(parsed.error.issues);
 
   const { name, email, password, role, isActive } = parsed.data;
-
-  // Only System Admins can create other System Admin accounts.
-  if (role === "SYSTEM_ADMIN" && currentUser.role !== "SYSTEM_ADMIN") {
-    return {
-      success: false,
-      message: "Only a System Admin can create System Admin accounts.",
-      fieldErrors: { role: "Only a System Admin can assign this role." },
-    };
-  }
 
   try {
     const existingUser = await prisma.tbl_user_account.findFirst({

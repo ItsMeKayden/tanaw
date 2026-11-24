@@ -91,6 +91,7 @@ export async function ApplicantsView({ module }: Readonly<{ module: "admission" 
       </div>
 
       <ApplicantTable
+        userId={user.id}
         applicants={rows}
         canEdit={canEdit}
         canArchive={canArchive}
