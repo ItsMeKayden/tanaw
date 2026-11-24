@@ -1,3 +1,7 @@
+import "dotenv/config";
+
+import path from "node:path";
+
 /**
  * Demo data for local development: applicants spread across every admission
  * stage, exam results, stage history, quotas, and sample documents. Exam
@@ -395,4 +399,39 @@ async function seedQuotas(
   }
 
   log("demo", `${targets.length} quotas (${created} new)`);
+}
+
+const isDirectRun =
+  Boolean(process.argv[1]) &&
+  path.resolve(process.argv[1]) === path.resolve(__filename);
+
+if (isDirectRun) {
+  const args = new Set(process.argv.slice(2));
+  const reset = args.has("--reset") || args.has("--reset-demo");
+  const resetOnly = args.has("--reset-only");
+
+  async function main() {
+    console.log("Seeding demo data...");
+
+    if (reset) {
+      console.log("Demo data (reset)");
+      await resetDemoData();
+    }
+
+    if (!resetOnly) {
+      console.log("Demo data");
+      await seedDemoData();
+    }
+
+    console.log("Demo data done.");
+  }
+
+  main()
+    .catch((error) => {
+      console.error("Demo data seeding failed:", error);
+      process.exitCode = 1;
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
 }
