@@ -81,6 +81,15 @@ export async function deleteExamSession(sessionIdInput: number): Promise<ActionR
   if (!sessionId) return { error: "Invalid exam session." };
 
   try {
+    const scored = await prisma.tbl_exam_session_applicant.count({
+      where: { session_id: sessionId, tbl_application: { tbl_exam_result: { some: {} } } },
+    });
+    if (scored > 0) {
+      return {
+        error: `${scored} applicant${scored === 1 ? " in this session has" : "s in this session have"} exam scores, so the session (and their attendance) can't be deleted.`,
+      };
+    }
+
     const deleted = await prisma.tbl_exam_session.deleteMany({ where: { session_id: sessionId } });
     if (deleted.count === 0) return { error: "Exam session not found." };
     revalidate();
@@ -156,6 +165,11 @@ export async function removeFromSession(sessionIdInput: number, applicationIdInp
   if (!sessionId || !applicationId) return { error: "Invalid applicant." };
 
   try {
+    const scored = await prisma.tbl_exam_result.count({ where: { application_id: applicationId } });
+    if (scored > 0) {
+      return { error: "This applicant already has an exam score, so they can't be removed from the session." };
+    }
+
     const deleted = await prisma.tbl_exam_session_applicant.deleteMany({
       where: { session_id: sessionId, application_id: applicationId },
     });
@@ -170,7 +184,8 @@ export async function removeFromSession(sessionIdInput: number, applicationIdInp
 /**
  * Saves attendance for a session. Present applicants still "For Examination"
  * move to "Exam Completed"; an applicant changed to absent moves back if
- * they have no exam result yet. Stage changes are logged.
+ * they have no exam result yet. An applicant with an exam result can't be
+ * changed to absent. Stage changes are logged.
  */
 export async function saveAttendance(
   sessionIdInput: number,
@@ -194,12 +209,32 @@ export async function saveAttendance(
         where: { session_id: sessionId, application_id: { in: entries.map((e) => e.application_id) } },
         select: {
           application_id: true,
+          attendance: true,
           tbl_application: {
-            select: { current_stage_id: true, _count: { select: { tbl_exam_result: true } } },
+            select: { application_no: true, current_stage_id: true, _count: { select: { tbl_exam_result: true } } },
           },
         },
       });
       if (seats.length !== entries.length) throw new Error("The applicant list changed. Reload the page.");
+
+      // Scores require attendance, so a scored applicant can't be changed to absent
+      // (their result, stage and course recommendations would no longer match).
+      const scoredToAbsent = entries
+        .map((entry) => ({ entry, seat: seats.find((s) => s.application_id === entry.application_id)! }))
+        .filter(
+          ({ entry, seat }) =>
+            !entry.present &&
+            seat.attendance !== ATTENDANCE.ABSENT &&
+            seat.tbl_application._count.tbl_exam_result > 0,
+        )
+        .map(({ seat }) => seat.tbl_application.application_no);
+      if (scoredToAbsent.length > 0) {
+        throw new Error(
+          `${scoredToAbsent.join(", ")} already ${scoredToAbsent.length === 1 ? "has an exam score" : "have exam scores"}, so ${
+            scoredToAbsent.length === 1 ? "it" : "they"
+          } can't be marked absent.`,
+        );
+      }
 
       const { forExamination, examCompleted } = await stageIds(tx);
       let stageChanges = 0;

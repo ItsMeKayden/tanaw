@@ -35,6 +35,8 @@ export type SeatRow = {
   application_no: string;
   name: string;
   attendance: "PRESENT" | "ABSENT" | null;
+  /** Has an exam score: can't be changed to absent or removed from the session. */
+  scored: boolean;
 };
 
 type Feedback = { type: "success" | "error"; text: string } | null;
@@ -221,13 +223,16 @@ function AttendancePanel({
             let badge = "border-neutral-400 bg-neutral-100 text-neutral-700";
             if (status === "Present") badge = "border-green-600 bg-green-100 text-green-900";
             if (status === "Absent") badge = "border-red-400 bg-red-100 text-red-900";
+            // A scored applicant stays present and stays in the session.
+            const locked = seat.scored && seat.attendance === "PRESENT";
             return (
               <li key={seat.application_id} className="flex items-center gap-2 rounded px-1 py-0.5 hover:bg-[#f4f5fd]">
                 <input
                   type="checkbox"
                   id={`seat-${seat.application_id}`}
                   checked={checked}
-                  disabled={!canWrite}
+                  disabled={!canWrite || locked}
+                  title={locked ? "Has an exam score, so attendance stays Present" : undefined}
                   onChange={(e) => {
                     setTouched(true);
                     setPresent((prev) => ({ ...prev, [seat.application_id]: e.target.checked }));
@@ -237,8 +242,13 @@ function AttendancePanel({
                 <label htmlFor={`seat-${seat.application_id}`} className="min-w-0 flex-1 truncate" title={seat.application_no}>
                   {seat.name}
                 </label>
+                {seat.scored && (
+                  <span className="rounded-full border border-[#191e73]/30 bg-[#e3e4f8] px-2 text-[11px] text-[#191e73]" title="Has an exam score">
+                    Scored
+                  </span>
+                )}
                 <span className={`rounded-full border px-2 text-[11px] ${badge}`}>{status}</span>
-                {canWrite && (
+                {canWrite && !seat.scored && (
                   <button
                     type="button"
                     disabled={isPending}
