@@ -106,6 +106,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
     async signOut(message) {
       const token = "token" in message ? message.token : null;
+
+      // End the server-side session so the JWT can't be reused.
+      if (typeof token?.sessionId === "string") {
+        await prisma.tbl_auth_session.deleteMany({
+          where: { session_id: token.sessionId },
+        });
+      }
+
       await recordAuditEvent({
         action: "LOGOUT",
         description: `${token?.name ?? token?.email ?? "A user"} signed out.`,
@@ -193,16 +201,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
 
       return session;
-    },
-  },
-
-  events: {
-    async signOut(message) {
-      if ("token" in message && typeof message.token?.sessionId === "string") {
-        await prisma.tbl_auth_session.deleteMany({
-          where: { session_id: message.token.sessionId },
-        });
-      }
     },
   },
 });

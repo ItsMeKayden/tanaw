@@ -121,8 +121,8 @@ const navigationItems: NavigationItem[] = [
   {
     label: "User Management",
     icon: "users",
-    permission: "users",
-    requiredRole: "SYSTEM_ADMIN",
+    // Accounts and Roles are admin-only; Audit Log follows the audit
+    // permission. The group hides itself when no child is left.
     permission: ["users", "audit"],
     children: [
       {

@@ -446,8 +446,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "tbl_admission_cycle" | "tbl_admission_stage" | "tbl_applicant" | "tbl_application" | "tbl_application_stage_log" | "tbl_barangay" | "tbl_branch" | "tbl_competency" | "tbl_course_recommendation" | "tbl_district" | "tbl_exam" | "tbl_exam_question" | "tbl_exam_result" | "tbl_import_batch" | "tbl_passing_score_setting" | "tbl_permission" | "tbl_program" | "tbl_program_competency" | "tbl_question_response" | "tbl_quota" | "tbl_role" | "tbl_role_permission" | "tbl_school" | "tbl_user_account" | "tbl_admission_draft" | "tbl_auth_session" | "tbl_password_reset_token" | "tbl_application_document" | "tbl_exam_session" | "tbl_exam_session_applicant" | "tbl_exam_subject_score" | "tbl_recommendation_setting"
-    modelProps: "user" | "tbl_admission_cycle" | "tbl_admission_stage" | "tbl_applicant" | "tbl_application" | "tbl_application_stage_log" | "tbl_barangay" | "tbl_branch" | "tbl_competency" | "tbl_course_recommendation" | "tbl_district" | "tbl_exam" | "tbl_exam_question" | "tbl_exam_result" | "tbl_import_batch" | "tbl_passing_score_setting" | "tbl_permission" | "tbl_program" | "tbl_program_competency" | "tbl_question_response" | "tbl_quota" | "tbl_role" | "tbl_role_permission" | "tbl_school" | "tbl_user_account" | "tbl_password_reset_token" | "tbl_application_document" | "tbl_exam_session" | "tbl_exam_session_applicant" | "tbl_exam_subject_score" | "tbl_recommendation_setting" | "tbl_audit_log"
+    modelProps: "user" | "tbl_admission_cycle" | "tbl_admission_stage" | "tbl_applicant" | "tbl_application" | "tbl_application_stage_log" | "tbl_barangay" | "tbl_branch" | "tbl_competency" | "tbl_course_recommendation" | "tbl_district" | "tbl_exam" | "tbl_exam_question" | "tbl_exam_result" | "tbl_import_batch" | "tbl_passing_score_setting" | "tbl_permission" | "tbl_program" | "tbl_program_competency" | "tbl_question_response" | "tbl_quota" | "tbl_role" | "tbl_role_permission" | "tbl_school" | "tbl_user_account" | "tbl_admission_draft" | "tbl_auth_session" | "tbl_password_reset_token" | "tbl_application_document" | "tbl_exam_session" | "tbl_exam_session_applicant" | "tbl_exam_subject_score" | "tbl_recommendation_setting" | "tbl_audit_log"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3432,6 +3431,14 @@ export const JsonNullValueInput = {
 export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -3579,20 +3586,6 @@ export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 
  * Reference to a field of type 'BigInt[]'
  */
 export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
-    
-
-
-/**
- * Reference to a field of type 'Json'
- */
-export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-/**
- * Reference to a field of type 'QueryMode'
- */
-export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
