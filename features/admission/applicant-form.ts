@@ -110,8 +110,19 @@ export const applicantFormSchema = z
     email: z
       .string()
       .trim()
-      .max(150, "Email must not exceed 150 characters.")
-      .refine((v) => !v || EMAIL_PATTERN.test(v), "Enter a valid email address (e.g. name@gmail.com)."),
+      .superRefine((v, ctx) => {
+        if (!v) {
+          ctx.addIssue({ code: "custom", message: "Email is required." });
+          return;
+        }
+        if (v.length > 150) {
+          ctx.addIssue({ code: "custom", message: "Email must not exceed 150 characters." });
+          return;
+        }
+        if (!EMAIL_PATTERN.test(v)) {
+          ctx.addIssue({ code: "custom", message: "Enter a valid email address (e.g. name@gmail.com)." });
+        }
+      }),
     mobile_no: z
       .string()
       .trim()

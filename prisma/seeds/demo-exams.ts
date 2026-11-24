@@ -1,3 +1,7 @@
+import "dotenv/config";
+
+import path from "node:path";
+
 /**
  * Demo data for the Exam Schedule and Exam Scores pages:
  *
@@ -192,4 +196,67 @@ export async function seedDemoSubjectScores(examId: number) {
   }
 
   log("demo", `subject scores for ${results.length} exam results (${rows} rows)`);
+}
+
+const isDirectRun =
+  Boolean(process.argv[1]) &&
+  path.resolve(process.argv[1]) === path.resolve(__filename);
+
+if (isDirectRun) {
+  const EXAM_NAME = "TANAW Admission Test";
+  const args = new Set(process.argv.slice(2));
+  const shouldReset = args.has("--reset") || args.has("--reset-demo");
+
+  async function main() {
+    console.log("Seeding demo exams...");
+
+    const cycle = await prisma.tbl_admission_cycle.findFirst({
+      where: { is_active: true },
+      orderBy: { start_date: "desc" },
+    });
+
+    if (!cycle) {
+      warn("demo", "no active admission cycle — run base seed first.");
+      return;
+    }
+
+    const exam =
+      (await prisma.tbl_exam.findFirst({
+        where: { cycle_id: cycle.cycle_id, exam_name: EXAM_NAME },
+      })) ??
+      (await prisma.tbl_exam.create({
+        data: {
+          cycle_id: cycle.cycle_id,
+          exam_name: EXAM_NAME,
+          exam_date: new Date("2026-09-12T00:00:00.000Z"),
+          total_items: 100,
+          max_score: 100,
+        },
+      }));
+
+    const actor = await prisma.tbl_user_account.findFirst({
+      where: { username: { in: ["test.admission@example.com", "systemadmin"] } },
+      orderBy: { user_id: "asc" },
+      select: { user_id: true },
+    });
+
+    if (shouldReset) {
+      console.log("Resetting demo exam sessions...");
+      await resetDemoExamSessions(exam.exam_id);
+    }
+
+    await seedDemoExamSchedule(exam.exam_id, actor?.user_id ?? null);
+    await seedDemoSubjectScores(exam.exam_id);
+
+    console.log("Demo exams done.");
+  }
+
+  main()
+    .catch((error) => {
+      console.error("Demo exam seeding failed:", error);
+      process.exitCode = 1;
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
 }

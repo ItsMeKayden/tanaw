@@ -132,7 +132,7 @@ export async function parseApplicantForm(
         suffix: values.suffix || null,
         sex: values.sex,
         birth_date: new Date(`${values.birth_date}T00:00:00.000Z`),
-        email: values.email || null,
+        email: values.email,
         mobile_no: normalizeMobile(values.mobile_no) || null,
       },
       application: {

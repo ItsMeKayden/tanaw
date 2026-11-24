@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { Loader2 } from "lucide-react";
 
 import ApplicantForm from "@/components/admission/applicant-form";
+import { DiscardWarningModal } from "@/components/admission/discard-warning-modal";
 import { Modal } from "@/components/ui/modal";
 import { loadApplicantForm, type ApplicantFormReference } from "@/features/admission/actions/load-applicant";
 import { emptyApplicantForm } from "@/features/admission/applicant-form";
@@ -37,6 +38,7 @@ export function ApplicantFormModal({
 }>) {
   // Last load result, tagged with the request it belongs to.
   const [result, setResult] = useState<{ key: string; loaded?: Loaded; error?: string } | null>(null);
+  const [showCloseWarning, setShowCloseWarning] = useState(false);
   const dirty = useRef(false);
   const setDirty = useCallback((value: boolean) => {
     dirty.current = value;
@@ -75,12 +77,20 @@ export function ApplicantFormModal({
   const loaded: Loaded | null = instant ?? current?.loaded ?? null;
   const error = current?.error ?? null;
 
-  function close(force = false) {
-    if (!force && dirty.current && !window.confirm("Discard your changes and close this form?")) return;
+  function forceClose() {
+    setShowCloseWarning(false);
     dirty.current = false;
     clearAdmissionFormUrl();
     setResult(null); // reopening reloads fresh data
     onClose();
+  }
+
+  function close(force = false) {
+    if (!force && dirty.current) {
+      setShowCloseWarning(true);
+      return;
+    }
+    forceClose();
   }
 
   function saved(applicantId: number, mode: "create" | "edit") {
@@ -145,6 +155,11 @@ export function ApplicantFormModal({
           {...loaded.reference.referenceData}
         />
       )}
+      <DiscardWarningModal
+        open={showCloseWarning}
+        onKeepEditing={() => setShowCloseWarning(false)}
+        onDiscard={forceClose}
+      />
     </Modal>
   );
 }

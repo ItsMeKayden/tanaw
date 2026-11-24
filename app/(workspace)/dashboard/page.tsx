@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import { Activity, ScrollText, ShieldAlert, ShieldCheck, Users } from "lucide-react";
 
 import { connection } from "next/server";
 
@@ -10,6 +11,9 @@ import { OverviewSkeleton } from "@/components/ui/skeletons";
 import { tableStyles } from "@/components/ui/table-styles";
 import { resolveCycle } from "@/features/admission/admission-stats";
 import { ADMISSION_STAGES, EXAM_RESULT_PASSED } from "@/features/admission/stages";
+import { tableInfo } from "@/features/audit-log/labels";
+import { getAuditActivities, getAuditStats } from "@/features/audit-log/queries";
+import { getRoleLabels } from "@/features/user-management/role-labels";
 import { requirePermission } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
 
@@ -1097,10 +1101,234 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 	);
 }
 
+function adminTimeAgo(iso: string) {
+	const seconds = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
+	if (seconds < 60) return "just now";
+	if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+	if (seconds < 86_400) return `${Math.floor(seconds / 3600)}h ago`;
+	return new Date(iso).toLocaleDateString("en-PH", { month: "short", day: "numeric" });
+}
+
+async function AdminDashboard() {
+	await connection();
+	await requirePermission("dashboard", "read");
+
+	const [totalAccounts, activeAccounts, inactiveAccounts, roles, auditStats, auditData, roleLabels] = await Promise.all([
+		prisma.tbl_user_account.count(),
+		prisma.tbl_user_account.count({ where: { is_active: true } }),
+		prisma.tbl_user_account.count({ where: { is_active: false } }),
+		prisma.tbl_role.findMany({
+			select: {
+				role_name: true,
+				description: true,
+				_count: { select: { tbl_user_account: true } },
+			},
+			orderBy: { role_name: "asc" },
+		}),
+		getAuditStats(),
+		getAuditActivities({ page: 1 }),
+		getRoleLabels(),
+	]);
+
+	const recentActivities = auditData.activities.slice(0, 7);
+
+	return (
+		<div className="relative isolate min-h-full space-y-5 p-4 sm:p-6">
+			<QcuWatermark />
+			<div className="relative z-10">
+				<div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+					<div>
+						<h1 className="text-2xl font-bold tracking-tight text-neutral-900">Dashboard</h1>
+						<p className="text-sm text-neutral-700">Account management and audit trail overview</p>
+					</div>
+					<div className="flex flex-wrap items-center gap-2">
+						<Link
+							href="/user-management/accounts"
+							className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-400 bg-white px-3 py-1.5 text-xs font-semibold text-neutral-800 shadow-sm transition hover:bg-neutral-50"
+						>
+							<Users className="size-3.5 text-[#0d1b8c]" aria-hidden="true" />
+							User Accounts
+						</Link>
+						<Link
+							href="/user-management/roles"
+							className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-400 bg-white px-3 py-1.5 text-xs font-semibold text-neutral-800 shadow-sm transition hover:bg-neutral-50"
+						>
+							<ShieldCheck className="size-3.5 text-[#0d1b8c]" aria-hidden="true" />
+							Roles &amp; Permissions
+						</Link>
+						<Link
+							href="/user-management/audit-log"
+							className="inline-flex items-center gap-1.5 rounded-lg bg-[#0d1b8c] px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-[#1f3d8f]"
+						>
+							<ScrollText className="size-3.5" aria-hidden="true" />
+							View Full Audit Log
+						</Link>
+					</div>
+				</div>
+
+				<div className="grid gap-3 md:grid-cols-4">
+					<div className="rounded-xl border border-neutral-400 bg-white px-4 py-3 shadow-sm">
+						<div className="flex items-center justify-between text-neutral-600">
+							<span className="text-[13px] font-medium text-[#202020]">User Accounts</span>
+							<Users className="size-4 text-[#0d1b8c]" aria-hidden="true" />
+						</div>
+						<div className="mt-2 flex items-baseline justify-between">
+							<div className="text-3xl font-bold text-[#111827]">{totalAccounts}</div>
+							<div className="text-[11px] font-medium text-[#4b5563]">
+								<span className="font-semibold text-emerald-700">{activeAccounts}</span> active · {inactiveAccounts} inactive
+							</div>
+						</div>
+					</div>
+
+					<div className="rounded-xl border border-neutral-400 bg-white px-4 py-3 shadow-sm">
+						<div className="flex items-center justify-between text-neutral-600">
+							<span className="text-[13px] font-medium text-[#202020]">Changes Today</span>
+							<Activity className="size-4 text-[#0d1b8c]" aria-hidden="true" />
+						</div>
+						<div className="mt-2 flex items-baseline justify-between">
+							<div className="text-3xl font-bold text-[#111827]">{auditStats.changesToday}</div>
+							<div className="text-[11px] font-medium text-[#4b5563]">
+								{auditStats.usersToday} user{auditStats.usersToday === 1 ? "" : "s"} active today
+							</div>
+						</div>
+					</div>
+
+					<div className="rounded-xl border border-neutral-400 bg-white px-4 py-3 shadow-sm">
+						<div className="flex items-center justify-between text-neutral-600">
+							<span className="text-[13px] font-medium text-[#202020]">Changes This Week</span>
+							<ScrollText className="size-4 text-[#0d1b8c]" aria-hidden="true" />
+						</div>
+						<div className="mt-2 flex items-baseline justify-between">
+							<div className="text-3xl font-bold text-[#111827]">{auditStats.changesThisWeek}</div>
+							<div className="text-[11px] font-medium text-[#4b5563]">
+								{auditStats.totalEntries.toLocaleString()} total entries
+							</div>
+						</div>
+					</div>
+
+					<div className={`rounded-xl border bg-white px-4 py-3 shadow-sm ${auditStats.failedSignIns > 0 ? "border-amber-300 bg-amber-50/40" : "border-neutral-400"}`}>
+						<div className="flex items-center justify-between text-neutral-600">
+							<span className="text-[13px] font-medium text-[#202020]">Failed Sign-ins (7d)</span>
+							<ShieldAlert className={`size-4 ${auditStats.failedSignIns > 0 ? "text-amber-600" : "text-neutral-400"}`} aria-hidden="true" />
+						</div>
+						<div className="mt-2 flex items-baseline justify-between">
+							<div className={`text-3xl font-bold ${auditStats.failedSignIns > 0 ? "text-amber-800" : "text-[#111827]"}`}>
+								{auditStats.failedSignIns}
+							</div>
+							<div className="text-[11px] font-medium text-[#4b5563]">
+								{auditStats.failedSignIns === 0 ? "No security alerts" : "Investigate in Audit Log"}
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div className="mt-5 grid gap-4 lg:grid-cols-[1.1fr_1.9fr]">
+					<div className="flex flex-col justify-between rounded-xl border border-[#2f5a8d] bg-white/90 p-4 shadow-sm">
+						<div>
+							<div className="mb-3 flex items-center justify-between">
+								<h2 className="text-base font-semibold text-neutral-900">Accounts by Role</h2>
+								<Link href="/user-management/accounts" className="text-xs font-semibold text-[#0d1b8c] hover:underline">
+									View accounts →
+								</Link>
+							</div>
+							<div className="divide-y divide-neutral-200">
+								{roles.map((r) => {
+									const label = roleLabels[r.role_name as keyof typeof roleLabels] ?? r.role_name;
+									const count = r._count.tbl_user_account;
+									return (
+										<div key={r.role_name} className="flex items-center justify-between gap-3 py-2.5">
+											<div className="min-w-0">
+												<div className="flex items-center gap-2">
+													<span className="text-xs font-semibold text-neutral-900">{label}</span>
+													<span className="font-mono text-[10px] text-neutral-500">({r.role_name})</span>
+												</div>
+												<p className="line-clamp-1 text-[11px] text-neutral-600">{r.description ?? "No description"}</p>
+											</div>
+											<span className="shrink-0 rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-semibold text-neutral-700">
+												{count} {count === 1 ? "user" : "users"}
+											</span>
+										</div>
+									);
+								})}
+							</div>
+						</div>
+						<div className="mt-4 border-t border-neutral-200 pt-3">
+							<Link
+								href="/user-management/roles"
+								className="block text-center text-xs font-medium text-neutral-600 hover:text-neutral-900"
+							>
+								Configure Role Permissions in User Management &rarr;
+							</Link>
+						</div>
+					</div>
+
+					<div className="rounded-xl border border-[#2f5a8d] bg-white/90 p-4 shadow-sm">
+						<div className="mb-3 flex items-center justify-between">
+							<div className="flex items-center gap-2">
+								<h2 className="text-base font-semibold text-neutral-900">Recent Audit Logs</h2>
+								<span className="rounded-full bg-[#eef0ff] px-2 py-0.5 text-[11px] font-semibold text-[#3047ba]">
+									Live Log
+								</span>
+							</div>
+							<Link href="/user-management/audit-log" className="text-xs font-semibold text-[#0d1b8c] hover:underline">
+								View all logs →
+							</Link>
+						</div>
+
+						{recentActivities.length > 0 ? (
+							<div className="divide-y divide-neutral-200 text-sm">
+								{recentActivities.map((act) => {
+									const headline = act.changes[0];
+									const description = headline?.description || headline?.action || "Recorded action";
+									const moduleName = headline?.table_name ? tableInfo(headline.table_name).module : "System";
+
+									return (
+										<div key={act.key} className="flex items-start justify-between gap-3 py-2.5">
+											<div className="min-w-0 flex-1 space-y-0.5">
+												<div className="flex items-center gap-2">
+													<span className="text-xs font-medium text-neutral-900">
+														{act.actor_name ?? act.actor_email ?? "System"}
+													</span>
+													{act.actor_role && (
+														<span className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-medium text-neutral-600">
+															{act.actor_role}
+														</span>
+													)}
+													<span className="text-[11px] text-neutral-500">
+														· {adminTimeAgo(act.occurred_at)}
+													</span>
+												</div>
+												<p className="line-clamp-1 text-xs text-neutral-700">{description}</p>
+											</div>
+											<div className="flex shrink-0 items-center gap-1.5">
+												<span className="rounded-full border border-neutral-300 bg-neutral-50 px-2 py-0.5 text-[10px] font-medium text-neutral-600">
+													{moduleName}
+												</span>
+											</div>
+										</div>
+									);
+								})}
+							</div>
+						) : (
+							<div className="py-10 text-center text-sm text-neutral-500">
+								No audit activities recorded yet.
+							</div>
+						)}
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+}
+
 async function DashboardForRole(props: PageProps) {
 	await connection();
 	const session = await auth();
 	const role = session?.user?.role;
+
+	if (role === "SYSTEM_ADMIN") {
+		return <AdminDashboard />;
+	}
 
 	if (role === "GUIDANCE") {
 		return <GuidanceDashboard {...props} />;
@@ -1110,7 +1338,7 @@ async function DashboardForRole(props: PageProps) {
 		return <RegistrarDashboard {...props} />;
 	}
 
-	if (role === "PRESIDENT" || role === "SYSTEM_ADMIN") {
+	if (role === "PRESIDENT") {
 		return <DashboardContent {...props} />;
 	}
 
