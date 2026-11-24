@@ -1,17 +1,23 @@
 import { Suspense } from "react";
 import { auth } from "@/auth";
-import { getRoleLandingPath } from "@/lib/auth-navigation";
+import { getRoleLandingPath, getSafeReturnUrl } from "@/lib/auth-navigation";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 
 import { LoginForm } from "./login-form";
 
-async function LoginRoute() {
+async function LoginRoute({
+  searchParams,
+}: {
+  searchParams: Promise<{ returnUrl?: string | string[] }>;
+}) {
   await connection();
+  const params = await searchParams;
+  const returnUrl = getSafeReturnUrl(params.returnUrl);
   const session = await auth();
 
   if (session?.user) {
-    redirect(getRoleLandingPath(session.user.role));
+    redirect(returnUrl ?? getRoleLandingPath(session.user.role));
   }
 
   return <LoginForm />;
@@ -27,10 +33,14 @@ function LoginFallback() {
   );
 }
 
-export default function LoginPage() {
+export default function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ returnUrl?: string | string[] }>;
+}) {
   return (
     <Suspense fallback={<LoginFallback />}>
-      <LoginRoute />
+      <LoginRoute searchParams={searchParams} />
     </Suspense>
   );
 }

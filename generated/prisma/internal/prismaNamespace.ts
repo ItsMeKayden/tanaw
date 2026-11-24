@@ -422,6 +422,8 @@ export const ModelName = {
   tbl_role_permission: 'tbl_role_permission',
   tbl_school: 'tbl_school',
   tbl_user_account: 'tbl_user_account',
+  tbl_admission_draft: 'tbl_admission_draft',
+  tbl_auth_session: 'tbl_auth_session',
   tbl_password_reset_token: 'tbl_password_reset_token',
   tbl_application_document: 'tbl_application_document',
   tbl_exam_session: 'tbl_exam_session',
@@ -444,7 +446,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "tbl_admission_cycle" | "tbl_admission_stage" | "tbl_applicant" | "tbl_application" | "tbl_application_stage_log" | "tbl_barangay" | "tbl_branch" | "tbl_competency" | "tbl_course_recommendation" | "tbl_district" | "tbl_exam" | "tbl_exam_question" | "tbl_exam_result" | "tbl_import_batch" | "tbl_passing_score_setting" | "tbl_permission" | "tbl_program" | "tbl_program_competency" | "tbl_question_response" | "tbl_quota" | "tbl_role" | "tbl_role_permission" | "tbl_school" | "tbl_user_account" | "tbl_password_reset_token" | "tbl_application_document" | "tbl_exam_session" | "tbl_exam_session_applicant" | "tbl_exam_subject_score" | "tbl_recommendation_setting" | "tbl_audit_log"
+    modelProps: "user" | "tbl_admission_cycle" | "tbl_admission_stage" | "tbl_applicant" | "tbl_application" | "tbl_application_stage_log" | "tbl_barangay" | "tbl_branch" | "tbl_competency" | "tbl_course_recommendation" | "tbl_district" | "tbl_exam" | "tbl_exam_question" | "tbl_exam_result" | "tbl_import_batch" | "tbl_passing_score_setting" | "tbl_permission" | "tbl_program" | "tbl_program_competency" | "tbl_question_response" | "tbl_quota" | "tbl_role" | "tbl_role_permission" | "tbl_school" | "tbl_user_account" | "tbl_admission_draft" | "tbl_auth_session" | "tbl_password_reset_token" | "tbl_application_document" | "tbl_exam_session" | "tbl_exam_session_applicant" | "tbl_exam_subject_score" | "tbl_recommendation_setting" | "tbl_audit_log"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2298,6 +2300,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    tbl_admission_draft: {
+      payload: Prisma.$tbl_admission_draftPayload<ExtArgs>
+      fields: Prisma.tbl_admission_draftFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.tbl_admission_draftFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_admission_draftPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.tbl_admission_draftFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_admission_draftPayload>
+        }
+        findFirst: {
+          args: Prisma.tbl_admission_draftFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_admission_draftPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.tbl_admission_draftFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_admission_draftPayload>
+        }
+        findMany: {
+          args: Prisma.tbl_admission_draftFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_admission_draftPayload>[]
+        }
+        create: {
+          args: Prisma.tbl_admission_draftCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_admission_draftPayload>
+        }
+        createMany: {
+          args: Prisma.tbl_admission_draftCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.tbl_admission_draftCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_admission_draftPayload>[]
+        }
+        delete: {
+          args: Prisma.tbl_admission_draftDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_admission_draftPayload>
+        }
+        update: {
+          args: Prisma.tbl_admission_draftUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_admission_draftPayload>
+        }
+        deleteMany: {
+          args: Prisma.tbl_admission_draftDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.tbl_admission_draftUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.tbl_admission_draftUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_admission_draftPayload>[]
+        }
+        upsert: {
+          args: Prisma.tbl_admission_draftUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_admission_draftPayload>
+        }
+        aggregate: {
+          args: Prisma.Tbl_admission_draftAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTbl_admission_draft>
+        }
+        groupBy: {
+          args: Prisma.tbl_admission_draftGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tbl_admission_draftGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.tbl_admission_draftCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tbl_admission_draftCountAggregateOutputType> | number
+        }
+      }
+    }
+    tbl_auth_session: {
+      payload: Prisma.$tbl_auth_sessionPayload<ExtArgs>
+      fields: Prisma.tbl_auth_sessionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.tbl_auth_sessionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_auth_sessionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.tbl_auth_sessionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_auth_sessionPayload>
+        }
+        findFirst: {
+          args: Prisma.tbl_auth_sessionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_auth_sessionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.tbl_auth_sessionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_auth_sessionPayload>
+        }
+        findMany: {
+          args: Prisma.tbl_auth_sessionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_auth_sessionPayload>[]
+        }
+        create: {
+          args: Prisma.tbl_auth_sessionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_auth_sessionPayload>
+        }
+        createMany: {
+          args: Prisma.tbl_auth_sessionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.tbl_auth_sessionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_auth_sessionPayload>[]
+        }
+        delete: {
+          args: Prisma.tbl_auth_sessionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_auth_sessionPayload>
+        }
+        update: {
+          args: Prisma.tbl_auth_sessionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_auth_sessionPayload>
+        }
+        deleteMany: {
+          args: Prisma.tbl_auth_sessionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.tbl_auth_sessionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.tbl_auth_sessionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_auth_sessionPayload>[]
+        }
+        upsert: {
+          args: Prisma.tbl_auth_sessionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_auth_sessionPayload>
+        }
+        aggregate: {
+          args: Prisma.Tbl_auth_sessionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTbl_auth_session>
+        }
+        groupBy: {
+          args: Prisma.tbl_auth_sessionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tbl_auth_sessionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.tbl_auth_sessionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tbl_auth_sessionCountAggregateOutputType> | number
+        }
+      }
+    }
     tbl_password_reset_token: {
       payload: Prisma.$tbl_password_reset_tokenPayload<ExtArgs>
       fields: Prisma.tbl_password_reset_tokenFieldRefs
@@ -3147,6 +3297,29 @@ export const Tbl_user_accountScalarFieldEnum = {
 export type Tbl_user_accountScalarFieldEnum = (typeof Tbl_user_accountScalarFieldEnum)[keyof typeof Tbl_user_accountScalarFieldEnum]
 
 
+export const Tbl_admission_draftScalarFieldEnum = {
+  draft_id: 'draft_id',
+  user_id: 'user_id',
+  step_id: 'step_id',
+  status: 'status',
+  data: 'data',
+  updated_at: 'updated_at'
+} as const
+
+export type Tbl_admission_draftScalarFieldEnum = (typeof Tbl_admission_draftScalarFieldEnum)[keyof typeof Tbl_admission_draftScalarFieldEnum]
+
+
+export const Tbl_auth_sessionScalarFieldEnum = {
+  session_id: 'session_id',
+  user_id: 'user_id',
+  created_at: 'created_at',
+  last_activity_at: 'last_activity_at',
+  expires_at: 'expires_at'
+} as const
+
+export type Tbl_auth_sessionScalarFieldEnum = (typeof Tbl_auth_sessionScalarFieldEnum)[keyof typeof Tbl_auth_sessionScalarFieldEnum]
+
+
 export const Tbl_password_reset_tokenScalarFieldEnum = {
   token_id: 'token_id',
   user_id: 'user_id',
@@ -3249,6 +3422,13 @@ export const SortOrder = {
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const NullableJsonNullValueInput = {
@@ -3368,6 +3548,20 @@ export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMo
 
 
 /**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
  * Reference to a field of type 'Bytes'
  */
 export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
@@ -3392,20 +3586,6 @@ export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 
  * Reference to a field of type 'BigInt[]'
  */
 export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
-    
-
-
-/**
- * Reference to a field of type 'Json'
- */
-export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-/**
- * Reference to a field of type 'QueryMode'
- */
-export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -3598,6 +3778,8 @@ export type GlobalOmitConfig = {
   tbl_role_permission?: Prisma.tbl_role_permissionOmit
   tbl_school?: Prisma.tbl_schoolOmit
   tbl_user_account?: Prisma.tbl_user_accountOmit
+  tbl_admission_draft?: Prisma.tbl_admission_draftOmit
+  tbl_auth_session?: Prisma.tbl_auth_sessionOmit
   tbl_password_reset_token?: Prisma.tbl_password_reset_tokenOmit
   tbl_application_document?: Prisma.tbl_application_documentOmit
   tbl_exam_session?: Prisma.tbl_exam_sessionOmit

@@ -123,11 +123,13 @@ function StepIcon({ state }: Readonly<{ state: StepState }>) {
 }
 
 export default function ApplicantProfile({
+  userId,
   applicant,
   stages,
   canWrite,
   showEnrollmentLink = true,
 }: Readonly<{
+  userId: string;
   applicant: ApplicantProfileData;
   stages: Stage[];
   canWrite: boolean;
@@ -176,6 +178,7 @@ export default function ApplicantProfile({
         )}
         {canWrite && application && (
           <EditApplicantButton
+            userId={userId}
             applicantId={applicant.applicant_id}
             subtitle={`${fullName} · ${application.application_no}`}
             className="rounded-full bg-[#191e73] px-5 py-1 text-sm font-medium text-white hover:bg-[#232a99] print:hidden"
@@ -340,6 +343,7 @@ export default function ApplicantProfile({
         <h2 className="text-lg font-semibold">Documents</h2>
         {canWrite && (
           <EditApplicantButton
+            userId={userId}
             applicantId={applicant.applicant_id}
             subtitle={`${fullName} · ${application.application_no}`}
             initialStep={DOCUMENTS_STEP}

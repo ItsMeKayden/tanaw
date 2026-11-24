@@ -8,8 +8,6 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
 
-import { createApplicant } from "@/features/admission/actions/create-applicant";
-import { updateApplicant } from "@/features/admission/actions/update-applicant";
 import { DatePicker } from "@/components/ui/date-picker";
 import {
   APPLICANT_FORM_FIELDS,
@@ -31,6 +29,8 @@ import {
   validateDocumentFile,
   type DocumentSlotKey,
 } from "@/features/admission/documents";
+import { apiPost } from "@/lib/api-client";
+import { clearAdmissionFormUrl, updateAdmissionFormUrl } from "@/lib/admission-form-url";
 
 type District = {
   district_id: number;
@@ -57,6 +57,7 @@ export type ExistingDocument = {
 };
 
 type ApplicantFormProps = Readonly<{
+  userId: string;
   mode: "create" | "edit";
   initialValues: ApplicantFormValues;
   initialDistrictId?: string;
@@ -511,6 +512,7 @@ function ReviewGrid({ rows }: Readonly<{ rows: [string, ReactNode][] }>) {
 }
 
 export default function ApplicantForm({
+  userId,
   mode,
   initialValues,
   initialDistrictId = "",
@@ -531,8 +533,8 @@ export default function ApplicantForm({
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const scrollArea = useRef<HTMLDivElement>(null);
-  // Only edit mode may skip ahead; a new applicant starts at step 1.
-  const [step, setStep] = useState(mode === "edit" ? Math.min(Math.max(0, initialStep), STEPS.length - 1) : 0);
+  const restoredStep = Math.min(Math.max(0, initialStep), STEPS.length - 1);
+  const [step, setStep] = useState(restoredStep);
 
   // A new step starts at the top of the modal's scroll area. Done before
   // paint and without animation, so it never competes with the step fade.
@@ -540,7 +542,7 @@ export default function ApplicantForm({
     if (variant === "modal" && scrollArea.current) scrollArea.current.scrollTop = 0;
   }, [step, variant]);
   const [furthest, setFurthest] = useState(
-    mode === "edit" ? STEPS.length - 1 : 0,
+    mode === "edit" ? STEPS.length - 1 : restoredStep,
   );
 
   // Form state and validation: React Hook Form + the shared Zod schema.
@@ -610,6 +612,15 @@ export default function ApplicantForm({
     onDirtyChange?.(isDirty);
   }, [isDirty, onDirtyChange]);
 
+  useEffect(() => {
+    updateAdmissionFormUrl(
+      mode,
+      ids?.applicant_id,
+      step,
+      variant === "modal",
+    );
+  }, [mode, ids?.applicant_id, step, variant]);
+
   const programLabel = (id: string | undefined) => {
     const program = programs.find((p) => String(p.program_id) === id);
     return program ? `${program.program_code} – ${program.program_name}` : "";
@@ -654,7 +665,9 @@ export default function ApplicantForm({
       value: values[field] ?? "",
       "aria-invalid": Boolean(error),
       "aria-describedby": describedBy,
-      onBlur: () => void trigger(field),
+      onBlur: () => {
+        void trigger(field);
+      },
       className: inputClass(Boolean(error), extraClass),
     };
   }
@@ -724,6 +737,7 @@ export default function ApplicantForm({
   }
 
   function finish(applicantId: number) {
+    clearAdmissionFormUrl();
     if (onSuccess) onSuccess(applicantId);
     else router.push(`/admission/applicants/${applicantId}`);
   }
@@ -771,23 +785,30 @@ export default function ApplicantForm({
 
     startTransition(async () => {
       try {
+        if (mode === "edit") {
+          payload.set("applicant_id", String(ids!.applicant_id));
+          payload.set("application_id", String(ids!.application_id));
+        }
+        const response = await apiPost(
+          "/api/admission/applicants",
+          { body: payload },
+          { userId },
+        );
+        const result = (await response.json()) as
+          | { success: true; applicantId?: number }
+          | { error: string; fieldErrors?: ApplicantFieldErrors; documentErrors?: Partial<Record<DocumentSlotKey, string>> };
+        if (!response.ok || "error" in result) {
+          setSubmitError("error" in result ? result.error : "The applicant could not be saved.");
+          if ("error" in result) applyServerErrors(result.fieldErrors, result.documentErrors);
+          return;
+        }
         if (mode === "create") {
-          const result = await createApplicant(payload);
-          if ("error" in result) {
-            setSubmitError(result.error);
-            applyServerErrors(result.fieldErrors, result.documentErrors);
+          if (typeof result.applicantId !== "number") {
+            setSubmitError("The server did not confirm the applicant submission.");
             return;
           }
           finish(result.applicantId);
         } else {
-          payload.set("applicant_id", String(ids!.applicant_id));
-          payload.set("application_id", String(ids!.application_id));
-          const result = await updateApplicant(payload);
-          if ("error" in result) {
-            setSubmitError(result.error);
-            applyServerErrors(result.fieldErrors, result.documentErrors);
-            return;
-          }
           finish(ids!.applicant_id);
         }
         router.refresh();

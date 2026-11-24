@@ -254,6 +254,8 @@ export type tbl_user_accountWhereInput = {
   archived_applicants?: Prisma.Tbl_applicantListRelationFilter
   recommendation_settings?: Prisma.Tbl_recommendation_settingListRelationFilter
   password_reset_tokens?: Prisma.Tbl_password_reset_tokenListRelationFilter
+  auth_sessions?: Prisma.Tbl_auth_sessionListRelationFilter
+  admission_drafts?: Prisma.Tbl_admission_draftListRelationFilter
   tbl_role?: Prisma.XOR<Prisma.Tbl_roleNullableScalarRelationFilter, Prisma.tbl_roleWhereInput> | null
 }
 
@@ -276,6 +278,8 @@ export type tbl_user_accountOrderByWithRelationInput = {
   archived_applicants?: Prisma.tbl_applicantOrderByRelationAggregateInput
   recommendation_settings?: Prisma.tbl_recommendation_settingOrderByRelationAggregateInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenOrderByRelationAggregateInput
+  auth_sessions?: Prisma.tbl_auth_sessionOrderByRelationAggregateInput
+  admission_drafts?: Prisma.tbl_admission_draftOrderByRelationAggregateInput
   tbl_role?: Prisma.tbl_roleOrderByWithRelationInput
 }
 
@@ -301,6 +305,8 @@ export type tbl_user_accountWhereUniqueInput = Prisma.AtLeast<{
   archived_applicants?: Prisma.Tbl_applicantListRelationFilter
   recommendation_settings?: Prisma.Tbl_recommendation_settingListRelationFilter
   password_reset_tokens?: Prisma.Tbl_password_reset_tokenListRelationFilter
+  auth_sessions?: Prisma.Tbl_auth_sessionListRelationFilter
+  admission_drafts?: Prisma.Tbl_admission_draftListRelationFilter
   tbl_role?: Prisma.XOR<Prisma.Tbl_roleNullableScalarRelationFilter, Prisma.tbl_roleWhereInput> | null
 }, "user_id" | "username">
 
@@ -351,6 +357,8 @@ export type tbl_user_accountCreateInput = {
   archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
   recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftCreateNestedManyWithoutUserInput
   tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
 }
 
@@ -373,6 +381,8 @@ export type tbl_user_accountUncheckedCreateInput = {
   archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type tbl_user_accountUpdateInput = {
@@ -392,6 +402,8 @@ export type tbl_user_accountUpdateInput = {
   archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUpdateManyWithoutUserNestedInput
   tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
 }
 
@@ -414,6 +426,8 @@ export type tbl_user_accountUncheckedUpdateInput = {
   archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type tbl_user_accountCreateManyInput = {
@@ -632,6 +646,34 @@ export type tbl_user_accountUncheckedUpdateManyWithoutTbl_roleNestedInput = {
   deleteMany?: Prisma.tbl_user_accountScalarWhereInput | Prisma.tbl_user_accountScalarWhereInput[]
 }
 
+export type tbl_user_accountCreateNestedOneWithoutAdmission_draftsInput = {
+  create?: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutAdmission_draftsInput, Prisma.tbl_user_accountUncheckedCreateWithoutAdmission_draftsInput>
+  connectOrCreate?: Prisma.tbl_user_accountCreateOrConnectWithoutAdmission_draftsInput
+  connect?: Prisma.tbl_user_accountWhereUniqueInput
+}
+
+export type tbl_user_accountUpdateOneRequiredWithoutAdmission_draftsNestedInput = {
+  create?: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutAdmission_draftsInput, Prisma.tbl_user_accountUncheckedCreateWithoutAdmission_draftsInput>
+  connectOrCreate?: Prisma.tbl_user_accountCreateOrConnectWithoutAdmission_draftsInput
+  upsert?: Prisma.tbl_user_accountUpsertWithoutAdmission_draftsInput
+  connect?: Prisma.tbl_user_accountWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.tbl_user_accountUpdateToOneWithWhereWithoutAdmission_draftsInput, Prisma.tbl_user_accountUpdateWithoutAdmission_draftsInput>, Prisma.tbl_user_accountUncheckedUpdateWithoutAdmission_draftsInput>
+}
+
+export type tbl_user_accountCreateNestedOneWithoutAuth_sessionsInput = {
+  create?: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutAuth_sessionsInput, Prisma.tbl_user_accountUncheckedCreateWithoutAuth_sessionsInput>
+  connectOrCreate?: Prisma.tbl_user_accountCreateOrConnectWithoutAuth_sessionsInput
+  connect?: Prisma.tbl_user_accountWhereUniqueInput
+}
+
+export type tbl_user_accountUpdateOneRequiredWithoutAuth_sessionsNestedInput = {
+  create?: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutAuth_sessionsInput, Prisma.tbl_user_accountUncheckedCreateWithoutAuth_sessionsInput>
+  connectOrCreate?: Prisma.tbl_user_accountCreateOrConnectWithoutAuth_sessionsInput
+  upsert?: Prisma.tbl_user_accountUpsertWithoutAuth_sessionsInput
+  connect?: Prisma.tbl_user_accountWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.tbl_user_accountUpdateToOneWithWhereWithoutAuth_sessionsInput, Prisma.tbl_user_accountUpdateWithoutAuth_sessionsInput>, Prisma.tbl_user_accountUncheckedUpdateWithoutAuth_sessionsInput>
+}
+
 export type tbl_user_accountCreateNestedOneWithoutPassword_reset_tokensInput = {
   create?: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutPassword_reset_tokensInput, Prisma.tbl_user_accountUncheckedCreateWithoutPassword_reset_tokensInput>
   connectOrCreate?: Prisma.tbl_user_accountCreateOrConnectWithoutPassword_reset_tokensInput
@@ -726,6 +768,8 @@ export type tbl_user_accountCreateWithoutArchived_applicantsInput = {
   tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantCreateNestedManyWithoutTbl_user_accountInput
   recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftCreateNestedManyWithoutUserInput
   tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
 }
 
@@ -747,6 +791,8 @@ export type tbl_user_accountUncheckedCreateWithoutArchived_applicantsInput = {
   tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedCreateNestedManyWithoutTbl_user_accountInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type tbl_user_accountCreateOrConnectWithoutArchived_applicantsInput = {
@@ -781,6 +827,8 @@ export type tbl_user_accountUpdateWithoutArchived_applicantsInput = {
   tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUpdateManyWithoutTbl_user_accountNestedInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUpdateManyWithoutUserNestedInput
   tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
 }
 
@@ -802,6 +850,8 @@ export type tbl_user_accountUncheckedUpdateWithoutArchived_applicantsInput = {
   tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type tbl_user_accountCreateWithoutTbl_application_stage_logInput = {
@@ -820,6 +870,8 @@ export type tbl_user_accountCreateWithoutTbl_application_stage_logInput = {
   archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
   recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftCreateNestedManyWithoutUserInput
   tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
 }
 
@@ -841,6 +893,8 @@ export type tbl_user_accountUncheckedCreateWithoutTbl_application_stage_logInput
   archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type tbl_user_accountCreateOrConnectWithoutTbl_application_stage_logInput = {
@@ -875,6 +929,8 @@ export type tbl_user_accountUpdateWithoutTbl_application_stage_logInput = {
   archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUpdateManyWithoutUserNestedInput
   tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
 }
 
@@ -896,6 +952,8 @@ export type tbl_user_accountUncheckedUpdateWithoutTbl_application_stage_logInput
   archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type tbl_user_accountCreateWithoutTbl_import_batchInput = {
@@ -914,6 +972,8 @@ export type tbl_user_accountCreateWithoutTbl_import_batchInput = {
   archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
   recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftCreateNestedManyWithoutUserInput
   tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
 }
 
@@ -935,6 +995,8 @@ export type tbl_user_accountUncheckedCreateWithoutTbl_import_batchInput = {
   archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type tbl_user_accountCreateOrConnectWithoutTbl_import_batchInput = {
@@ -969,6 +1031,8 @@ export type tbl_user_accountUpdateWithoutTbl_import_batchInput = {
   archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUpdateManyWithoutUserNestedInput
   tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
 }
 
@@ -990,6 +1054,8 @@ export type tbl_user_accountUncheckedUpdateWithoutTbl_import_batchInput = {
   archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type tbl_user_accountCreateWithoutTbl_passing_score_settingInput = {
@@ -1008,6 +1074,8 @@ export type tbl_user_accountCreateWithoutTbl_passing_score_settingInput = {
   archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
   recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftCreateNestedManyWithoutUserInput
   tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
 }
 
@@ -1029,6 +1097,8 @@ export type tbl_user_accountUncheckedCreateWithoutTbl_passing_score_settingInput
   archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type tbl_user_accountCreateOrConnectWithoutTbl_passing_score_settingInput = {
@@ -1063,6 +1133,8 @@ export type tbl_user_accountUpdateWithoutTbl_passing_score_settingInput = {
   archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUpdateManyWithoutUserNestedInput
   tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
 }
 
@@ -1084,6 +1156,8 @@ export type tbl_user_accountUncheckedUpdateWithoutTbl_passing_score_settingInput
   archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type tbl_user_accountCreateWithoutTbl_quotaInput = {
@@ -1102,6 +1176,8 @@ export type tbl_user_accountCreateWithoutTbl_quotaInput = {
   archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
   recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftCreateNestedManyWithoutUserInput
   tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
 }
 
@@ -1123,6 +1199,8 @@ export type tbl_user_accountUncheckedCreateWithoutTbl_quotaInput = {
   archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type tbl_user_accountCreateOrConnectWithoutTbl_quotaInput = {
@@ -1157,6 +1235,8 @@ export type tbl_user_accountUpdateWithoutTbl_quotaInput = {
   archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUpdateManyWithoutUserNestedInput
   tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
 }
 
@@ -1178,6 +1258,8 @@ export type tbl_user_accountUncheckedUpdateWithoutTbl_quotaInput = {
   archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type tbl_user_accountCreateWithoutTbl_roleInput = {
@@ -1197,6 +1279,8 @@ export type tbl_user_accountCreateWithoutTbl_roleInput = {
   archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
   recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftCreateNestedManyWithoutUserInput
 }
 
 export type tbl_user_accountUncheckedCreateWithoutTbl_roleInput = {
@@ -1217,6 +1301,8 @@ export type tbl_user_accountUncheckedCreateWithoutTbl_roleInput = {
   archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type tbl_user_accountCreateOrConnectWithoutTbl_roleInput = {
@@ -1259,6 +1345,210 @@ export type tbl_user_accountScalarWhereInput = {
   created_at?: Prisma.DateTimeNullableFilter<"tbl_user_account"> | Date | string | null
 }
 
+export type tbl_user_accountCreateWithoutAdmission_draftsInput = {
+  username: string
+  password_hash: string
+  full_name: string
+  email: string
+  is_active?: boolean | null
+  created_at?: Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchCreateNestedManyWithoutTbl_user_accountInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingCreateNestedManyWithoutTbl_user_accountInput
+  tbl_quota?: Prisma.tbl_quotaCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_document?: Prisma.tbl_application_documentCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
+  password_reset_tokens?: Prisma.tbl_password_reset_tokenCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionCreateNestedManyWithoutUserInput
+  tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
+}
+
+export type tbl_user_accountUncheckedCreateWithoutAdmission_draftsInput = {
+  user_id?: number
+  role_id?: number | null
+  username: string
+  password_hash: string
+  full_name: string
+  email: string
+  is_active?: boolean | null
+  created_at?: Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_quota?: Prisma.tbl_quotaUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_document?: Prisma.tbl_application_documentUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type tbl_user_accountCreateOrConnectWithoutAdmission_draftsInput = {
+  where: Prisma.tbl_user_accountWhereUniqueInput
+  create: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutAdmission_draftsInput, Prisma.tbl_user_accountUncheckedCreateWithoutAdmission_draftsInput>
+}
+
+export type tbl_user_accountUpsertWithoutAdmission_draftsInput = {
+  update: Prisma.XOR<Prisma.tbl_user_accountUpdateWithoutAdmission_draftsInput, Prisma.tbl_user_accountUncheckedUpdateWithoutAdmission_draftsInput>
+  create: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutAdmission_draftsInput, Prisma.tbl_user_accountUncheckedCreateWithoutAdmission_draftsInput>
+  where?: Prisma.tbl_user_accountWhereInput
+}
+
+export type tbl_user_accountUpdateToOneWithWhereWithoutAdmission_draftsInput = {
+  where?: Prisma.tbl_user_accountWhereInput
+  data: Prisma.XOR<Prisma.tbl_user_accountUpdateWithoutAdmission_draftsInput, Prisma.tbl_user_accountUncheckedUpdateWithoutAdmission_draftsInput>
+}
+
+export type tbl_user_accountUpdateWithoutAdmission_draftsInput = {
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  password_hash?: Prisma.StringFieldUpdateOperationsInput | string
+  full_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_quota?: Prisma.tbl_quotaUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_document?: Prisma.tbl_application_documentUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
+  password_reset_tokens?: Prisma.tbl_password_reset_tokenUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUpdateManyWithoutUserNestedInput
+  tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
+}
+
+export type tbl_user_accountUncheckedUpdateWithoutAdmission_draftsInput = {
+  user_id?: Prisma.IntFieldUpdateOperationsInput | number
+  role_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  password_hash?: Prisma.StringFieldUpdateOperationsInput | string
+  full_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_quota?: Prisma.tbl_quotaUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_document?: Prisma.tbl_application_documentUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type tbl_user_accountCreateWithoutAuth_sessionsInput = {
+  username: string
+  password_hash: string
+  full_name: string
+  email: string
+  is_active?: boolean | null
+  created_at?: Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchCreateNestedManyWithoutTbl_user_accountInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingCreateNestedManyWithoutTbl_user_accountInput
+  tbl_quota?: Prisma.tbl_quotaCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_document?: Prisma.tbl_application_documentCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
+  password_reset_tokens?: Prisma.tbl_password_reset_tokenCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftCreateNestedManyWithoutUserInput
+  tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
+}
+
+export type tbl_user_accountUncheckedCreateWithoutAuth_sessionsInput = {
+  user_id?: number
+  role_id?: number | null
+  username: string
+  password_hash: string
+  full_name: string
+  email: string
+  is_active?: boolean | null
+  created_at?: Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_quota?: Prisma.tbl_quotaUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_application_document?: Prisma.tbl_application_documentUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type tbl_user_accountCreateOrConnectWithoutAuth_sessionsInput = {
+  where: Prisma.tbl_user_accountWhereUniqueInput
+  create: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutAuth_sessionsInput, Prisma.tbl_user_accountUncheckedCreateWithoutAuth_sessionsInput>
+}
+
+export type tbl_user_accountUpsertWithoutAuth_sessionsInput = {
+  update: Prisma.XOR<Prisma.tbl_user_accountUpdateWithoutAuth_sessionsInput, Prisma.tbl_user_accountUncheckedUpdateWithoutAuth_sessionsInput>
+  create: Prisma.XOR<Prisma.tbl_user_accountCreateWithoutAuth_sessionsInput, Prisma.tbl_user_accountUncheckedCreateWithoutAuth_sessionsInput>
+  where?: Prisma.tbl_user_accountWhereInput
+}
+
+export type tbl_user_accountUpdateToOneWithWhereWithoutAuth_sessionsInput = {
+  where?: Prisma.tbl_user_accountWhereInput
+  data: Prisma.XOR<Prisma.tbl_user_accountUpdateWithoutAuth_sessionsInput, Prisma.tbl_user_accountUncheckedUpdateWithoutAuth_sessionsInput>
+}
+
+export type tbl_user_accountUpdateWithoutAuth_sessionsInput = {
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  password_hash?: Prisma.StringFieldUpdateOperationsInput | string
+  full_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_quota?: Prisma.tbl_quotaUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_document?: Prisma.tbl_application_documentUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
+  password_reset_tokens?: Prisma.tbl_password_reset_tokenUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUpdateManyWithoutUserNestedInput
+  tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
+}
+
+export type tbl_user_accountUncheckedUpdateWithoutAuth_sessionsInput = {
+  user_id?: Prisma.IntFieldUpdateOperationsInput | number
+  role_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  password_hash?: Prisma.StringFieldUpdateOperationsInput | string
+  full_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tbl_import_batch?: Prisma.tbl_import_batchUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_passing_score_setting?: Prisma.tbl_passing_score_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_quota?: Prisma.tbl_quotaUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_application_document?: Prisma.tbl_application_documentUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
+  recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedUpdateManyWithoutUserNestedInput
+}
+
 export type tbl_user_accountCreateWithoutPassword_reset_tokensInput = {
   username: string
   password_hash: string
@@ -1275,6 +1565,8 @@ export type tbl_user_accountCreateWithoutPassword_reset_tokensInput = {
   tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantCreateNestedManyWithoutTbl_user_accountInput
   archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
   recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
+  auth_sessions?: Prisma.tbl_auth_sessionCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftCreateNestedManyWithoutUserInput
   tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
 }
 
@@ -1296,6 +1588,8 @@ export type tbl_user_accountUncheckedCreateWithoutPassword_reset_tokensInput = {
   tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedCreateNestedManyWithoutTbl_user_accountInput
   archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type tbl_user_accountCreateOrConnectWithoutPassword_reset_tokensInput = {
@@ -1330,6 +1624,8 @@ export type tbl_user_accountUpdateWithoutPassword_reset_tokensInput = {
   tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUpdateManyWithoutTbl_user_accountNestedInput
   archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUpdateManyWithoutUserNestedInput
   tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
 }
 
@@ -1351,6 +1647,8 @@ export type tbl_user_accountUncheckedUpdateWithoutPassword_reset_tokensInput = {
   tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type tbl_user_accountCreateWithoutTbl_application_documentInput = {
@@ -1369,6 +1667,8 @@ export type tbl_user_accountCreateWithoutTbl_application_documentInput = {
   archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
   recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftCreateNestedManyWithoutUserInput
   tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
 }
 
@@ -1390,6 +1690,8 @@ export type tbl_user_accountUncheckedCreateWithoutTbl_application_documentInput 
   archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type tbl_user_accountCreateOrConnectWithoutTbl_application_documentInput = {
@@ -1424,6 +1726,8 @@ export type tbl_user_accountUpdateWithoutTbl_application_documentInput = {
   archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUpdateManyWithoutUserNestedInput
   tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
 }
 
@@ -1445,6 +1749,8 @@ export type tbl_user_accountUncheckedUpdateWithoutTbl_application_documentInput 
   archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type tbl_user_accountCreateWithoutTbl_exam_sessionInput = {
@@ -1463,6 +1769,8 @@ export type tbl_user_accountCreateWithoutTbl_exam_sessionInput = {
   archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
   recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftCreateNestedManyWithoutUserInput
   tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
 }
 
@@ -1484,6 +1792,8 @@ export type tbl_user_accountUncheckedCreateWithoutTbl_exam_sessionInput = {
   archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type tbl_user_accountCreateOrConnectWithoutTbl_exam_sessionInput = {
@@ -1518,6 +1828,8 @@ export type tbl_user_accountUpdateWithoutTbl_exam_sessionInput = {
   archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUpdateManyWithoutUserNestedInput
   tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
 }
 
@@ -1539,6 +1851,8 @@ export type tbl_user_accountUncheckedUpdateWithoutTbl_exam_sessionInput = {
   archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type tbl_user_accountCreateWithoutTbl_exam_session_applicantInput = {
@@ -1557,6 +1871,8 @@ export type tbl_user_accountCreateWithoutTbl_exam_session_applicantInput = {
   archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
   recommendation_settings?: Prisma.tbl_recommendation_settingCreateNestedManyWithoutTbl_user_accountInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftCreateNestedManyWithoutUserInput
   tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
 }
 
@@ -1578,6 +1894,8 @@ export type tbl_user_accountUncheckedCreateWithoutTbl_exam_session_applicantInpu
   archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedCreateNestedManyWithoutTbl_user_accountInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type tbl_user_accountCreateOrConnectWithoutTbl_exam_session_applicantInput = {
@@ -1612,6 +1930,8 @@ export type tbl_user_accountUpdateWithoutTbl_exam_session_applicantInput = {
   archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUpdateManyWithoutUserNestedInput
   tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
 }
 
@@ -1633,6 +1953,8 @@ export type tbl_user_accountUncheckedUpdateWithoutTbl_exam_session_applicantInpu
   archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type tbl_user_accountCreateWithoutRecommendation_settingsInput = {
@@ -1651,6 +1973,8 @@ export type tbl_user_accountCreateWithoutRecommendation_settingsInput = {
   tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantCreateNestedManyWithoutTbl_user_accountInput
   archived_applicants?: Prisma.tbl_applicantCreateNestedManyWithoutArchived_by_userInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftCreateNestedManyWithoutUserInput
   tbl_role?: Prisma.tbl_roleCreateNestedOneWithoutTbl_user_accountInput
 }
 
@@ -1672,6 +1996,8 @@ export type tbl_user_accountUncheckedCreateWithoutRecommendation_settingsInput =
   tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedCreateNestedManyWithoutTbl_user_accountInput
   archived_applicants?: Prisma.tbl_applicantUncheckedCreateNestedManyWithoutArchived_by_userInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedCreateNestedManyWithoutUserInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedCreateNestedManyWithoutUserInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type tbl_user_accountCreateOrConnectWithoutRecommendation_settingsInput = {
@@ -1706,6 +2032,8 @@ export type tbl_user_accountUpdateWithoutRecommendation_settingsInput = {
   tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUpdateManyWithoutTbl_user_accountNestedInput
   archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUpdateManyWithoutUserNestedInput
   tbl_role?: Prisma.tbl_roleUpdateOneWithoutTbl_user_accountNestedInput
 }
 
@@ -1727,6 +2055,8 @@ export type tbl_user_accountUncheckedUpdateWithoutRecommendation_settingsInput =
   tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type tbl_user_accountCreateManyTbl_roleInput = {
@@ -1756,6 +2086,8 @@ export type tbl_user_accountUpdateWithoutTbl_roleInput = {
   archived_applicants?: Prisma.tbl_applicantUpdateManyWithoutArchived_by_userNestedInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUpdateManyWithoutTbl_user_accountNestedInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUpdateManyWithoutUserNestedInput
 }
 
 export type tbl_user_accountUncheckedUpdateWithoutTbl_roleInput = {
@@ -1776,6 +2108,8 @@ export type tbl_user_accountUncheckedUpdateWithoutTbl_roleInput = {
   archived_applicants?: Prisma.tbl_applicantUncheckedUpdateManyWithoutArchived_by_userNestedInput
   recommendation_settings?: Prisma.tbl_recommendation_settingUncheckedUpdateManyWithoutTbl_user_accountNestedInput
   password_reset_tokens?: Prisma.tbl_password_reset_tokenUncheckedUpdateManyWithoutUserNestedInput
+  auth_sessions?: Prisma.tbl_auth_sessionUncheckedUpdateManyWithoutUserNestedInput
+  admission_drafts?: Prisma.tbl_admission_draftUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type tbl_user_accountUncheckedUpdateManyWithoutTbl_roleInput = {
@@ -1804,6 +2138,8 @@ export type Tbl_user_accountCountOutputType = {
   archived_applicants: number
   recommendation_settings: number
   password_reset_tokens: number
+  auth_sessions: number
+  admission_drafts: number
 }
 
 export type Tbl_user_accountCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1817,6 +2153,8 @@ export type Tbl_user_accountCountOutputTypeSelect<ExtArgs extends runtime.Types.
   archived_applicants?: boolean | Tbl_user_accountCountOutputTypeCountArchived_applicantsArgs
   recommendation_settings?: boolean | Tbl_user_accountCountOutputTypeCountRecommendation_settingsArgs
   password_reset_tokens?: boolean | Tbl_user_accountCountOutputTypeCountPassword_reset_tokensArgs
+  auth_sessions?: boolean | Tbl_user_accountCountOutputTypeCountAuth_sessionsArgs
+  admission_drafts?: boolean | Tbl_user_accountCountOutputTypeCountAdmission_draftsArgs
 }
 
 /**
@@ -1899,6 +2237,20 @@ export type Tbl_user_accountCountOutputTypeCountPassword_reset_tokensArgs<ExtArg
   where?: Prisma.tbl_password_reset_tokenWhereInput
 }
 
+/**
+ * Tbl_user_accountCountOutputType without action
+ */
+export type Tbl_user_accountCountOutputTypeCountAuth_sessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.tbl_auth_sessionWhereInput
+}
+
+/**
+ * Tbl_user_accountCountOutputType without action
+ */
+export type Tbl_user_accountCountOutputTypeCountAdmission_draftsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.tbl_admission_draftWhereInput
+}
+
 
 export type tbl_user_accountSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   user_id?: boolean
@@ -1919,6 +2271,8 @@ export type tbl_user_accountSelect<ExtArgs extends runtime.Types.Extensions.Inte
   archived_applicants?: boolean | Prisma.tbl_user_account$archived_applicantsArgs<ExtArgs>
   recommendation_settings?: boolean | Prisma.tbl_user_account$recommendation_settingsArgs<ExtArgs>
   password_reset_tokens?: boolean | Prisma.tbl_user_account$password_reset_tokensArgs<ExtArgs>
+  auth_sessions?: boolean | Prisma.tbl_user_account$auth_sessionsArgs<ExtArgs>
+  admission_drafts?: boolean | Prisma.tbl_user_account$admission_draftsArgs<ExtArgs>
   tbl_role?: boolean | Prisma.tbl_user_account$tbl_roleArgs<ExtArgs>
   _count?: boolean | Prisma.Tbl_user_accountCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tbl_user_account"]>
@@ -1970,6 +2324,8 @@ export type tbl_user_accountInclude<ExtArgs extends runtime.Types.Extensions.Int
   archived_applicants?: boolean | Prisma.tbl_user_account$archived_applicantsArgs<ExtArgs>
   recommendation_settings?: boolean | Prisma.tbl_user_account$recommendation_settingsArgs<ExtArgs>
   password_reset_tokens?: boolean | Prisma.tbl_user_account$password_reset_tokensArgs<ExtArgs>
+  auth_sessions?: boolean | Prisma.tbl_user_account$auth_sessionsArgs<ExtArgs>
+  admission_drafts?: boolean | Prisma.tbl_user_account$admission_draftsArgs<ExtArgs>
   tbl_role?: boolean | Prisma.tbl_user_account$tbl_roleArgs<ExtArgs>
   _count?: boolean | Prisma.Tbl_user_accountCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -1993,6 +2349,8 @@ export type $tbl_user_accountPayload<ExtArgs extends runtime.Types.Extensions.In
     archived_applicants: Prisma.$tbl_applicantPayload<ExtArgs>[]
     recommendation_settings: Prisma.$tbl_recommendation_settingPayload<ExtArgs>[]
     password_reset_tokens: Prisma.$tbl_password_reset_tokenPayload<ExtArgs>[]
+    auth_sessions: Prisma.$tbl_auth_sessionPayload<ExtArgs>[]
+    admission_drafts: Prisma.$tbl_admission_draftPayload<ExtArgs>[]
     tbl_role: Prisma.$tbl_rolePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -2408,6 +2766,8 @@ export interface Prisma__tbl_user_accountClient<T, Null = never, ExtArgs extends
   archived_applicants<T extends Prisma.tbl_user_account$archived_applicantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_user_account$archived_applicantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_applicantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   recommendation_settings<T extends Prisma.tbl_user_account$recommendation_settingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_user_account$recommendation_settingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_recommendation_settingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   password_reset_tokens<T extends Prisma.tbl_user_account$password_reset_tokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_user_account$password_reset_tokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_password_reset_tokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  auth_sessions<T extends Prisma.tbl_user_account$auth_sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_user_account$auth_sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_auth_sessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  admission_drafts<T extends Prisma.tbl_user_account$admission_draftsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_user_account$admission_draftsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$tbl_admission_draftPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   tbl_role<T extends Prisma.tbl_user_account$tbl_roleArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.tbl_user_account$tbl_roleArgs<ExtArgs>>): Prisma.Prisma__tbl_roleClient<runtime.Types.Result.GetResult<Prisma.$tbl_rolePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3084,6 +3444,54 @@ export type tbl_user_account$password_reset_tokensArgs<ExtArgs extends runtime.T
   take?: number
   skip?: number
   distinct?: Prisma.Tbl_password_reset_tokenScalarFieldEnum | Prisma.Tbl_password_reset_tokenScalarFieldEnum[]
+}
+
+/**
+ * tbl_user_account.auth_sessions
+ */
+export type tbl_user_account$auth_sessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the tbl_auth_session
+   */
+  select?: Prisma.tbl_auth_sessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the tbl_auth_session
+   */
+  omit?: Prisma.tbl_auth_sessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.tbl_auth_sessionInclude<ExtArgs> | null
+  where?: Prisma.tbl_auth_sessionWhereInput
+  orderBy?: Prisma.tbl_auth_sessionOrderByWithRelationInput | Prisma.tbl_auth_sessionOrderByWithRelationInput[]
+  cursor?: Prisma.tbl_auth_sessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Tbl_auth_sessionScalarFieldEnum | Prisma.Tbl_auth_sessionScalarFieldEnum[]
+}
+
+/**
+ * tbl_user_account.admission_drafts
+ */
+export type tbl_user_account$admission_draftsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the tbl_admission_draft
+   */
+  select?: Prisma.tbl_admission_draftSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the tbl_admission_draft
+   */
+  omit?: Prisma.tbl_admission_draftOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.tbl_admission_draftInclude<ExtArgs> | null
+  where?: Prisma.tbl_admission_draftWhereInput
+  orderBy?: Prisma.tbl_admission_draftOrderByWithRelationInput | Prisma.tbl_admission_draftOrderByWithRelationInput[]
+  cursor?: Prisma.tbl_admission_draftWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Tbl_admission_draftScalarFieldEnum | Prisma.Tbl_admission_draftScalarFieldEnum[]
 }
 
 /**
