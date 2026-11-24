@@ -45,6 +45,7 @@ export type Tbl_exam_sessionMinAggregateOutputType = {
   exam_id: number | null
   session_date: Date | null
   start_time: string | null
+  end_time: string | null
   venue: string | null
   room: string | null
   capacity: number | null
@@ -57,6 +58,7 @@ export type Tbl_exam_sessionMaxAggregateOutputType = {
   exam_id: number | null
   session_date: Date | null
   start_time: string | null
+  end_time: string | null
   venue: string | null
   room: string | null
   capacity: number | null
@@ -69,6 +71,7 @@ export type Tbl_exam_sessionCountAggregateOutputType = {
   exam_id: number
   session_date: number
   start_time: number
+  end_time: number
   venue: number
   room: number
   capacity: number
@@ -97,6 +100,7 @@ export type Tbl_exam_sessionMinAggregateInputType = {
   exam_id?: true
   session_date?: true
   start_time?: true
+  end_time?: true
   venue?: true
   room?: true
   capacity?: true
@@ -109,6 +113,7 @@ export type Tbl_exam_sessionMaxAggregateInputType = {
   exam_id?: true
   session_date?: true
   start_time?: true
+  end_time?: true
   venue?: true
   room?: true
   capacity?: true
@@ -121,6 +126,7 @@ export type Tbl_exam_sessionCountAggregateInputType = {
   exam_id?: true
   session_date?: true
   start_time?: true
+  end_time?: true
   venue?: true
   room?: true
   capacity?: true
@@ -220,6 +226,7 @@ export type Tbl_exam_sessionGroupByOutputType = {
   exam_id: number
   session_date: Date
   start_time: string | null
+  end_time: string | null
   venue: string
   room: string | null
   capacity: number
@@ -255,6 +262,7 @@ export type tbl_exam_sessionWhereInput = {
   exam_id?: Prisma.IntFilter<"tbl_exam_session"> | number
   session_date?: Prisma.DateTimeFilter<"tbl_exam_session"> | Date | string
   start_time?: Prisma.StringNullableFilter<"tbl_exam_session"> | string | null
+  end_time?: Prisma.StringNullableFilter<"tbl_exam_session"> | string | null
   venue?: Prisma.StringFilter<"tbl_exam_session"> | string
   room?: Prisma.StringNullableFilter<"tbl_exam_session"> | string | null
   capacity?: Prisma.IntFilter<"tbl_exam_session"> | number
@@ -270,6 +278,7 @@ export type tbl_exam_sessionOrderByWithRelationInput = {
   exam_id?: Prisma.SortOrder
   session_date?: Prisma.SortOrder
   start_time?: Prisma.SortOrderInput | Prisma.SortOrder
+  end_time?: Prisma.SortOrderInput | Prisma.SortOrder
   venue?: Prisma.SortOrder
   room?: Prisma.SortOrderInput | Prisma.SortOrder
   capacity?: Prisma.SortOrder
@@ -288,6 +297,7 @@ export type tbl_exam_sessionWhereUniqueInput = Prisma.AtLeast<{
   exam_id?: Prisma.IntFilter<"tbl_exam_session"> | number
   session_date?: Prisma.DateTimeFilter<"tbl_exam_session"> | Date | string
   start_time?: Prisma.StringNullableFilter<"tbl_exam_session"> | string | null
+  end_time?: Prisma.StringNullableFilter<"tbl_exam_session"> | string | null
   venue?: Prisma.StringFilter<"tbl_exam_session"> | string
   room?: Prisma.StringNullableFilter<"tbl_exam_session"> | string | null
   capacity?: Prisma.IntFilter<"tbl_exam_session"> | number
@@ -303,6 +313,7 @@ export type tbl_exam_sessionOrderByWithAggregationInput = {
   exam_id?: Prisma.SortOrder
   session_date?: Prisma.SortOrder
   start_time?: Prisma.SortOrderInput | Prisma.SortOrder
+  end_time?: Prisma.SortOrderInput | Prisma.SortOrder
   venue?: Prisma.SortOrder
   room?: Prisma.SortOrderInput | Prisma.SortOrder
   capacity?: Prisma.SortOrder
@@ -323,6 +334,7 @@ export type tbl_exam_sessionScalarWhereWithAggregatesInput = {
   exam_id?: Prisma.IntWithAggregatesFilter<"tbl_exam_session"> | number
   session_date?: Prisma.DateTimeWithAggregatesFilter<"tbl_exam_session"> | Date | string
   start_time?: Prisma.StringNullableWithAggregatesFilter<"tbl_exam_session"> | string | null
+  end_time?: Prisma.StringNullableWithAggregatesFilter<"tbl_exam_session"> | string | null
   venue?: Prisma.StringWithAggregatesFilter<"tbl_exam_session"> | string
   room?: Prisma.StringNullableWithAggregatesFilter<"tbl_exam_session"> | string | null
   capacity?: Prisma.IntWithAggregatesFilter<"tbl_exam_session"> | number
@@ -333,6 +345,7 @@ export type tbl_exam_sessionScalarWhereWithAggregatesInput = {
 export type tbl_exam_sessionCreateInput = {
   session_date: Date | string
   start_time?: string | null
+  end_time?: string | null
   venue: string
   room?: string | null
   capacity: number
@@ -347,6 +360,7 @@ export type tbl_exam_sessionUncheckedCreateInput = {
   exam_id: number
   session_date: Date | string
   start_time?: string | null
+  end_time?: string | null
   venue: string
   room?: string | null
   capacity: number
@@ -358,6 +372,7 @@ export type tbl_exam_sessionUncheckedCreateInput = {
 export type tbl_exam_sessionUpdateInput = {
   session_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   start_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  end_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -372,6 +387,7 @@ export type tbl_exam_sessionUncheckedUpdateInput = {
   exam_id?: Prisma.IntFieldUpdateOperationsInput | number
   session_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   start_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  end_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -385,6 +401,7 @@ export type tbl_exam_sessionCreateManyInput = {
   exam_id: number
   session_date: Date | string
   start_time?: string | null
+  end_time?: string | null
   venue: string
   room?: string | null
   capacity: number
@@ -395,6 +412,7 @@ export type tbl_exam_sessionCreateManyInput = {
 export type tbl_exam_sessionUpdateManyMutationInput = {
   session_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   start_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  end_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -406,6 +424,7 @@ export type tbl_exam_sessionUncheckedUpdateManyInput = {
   exam_id?: Prisma.IntFieldUpdateOperationsInput | number
   session_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   start_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  end_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -428,6 +447,7 @@ export type tbl_exam_sessionCountOrderByAggregateInput = {
   exam_id?: Prisma.SortOrder
   session_date?: Prisma.SortOrder
   start_time?: Prisma.SortOrder
+  end_time?: Prisma.SortOrder
   venue?: Prisma.SortOrder
   room?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
@@ -447,6 +467,7 @@ export type tbl_exam_sessionMaxOrderByAggregateInput = {
   exam_id?: Prisma.SortOrder
   session_date?: Prisma.SortOrder
   start_time?: Prisma.SortOrder
+  end_time?: Prisma.SortOrder
   venue?: Prisma.SortOrder
   room?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
@@ -459,6 +480,7 @@ export type tbl_exam_sessionMinOrderByAggregateInput = {
   exam_id?: Prisma.SortOrder
   session_date?: Prisma.SortOrder
   start_time?: Prisma.SortOrder
+  end_time?: Prisma.SortOrder
   venue?: Prisma.SortOrder
   room?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
@@ -579,6 +601,7 @@ export type tbl_exam_sessionUpdateOneRequiredWithoutTbl_exam_session_applicantNe
 export type tbl_exam_sessionCreateWithoutTbl_examInput = {
   session_date: Date | string
   start_time?: string | null
+  end_time?: string | null
   venue: string
   room?: string | null
   capacity: number
@@ -591,6 +614,7 @@ export type tbl_exam_sessionUncheckedCreateWithoutTbl_examInput = {
   session_id?: number
   session_date: Date | string
   start_time?: string | null
+  end_time?: string | null
   venue: string
   room?: string | null
   capacity: number
@@ -633,6 +657,7 @@ export type tbl_exam_sessionScalarWhereInput = {
   exam_id?: Prisma.IntFilter<"tbl_exam_session"> | number
   session_date?: Prisma.DateTimeFilter<"tbl_exam_session"> | Date | string
   start_time?: Prisma.StringNullableFilter<"tbl_exam_session"> | string | null
+  end_time?: Prisma.StringNullableFilter<"tbl_exam_session"> | string | null
   venue?: Prisma.StringFilter<"tbl_exam_session"> | string
   room?: Prisma.StringNullableFilter<"tbl_exam_session"> | string | null
   capacity?: Prisma.IntFilter<"tbl_exam_session"> | number
@@ -643,6 +668,7 @@ export type tbl_exam_sessionScalarWhereInput = {
 export type tbl_exam_sessionCreateWithoutTbl_user_accountInput = {
   session_date: Date | string
   start_time?: string | null
+  end_time?: string | null
   venue: string
   room?: string | null
   capacity: number
@@ -656,6 +682,7 @@ export type tbl_exam_sessionUncheckedCreateWithoutTbl_user_accountInput = {
   exam_id: number
   session_date: Date | string
   start_time?: string | null
+  end_time?: string | null
   venue: string
   room?: string | null
   capacity: number
@@ -692,6 +719,7 @@ export type tbl_exam_sessionUpdateManyWithWhereWithoutTbl_user_accountInput = {
 export type tbl_exam_sessionCreateWithoutTbl_exam_session_applicantInput = {
   session_date: Date | string
   start_time?: string | null
+  end_time?: string | null
   venue: string
   room?: string | null
   capacity: number
@@ -705,6 +733,7 @@ export type tbl_exam_sessionUncheckedCreateWithoutTbl_exam_session_applicantInpu
   exam_id: number
   session_date: Date | string
   start_time?: string | null
+  end_time?: string | null
   venue: string
   room?: string | null
   capacity: number
@@ -731,6 +760,7 @@ export type tbl_exam_sessionUpdateToOneWithWhereWithoutTbl_exam_session_applican
 export type tbl_exam_sessionUpdateWithoutTbl_exam_session_applicantInput = {
   session_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   start_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  end_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -744,6 +774,7 @@ export type tbl_exam_sessionUncheckedUpdateWithoutTbl_exam_session_applicantInpu
   exam_id?: Prisma.IntFieldUpdateOperationsInput | number
   session_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   start_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  end_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -755,6 +786,7 @@ export type tbl_exam_sessionCreateManyTbl_examInput = {
   session_id?: number
   session_date: Date | string
   start_time?: string | null
+  end_time?: string | null
   venue: string
   room?: string | null
   capacity: number
@@ -765,6 +797,7 @@ export type tbl_exam_sessionCreateManyTbl_examInput = {
 export type tbl_exam_sessionUpdateWithoutTbl_examInput = {
   session_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   start_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  end_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -777,6 +810,7 @@ export type tbl_exam_sessionUncheckedUpdateWithoutTbl_examInput = {
   session_id?: Prisma.IntFieldUpdateOperationsInput | number
   session_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   start_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  end_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -789,6 +823,7 @@ export type tbl_exam_sessionUncheckedUpdateManyWithoutTbl_examInput = {
   session_id?: Prisma.IntFieldUpdateOperationsInput | number
   session_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   start_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  end_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -801,6 +836,7 @@ export type tbl_exam_sessionCreateManyTbl_user_accountInput = {
   exam_id: number
   session_date: Date | string
   start_time?: string | null
+  end_time?: string | null
   venue: string
   room?: string | null
   capacity: number
@@ -810,6 +846,7 @@ export type tbl_exam_sessionCreateManyTbl_user_accountInput = {
 export type tbl_exam_sessionUpdateWithoutTbl_user_accountInput = {
   session_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   start_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  end_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -823,6 +860,7 @@ export type tbl_exam_sessionUncheckedUpdateWithoutTbl_user_accountInput = {
   exam_id?: Prisma.IntFieldUpdateOperationsInput | number
   session_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   start_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  end_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -835,6 +873,7 @@ export type tbl_exam_sessionUncheckedUpdateManyWithoutTbl_user_accountInput = {
   exam_id?: Prisma.IntFieldUpdateOperationsInput | number
   session_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   start_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  end_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   venue?: Prisma.StringFieldUpdateOperationsInput | string
   room?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -877,6 +916,7 @@ export type tbl_exam_sessionSelect<ExtArgs extends runtime.Types.Extensions.Inte
   exam_id?: boolean
   session_date?: boolean
   start_time?: boolean
+  end_time?: boolean
   venue?: boolean
   room?: boolean
   capacity?: boolean
@@ -893,6 +933,7 @@ export type tbl_exam_sessionSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   exam_id?: boolean
   session_date?: boolean
   start_time?: boolean
+  end_time?: boolean
   venue?: boolean
   room?: boolean
   capacity?: boolean
@@ -907,6 +948,7 @@ export type tbl_exam_sessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   exam_id?: boolean
   session_date?: boolean
   start_time?: boolean
+  end_time?: boolean
   venue?: boolean
   room?: boolean
   capacity?: boolean
@@ -921,6 +963,7 @@ export type tbl_exam_sessionSelectScalar = {
   exam_id?: boolean
   session_date?: boolean
   start_time?: boolean
+  end_time?: boolean
   venue?: boolean
   room?: boolean
   capacity?: boolean
@@ -928,7 +971,7 @@ export type tbl_exam_sessionSelectScalar = {
   created_at?: boolean
 }
 
-export type tbl_exam_sessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"session_id" | "exam_id" | "session_date" | "start_time" | "venue" | "room" | "capacity" | "created_by" | "created_at", ExtArgs["result"]["tbl_exam_session"]>
+export type tbl_exam_sessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"session_id" | "exam_id" | "session_date" | "start_time" | "end_time" | "venue" | "room" | "capacity" | "created_by" | "created_at", ExtArgs["result"]["tbl_exam_session"]>
 export type tbl_exam_sessionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tbl_exam?: boolean | Prisma.tbl_examDefaultArgs<ExtArgs>
   tbl_user_account?: boolean | Prisma.tbl_exam_session$tbl_user_accountArgs<ExtArgs>
@@ -956,6 +999,7 @@ export type $tbl_exam_sessionPayload<ExtArgs extends runtime.Types.Extensions.In
     exam_id: number
     session_date: Date
     start_time: string | null
+    end_time: string | null
     venue: string
     room: string | null
     capacity: number
@@ -1391,6 +1435,7 @@ export interface tbl_exam_sessionFieldRefs {
   readonly exam_id: Prisma.FieldRef<"tbl_exam_session", 'Int'>
   readonly session_date: Prisma.FieldRef<"tbl_exam_session", 'DateTime'>
   readonly start_time: Prisma.FieldRef<"tbl_exam_session", 'String'>
+  readonly end_time: Prisma.FieldRef<"tbl_exam_session", 'String'>
   readonly venue: Prisma.FieldRef<"tbl_exam_session", 'String'>
   readonly room: Prisma.FieldRef<"tbl_exam_session", 'String'>
   readonly capacity: Prisma.FieldRef<"tbl_exam_session", 'Int'>

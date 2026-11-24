@@ -39,7 +39,7 @@ export default async function PassingRatePage({searchParams}:PageProps){
   <div className="grid gap-5 lg:grid-cols-2">
    <AnalyticsCard title="Overall result">
     <div className="rounded-xl border border-neutral-500 p-4">
-     <p className="mb-2 text-sm font-medium">Overall result (reference passing score: 50)</p>
+     <p className="mb-2 text-sm font-medium">Overall result</p>
      <DonutChart passed={passed} failed={examined-passed} title=""/>
     </div>
     <p className="mt-4 text-center text-lg font-semibold">{pct(passed,examined)}% passed ({passed} of {examined})</p>

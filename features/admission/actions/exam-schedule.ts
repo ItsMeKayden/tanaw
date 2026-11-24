@@ -7,7 +7,7 @@ import { getAccountId, requireAnyPermission } from "@/lib/authorization";
 import { EXAM_SCHEDULE_MODULES, EXAM_SCHEDULE_PATHS } from "@/features/admission/access";
 import { prisma } from "@/lib/prisma";
 import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
-import { ensureCycleExam } from "@/features/admission/exam";
+import { ensureCycleExam, isSessionFinished } from "@/features/admission/exam";
 import { ATTENDANCE } from "@/features/admission/exam-scoring";
 import { examSessionSchema, type ExamSessionValues } from "@/features/admission/schemas";
 import { ADMISSION_STAGES } from "@/features/admission/stages";
@@ -58,6 +58,7 @@ export async function createExamSession(cycleIdInput: number, input: ExamSession
           exam_id: exam.exam_id,
           session_date: new Date(`${data.session_date}T00:00:00.000Z`),
           start_time: data.start_time || null,
+          end_time: data.end_time || null,
           venue: data.venue,
           room: data.room || null,
           capacity: Number(data.capacity),
@@ -91,10 +92,10 @@ export async function deleteExamSession(sessionIdInput: number): Promise<ActionR
 }
 
 /**
- * Seats unscheduled applicants of the session's cycle who are in the
+ * Fills unscheduled applicants of the session's cycle who are in the
  * "For Examination" stage, earliest application first, up to capacity.
  */
-export async function fillSessionSeats(sessionIdInput: number): Promise<ActionResult> {
+export async function fillSessionSlots(sessionIdInput: number): Promise<ActionResult> {
   await requireAnyPermission(EXAM_SCHEDULE_MODULES, "write");
 
   const sessionId = validId(sessionIdInput);
@@ -156,6 +157,15 @@ export async function removeFromSession(sessionIdInput: number, applicationIdInp
   if (!sessionId || !applicationId) return { error: "Invalid applicant." };
 
   try {
+    const session = await prisma.tbl_exam_session.findUnique({
+      where: { session_id: sessionId },
+      select: { session_date: true, end_time: true },
+    });
+    if (!session) return { error: "Exam session not found." };
+    if (isSessionFinished(session.session_date, session.end_time)) {
+      return { error: "This session has ended; it is locked." };
+    }
+
     const deleted = await prisma.tbl_exam_session_applicant.deleteMany({
       where: { session_id: sessionId, application_id: applicationId },
     });
@@ -188,6 +198,15 @@ export async function saveAttendance(
   try {
     const accountId = getAccountId(user);
     const now = new Date();
+
+    const session = await prisma.tbl_exam_session.findUnique({
+      where: { session_id: sessionId },
+      select: { session_date: true, end_time: true },
+    });
+    if (!session) return { error: "Exam session not found." };
+    if (isSessionFinished(session.session_date, session.end_time)) {
+      return { error: "This session has ended; attendance is locked." };
+    }
 
     const moved = await prisma.$transaction(async (tx) => {
       const seats = await tx.tbl_exam_session_applicant.findMany({

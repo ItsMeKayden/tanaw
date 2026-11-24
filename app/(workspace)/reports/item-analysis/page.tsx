@@ -36,7 +36,7 @@ export default async function ItemAnalysisPage({searchParams}:PageProps){
  return <AnalyticsPage>
   <FilterBar action="/reports/item-analysis">
    <SelectFilter name="cycle" label="School Year" value={cycle?String(cycle.cycle_id):""} options={cycles.map((c)=>({value:String(c.cycle_id),label:c.school_year}))}/>
-   <SelectFilter name="exam" label="Exam set" value={examId?String(examId):"all"} options={[{value:"all",label:"All"},...exams.map((e)=>({value:String(e.exam_id),label:e.exam_name}))]}/>
+   <SelectFilter name="exam" label="Exam" value={examId?String(examId):"all"} options={[{value:"all",label:"All"},...exams.map((e)=>({value:String(e.exam_id),label:e.exam_name}))]}/>
    <SelectFilter name="subject" label="Subject" value={subject??"all"} options={[{value:"all",label:"All"},...subjects.map((s)=>({value:s,label:s}))]}/>
   </FilterBar>
   <div className="grid items-start gap-5 lg:grid-cols-2">

@@ -3,8 +3,9 @@
 import { useMemo, useRef, useState, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import Papa from "papaparse";
-import { Search, Upload } from "lucide-react";
+import { ScanLine, Search, Upload } from "lucide-react";
 
+import { ScanResultsImport } from "@/components/admission/scan-import";
 import { saveExamScores, savePassingScore } from "@/features/admission/actions/exam-scores";
 import type { ExamSubject, PassingRule } from "@/features/admission/exam";
 import { formatPassingRule, isPassing } from "@/features/admission/exam-scoring";
@@ -144,6 +145,7 @@ export function ExamScoreGrid({
   const [draft, setDraft] = useState<Draft>({});
   const [query, setQuery] = useState("");
   const [show, setShow] = useState<"all" | "missing" | "scored">("all");
+  const [scanOpen, setScanOpen] = useState(false);
 
   const maxTotal = subjects.reduce((sum, s) => sum + s.max, 0);
 
@@ -300,13 +302,23 @@ export function ExamScoreGrid({
             />
             <button
               type="button"
+              onClick={() => setScanOpen((v) => !v)}
+              disabled={isPending}
+              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-neutral-500 bg-white px-3 text-sm hover:bg-neutral-100 disabled:opacity-60"
+              title="Upload raw A–D answers and auto-grade them against the answer key"
+            >
+              <ScanLine className="h-4 w-4" aria-hidden="true" />
+              Import scanned results
+            </button>
+            <button
+              type="button"
               onClick={() => fileInput.current?.click()}
               disabled={isPending}
               className="inline-flex h-8 items-center gap-1.5 rounded-md border border-neutral-500 bg-white px-3 text-sm hover:bg-neutral-100 disabled:opacity-60"
               title={`CSV columns: Applicant ID, ${subjects.map((s) => s.short).join(", ")}`}
             >
               <Upload className="h-4 w-4" aria-hidden="true" />
-              Import CSV
+              Import Scores
             </button>
             <button
               type="button"
@@ -319,6 +331,8 @@ export function ExamScoreGrid({
           </div>
         )}
       </div>
+
+      {canWrite && scanOpen && <ScanResultsImport cycleId={cycleId} onClose={() => setScanOpen(false)} />}
 
       <div className="flex flex-wrap items-center gap-2">
         {yearFilter}

@@ -365,12 +365,13 @@ model tbl_application_document {
   @@unique([application_id, document_type])
 }
 
-// Exam sitting: one date/venue/room with a seat capacity (Exam Schedule page).
+// Exam sitting: one date/venue/room with a slot capacity (Exam Schedule page).
 model tbl_exam_session {
   session_id                 Int                          @id @default(autoincrement())
   exam_id                    Int
   session_date               DateTime                     @db.Date
   start_time                 String?                      @db.VarChar(5)
+  end_time                   String?                      @db.VarChar(5)
   venue                      String                       @db.VarChar(150)
   room                       String?                      @db.VarChar(50)
   capacity                   Int

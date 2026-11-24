@@ -19,6 +19,7 @@ type DemoSession = {
   key: "morning" | "afternoon" | "upcoming";
   date: string;
   time: string;
+  end_time: string;
   venue: string;
   room: string;
   capacity: number;
@@ -26,9 +27,9 @@ type DemoSession = {
 
 /** Exam day matches the demo exam's date (2026-09-12); the upcoming one is open for seating. */
 export const DEMO_SESSIONS: DemoSession[] = [
-  { key: "morning", date: "2026-09-12", time: "08:00", venue: "QCU San Bartolome Campus, Main Building", room: "201", capacity: 15 },
-  { key: "afternoon", date: "2026-09-12", time: "13:00", venue: "QCU San Bartolome Campus, Main Building", room: "202", capacity: 15 },
-  { key: "upcoming", date: "2026-12-05", time: "08:00", venue: "QCU Batasan Campus, Academic Building", room: "105", capacity: 5 },
+  { key: "morning",   date: "2026-09-12", time: "08:00", end_time: "10:00", venue: "QCU San Bartolome Campus, Main Building", room: "201", capacity: 15 },
+  { key: "afternoon", date: "2026-09-12", time: "13:00", end_time: "15:00", venue: "QCU San Bartolome Campus, Main Building", room: "202", capacity: 15 },
+  { key: "upcoming",  date: "2026-12-05", time: "08:00", end_time: "10:00", venue: "QCU Batasan Campus, Academic Building",    room: "105", capacity: 5  },
 ];
 
 const sessionWhere = (examId: number, s: DemoSession) => ({
@@ -65,7 +66,7 @@ export async function seedDemoExamSchedule(examId: number, markedBy: number | nu
       continue;
     }
     const created = await prisma.tbl_exam_session.create({
-      data: { ...sessionWhere(examId, s), start_time: s.time, capacity: s.capacity, created_by: markedBy },
+      data: { ...sessionWhere(examId, s), start_time: s.time, end_time: s.end_time, capacity: s.capacity, created_by: markedBy },
       select: { session_id: true },
     });
     sessions[s.key] = created.session_id;
