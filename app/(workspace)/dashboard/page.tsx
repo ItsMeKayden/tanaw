@@ -507,7 +507,7 @@ async function GuidanceDashboard({ searchParams }: PageProps) {
 		...(selectedCourseId ? { program_id: selectedCourseId } : {}),
 	};
 
-	const [recommendationRows, applicationsCount, quotaTotal] = await Promise.all([
+	const [recommendationRows, applicationsCount, passedCount, enrolledCount, quotaTotal] = await Promise.all([
 		prisma.tbl_application.findMany({
 			where: {
 				...whereBase,
@@ -545,6 +545,12 @@ async function GuidanceDashboard({ searchParams }: PageProps) {
 			},
 		}),
 		prisma.tbl_application.count({ where: { ...whereBase, tbl_exam_result: { some: {} } } }),
+		prisma.tbl_application.count({
+			where: { ...whereBase, tbl_exam_result: { some: { result_status: EXAM_RESULT_PASSED } } },
+		}),
+		prisma.tbl_application.count({
+			where: { ...whereBase, tbl_admission_stage: { stage_name: ADMISSION_STAGES.ENROLLED } },
+		}),
 		prisma.tbl_quota.aggregate({ where: { cycle_id: cycle.cycle_id }, _sum: { quota_slots: true } }),
 	]);
 
@@ -623,8 +629,8 @@ async function GuidanceDashboard({ searchParams }: PageProps) {
 		});
 
 	const totalQuotaSlots = Number(quotaTotal._sum.quota_slots ?? 0);
-	const quotaProgress = totalQuotaSlots > 0 ? Math.min((applicationsCount / totalQuotaSlots) * 100, 100) : 0;
-	const quotaRemaining = Math.max(totalQuotaSlots - applicationsCount, 0);
+	const quotaProgress = totalQuotaSlots > 0 ? Math.min((enrolledCount / totalQuotaSlots) * 100, 100) : 0;
+	const quotaRemaining = Math.max(totalQuotaSlots - enrolledCount, 0);
 	const funnel = [
 		{ label: "Applied", value: applicationsCount, width: applicationsCount ? "100%" : "0%", color: "#5c6ce6" },
 		{ label: "Examined", value: totalExamined, width: totalExamined ? `${Math.min((totalExamined / Math.max(applicationsCount, 1)) * 100, 100)}%` : "0%", color: "#7a8cf0" },
@@ -747,15 +753,15 @@ async function GuidanceDashboard({ searchParams }: PageProps) {
 						<div className="mb-4 text-lg font-semibold text-neutral-800">
 							Admission quota
 						</div>
-						<div className="mb-2 text-3xl font-bold text-neutral-900">{applicationsCount}</div>
+						<div className="mb-2 text-3xl font-bold text-neutral-900">{enrolledCount}</div>
 						<div className="mb-4 text-sm text-neutral-600">of {totalQuotaSlots} target students</div>
 						<div className="mb-3 h-2 overflow-hidden rounded-full bg-[#e7e7e7]">
 							<div className="h-full rounded-full bg-[#6ddeae]" style={{ width: `${quotaProgress}%` }} />
 						</div>
 						<div className="space-y-2 text-sm text-neutral-700">
 							<div>{totalQuotaSlots > 0 ? `${quotaRemaining} slots remaining` : "Quota not set"}</div>
-							<div>{Math.max(totalQuotaSlots - applicationsCount, 0)} slots remaining</div>
-							<div>{Math.max(compatible - applicationsCount, 0)} passers not yet enrolled</div>
+							<div>{Math.max(totalQuotaSlots - enrolledCount, 0)} slots remaining</div>
+							<div>{Math.max(passedCount - enrolledCount, 0)} passers not yet enrolled</div>
 						</div>
 						<Link
 							href="/recommendation"
@@ -818,7 +824,7 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 		...(selectedCourseId ? { program_id: selectedCourseId } : {}),
 	};
 
-	const [actionQueue, quotaTotal, applicantsCount] = await Promise.all([
+	const [actionQueue, quotaTotal, applicantsCount, enrolledCount] = await Promise.all([
 		prisma.tbl_application.findMany({
 			where: whereBase,
 			orderBy: { application_date: "desc" },
@@ -837,6 +843,9 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 		}),
 		prisma.tbl_quota.aggregate({ where: { cycle_id: cycle.cycle_id }, _sum: { quota_slots: true } }),
 		prisma.tbl_application.count({ where: whereBase }),
+		prisma.tbl_application.count({
+			where: { ...whereBase, tbl_admission_stage: { stage_name: ADMISSION_STAGES.ENROLLED } },
+		}),
 	]);
 
 	const awaitingExamSchedule = actionQueue.filter((application) => {
@@ -910,8 +919,8 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 	};
 
 	const totalQuotaSlots = Number(quotaTotal._sum.quota_slots ?? 0);
-	const quotaProgress = totalQuotaSlots > 0 ? Math.min((applicantsCount / totalQuotaSlots) * 100, 100) : 0;
-	const quotaRemaining = Math.max(totalQuotaSlots - applicantsCount, 0);
+	const quotaProgress = totalQuotaSlots > 0 ? Math.min((enrolledCount / totalQuotaSlots) * 100, 100) : 0;
+	const quotaRemaining = Math.max(totalQuotaSlots - enrolledCount, 0);
 	const funnel = [
 		{ label: "Applied", value: applicantsCount, width: applicantsCount ? "100%" : "0%", color: "#5c6ce6" },
 		{ label: "Took exam", value: actionQueue.filter((app) => app.tbl_exam_result.length > 0).length, width: applicantsCount ? `${Math.min((actionQueue.filter((app) => app.tbl_exam_result.length > 0).length / applicantsCount) * 100, 100)}%` : "0%", color: "#7a8cf0" },
@@ -1043,14 +1052,14 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 						<div className="mb-4 text-lg font-semibold text-neutral-800">
 							Admission quota
 						</div>
-						<div className="mb-2 text-3xl font-bold text-neutral-900">{applicantsCount}</div>
+						<div className="mb-2 text-3xl font-bold text-neutral-900">{enrolledCount}</div>
 						<div className="mb-4 text-sm text-neutral-600">of {totalQuotaSlots} target students</div>
 						<div className="mb-3 h-2 overflow-hidden rounded-full bg-[#e7e7e7]">
 							<div className="h-full rounded-full bg-[#6ddeae]" style={{ width: `${quotaProgress}%` }} />
 						</div>
 						<div className="space-y-2 text-sm text-neutral-700">
 							<div>{totalQuotaSlots > 0 ? `${quotaRemaining} slots remaining` : "Quota not set"}</div>
-							<div>{Math.max(totalQuotaSlots - applicantsCount, 0)} slots remaining</div>
+							<div>{Math.max(totalQuotaSlots - enrolledCount, 0)} slots remaining</div>
 							<div>{Math.max(passedNotEnrolled, 0)} passers not yet enrolled</div>
 						</div>
 						{isAdmissionRole ? (
