@@ -4,7 +4,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { hash } from "bcryptjs";
 import { headers } from "next/headers";
 
-import { isMailConfigured, sendMail } from "@/lib/mailer";
+import { escapeHtml, isMailConfigured, sendMail } from "@/lib/mailer";
 import { prisma } from "@/lib/prisma";
 import {
   fieldErrorsOf,
@@ -177,7 +177,3 @@ export async function resetPassword(input: ResetPasswordValues): Promise<Passwor
 }
 
 class TokenAlreadyUsed extends Error {}
-
-function escapeHtml(value: string) {
-  return value.replace(/[&<>"']/g, (char) => `&#${char.charCodeAt(0)};`);
-}

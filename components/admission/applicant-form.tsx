@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
 
 import { DatePicker } from "@/components/ui/date-picker";
+import { DocumentPreview } from "@/components/admission/document-preview";
 import {
   APPLICANT_FORM_FIELDS,
   MAX_APPLICANT_AGE,
@@ -54,6 +55,7 @@ export type ExistingDocument = {
   document_id: number;
   file_name: string;
   file_size: number;
+  mime_type: string;
 };
 
 type ApplicantFormProps = Readonly<{
@@ -348,6 +350,19 @@ function DocumentUpload({
   const [isDragging, setIsDragging] = useState(false);
   const inputId = `doc-${slotKey}`;
 
+  // Local preview of a picked file before it is uploaded.
+  const [fileUrl, setFileUrl] = useState<string | null>(null);
+  useEffect(() => {
+    if (!file) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- object URLs must be created and revoked in an effect
+      setFileUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    setFileUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+
   function accept(candidate: File | undefined) {
     if (!candidate) return;
     const problem = validateDocumentFile(candidate);
@@ -420,6 +435,25 @@ function DocumentUpload({
           event.target.value = "";
         }}
       />
+      {file && fileUrl && (
+        <DocumentPreview
+          src={fileUrl}
+          fileName={file.name}
+          mimeType={file.type}
+          title={`${label} (not saved yet)`}
+          meta={formatFileSize(file.size)}
+          allowDownload={false}
+        />
+      )}
+      {!file && existing && !removeExisting && (
+        <DocumentPreview
+          src={`/api/documents/${existing.document_id}`}
+          fileName={existing.file_name}
+          mimeType={existing.mime_type}
+          title={label}
+          meta={formatFileSize(existing.file_size)}
+        />
+      )}
       <div className="flex flex-wrap gap-3 text-xs">
         {file && (
           <button
@@ -432,14 +466,6 @@ function DocumentUpload({
         )}
         {!file && existing && (
           <>
-            <a
-              href={`/api/documents/${existing.document_id}`}
-              target="_blank"
-              rel="noreferrer"
-              className="text-[#191e73] hover:underline"
-            >
-              View current file
-            </a>
             <button
               type="button"
               onClick={onToggleRemove}

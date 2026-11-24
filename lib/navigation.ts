@@ -1,5 +1,6 @@
 import { hasAnyPermission, type ModuleName } from "@/lib/permissions";
 import type { UserRole } from "@/lib/authorization";
+import { QUOTA_VIEW_MODULES } from "@/features/admission/access";
 
 /** Icon keys rendered by the sidebar (components can't cross the server boundary). */
 export type NavigationIcon =
@@ -72,7 +73,7 @@ const navigationItems: NavigationItem[] = [
         permission: enrollmentVerificationModules,
       },
       { label: "Additional Applicants", href: "/admission/additional-applicants", permission: "admission" },
-      { label: "Quota", href: "/admission/quota", permission: "admission" },
+      { label: "Quota", href: "/admission/quota", permission: QUOTA_VIEW_MODULES },
       {
         label: "Archive History",
         href: "/admission/archive",

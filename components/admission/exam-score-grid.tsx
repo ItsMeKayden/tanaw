@@ -7,7 +7,7 @@ import { Search, Upload } from "lucide-react";
 
 import { saveExamScores, savePassingScore } from "@/features/admission/actions/exam-scores";
 import type { ExamSubject, PassingRule } from "@/features/admission/exam";
-import { formatPassingRule, isPassing } from "@/features/admission/exam-scoring";
+import { ATTENDANCE, formatPassingRule, isPassing } from "@/features/admission/exam-scoring";
 import { tableStyles } from "@/components/ui/table-styles";
 import { toast } from "@/components/ui/toaster";
 
@@ -20,9 +20,12 @@ export type ScoreRow = {
   /** Saved total and pass/fail from tbl_exam_result (null = no result yet). */
   savedTotal: number | null;
   savedPassed: boolean | null;
-  /** Marked absent at their exam session (Exam Schedule). */
-  absent: boolean;
+  /** Attendance at their exam session (Exam Schedule); null = not marked / not seated. */
+  attendance: "PRESENT" | "ABSENT" | null;
 };
+
+/** Scores can only be entered for applicants marked present at their exam session. */
+const canScore = (row: ScoreRow) => row.attendance === ATTENDANCE.PRESENT;
 
 type Feedback = { type: "success" | "error"; text: string; details?: string[] } | null;
 type Draft = Record<number, Record<number, string>>;
@@ -164,7 +167,7 @@ export function ExamScoreGrid({
     return { total, filled, complete, hasInvalid, passed: complete && rule ? isPassing(total!, maxTotal, rule) : null };
   }
 
-  const dirtyRows = rows.filter(isDirty);
+  const dirtyRows = rows.filter((row) => canScore(row) && isDirty(row));
 
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -216,6 +219,10 @@ export function ExamScoreGrid({
           const row = byNo.get(no.toLowerCase());
           if (!row) {
             problems.push(`Line ${index + 2}: applicant "${no || "(blank)"}" is not on this list.`);
+            return;
+          }
+          if (!canScore(row)) {
+            problems.push(`Line ${index + 2} (${no}): skipped, not marked present on the Exam Schedule.`);
             return;
           }
           matched++;
@@ -396,9 +403,14 @@ export function ExamScoreGrid({
                   <td className={`${cell} whitespace-nowrap tabular-nums`}>{row.application_no}</td>
                   <td className={`${cell} text-left`}>
                     {row.name}
-                    {row.absent && (
-                      <span className="ml-1.5 rounded-full bg-red-100 px-1.5 text-[11px] text-red-900" title="Marked absent at their exam session">
+                    {row.attendance === ATTENDANCE.ABSENT && (
+                      <span className="ml-1.5 rounded-full bg-red-100 px-1.5 text-[11px] text-red-900" title="Marked absent at their exam session; scores can't be entered">
                         Absent
+                      </span>
+                    )}
+                    {row.attendance === null && (
+                      <span className="ml-1.5 rounded-full bg-neutral-200 px-1.5 text-[11px] text-neutral-700" title="Mark them present on the Exam Schedule before entering scores">
+                        Attendance not marked
                       </span>
                     )}
                   </td>
@@ -407,7 +419,7 @@ export function ExamScoreGrid({
                     const bad = invalid(text, s.max);
                     return (
                       <td key={s.competency_id} className={`${cell} p-0.5`}>
-                        {canWrite ? (
+                        {canWrite && canScore(row) ? (
                           <input
                             type="text"
                             inputMode="numeric"
@@ -443,7 +455,8 @@ export function ExamScoreGrid({
         </table>
       </div>
       <p className="text-xs text-neutral-600 italic">
-        Total and status update automatically as scores are typed. Changed rows are highlighted until saved. Saved
+        Scores can only be entered for applicants marked present on the Exam Schedule. Total and status update
+        automatically as scores are typed. Changed rows are highlighted until saved. Saved
         subject scores also update the applicant&apos;s course recommendations.
       </p>
     </div>

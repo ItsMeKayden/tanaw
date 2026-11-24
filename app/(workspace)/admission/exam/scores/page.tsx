@@ -19,12 +19,17 @@ type PageProps = Readonly<{
   searchParams: Promise<{ cycle?: string | string[] }>;
 }>;
 
+function toAttendance(value: string | null | undefined): ScoreRow["attendance"] {
+  if (value === ATTENDANCE.PRESENT || value === ATTENDANCE.ABSENT) return value;
+  return null;
+}
+
 /** Applicants who are taking or have taken the exam. */
 const EXAM_STAGES = [
   ADMISSION_STAGES.FOR_EXAMINATION,
   ADMISSION_STAGES.EXAM_COMPLETED,
   ADMISSION_STAGES.PASSED,
-  ADMISSION_STAGES.QUALIFIED,
+  ADMISSION_STAGES.WAITLISTED,
   ADMISSION_STAGES.FAILED,
   ADMISSION_STAGES.ENROLLED,
   ADMISSION_STAGES.NOT_ENROLLED,
@@ -120,7 +125,7 @@ async function ScoresContent({ searchParams }: PageProps) {
       scores,
       savedTotal: result?.raw_score ?? null,
       savedPassed: result?.result_status ? result.result_status === EXAM_RESULT_PASSED : null,
-      absent: application.tbl_exam_session_applicant?.attendance === ATTENDANCE.ABSENT,
+      attendance: toAttendance(application.tbl_exam_session_applicant?.attendance),
     };
   });
 

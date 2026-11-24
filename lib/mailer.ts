@@ -7,6 +7,11 @@ export type MailMessage = {
   html: string;
 };
 
+/** Escapes text for use inside an email's HTML body. */
+export function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, (char) => `&#${char.charCodeAt(0)};`);
+}
+
 /** false = emails are only printed to the console (development without SMTP). */
 export function isMailConfigured() {
   return Boolean(process.env.SMTP_HOST);

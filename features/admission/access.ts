@@ -15,6 +15,9 @@ export const APPLICANT_EDIT_MODULES: ModuleName[] = ["admission", "registrar"];
 /** Modules that show the Exam Schedule; write access manages sessions and attendance. */
 export const EXAM_SCHEDULE_MODULES: ModuleName[] = ["admission", "registrar"];
 
+/** Modules that can view the Quota page; only Admission write access can change it. */
+export const QUOTA_VIEW_MODULES: ModuleName[] = ["admission", "guidance"];
+
 /** Where each module's applicant profiles live: `${base}/[id]`. */
 export const APPLICANT_BASE_PATH: Partial<Record<ModuleName, string>> = {
   admission: "/admission/applicants",
