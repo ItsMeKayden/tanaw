@@ -25,3 +25,4 @@ export const APPLICANT_BASE_PATH: Partial<Record<ModuleName, string>> = {
 /** Every page that lists applicants or exam sessions (for revalidatePath after a change). */
 export const APPLICANT_LIST_PATHS = ["/admission", "/registrar/applicants", "/guidance/applicants"];
 export const EXAM_SCHEDULE_PATHS = ["/admission/exam/schedule", "/registrar/exam-schedule"];
+export const EXAM_QUESTIONS_PATH = "/admission/exam/questions";

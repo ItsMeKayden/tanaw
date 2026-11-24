@@ -1,10 +1,11 @@
 import { connection } from "next/server";
 
-import { ExamSchedule, type SeatRow, type SessionRow } from "@/components/admission/exam-schedule";
+import { ExamSchedule, type SlotRow, type SessionRow } from "@/components/admission/exam-schedule";
 import { FilterSelect } from "@/components/admission/filter-select";
 import { QcuWatermark } from "@/components/admission/qcu-watermark";
 import { resolveCycle } from "@/features/admission/admission-stats";
 import { formatFullName } from "@/features/admission/enrollment-queries";
+import { isSessionFinished } from "@/features/admission/exam";
 import { ATTENDANCE } from "@/features/admission/exam-scoring";
 import { ADMISSION_STAGES } from "@/features/admission/stages";
 import { requirePermission } from "@/lib/authorization";
@@ -53,6 +54,7 @@ export async function ExamScheduleView({
         session_id: true,
         session_date: true,
         start_time: true,
+        end_time: true,
         venue: true,
         room: true,
         capacity: true,
@@ -81,18 +83,20 @@ export async function ExamScheduleView({
     session_id: s.session_id,
     date: dateFormat.format(s.session_date),
     time: formatTime(s.start_time),
+    end_time: formatTime(s.end_time),
     venue: s.venue,
     room: s.room,
     capacity: s.capacity,
     registered: s._count.tbl_exam_session_applicant,
     present: countOf(s.session_id, ATTENDANCE.PRESENT),
     absent: countOf(s.session_id, ATTENDANCE.ABSENT),
+    finished: isSessionFinished(s.session_date, s.end_time),
   }));
 
   const requested = Number(Array.isArray(params.session) ? params.session[0] : params.session);
   const selected = rows.find((r) => r.session_id === requested) ?? rows[0] ?? null;
 
-  const seats: SeatRow[] = selected
+  const slots: SlotRow[] = selected
     ? (
         await prisma.tbl_exam_session_applicant.findMany({
           where: { session_id: selected.session_id, tbl_application: ACTIVE_APPLICATION },
@@ -113,12 +117,12 @@ export async function ExamScheduleView({
           const lastB = b.tbl_application.tbl_applicant?.last_name ?? "";
           return lastA.localeCompare(lastB) || a.application_id - b.application_id;
         })
-        .map((seat) => ({
-          application_id: seat.application_id,
-          application_no: seat.tbl_application.application_no,
-          name: formatFullName(seat.tbl_application.tbl_applicant),
+        .map((slot) => ({
+          application_id: slot.application_id,
+          application_no: slot.tbl_application.application_no,
+          name: formatFullName(slot.tbl_application.tbl_applicant),
           attendance:
-            seat.attendance === ATTENDANCE.PRESENT || seat.attendance === ATTENDANCE.ABSENT ? seat.attendance : null,
+            slot.attendance === ATTENDANCE.PRESENT || slot.attendance === ATTENDANCE.ABSENT ? slot.attendance : null,
         }))
     : [];
 
@@ -131,7 +135,7 @@ export async function ExamScheduleView({
         cycleId={cycle.cycle_id}
         sessions={rows}
         selected={selected}
-        seats={seats}
+        slots={slots}
         waiting={waiting}
         canWrite={canWrite}
         yearFilter={

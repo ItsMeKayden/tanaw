@@ -1,13 +1,22 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import Papa from "papaparse";
 
 import type { Prisma } from "@/generated/prisma/client";
 import { getAccountId, requirePermission } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
 import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
-import { ensureCycleExam, getExamSubjects, getPassingRule, type PassingRule } from "@/features/admission/exam";
+import { ensureCycleExam, getCycleExam, getExamSubjects, getPassingRule, type PassingRule } from "@/features/admission/exam";
 import { isPassing, scorePercent } from "@/features/admission/exam-scoring";
+import { formatFullName } from "@/features/admission/enrollment-queries";
+import {
+  gradeMarked,
+  normalizeAnswer,
+  type AnswerKeyItem,
+  type ScannedPreviewRow,
+  type ScanSubject,
+} from "@/features/admission/exam-grading";
 import { loadSlotTracker } from "@/features/admission/slots";
 import { ADMISSION_STAGES, EXAM_RESULT_PASSED } from "@/features/admission/stages";
 import { generateRecommendations } from "@/features/recommendation/engine";
@@ -133,6 +142,173 @@ async function refreshRecommendations(cycleId: number, applicationIds: number[])
   } catch (error) {
     console.error("Refresh recommendations error:", error);
     return false;
+  }
+}
+
+type ScanPreviewResult =
+  | { rows: ScannedPreviewRow[]; subjects: ScanSubject[]; maxTotal: number }
+  | { error: string };
+
+const APP_NO_COLS = [
+  "application_no",
+  "application no",
+  "application number",
+  "app_no",
+  "app no",
+  "appno",
+  "applicant_no",
+  "applicant no",
+  "applicationno",
+];
+const ANSWER_COLS = ["answers", "answer_key", "answerkey", "responses", "response", "marks", "answer"];
+
+function pickHeader(headers: string[], names: string[]): string | null {
+  return names.find((n) => headers.includes(n)) ?? null;
+}
+
+/**
+ * Parses an uploaded CSV of scanned answers and grades each row against the
+ * cycle exam's key, returning preview rows (per-subject scores aligned to the
+ * official subjects). Writes nothing — the client confirms with saveExamScores.
+ */
+export async function previewScannedResults(
+  cycleIdInput: number,
+  filename: string,
+  base64: string,
+): Promise<ScanPreviewResult> {
+  await requirePermission("admission", "write");
+
+  const cycleId = validId(cycleIdInput);
+  if (!cycleId) return { error: "Invalid admission cycle." };
+  if (!base64) return { error: "No file provided." };
+  if (base64.length > 6_000_000) return { error: "File is too large (about 4 MB max)." };
+  if (!filename.toLowerCase().endsWith(".csv")) {
+    return { error: "Upload a .csv file exported from your scanner or spreadsheet." };
+  }
+
+  try {
+    const exam = await getCycleExam(cycleId);
+    if (!exam) return { error: "Create the exam for this school year first." };
+
+    const [key, subjects] = await Promise.all([
+      prisma.tbl_exam_question.findMany({
+        where: { exam_id: exam.exam_id },
+        orderBy: { question_no: "asc" },
+        select: { question_no: true, correct_answer: true, points: true, competency_id: true },
+      }),
+      getExamSubjects(exam),
+    ]);
+    if (key.length === 0) return { error: "This exam has no questions. Add the answer key first." };
+    if (subjects.length === 0) return { error: "The exam has no subjects (competencies) set up." };
+
+    const maxTotal = subjects.reduce((s, x) => s + x.max, 0);
+    const questionNos = key.map((k) => k.question_no);
+    const keyItems: AnswerKeyItem[] = key.map((k) => ({
+      question_no: k.question_no,
+      correct_answer: k.correct_answer,
+      points: k.points,
+      competency_id: k.competency_id,
+    }));
+
+    const parsed = Papa.parse<Record<string, string>>(Buffer.from(base64, "base64").toString("utf8"), {
+      header: true,
+      skipEmptyLines: true,
+      transformHeader: (h) => h.trim().toLowerCase(),
+    });
+    const headers = (parsed.meta.fields ?? []).map((f) => f.trim().toLowerCase());
+
+    const appNoCol = pickHeader(headers, APP_NO_COLS);
+    if (!appNoCol) {
+      return { error: 'Could not find an application-number column. Add a header named "application_no".' };
+    }
+
+    const answersCol = pickHeader(headers, ANSWER_COLS);
+    const perQuestion = headers
+      .map((h) => ({ h, m: /^(?:q|item)?\s*0*(\d+)$/.exec(h) }))
+      .filter((x) => x.m)
+      .map((x) => ({ header: x.h, no: Number(x.m![1]) }));
+
+    if (!answersCol && perQuestion.length === 0) {
+      return {
+        error:
+          'Could not find answers. Add either an "answers" column (e.g. "ABCDA") or one column per question (q1, q2, …).',
+      };
+    }
+
+    const applications = await prisma.tbl_application.findMany({
+      where: { cycle_id: cycleId, ...ACTIVE_APPLICATION },
+      select: {
+        application_id: true,
+        application_no: true,
+        tbl_applicant: { select: { first_name: true, middle_name: true, last_name: true, suffix: true } },
+      },
+    });
+    const byAppNo = new Map(applications.map((a) => [a.application_no.trim().toLowerCase(), a]));
+
+    const seen = new Set<string>();
+    const rows: ScannedPreviewRow[] = parsed.data.map((rec, i) => {
+      const rowNumber = i + 2;
+      const appNo = (rec[appNoCol] ?? "").trim();
+      const appKey = appNo.toLowerCase();
+
+      const marked = new Map<number, string>();
+      let warning: string | null = null;
+      if (perQuestion.length > 0) {
+        for (const { header, no } of perQuestion) {
+          const v = normalizeAnswer(rec[header] ?? "");
+          if (v) marked.set(no, v);
+        }
+      } else if (answersCol) {
+        const raw = (rec[answersCol] ?? "").replace(/[\s,]+/g, "");
+        for (let j = 0; j < raw.length && j < questionNos.length; j++) {
+          const v = normalizeAnswer(raw[j]);
+          if (v) marked.set(questionNos[j], v);
+        }
+        if (raw.length !== questionNos.length) {
+          warning = `Answer string has ${raw.length} marks but the exam has ${questionNos.length} items.`;
+        }
+      }
+
+      const app = appNo ? byAppNo.get(appKey) : undefined;
+      let error: string | null = null;
+      if (!appNo) error = "Missing application number.";
+      else if (!app) error = `No applicant "${appNo}" in this school year.`;
+      else if (seen.has(appKey)) error = `"${appNo}" appears more than once in the file.`;
+      if (app) seen.add(appKey);
+
+      const graded = gradeMarked(keyItems, marked);
+      const scores = subjects.map((s) => ({
+        competency_id: s.competency_id,
+        score: graded.byCompetency.get(s.competency_id) ?? 0,
+      }));
+
+      return {
+        rowNumber,
+        application_no: appNo,
+        applicant_name: app?.tbl_applicant ? formatFullName(app.tbl_applicant) : null,
+        application_id: app?.application_id ?? null,
+        total: graded.total,
+        max: maxTotal,
+        percentage: maxTotal > 0 ? scorePercent(graded.total, maxTotal) : null,
+        answered: graded.answered,
+        questionCount: questionNos.length,
+        scores,
+        error,
+        warning,
+      };
+    });
+
+    if (rows.length === 0) return { error: "No data rows found in the file." };
+    if (rows.length > MAX_ROWS) return { error: `Import at most ${MAX_ROWS} rows at a time.` };
+
+    return {
+      rows,
+      subjects: subjects.map((s) => ({ competency_id: s.competency_id, short: s.short, max: s.max })),
+      maxTotal,
+    };
+  } catch (error) {
+    console.error("Preview scanned results error:", error);
+    return { error: error instanceof Error ? error.message : "Could not read the file." };
   }
 }
 

@@ -264,7 +264,7 @@ export function GridEditorSkeleton({
   );
 }
 
-/** Score Breakdown and Course Comparison: filters, chart, and a side panel. */
+/** Course Comparison: filters, chart, and a side panel. */
 export function ChartPageSkeleton({ label, radar = false }: Readonly<{ label: string; radar?: boolean }>) {
   return (
     <Frame label={label}>

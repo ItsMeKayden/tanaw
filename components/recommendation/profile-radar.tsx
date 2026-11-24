@@ -21,7 +21,10 @@ export type RadarRow = { label: string; score: number | null; required: number |
  * one spoke per competency. A spoke whose score is under its requirement gets
  * a red point and a red "score / required" label.
  */
-export function ProfileRadar({ rows, courseLabel }: Readonly<{ rows: RadarRow[]; courseLabel: string }>) {
+export function ProfileRadar({
+  rows,
+  courseLabel,
+}: Readonly<{ rows: RadarRow[]; courseLabel: string }>) {
   // Animated copies of the values: grow from the center on first show, then
   // morph smoothly when the applicant or course changes.
   const scores = useTweenedValues(rows.map((r) => r.score ?? 0));
@@ -47,9 +50,10 @@ export function ProfileRadar({ rows, courseLabel }: Readonly<{ rows: RadarRow[];
 
   return (
     <figure className="space-y-3">
+      <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-6">
       <svg
         viewBox={`0 0 ${size} ${size}`}
-        className="mx-auto block w-full max-w-sm"
+        className="block w-[300px] max-w-full shrink-0"
         role="img"
         aria-label={`Applicant scores compared with ${courseLabel} requirements: ${rows
           .map((r) => `${r.label} ${r.score ?? 0} of ${r.required ?? "no requirement"}`)
@@ -113,7 +117,10 @@ export function ProfileRadar({ rows, courseLabel }: Readonly<{ rows: RadarRow[];
         })}
       </svg>
 
-      <ul className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-xs text-neutral-800" aria-label="Legend">
+      <ul
+        className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-xs text-neutral-800 sm:flex-col sm:flex-nowrap sm:justify-center sm:gap-x-0 sm:gap-y-2.5"
+        aria-label="Legend"
+      >
         <li className="flex items-center gap-1.5">
           <span aria-hidden="true" className="size-3 rounded-[3px] border-2" style={{ backgroundColor: `${RADAR_APPLICANT_FILL}aa`, borderColor: RADAR_APPLICANT_EDGE }} />
           Applicant
@@ -129,35 +136,33 @@ export function ProfileRadar({ rows, courseLabel }: Readonly<{ rows: RadarRow[];
           Below requirement
         </li>
       </ul>
+      </div>
 
-      <details className="text-xs text-neutral-700">
-        <summary className="cursor-pointer select-none hover:text-black">Show as table</summary>
-        <div className={`${tableStyles.wrap} mt-2`}>
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className={tableStyles.headRow}>
-                {["Competency", "Applicant", "Required", "Result"].map((h) => (
-                  <th key={h} className="px-3 py-2 text-left text-[11px] font-semibold tracking-wide text-[#191e73] uppercase">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className={tableStyles.body}>
-              {rows.map((row) => (
-                <tr key={row.label}>
-                  <td className="px-3 py-1.5">{row.label}</td>
-                  <td className="px-3 py-1.5 tabular-nums">{row.score ?? 0}%</td>
-                  <td className="px-3 py-1.5 tabular-nums">{row.required === null ? "—" : `${row.required}%`}</td>
-                  <td className="px-3 py-1.5">
-                    {row.required === null ? "Not required" : below(row) ? "Below" : "Meets"}
-                  </td>
-                </tr>
+      <div className={`${tableStyles.wrap} text-xs text-neutral-700`}>
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className={tableStyles.headRow}>
+              {["Competency", "Applicant", "Required", "Result"].map((h) => (
+                <th key={h} className="px-3 py-2 text-left text-[11px] font-semibold tracking-wide text-[#191e73] uppercase">
+                  {h}
+                </th>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </details>
+            </tr>
+          </thead>
+          <tbody className={tableStyles.body}>
+            {rows.map((row) => (
+              <tr key={row.label}>
+                <td className="px-3 py-1.5">{row.label}</td>
+                <td className="px-3 py-1.5 tabular-nums">{row.score ?? 0}%</td>
+                <td className="px-3 py-1.5 tabular-nums">{row.required === null ? "—" : `${row.required}%`}</td>
+                <td className="px-3 py-1.5">
+                  {row.required === null ? "Not required" : below(row) ? "Below" : "Meets"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </figure>
   );
 }
