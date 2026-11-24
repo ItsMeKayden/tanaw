@@ -120,7 +120,7 @@ This runs, in order:
 - **Access control:** the 5 roles, 16 module permissions and their default role assignments. Defaults are only applied to permissions nobody has configured yet, so access changed on the User Management page is kept.
 - **SYSTEM_ADMIN account** (`systemadmin@tanaw.com`) using `SYSTEM_ADMIN_PASSWORD`. An existing account's password is never changed.
 - **Test accounts** (one per role) using `TEST_USER_PASSWORD`. Skipped if the variable is empty; re-running resets their passwords.
-- **Admission stages:** Application Submitted → For Examination → Exam Completed → Passed / Qualified / Failed → Enrolled / Not Enrolled. Qualified is the waiting list: applicants who pass after their course's quota is full, admitted later from Admission → Additional Applicants.
+- **Admission stages:** Application Submitted → For Examination → Exam Completed → Passed / Waitlisted / Failed → Enrolled / Not Enrolled. Waitlisted = the waiting list: applicants who pass after their course's quota is full, admitted later from Admission → Additional Applicants.
 - **Reference data:** Quezon City districts and barangays, the 3 campuses, 7 programs, and a starter list of schools.
 - **Admission cycle 2026-2027** (active), only if no such cycle exists, plus a default passing score (75%) when the active cycle has none.
 - **Map boundaries:** Quezon City barangay shapes from `prisma/seeds/geo/qc-barangays.geojson` into `tbl_barangay.boundary_geojson`, and each district's outline into `tbl_district.boundary_geojson` (source and license: `prisma/seeds/geo/README.md`).

@@ -66,6 +66,7 @@ export function getApplicantProfile(applicantId: number) {
               document_type: true,
               file_name: true,
               file_size: true,
+              mime_type: true,
               uploaded_at: true,
               tbl_user_account: { select: { full_name: true } },
             },

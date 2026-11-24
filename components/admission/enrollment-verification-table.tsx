@@ -64,6 +64,24 @@ function EnrollmentBadge({ row }: Readonly<{ row: EnrollmentRow }>) {
   );
 }
 
+/** Opens the verification page: "Verify" while pending, "View" once decided. */
+function VerifyButton({ row }: Readonly<{ row: EnrollmentRow }>) {
+  const pending = row.status === "PENDING";
+  return (
+    <Link
+      href={`/admission/enrollment-verification/${row.application_id}`}
+      aria-label={`${pending ? "Verify enrollment of" : "View enrollment of"} ${row.full_name}`}
+      className={`inline-flex h-7 items-center rounded-md px-3 text-xs font-semibold whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-[#191e73]/30 focus-visible:outline-none ${
+        pending
+          ? "bg-[#191e73] text-white hover:bg-[#232a99]"
+          : "border border-neutral-500 bg-white text-neutral-800 hover:bg-neutral-100"
+      }`}
+    >
+      {pending ? "Verify" : "View"}
+    </Link>
+  );
+}
+
 export default function EnrollmentVerificationTable({
   rows,
 }: Readonly<{ rows: EnrollmentRow[] }>) {
@@ -143,6 +161,7 @@ export default function EnrollmentVerificationTable({
               <th className={tableStyles.th}>Exam score</th>
               <th className={tableStyles.th}>Enrollment</th>
               <th className={tableStyles.th}>Verified by</th>
+              <th className={`${tableStyles.th} text-right`}>Action</th>
             </tr>
           </thead>
           <tbody className={tableStyles.body}>
@@ -181,11 +200,14 @@ export default function EnrollmentVerificationTable({
                       "--"
                     )}
                   </td>
+                  <td className={`${cell} text-right`}>
+                    <VerifyButton row={row} />
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={6} className={tableStyles.empty}>
+                <td colSpan={7} className={tableStyles.empty}>
                   {filter !== "ALL" || search
                     ? "No applicants match this filter."
                     : "No passed applicants yet."}

@@ -37,6 +37,8 @@ export type SlotRow = {
   application_no: string;
   name: string;
   attendance: "PRESENT" | "ABSENT" | null;
+  /** Has an exam score: can't be changed to absent or removed from the session. */
+  scored: boolean;
 };
 
 type Feedback = { type: "success" | "error"; text: string } | null;
@@ -231,13 +233,16 @@ function AttendancePanel({
             let badge = "border-neutral-400 bg-neutral-100 text-neutral-700";
             if (status === "Present") badge = "border-green-600 bg-green-100 text-green-900";
             if (status === "Absent") badge = "border-red-400 bg-red-100 text-red-900";
+            // A scored applicant stays present and stays in the session.
+            const locked = slot.scored && slot.attendance === "PRESENT";
             return (
               <li key={slot.application_id} className="flex items-center gap-2 rounded px-1 py-0.5 hover:bg-[#f4f5fd]">
                 <input
                   type="checkbox"
                   id={`slot-${slot.application_id}`}
                   checked={checked}
-                  disabled={!canWrite || session.finished}
+                  disabled={!canWrite || session.finished || locked}
+                  title={locked ? "Has an exam score, so attendance stays Present" : undefined}
                   onChange={(e) => {
                     setTouched(true);
                     setPresent((prev) => ({ ...prev, [slot.application_id]: e.target.checked }));
@@ -247,8 +252,13 @@ function AttendancePanel({
                 <label htmlFor={`slot-${slot.application_id}`} className="min-w-0 flex-1 truncate" title={slot.application_no}>
                   {slot.name}
                 </label>
+                {slot.scored && (
+                  <span className="rounded-full border border-[#191e73]/30 bg-[#e3e4f8] px-2 text-[11px] text-[#191e73]" title="Has an exam score">
+                    Scored
+                  </span>
+                )}
                 {status && <span className={`rounded-full border px-2 text-[11px] ${badge}`}>{status}</span>}
-                {canWrite && !session.finished && (
+                {canWrite && !session.finished && !slot.scored && (
                   <button
                     type="button"
                     disabled={isPending}

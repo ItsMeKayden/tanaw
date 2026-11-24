@@ -5,7 +5,8 @@ import { FilterSelect } from "@/components/admission/filter-select";
 import { QcuWatermark } from "@/components/admission/qcu-watermark";
 import { QuotaPlanner } from "@/components/admission/quota-planner";
 import { countForScope, getApplicationCounts, resolveCycle } from "@/features/admission/admission-stats";
-import { requirePermission } from "@/lib/authorization";
+import { QUOTA_VIEW_MODULES } from "@/features/admission/access";
+import { requireAnyPermission } from "@/lib/authorization";
 import { hasPermission } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { GridEditorSkeleton } from "@/components/ui/skeletons";
@@ -16,7 +17,7 @@ type PageProps = Readonly<{
 
 async function QuotaContent({ searchParams }: PageProps) {
   await connection();
-  const user = await requirePermission("admission", "read");
+  const user = await requireAnyPermission(QUOTA_VIEW_MODULES, "read");
   const canWrite = await hasPermission(user.role, "admission", "write");
 
   const { cycles, cycle } = await resolveCycle((await searchParams).cycle);

@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
 import { ADMISSION_STAGES, EXAM_RESULT_PASSED } from "@/features/admission/stages";
 import { enrollmentDecisionSchema, notEnrolledSchema } from "@/features/admission/schemas";
+import { describeEnrollmentEmail, sendEnrollmentEmail } from "@/features/admission/enrollment-email";
 
 /**
  * Enrollment verification records its decisions as stage changes
@@ -97,6 +98,8 @@ async function runTransition(
     defaultRemarks: string;
     requirePassedExam?: boolean;
     successMessage: string;
+    /** Runs after the change is saved; its text is added to the success message. */
+    afterSave?: (applicationId: number) => Promise<string>;
   },
 ): Promise<ActionResult> {
   const user = await requireAnyPermission(VERIFIER_MODULES, "write");
@@ -117,17 +120,20 @@ async function runTransition(
       remarks: remarks ?? config.defaultRemarks,
       requirePassedExam: config.requirePassedExam,
     });
-    revalidateEnrollmentPaths(applicationId);
-    return { success: true, message: config.successMessage };
   } catch (error) {
     console.error(`Enrollment transition ${config.from} → ${config.to} error:`, error);
     return {
       error: error instanceof Error ? error.message : "Something went wrong.",
     };
   }
+
+  revalidateEnrollmentPaths(applicationId);
+  // The change is saved; a follow-up problem (e.g. email) must not report it as failed.
+  const note = config.afterSave ? await config.afterSave(applicationId).catch(() => "") : "";
+  return { success: true, message: note ? `${config.successMessage} ${note}` : config.successMessage };
 }
 
-/** Passed → Enrolled. Requires a PASSED exam result. */
+/** Passed → Enrolled. Requires a PASSED exam result. Emails the applicant. */
 export async function verifyEnrollment(input: {
   application_id: number;
   remarks?: string;
@@ -139,6 +145,7 @@ export async function verifyEnrollment(input: {
     defaultRemarks: "Enrollment verified.",
     requirePassedExam: true,
     successMessage: "Applicant verified as enrolled.",
+    afterSave: async (applicationId) => describeEnrollmentEmail(await sendEnrollmentEmail(applicationId)),
   });
 }
 

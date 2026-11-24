@@ -106,6 +106,7 @@ export async function ExamScheduleView({
             tbl_application: {
               select: {
                 application_no: true,
+                _count: { select: { tbl_exam_result: true } },
                 tbl_applicant: { select: { first_name: true, middle_name: true, last_name: true, suffix: true } },
               },
             },
@@ -123,6 +124,7 @@ export async function ExamScheduleView({
           name: formatFullName(slot.tbl_application.tbl_applicant),
           attendance:
             slot.attendance === ATTENDANCE.PRESENT || slot.attendance === ATTENDANCE.ABSENT ? slot.attendance : null,
+          scored: slot.tbl_application._count.tbl_exam_result > 0,
         }))
     : [];
 

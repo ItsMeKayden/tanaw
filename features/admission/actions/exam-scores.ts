@@ -8,7 +8,7 @@ import { getAccountId, requirePermission } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
 import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
 import { ensureCycleExam, getCycleExam, getExamSubjects, getPassingRule, type PassingRule } from "@/features/admission/exam";
-import { isPassing, scorePercent } from "@/features/admission/exam-scoring";
+import { ATTENDANCE, isPassing, scorePercent } from "@/features/admission/exam-scoring";
 import { formatFullName } from "@/features/admission/enrollment-queries";
 import {
   gradeMarked,
@@ -33,7 +33,7 @@ const RESULT_DRIVEN_STAGES: readonly string[] = [
   ADMISSION_STAGES.FOR_EXAMINATION,
   ADMISSION_STAGES.EXAM_COMPLETED,
   ADMISSION_STAGES.PASSED,
-  ADMISSION_STAGES.QUALIFIED,
+  ADMISSION_STAGES.WAITLISTED,
   ADMISSION_STAGES.FAILED,
 ];
 
@@ -68,14 +68,14 @@ type ResultEntry = {
   remarks: string;
 };
 
-const WAITLIST_NOTE = " Course quota is full; added to the waiting list (Qualified).";
+const WAITLIST_NOTE = " Course quota is full; added to the waiting list.";
 
 /**
  * Moves applications to match their exam results (only from a result-driven
  * stage) and logs each change. Failures go first so their slots are freed;
  * then passers, highest score first, go to Passed while their course has a
- * free slot and to Qualified (the waiting list) once its quota is full.
- * Applicants already Passed or Qualified keep that stage.
+ * free slot and to Waitlisted once its quota is full.
+ * Applicants already Passed or Waitlisted keep that stage.
  */
 async function syncStages(
   db: Db,
@@ -101,16 +101,16 @@ async function syncStages(
     if (!passed) {
       targetName = ADMISSION_STAGES.FAILED;
       if (current === ADMISSION_STAGES.PASSED) tracker.release(application);
-    } else if (current === ADMISSION_STAGES.PASSED || current === ADMISSION_STAGES.QUALIFIED) {
+    } else if (current === ADMISSION_STAGES.PASSED || current === ADMISSION_STAGES.WAITLISTED) {
       continue;
     } else {
-      targetName = tracker.take(application) ? ADMISSION_STAGES.PASSED : ADMISSION_STAGES.QUALIFIED;
+      targetName = tracker.take(application) ? ADMISSION_STAGES.PASSED : ADMISSION_STAGES.WAITLISTED;
     }
 
     const target = stages.find((s) => s.stage_name === targetName);
     if (!target || target.stage_id === application.current_stage_id) continue;
 
-    const waiting = targetName === ADMISSION_STAGES.QUALIFIED;
+    const waiting = targetName === ADMISSION_STAGES.WAITLISTED;
     await db.tbl_application.update({
       where: { application_id: application.application_id },
       data: { current_stage_id: target.stage_id },
@@ -143,6 +143,22 @@ async function refreshRecommendations(cycleId: number, applicationIds: number[])
     console.error("Refresh recommendations error:", error);
     return false;
   }
+}
+
+/** Only applicants marked present at their exam session can get a score. */
+function assertAllPresent(
+  applications: { application_no: string; tbl_exam_session_applicant: { attendance: string | null } | null }[],
+) {
+  const notPresent = applications.filter((a) => a.tbl_exam_session_applicant?.attendance !== ATTENDANCE.PRESENT);
+  if (notPresent.length === 0) return;
+  const list = notPresent
+    .slice(0, 5)
+    .map((a) => a.application_no)
+    .join(", ");
+  const more = notPresent.length > 5 ? ` and ${notPresent.length - 5} more` : "";
+  throw new Error(
+    `Scores can only be saved for applicants marked present on the Exam Schedule. Not present: ${list}${more}.`,
+  );
 }
 
 type ScanPreviewResult =
@@ -241,6 +257,7 @@ export async function previewScannedResults(
         application_id: true,
         application_no: true,
         tbl_applicant: { select: { first_name: true, middle_name: true, last_name: true, suffix: true } },
+        tbl_exam_session_applicant: { select: { attendance: true } },
       },
     });
     const byAppNo = new Map(applications.map((a) => [a.application_no.trim().toLowerCase(), a]));
@@ -274,6 +291,10 @@ export async function previewScannedResults(
       if (!appNo) error = "Missing application number.";
       else if (!app) error = `No applicant "${appNo}" in this school year.`;
       else if (seen.has(appKey)) error = `"${appNo}" appears more than once in the file.`;
+      // Same rule as saveExamScores: scores only for applicants marked present.
+      else if (app.tbl_exam_session_applicant?.attendance !== ATTENDANCE.PRESENT) {
+        error = "Not marked present on the Exam Schedule.";
+      }
       if (app) seen.add(appKey);
 
       const graded = gradeMarked(keyItems, marked);
@@ -357,6 +378,7 @@ export async function saveExamScores(cycleIdInput: number, rows: ScoreRowInput[]
             current_stage_id: true,
             branch_id: true,
             program_id: true,
+            tbl_exam_session_applicant: { select: { attendance: true } },
             tbl_exam_result: {
               where: { exam_id: exam.exam_id },
               select: { result_id: true },
@@ -365,6 +387,8 @@ export async function saveExamScores(cycleIdInput: number, rows: ScoreRowInput[]
           },
         });
         if (applications.length !== rows.length) throw new Error("Some applicants are not in this school year. Reload the page.");
+
+        assertAllPresent(applications);
 
         let passedCount = 0;
         const entries: ResultEntry[] = [];

@@ -5,7 +5,8 @@ import { connection } from "next/server";
 
 import EnrollmentDecision from "@/components/admission/enrollment-decision";
 import { QcuWatermark } from "@/components/admission/qcu-watermark";
-import { DOCUMENT_SLOTS } from "@/features/admission/documents";
+import { DocumentPreview } from "@/components/admission/document-preview";
+import { DOCUMENT_SLOTS, formatFileSize } from "@/features/admission/documents";
 import { formatFullName } from "@/features/admission/enrollment-queries";
 import {
   ADMISSION_STAGES,
@@ -78,7 +79,7 @@ async function EnrollmentDetailContent({ params }: PageProps) {
       },
       // Metadata only — never load file_data here.
       tbl_application_document: {
-        select: { document_id: true, document_type: true, file_name: true },
+        select: { document_id: true, document_type: true, file_name: true, file_size: true, mime_type: true },
       },
       tbl_application_stage_log: {
         where: {
@@ -183,23 +184,23 @@ async function EnrollmentDetailContent({ params }: PageProps) {
         </dl>
 
         <h3 className="mt-4 mb-2 font-semibold">Documents</h3>
-        <ul className="space-y-1 text-sm">
+        <ul className="grid gap-3 text-sm sm:grid-cols-2">
           {DOCUMENT_SLOTS.map((slot) => {
             const document = application.tbl_application_document.find(
               (doc) => doc.document_type === slot.documentType,
             );
             return (
-              <li key={slot.key} className="flex gap-1">
-                <span className="text-neutral-700">{slot.label}:</span>
+              <li key={slot.key} className="flex min-w-0 flex-col gap-1">
+                <span className="text-neutral-700">{slot.label}</span>
                 {document ? (
-                  <a
-                    href={`/api/documents/${document.document_id}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-[#191e73] hover:underline"
-                  >
-                    {document.file_name} ↗
-                  </a>
+                  <DocumentPreview
+                    src={`/api/documents/${document.document_id}`}
+                    fileName={document.file_name}
+                    mimeType={document.mime_type}
+                    title={slot.label}
+                    meta={formatFileSize(document.file_size)}
+                    variant="card"
+                  />
                 ) : (
                   <span className="text-amber-700">Missing</span>
                 )}

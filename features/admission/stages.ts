@@ -1,11 +1,11 @@
 /**
  * Canonical admission pipeline stages (tbl_admission_stage.stage_name).
  *
- * Application Submitted → For Examination → Exam Completed → Passed | Qualified | Failed
- * Qualified → (slot opens, Additional Applicants) → Passed
+ * Application Submitted → For Examination → Exam Completed → Passed | Waitlisted | Failed
+ * Waitlisted → (slot opens, Additional Applicants) → Passed
  * Passed → (enrollment requirements verified) → Enrolled | Not Enrolled
  *
- * Qualified is the waiting list: applicants who passed the exam after their
+ * Waitlisted = the waiting list: applicants who passed the exam after their
  * course's quota was already full.
  */
 export const ADMISSION_STAGES = {
@@ -13,7 +13,7 @@ export const ADMISSION_STAGES = {
   FOR_EXAMINATION: "For Examination",
   EXAM_COMPLETED: "Exam Completed",
   PASSED: "Passed",
-  QUALIFIED: "Qualified",
+  WAITLISTED: "Waitlisted",
   FAILED: "Failed",
   ENROLLED: "Enrolled",
   NOT_ENROLLED: "Not Enrolled",
@@ -28,7 +28,7 @@ export const ADMISSION_STAGE_ORDER: AdmissionStageName[] = [
   ADMISSION_STAGES.FOR_EXAMINATION,
   ADMISSION_STAGES.EXAM_COMPLETED,
   ADMISSION_STAGES.PASSED,
-  ADMISSION_STAGES.QUALIFIED,
+  ADMISSION_STAGES.WAITLISTED,
   ADMISSION_STAGES.FAILED,
   ADMISSION_STAGES.ENROLLED,
   ADMISSION_STAGES.NOT_ENROLLED,
@@ -36,7 +36,7 @@ export const ADMISSION_STAGE_ORDER: AdmissionStageName[] = [
 
 /**
  * Stages that use up a quota slot. Not Enrolled gives the slot back, so it
- * can go to the next Qualified applicant.
+ * can go to the next Waitlisted applicant.
  */
 export const SLOT_HOLDING_STAGES: readonly string[] = [ADMISSION_STAGES.PASSED, ADMISSION_STAGES.ENROLLED];
 
@@ -73,7 +73,7 @@ const STAGE_TONES: Record<string, string> = {
   [ADMISSION_STAGES.FOR_EXAMINATION]: "bg-sky-50 text-sky-800 ring-sky-200",
   [ADMISSION_STAGES.EXAM_COMPLETED]: "bg-indigo-50 text-indigo-800 ring-indigo-200",
   [ADMISSION_STAGES.PASSED]: "bg-green-50 text-green-800 ring-green-200",
-  [ADMISSION_STAGES.QUALIFIED]: "bg-amber-50 text-amber-900 ring-amber-300",
+  [ADMISSION_STAGES.WAITLISTED]: "bg-amber-50 text-amber-900 ring-amber-300",
   [ADMISSION_STAGES.FAILED]: "bg-red-50 text-red-800 ring-red-200",
   [ADMISSION_STAGES.ENROLLED]: "bg-emerald-600 text-white ring-emerald-600",
   [ADMISSION_STAGES.NOT_ENROLLED]: "bg-neutral-100 text-neutral-600 ring-neutral-300",
