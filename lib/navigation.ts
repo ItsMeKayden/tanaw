@@ -45,7 +45,6 @@ const navigationItems: NavigationItem[] = [
       { label: "Applicant", href: "/admission", permission: "admission" },
       { label: "Applicant", href: "/registrar/applicants", permission: "registrar" },
       { label: "Applicant", href: "/guidance/applicants", permission: "guidance" },
-      { label: "Tracker", href: "/admission/tracker", permission: "admission" },
       {
         label: "Exam",
         permission: ["admission", "registrar"],
@@ -72,6 +71,7 @@ const navigationItems: NavigationItem[] = [
         href: "/admission/enrollment-verification",
         permission: enrollmentVerificationModules,
       },
+      { label: "Additional Applicants", href: "/admission/additional-applicants", permission: "admission" },
       { label: "Quota", href: "/admission/quota", permission: "admission" },
       {
         label: "Archive History",
@@ -123,6 +123,7 @@ const navigationItems: NavigationItem[] = [
     icon: "users",
     permission: "users",
     requiredRole: "SYSTEM_ADMIN",
+    permission: ["users", "audit"],
     children: [
       {
         label: "User Accounts",
@@ -135,6 +136,11 @@ const navigationItems: NavigationItem[] = [
         href: "/user-management/roles",
         permission: "users",
         requiredRole: "SYSTEM_ADMIN",
+      },
+      {
+        label: "Audit Log",
+        href: "/user-management/audit-log",
+        permission: "audit",
       },
     ],
   },

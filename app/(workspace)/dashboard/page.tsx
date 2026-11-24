@@ -7,38 +7,35 @@ import { auth } from "@/auth";
 import { QcuWatermark } from "@/components/admission/qcu-watermark";
 import { DashboardFilters } from "@/components/dashboard/dashboard-filters";
 import { OverviewSkeleton } from "@/components/ui/skeletons";
+import { tableStyles } from "@/components/ui/table-styles";
 import { resolveCycle } from "@/features/admission/admission-stats";
 import { ADMISSION_STAGES, EXAM_RESULT_PASSED } from "@/features/admission/stages";
 import { requirePermission } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
 
 const applicationMonthLabels = [
-	"Jan",
-	"Feb",
-	"Mar",
-	"Apr",
-	"May",
-	"Jun",
-	"Jul",
 	"Aug",
 	"Sep",
 	"Oct",
 	"Nov",
 	"Dec",
+	"Jan",
+	"Feb",
+	"Mar",
+	"Apr",
+	"May",
 ] as const;
 const applicationMonthMap = new Map<number, string>([
-	[0, "Jan"],
-	[1, "Feb"],
-	[2, "Mar"],
-	[3, "Apr"],
-	[4, "May"],
-	[5, "Jun"],
-	[6, "Jul"],
-	[7, "Aug"],
-	[8, "Sep"],
-	[9, "Oct"],
-	[10, "Nov"],
-	[11, "Dec"],
+	[0, "Aug"],
+	[1, "Sep"],
+	[2, "Oct"],
+	[3, "Nov"],
+	[4, "Dec"],
+	[5, "Jan"],
+	[6, "Feb"],
+	[7, "Mar"],
+	[8, "Apr"],
+	[9, "May"],
 ]);
 
 function formatSignedPercent(value: number) {
@@ -273,7 +270,7 @@ async function DashboardContent({ searchParams }: PageProps) {
 					{stats.map((stat) => (
 						<div
 							key={stat.label}
-							className={`${stat.tone} rounded-xl border border-[#cfcfcf] px-4 py-3 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.02)]`}
+							className={`rounded-xl border border-neutral-400 bg-white px-4 py-3 shadow-sm`}
 						>
 							<div className="text-[14px] font-medium text-[#202020]">{stat.label}</div>
 							<div className="mt-2 flex items-end justify-between gap-3">
@@ -315,8 +312,8 @@ async function DashboardContent({ searchParams }: PageProps) {
 								<line x1="52" y1="135" x2="398" y2="135" stroke="#2d2d2d" strokeWidth="1.2" />
 								<line x1="52" y1="22" x2="52" y2="135" stroke="#2d2d2d" strokeWidth="1.2" />
 
-								{[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((index) => {
-									const x = 58 + index * 28;
+								{[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => {
+												const x = 58 + index * 37.777;
 									return (
 										<line
 											key={`v-${index}`}
@@ -334,7 +331,7 @@ async function DashboardContent({ searchParams }: PageProps) {
 									d={applicationMonthLabels
 										.map((label, index) => {
 											const pointValue = applicantTrend[index] ?? 0;
-											const x = 58 + index * 28;
+											const x = 58 + index * 37.777;
 											const y = 135 - (pointValue / chartMax) * 95;
 											return `${index === 0 ? "M" : "L"}${x} ${y}`;
 										})
@@ -348,7 +345,7 @@ async function DashboardContent({ searchParams }: PageProps) {
 
 								{applicationMonthLabels.map((label, index) => {
 									const pointValue = applicantTrend[index] ?? 0;
-									const x = 58 + index * 28;
+									const x = 58 + index * 37.777;
 									const y = 135 - (pointValue / chartMax) * 95;
 									return (
 										<g key={`${label}-${index}`}>
@@ -363,11 +360,11 @@ async function DashboardContent({ searchParams }: PageProps) {
 								{applicationMonthLabels.map((label, index) => (
 									<text
 										key={label}
-										x={58 + index * 28}
-										y="180"
+										x={58 + index * 37.777}
+										y="150"
 										fill="#4b5563"
-										fontSize="9"
-										textAnchor="middle"
+										fontSize="8.5"
+										textAnchor={index === 0 ? "start" : index === applicationMonthLabels.length - 1 ? "end" : "middle"}
 									>
 										{label}
 									</text>
@@ -682,7 +679,7 @@ async function GuidanceDashboard({ searchParams }: PageProps) {
 						{ label: "Alternative", value: `${alternativePct}%`, tone: "bg-[#d9ebff]" },
 						{ label: "Flagged", value: `${flaggedPct}%`, tone: "bg-[#f5d7fa]" },
 					].map((stat) => (
-						<div key={stat.label} className={`${stat.tone} rounded-xl border border-[#cfcfcf] px-4 py-3 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.02)]`}>
+						<div key={stat.label} className={`rounded-xl border border-neutral-400 bg-white px-4 py-3 shadow-sm`}>
 							<div className="text-[14px] font-medium text-[#202020]">{stat.label}</div>
 							<div className="mt-2 flex items-end justify-between gap-3">
 								<div className="text-3xl font-bold text-[#111827]">{stat.value}</div>
@@ -976,7 +973,7 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 						{ label: "Passed, not yet enrolled", value: passedNotEnrolled, tone: "bg-[#f1ebff]" },
 						{ label: "Documents to verify", value: documentsToVerify, tone: "bg-[#f4f4f4]" },
 					].map((stat) => (
-						<div key={stat.label} className={`${stat.tone} rounded-xl border border-[#cfcfcf] px-4 py-3 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.02)]`}>
+						<div key={stat.label} className={`rounded-xl border border-neutral-400 bg-white px-4 py-3 shadow-sm`}>
 							<div className="text-[13px] font-medium text-[#202020]">{stat.label}</div>
 							<div className="mt-2 text-3xl font-bold text-[#111827]">{stat.value}</div>
 						</div>
@@ -998,29 +995,29 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 						</div>
 					</div>
 
-					<div className="overflow-hidden rounded-lg border border-neutral-300 bg-white/80">
-						<table className="w-full text-left text-sm text-neutral-700">
-							<thead className="bg-[#eef0ff] text-neutral-700">
-								<tr>
-									<th className="px-3 py-2 font-semibold">Applicant ID</th>
-									<th className="px-3 py-2 font-semibold">Name</th>
-									<th className="px-3 py-2 font-semibold">Course</th>
-									<th className="px-3 py-2 font-semibold">Action needed</th>
-									<th className="px-3 py-2 font-semibold">Status</th>
+					<div className={tableStyles.wrap}>
+						<table className="w-full border-collapse text-sm">
+							<thead>
+								<tr className={tableStyles.headRow}>
+									<th className={tableStyles.th}>Applicant ID</th>
+									<th className={tableStyles.th}>Name</th>
+									<th className={tableStyles.th}>Course</th>
+									<th className={tableStyles.th}>Action needed</th>
+									<th className={tableStyles.th}>Status</th>
 								</tr>
 							</thead>
-							<tbody>
+							<tbody className={tableStyles.body}>
 								{queue.length ? queue.map((applicant, index) => (
-									<tr key={`${applicant.applicantId}-${index}`} className="border-t border-neutral-200">
-										<td className="px-3 py-2">{applicant.applicantId}</td>
-										<td className="px-3 py-2">{applicant.name}</td>
-										<td className="px-3 py-2">{applicant.course}</td>
-										<td className="px-3 py-2">{applicant.action}</td>
-										<td className="px-3 py-2">{applicant.status}</td>
+									<tr key={`${applicant.applicantId}-${index}`} className={tableStyles.row}>
+										<td className={`${tableStyles.td} tabular-nums`}>{applicant.applicantId}</td>
+										<td className={`${tableStyles.td} font-medium`}>{applicant.name}</td>
+										<td className={tableStyles.td}>{applicant.course}</td>
+										<td className={tableStyles.td}>{applicant.action}</td>
+										<td className={tableStyles.td}>{applicant.status}</td>
 									</tr>
 								)) : (
 									<tr>
-										<td colSpan={5} className="px-3 py-4 text-center text-neutral-600">No data available</td>
+										<td colSpan={5} className={tableStyles.empty}>No data available</td>
 									</tr>
 								)}
 							</tbody>

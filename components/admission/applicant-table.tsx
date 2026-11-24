@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { ApplicantFormModal, type ApplicantFormRequest } from "@/components/admission/applicant-form-modal";
 import { Modal } from "@/components/ui/modal";
 import { Pagination } from "@/components/ui/pagination";
+import { tableStyles } from "@/components/ui/table-styles";
 import { archiveApplicant } from "@/features/admission/actions/archive-applicant";
 import type { ApplicantFormReference } from "@/features/admission/actions/load-applicant";
 import { ADMISSION_STAGE_ORDER, stageBadgeClass } from "@/features/admission/stages";
@@ -30,11 +31,11 @@ type ArchiveState = { row: ApplicantRow; error: string | null } | null;
 
 const PAGE_SIZE = 10;
 
-const th = "border border-neutral-500 px-3 py-2 text-center font-medium";
-const td = "border border-neutral-500 px-3 py-2 text-center";
+const th = tableStyles.th;
+const td = tableStyles.td;
 const fieldClass =
   "h-9 w-full rounded-md border border-neutral-500 bg-white px-3 text-sm outline-none focus:border-[#191e73] focus:ring-2 focus:ring-[#191e73]/20";
-const actionButton = "rounded-md border border-neutral-500 bg-white px-2 py-0.5 text-xs hover:bg-neutral-100";
+const actionButton = tableStyles.action;
 
 const applicantId = (row: ApplicantRow) => row.application_no ?? String(row.applicant_id).padStart(6, "0");
 
@@ -193,10 +194,10 @@ export default function ApplicantTable({
       )}
 
       {/* Applicant table */}
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse bg-white/90 text-sm">
+      <div className={tableStyles.wrap}>
+        <table className="w-full border-collapse text-sm">
           <thead>
-            <tr className="bg-[#b4b7f3]">
+            <tr className={tableStyles.headRow}>
               <th className={th}>Applicant ID</th>
               <th className={th}>Name</th>
               <th className={th}>Preferred Course</th>
@@ -207,10 +208,10 @@ export default function ApplicantTable({
             </tr>
           </thead>
 
-          <tbody>
+          <tbody className={tableStyles.body}>
             {currentApplicants.length > 0 ? (
               currentApplicants.map((row) => (
-                <tr key={row.applicant_id} className="hover:bg-[#e3e4f8]/60">
+                <tr key={row.applicant_id} className={tableStyles.row}>
                   <td className={`${td} whitespace-nowrap tabular-nums`}>{applicantId(row)}</td>
                   <td className={td}>{row.name}</td>
                   <td className={td} title={row.course_name ?? undefined}>
@@ -232,7 +233,7 @@ export default function ApplicantTable({
                     )}
                   </td>
                   <td className={td}>
-                    <div className="flex items-center justify-center gap-1.5">
+                    <div className="flex items-center gap-1.5">
                       <Link href={`${profileBase}/${row.applicant_id}`} className={actionButton}>
                         View
                       </Link>
@@ -258,7 +259,7 @@ export default function ApplicantTable({
                             setFeedback(null);
                             setArchiving({ row, error: null });
                           }}
-                          className="rounded-md border border-amber-400 bg-white px-2 py-0.5 text-xs text-amber-800 hover:bg-amber-50"
+                          className="rounded-md border border-amber-400 bg-white inline-flex h-7 items-center px-2.5 text-xs font-medium text-amber-800 hover:bg-amber-50"
                         >
                           Archive
                         </button>
@@ -269,7 +270,7 @@ export default function ApplicantTable({
               ))
             ) : (
               <tr>
-                <td colSpan={7} className={`${td} py-10 text-neutral-600`}>
+                <td colSpan={7} className={tableStyles.empty}>
                   {query || stageFilter !== "ALL" ? "No applicants match your search or filter." : "No applicants found."}
                 </td>
               </tr>

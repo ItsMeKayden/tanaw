@@ -6,6 +6,7 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Trash2, UserPlus, X } from "lucide-react";
 
+import { tableStyles } from "@/components/ui/table-styles";
 import { DatePicker } from "@/components/ui/date-picker";
 import {
   createExamSession,
@@ -39,7 +40,6 @@ export type SeatRow = {
 type Feedback = { type: "success" | "error"; text: string } | null;
 type ActionResult = { error: string } | { success: true; message: string };
 
-const cell = "border border-neutral-500 px-2 py-1.5 text-center";
 const fieldClass =
   "h-9 w-full rounded-md border bg-white px-2.5 text-sm outline-none placeholder:text-neutral-400 focus:border-[#191e73] focus:ring-2 focus:ring-[#191e73]/20";
 const primaryButton =
@@ -222,7 +222,7 @@ function AttendancePanel({
             if (status === "Present") badge = "border-green-600 bg-green-100 text-green-900";
             if (status === "Absent") badge = "border-red-400 bg-red-100 text-red-900";
             return (
-              <li key={seat.application_id} className="flex items-center gap-2 rounded px-1 py-0.5 hover:bg-[#e3e4f8]/60">
+              <li key={seat.application_id} className="flex items-center gap-2 rounded px-1 py-0.5 hover:bg-[#f4f5fd]">
                 <input
                   type="checkbox"
                   id={`seat-${seat.application_id}`}
@@ -371,39 +371,43 @@ export function ExamSchedule({
           <FeedbackLine feedback={feedback} />
         </div>
 
-        <div className="overflow-x-auto">
+        <div className={tableStyles.wrap}>
           <table className="w-full border-collapse text-sm">
             <thead>
-              <tr className="bg-[#c5c8f0]">
-                {["Date", "Venue", "Cap.", "Reg.", "Present", "Absent"].map((h) => (
-                  <th key={h} className={`${cell} font-medium`}>
-                    {h}
-                  </th>
-                ))}
+              <tr className={tableStyles.headRow}>
+                <th className={tableStyles.th}>Date</th>
+                <th className={tableStyles.th}>Venue</th>
+                <th className={`${tableStyles.th} w-36`}>Seats</th>
+                <th className={`${tableStyles.th} text-center`}>Present</th>
+                <th className={`${tableStyles.th} text-center`}>Absent</th>
                 {canWrite && (
-                  <th className={`${cell} w-10 font-medium`}>
+                  <th className={`${tableStyles.th} w-12`}>
                     <span className="sr-only">Actions</span>
                   </th>
                 )}
               </tr>
             </thead>
-            <tbody>
+            <tbody className={tableStyles.body}>
               {sessions.length === 0 && (
                 <tr>
-                  <td colSpan={canWrite ? 7 : 6} className={`${cell} py-8 text-neutral-600`}>
+                  <td colSpan={canWrite ? 6 : 5} className={tableStyles.empty}>
                     No exam sessions for this school year yet.
                   </td>
                 </tr>
               )}
               {sessions.map((session) => {
                 const active = selected?.session_id === session.session_id;
+                const full = session.capacity > 0 && session.registered >= session.capacity;
+                const fill = session.capacity > 0 ? Math.min(100, (session.registered / session.capacity) * 100) : 0;
                 return (
                   <tr
                     key={session.session_id}
                     onClick={() => select(session.session_id)}
-                    className={`cursor-pointer ${active ? "bg-[#e3e4f8]" : "hover:bg-[#e3e4f8]/50"}`}
+                    className={`cursor-pointer transition-colors ${
+                      active ? "bg-[#eef0fd] shadow-[inset_3px_0_0_#191e73]" : "hover:bg-[#f4f5fd]"
+                    }`}
                   >
-                    <td className={cell}>
+                    <td className={`${tableStyles.td} whitespace-nowrap`}>
                       <button
                         type="button"
                         onClick={(e) => {
@@ -413,20 +417,45 @@ export function ExamSchedule({
                         aria-current={active ? "true" : undefined}
                         className="text-left underline-offset-2 hover:underline"
                       >
-                        {session.date}
+                        <span className={`block font-medium ${active ? "text-[#191e73]" : "text-neutral-900"}`}>
+                          {session.date}
+                        </span>
                         {session.time && <span className="block text-xs text-neutral-600">{session.time}</span>}
                       </button>
                     </td>
-                    <td className={`${cell} text-left`}>
-                      {session.venue}
+                    <td className={tableStyles.td}>
+                      <span className="block text-neutral-900">{session.venue}</span>
                       {session.room && <span className="block text-xs text-neutral-600">Room {session.room}</span>}
                     </td>
-                    <td className={`${cell} tabular-nums`}>{session.capacity}</td>
-                    <td className={`${cell} tabular-nums`}>{session.registered}</td>
-                    <td className={`${cell} tabular-nums`}>{session.present}</td>
-                    <td className={`${cell} bg-red-50 tabular-nums`}>{session.absent}</td>
+                    <td className={tableStyles.td}>
+                      <span className="flex items-baseline justify-between gap-2 text-xs">
+                        <span className="tabular-nums">
+                          <span className="text-sm font-semibold text-neutral-900">{session.registered}</span>
+                          <span className="text-neutral-500"> / {session.capacity}</span>
+                        </span>
+                        {full && <span className="font-medium text-amber-700">Full</span>}
+                      </span>
+                      <span className="mt-1.5 block h-1.5 overflow-hidden rounded-full bg-neutral-100" aria-hidden="true">
+                        <span
+                          className={`block h-full rounded-full ${full ? "bg-amber-500" : "bg-[#191e73]/70"}`}
+                          style={{ width: `${fill}%` }}
+                        />
+                      </span>
+                    </td>
+                    <td className={`${tableStyles.td} text-center font-medium text-green-700 tabular-nums`}>
+                      {session.present}
+                    </td>
+                    <td className={`${tableStyles.td} text-center`}>
+                      {session.absent > 0 ? (
+                        <span className="inline-flex min-w-7 justify-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-800 tabular-nums">
+                          {session.absent}
+                        </span>
+                      ) : (
+                        <span className="text-neutral-400 tabular-nums">0</span>
+                      )}
+                    </td>
                     {canWrite && (
-                      <td className={cell}>
+                      <td className={`${tableStyles.td} text-center`}>
                         <button
                           type="button"
                           disabled={isPending}

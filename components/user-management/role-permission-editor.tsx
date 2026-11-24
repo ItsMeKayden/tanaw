@@ -6,6 +6,7 @@ import { Lock, Pencil } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { tableStyles } from "@/components/ui/table-styles";
 import { RoleDetailsModal, type RoleDetails } from "@/components/user-management/role-details-modal";
 import { updateRolePermissions } from "@/features/user-management/actions/update-role-permissions";
 import {
@@ -30,7 +31,7 @@ const LEVEL_CLASS: Record<AccessLevel, string> = {
   WRITE: "text-green-700 font-semibold",
 };
 
-const cell = "border border-neutral-500 px-2 py-2";
+const cell = "border border-neutral-200 px-2 py-2";
 
 export default function RolePermissionEditor({
   roles,
@@ -82,11 +83,11 @@ export default function RolePermissionEditor({
 
   return (
     <div className="space-y-3">
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[960px] border-collapse bg-white/90 text-sm">
+      <div className={tableStyles.wrap}>
+        <table className={`${tableStyles.grid} min-w-[960px] `}>
           <thead>
-            <tr className="bg-neutral-100 text-left">
-              <th className={`${cell} sticky left-0 z-10 min-w-48 bg-neutral-100 font-medium`}>Role</th>
+            <tr className={`${tableStyles.gridHeadRow} text-left`}>
+              <th className={`${cell} sticky left-0 z-10 min-w-48 bg-[#f4f5fd] font-semibold`}>Role</th>
               {MODULES.map((m) => (
                 <th key={m.code} className={`${cell} text-center font-medium`}>
                   {m.label}

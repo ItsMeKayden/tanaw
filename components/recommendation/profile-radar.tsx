@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { tableStyles } from "@/components/ui/table-styles";
+
 /*
  * Profile radar colors (one blue ramp, validated for CVD and normal-vision
  * separation): applicant fill #86aef5 / edge #4a7be0, requirement #2f3fb0.
@@ -130,29 +132,31 @@ export function ProfileRadar({ rows, courseLabel }: Readonly<{ rows: RadarRow[];
 
       <details className="text-xs text-neutral-700">
         <summary className="cursor-pointer select-none hover:text-black">Show as table</summary>
-        <table className="mt-2 w-full border-collapse">
-          <thead>
-            <tr>
-              {["Competency", "Applicant", "Required", "Result"].map((h) => (
-                <th key={h} className="border border-neutral-300 px-2 py-1 text-left font-medium">
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row.label}>
-                <td className="border border-neutral-300 px-2 py-1">{row.label}</td>
-                <td className="border border-neutral-300 px-2 py-1 tabular-nums">{row.score ?? 0}%</td>
-                <td className="border border-neutral-300 px-2 py-1 tabular-nums">{row.required === null ? "—" : `${row.required}%`}</td>
-                <td className="border border-neutral-300 px-2 py-1">
-                  {row.required === null ? "Not required" : below(row) ? "Below" : "Meets"}
-                </td>
+        <div className={`${tableStyles.wrap} mt-2`}>
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className={tableStyles.headRow}>
+                {["Competency", "Applicant", "Required", "Result"].map((h) => (
+                  <th key={h} className="px-3 py-2 text-left text-[11px] font-semibold tracking-wide text-[#191e73] uppercase">
+                    {h}
+                  </th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className={tableStyles.body}>
+              {rows.map((row) => (
+                <tr key={row.label}>
+                  <td className="px-3 py-1.5">{row.label}</td>
+                  <td className="px-3 py-1.5 tabular-nums">{row.score ?? 0}%</td>
+                  <td className="px-3 py-1.5 tabular-nums">{row.required === null ? "—" : `${row.required}%`}</td>
+                  <td className="px-3 py-1.5">
+                    {row.required === null ? "Not required" : below(row) ? "Below" : "Meets"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </details>
     </figure>
   );

@@ -120,7 +120,7 @@ This runs, in order:
 - **Access control:** the 5 roles, 16 module permissions and their default role assignments. Defaults are only applied to permissions nobody has configured yet, so access changed on the User Management page is kept.
 - **SYSTEM_ADMIN account** (`systemadmin@tanaw.com`) using `SYSTEM_ADMIN_PASSWORD`. An existing account's password is never changed.
 - **Test accounts** (one per role) using `TEST_USER_PASSWORD`. Skipped if the variable is empty; re-running resets their passwords.
-- **Admission stages:** Application Submitted → For Examination → Exam Completed → Passed / Failed → Enrolled / Not Enrolled.
+- **Admission stages:** Application Submitted → For Examination → Exam Completed → Passed / Qualified / Failed → Enrolled / Not Enrolled. Qualified is the waiting list: applicants who pass after their course's quota is full, admitted later from Admission → Additional Applicants.
 - **Reference data:** Quezon City districts and barangays, the 3 campuses, 7 programs, and a starter list of schools.
 - **Admission cycle 2026-2027** (active), only if no such cycle exists, plus a default passing score (75%) when the active cycle has none.
 - **Map boundaries:** Quezon City barangay shapes from `prisma/seeds/geo/qc-barangays.geojson` into `tbl_barangay.boundary_geojson`, and each district's outline into `tbl_district.boundary_geojson` (source and license: `prisma/seeds/geo/README.md`).
@@ -238,5 +238,6 @@ Log in with the SYSTEM_ADMIN account or a test account.
 - Commit the migration folder, `prisma/schema.prisma`, the `generated/prisma` output, and seeder changes together so others can reproduce the update.
 - Never edit or delete a migration that has already been pushed; add a new one instead.
 - Do not run `prisma migrate reset` on a database containing data you want to preserve.
+- **Audit log:** database triggers record every insert, update, delete and truncate in `tbl_audit_log` (User Management → Audit Log). A migration that creates a new table must end with `SELECT tanaw_audit_attach('"tbl_new_table"');` (or `SELECT tanaw_audit_attach_all();`), or changes to that table will not be logged. Entries are tamper-proof: once committed they cannot be edited or deleted (a retention clean-up must first run `SELECT set_config('tanaw.audit_maintenance', 'on', true);` in its transaction).
 - Do not commit `.env` or share actual passwords and secrets.
 - Each developer maintains their own local PostgreSQL database; data (accounts, applicants) is not shared through Git. Use the seeders to get the same baseline.

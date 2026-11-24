@@ -1,6 +1,7 @@
 import { connection } from "next/server";
 
 import { AnalyticsCard, AnalyticsPage, FilterBar, SelectFilter, VerticalBars } from "@/components/reports/analytics-ui";
+import { tableStyles } from "@/components/ui/table-styles";
 import { resolveCycle } from "@/features/admission/admission-stats";
 import { requirePermission } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
@@ -38,7 +39,7 @@ export default async function ItemAnalysisPage({searchParams}:PageProps){
    <SelectFilter name="exam" label="Exam set" value={examId?String(examId):"all"} options={[{value:"all",label:"All"},...exams.map((e)=>({value:String(e.exam_id),label:e.exam_name}))]}/>
    <SelectFilter name="subject" label="Subject" value={subject??"all"} options={[{value:"all",label:"All"},...subjects.map((s)=>({value:s,label:s}))]}/>
   </FilterBar>
-  <div className="grid gap-5 lg:grid-cols-2">
+  <div className="grid items-start gap-5 lg:grid-cols-2">
    <AnalyticsCard title="Correct answer per question">
     <div className="rounded-xl border border-neutral-500 p-3">
      {chartItems.length?<VerticalBars title="Correct answer per question" items={chartItems.map((item)=>({label:item.label,publicValue:item.value,privateValue:0}))}/>:<p className="py-16 text-center text-sm text-neutral-500">No question response data available.</p>}
@@ -46,7 +47,7 @@ export default async function ItemAnalysisPage({searchParams}:PageProps){
    </AnalyticsCard>
    <AnalyticsCard title="Hardest and easiest">
     <div className="space-y-5">
-     {[{title:"Hardest",rows:hardest},{title:"Easiest",rows:easiest}].map((section)=><div key={section.title}><p className="mb-1 text-center text-sm text-neutral-600">{section.title}</p><table className="w-full border-collapse text-sm"><thead><tr className="bg-[#cfd4f3]"><th className="border border-neutral-600 px-2 py-2">Q</th><th className="border border-neutral-600 px-2 py-2">Correct</th><th className="border border-neutral-600 px-2 py-2">%</th></tr></thead><tbody>{(section.rows.length?section.rows:Array.from({length:4},(_,i)=>({label:`Q${i+1}`,percent:0,correct:0,total:0}))).map((row,index)=><tr key={`${section.title}-${row.label}-${index}`}><td className="border border-neutral-400 px-2 py-2">{row.label}</td><td className="border border-neutral-400 px-2 py-2 text-center">{row.correct}/{row.total}</td><td className="border border-neutral-400 px-2 py-2 text-center">{row.percent}%</td></tr>)}</tbody></table></div>)}
+     {[{title:"Hardest",rows:hardest},{title:"Easiest",rows:easiest}].map((section)=><div key={section.title}><p className="mb-2 text-sm font-semibold text-neutral-800">{section.title}</p><div className={tableStyles.wrap}><table className="w-full border-collapse text-sm"><thead><tr className={tableStyles.headRow}><th className={tableStyles.th}>Question</th><th className={`${tableStyles.th} text-right`}>Correct</th><th className={`${tableStyles.th} text-right`}>Rate</th></tr></thead><tbody className={tableStyles.body}>{(section.rows.length?section.rows:Array.from({length:4},(_,i)=>({label:`Q${i+1}`,percent:0,correct:0,total:0}))).map((row,index)=><tr key={`${section.title}-${row.label}-${index}`} className={tableStyles.row}><td className={`${tableStyles.td} font-medium`}>{row.label}</td><td className={`${tableStyles.td} text-right tabular-nums text-neutral-700`}>{row.correct}/{row.total}</td><td className={`${tableStyles.td} text-right`}><span className={`inline-flex min-w-12 justify-center rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums ${row.percent>=75?"bg-green-100 text-green-800":row.percent>=40?"bg-amber-100 text-amber-800":"bg-red-100 text-red-800"}`}>{row.percent}%</span></td></tr>)}</tbody></table></div></div>)}
     </div>
    </AnalyticsCard>
   </div>

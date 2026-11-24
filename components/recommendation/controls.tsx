@@ -49,19 +49,34 @@ export function ParamSelect({
   value,
   options,
   resetParams = [],
+  compact = false,
 }: Readonly<{
   param: string;
   label: string;
   value: string;
   options: { value: string; label: string }[];
   resetParams?: string[];
+  /**
+   * Smaller box whose dropdown is as wide as the chosen option, not the
+   * longest one (browsers without CSS field-sizing fall back to a fixed width).
+   */
+  compact?: boolean;
 }>) {
   const navigate = useNavigate();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const selectClassName = compact
+    ? "w-28 max-w-44 supports-[field-sizing:content]:w-auto supports-[field-sizing:content]:[field-sizing:content]"
+    : "max-w-64";
 
   return (
-    <label className="flex items-center gap-2 rounded-lg border border-neutral-500 bg-white px-3 py-1.5 text-sm">
+    <label
+      className={`flex items-center rounded-lg border bg-white text-sm ${
+        compact
+          ? "h-8 gap-1.5 border-neutral-300 px-2.5 shadow-sm hover:border-neutral-400"
+          : "gap-2 border-neutral-500 px-3 py-1.5"
+      }`}
+    >
       <span className="text-neutral-700">{label}:</span>
       <select
         value={value}
@@ -71,7 +86,7 @@ export function ParamSelect({
           for (const key of resetParams) next.delete(key);
           navigate(`${pathname}?${next.toString()}`);
         }}
-        className="max-w-64 truncate bg-transparent font-medium outline-none"
+        className={`${selectClassName} truncate bg-transparent font-medium outline-none`}
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>

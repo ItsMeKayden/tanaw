@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { connection } from "next/server";
 
+import { tableStyles } from "@/components/ui/table-styles";
 import { QcuWatermark } from "@/components/admission/qcu-watermark";
 import { BackLink } from "@/components/ui/back-link";
 import { Pagination } from "@/components/ui/pagination";
@@ -30,7 +31,7 @@ type PageProps = Readonly<{
   }>;
 }>;
 
-const cell = "border border-neutral-500 px-3 py-2";
+const cell = tableStyles.td;
 
 function positiveInt(value: string | undefined) {
   const n = Number(value);
@@ -131,21 +132,21 @@ async function LocationApplicantsContent({ searchParams }: PageProps) {
         <ExportMenu href={`/api/map/applicants/export?${filterQuery(filters, locationQuery)}`} />
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[760px] border-collapse bg-white/90 text-sm">
+      <div className={tableStyles.wrap}>
+        <table className="w-full min-w-[760px] border-collapse text-sm">
           <thead>
-            <tr className="bg-neutral-100 text-left">
+            <tr className={tableStyles.headRow}>
               {["Applicant ID", "Name", "Previous school", "Preferred course", "Exam", "Result"].map((h) => (
-                <th key={h} className={`${cell} font-medium`}>
+                <th key={h} className={tableStyles.th}>
                   {h}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody>
+          <tbody className={tableStyles.body}>
             {rows.length > 0 ? (
               rows.map((row) => (
-                <tr key={row.application_no} className="hover:bg-[#e3e4f8]/60">
+                <tr key={row.application_no} className={tableStyles.row}>
                   <td className={`${cell} tabular-nums`}>
                     {row.applicant_id === null ? "--" : String(row.applicant_id).padStart(6, "0")}
                   </td>
@@ -185,7 +186,7 @@ async function LocationApplicantsContent({ searchParams }: PageProps) {
               ))
             ) : (
               <tr>
-                <td colSpan={6} className={`${cell} py-10 text-center text-neutral-600`}>
+                <td colSpan={6} className={tableStyles.empty}>
                   No applicants for this location and filters.
                 </td>
               </tr>
