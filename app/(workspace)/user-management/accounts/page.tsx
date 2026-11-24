@@ -4,18 +4,16 @@ import { connection } from "next/server";
 import { QcuWatermark } from "@/components/admission/qcu-watermark";
 import { UserAccounts } from "@/components/user-management/user-accounts";
 import { getRoleLabels } from "@/features/user-management/role-labels";
-import { getAccountId, requirePermission } from "@/lib/authorization";
+import { getAccountId, requireRole } from "@/lib/authorization";
 import { ROLE_NAMES, type RoleName } from "@/lib/modules";
-import { hasPermission } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { TablePageSkeleton } from "@/components/ui/skeletons";
 
 async function UserAccountsContent() {
   await connection();
-  const currentUser = await requirePermission("users", "read");
+  const currentUser = await requireRole(["SYSTEM_ADMIN"]);
 
-  const [canWrite, users, roleLabels] = await Promise.all([
-    hasPermission(currentUser.role, "users", "write"),
+  const [users, roleLabels] = await Promise.all([
     prisma.tbl_user_account.findMany({
       orderBy: { created_at: "desc" },
       select: {
@@ -64,7 +62,7 @@ async function UserAccountsContent() {
           is_active: user.is_active === true,
           created_at: user.created_at?.toISOString() ?? null,
         }))}
-        canWrite={canWrite}
+        canWrite
         currentUserId={getAccountId(currentUser)}
         currentRole={currentUser.role}
         roleLabels={roleLabels}

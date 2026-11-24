@@ -41,6 +41,14 @@ const WRITE_OPERATIONS = new Set([
   "$executeRawUnsafe",
 ]);
 
+/**
+ * Models whose writes skip the actor lookup. tbl_auth_session is written by
+ * the auth.ts jwt callback, i.e. from inside auth(); looking up the actor
+ * calls auth() again and the request never finishes. Session rows are not
+ * audited (no trigger), so there is nothing to attribute.
+ */
+const UNAUDITED_MODELS = new Set(["tbl_audit_log", "tbl_auth_session"]);
+
 /** Set while a $transaction() is running, so its queries are not re-wrapped. */
 const transactionScope = new AsyncLocalStorage<true>();
 
@@ -61,7 +69,7 @@ function withAuditActor(base: PrismaClient): PrismaClient {
       async $allOperations({ model, operation, args, query }) {
         if (
           !WRITE_OPERATIONS.has(operation) ||
-          model === "tbl_audit_log" ||
+          (model !== undefined && UNAUDITED_MODELS.has(model)) ||
           transactionScope.getStore()
         ) {
           return query(args);

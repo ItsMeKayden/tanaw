@@ -10,7 +10,7 @@ import { Cinzel } from "next/font/google";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { getRoleLandingPath } from "@/lib/auth-navigation";
+import { getRoleLandingPath, getSafeReturnUrl } from "@/lib/auth-navigation";
 import qcuLogo from "@/public/qcu-logo.png";
 import qcuGate from "@/public/qcu-gate.jpg";
 
@@ -62,8 +62,11 @@ export function LoginForm() {
       const sessionResponse = await fetch("/api/auth/session", { cache: "no-store" });
       const session = await sessionResponse.json();
       const role = session?.user?.role;
+      const returnUrl = getSafeReturnUrl(
+        new URLSearchParams(window.location.search).get("returnUrl"),
+      );
 
-      router.replace(getRoleLandingPath(role));
+      router.replace(returnUrl ?? getRoleLandingPath(role));
       router.refresh();
     } catch {
       setError("Unable to sign in. Please try again.");

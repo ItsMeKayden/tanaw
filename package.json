@@ -15,6 +15,8 @@
     "db:status": "prisma migrate status --config prisma7.config.ts",
     "db:seed:demo": "prisma db seed --config prisma7.config.ts -- --demo",
     "db:seed:reset-demo": "prisma db seed --config prisma7.config.ts -- --reset-demo --demo",
+    "db:seed:demo-data": "tsx prisma/seeds/demo-data.ts",
+    "db:seed:demo-exams": "tsx prisma/seeds/demo-exams.ts",
     "db:setup": "npm run db:migrate && npm run db:generate && npm run db:seed",
     "archive:purge": "tsx scripts/purge-archive.ts"
   },

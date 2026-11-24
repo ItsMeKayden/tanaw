@@ -8,8 +8,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
 
-import { createApplicant } from "@/features/admission/actions/create-applicant";
-import { updateApplicant } from "@/features/admission/actions/update-applicant";
+import { DiscardWarningModal } from "@/components/admission/discard-warning-modal";
 import { DatePicker } from "@/components/ui/date-picker";
 import {
   APPLICANT_FORM_FIELDS,
@@ -31,6 +30,8 @@ import {
   validateDocumentFile,
   type DocumentSlotKey,
 } from "@/features/admission/documents";
+import { apiPost } from "@/lib/api-client";
+import { clearAdmissionFormUrl, updateAdmissionFormUrl } from "@/lib/admission-form-url";
 
 type District = {
   district_id: number;
@@ -57,6 +58,7 @@ export type ExistingDocument = {
 };
 
 type ApplicantFormProps = Readonly<{
+  userId: string;
   mode: "create" | "edit";
   initialValues: ApplicantFormValues;
   initialDistrictId?: string;
@@ -511,6 +513,7 @@ function ReviewGrid({ rows }: Readonly<{ rows: [string, ReactNode][] }>) {
 }
 
 export default function ApplicantForm({
+  userId,
   mode,
   initialValues,
   initialDistrictId = "",
@@ -531,8 +534,8 @@ export default function ApplicantForm({
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const scrollArea = useRef<HTMLDivElement>(null);
-  // Only edit mode may skip ahead; a new applicant starts at step 1.
-  const [step, setStep] = useState(mode === "edit" ? Math.min(Math.max(0, initialStep), STEPS.length - 1) : 0);
+  const restoredStep = Math.min(Math.max(0, initialStep), STEPS.length - 1);
+  const [step, setStep] = useState(restoredStep);
 
   // A new step starts at the top of the modal's scroll area. Done before
   // paint and without animation, so it never competes with the step fade.
@@ -540,7 +543,7 @@ export default function ApplicantForm({
     if (variant === "modal" && scrollArea.current) scrollArea.current.scrollTop = 0;
   }, [step, variant]);
   const [furthest, setFurthest] = useState(
-    mode === "edit" ? STEPS.length - 1 : 0,
+    mode === "edit" ? STEPS.length - 1 : restoredStep,
   );
 
   // Form state and validation: React Hook Form + the shared Zod schema.
@@ -577,6 +580,7 @@ export default function ApplicantForm({
     Partial<Record<DocumentSlotKey, string>>
   >({});
   const [submitError, setSubmitError] = useState("");
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const errors: Partial<Record<ErrorKey, string>> = {};
@@ -601,14 +605,35 @@ export default function ApplicantForm({
   );
   const isExistingSchool = values.school_entry_mode === "existing";
 
+  const hasAnyInput =
+    mode === "create" &&
+    Object.entries(values).some(
+      ([key, val]) =>
+        key !== "school_entry_mode" &&
+        val !== undefined &&
+        val !== null &&
+        val !== "",
+    );
+
   const isDirty =
     formState.isDirty ||
+    hasAnyInput ||
+    (districtId ?? "") !== (initialDistrictId ?? "") ||
     Object.keys(files).length > 0 ||
     Object.values(removeDocs).some(Boolean);
 
   useEffect(() => {
     onDirtyChange?.(isDirty);
   }, [isDirty, onDirtyChange]);
+
+  useEffect(() => {
+    updateAdmissionFormUrl(
+      mode,
+      ids?.applicant_id,
+      step,
+      variant === "modal",
+    );
+  }, [mode, ids?.applicant_id, step, variant]);
 
   const programLabel = (id: string | undefined) => {
     const program = programs.find((p) => String(p.program_id) === id);
@@ -654,7 +679,9 @@ export default function ApplicantForm({
       value: values[field] ?? "",
       "aria-invalid": Boolean(error),
       "aria-describedby": describedBy,
-      onBlur: () => void trigger(field),
+      onBlur: () => {
+        void trigger(field);
+      },
       className: inputClass(Boolean(error), extraClass),
     };
   }
@@ -716,14 +743,26 @@ export default function ApplicantForm({
     setFurthest((value) => Math.max(value, target));
   }
 
-  function cancel() {
-    if (isDirty && !window.confirm("Discard your changes and leave this form?"))
-      return;
+  function performCancel() {
     if (onCancel) onCancel();
     else router.push(cancelHref);
   }
 
+  function cancel() {
+    if (isDirty) {
+      setShowCancelModal(true);
+      return;
+    }
+    performCancel();
+  }
+
+  function confirmDiscard() {
+    setShowCancelModal(false);
+    performCancel();
+  }
+
   function finish(applicantId: number) {
+    clearAdmissionFormUrl();
     if (onSuccess) onSuccess(applicantId);
     else router.push(`/admission/applicants/${applicantId}`);
   }
@@ -771,23 +810,30 @@ export default function ApplicantForm({
 
     startTransition(async () => {
       try {
+        if (mode === "edit") {
+          payload.set("applicant_id", String(ids!.applicant_id));
+          payload.set("application_id", String(ids!.application_id));
+        }
+        const response = await apiPost(
+          "/api/admission/applicants",
+          { body: payload },
+          { userId },
+        );
+        const result = (await response.json()) as
+          | { success: true; applicantId?: number }
+          | { error: string; fieldErrors?: ApplicantFieldErrors; documentErrors?: Partial<Record<DocumentSlotKey, string>> };
+        if (!response.ok || "error" in result) {
+          setSubmitError("error" in result ? result.error : "The applicant could not be saved.");
+          if ("error" in result) applyServerErrors(result.fieldErrors, result.documentErrors);
+          return;
+        }
         if (mode === "create") {
-          const result = await createApplicant(payload);
-          if ("error" in result) {
-            setSubmitError(result.error);
-            applyServerErrors(result.fieldErrors, result.documentErrors);
+          if (typeof result.applicantId !== "number") {
+            setSubmitError("The server did not confirm the applicant submission.");
             return;
           }
           finish(result.applicantId);
         } else {
-          payload.set("applicant_id", String(ids!.applicant_id));
-          payload.set("application_id", String(ids!.application_id));
-          const result = await updateApplicant(payload);
-          if ("error" in result) {
-            setSubmitError(result.error);
-            applyServerErrors(result.fieldErrors, result.documentErrors);
-            return;
-          }
           finish(ids!.applicant_id);
         }
         router.refresh();
@@ -973,7 +1019,7 @@ export default function ApplicantForm({
                 <option value="Female" className="text-black">Female</option>
               </select>
             </Field>
-            <Field id="field-email" label="Email (Optional)" error={errors.email}>
+            <Field id="field-email" label="Email" required error={errors.email}>
               <input
                 {...control("email")}
                 onChange={(e) => update({ email: inputFilters.email(e.target.value) })}
@@ -1080,9 +1126,8 @@ export default function ApplicantForm({
           <h2 id="step-1-title" className="text-lg font-semibold">
             Preferred course and campus
           </h2>
-          <p className="mb-4 text-sm text-neutral-700">
-            The 1st choice is the program applied to. 2nd and 3rd choices are
-            optional alternatives.
+          <p className="mb-4 text-xs text-neutral-600">
+            Fields marked * are required. The 1st choice is the program applied to. 2nd and 3rd choices are optional alternatives.
           </p>
 
           <div className="grid gap-x-6 gap-y-3 sm:grid-cols-2">
@@ -1221,9 +1266,8 @@ export default function ApplicantForm({
           <h2 id="step-2-title" className="text-lg font-semibold">
             Previous school
           </h2>
-          <p className="mb-4 text-sm text-neutral-700">
-            Pick the school from the list, or add it if it isn&apos;t listed
-            yet.
+          <p className="mb-4 text-xs text-neutral-600">
+            Fields marked * are required. Pick the school from the list, or add it if it isn&apos;t listed yet.
           </p>
 
           <div
@@ -1636,6 +1680,11 @@ export default function ApplicantForm({
           </button>
         </div>
       </div>
+      <DiscardWarningModal
+        open={showCancelModal}
+        onKeepEditing={() => setShowCancelModal(false)}
+        onDiscard={confirmDiscard}
+      />
     </form>
   );
 }

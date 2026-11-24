@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { Sidebar } from "@/components/layout/sidebar";
 import { WorkspaceHeader } from "@/components/layout/workspace-header";
 import { Toaster } from "@/components/ui/toaster";
+import { SessionExpirationGuard } from "@/components/auth/session-expiration-guard";
 import { requireUser } from "@/lib/authorization";
 import { getRoleLabels } from "@/features/user-management/role-labels";
 import { getNavigationItems } from "@/lib/navigation";
@@ -22,6 +23,7 @@ async function AuthenticatedWorkspace({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen flex-col bg-white text-black sm:flex-row">
       <Sidebar navigation={navigation} />
       <div className="flex min-h-[50vh] min-w-0 flex-1 flex-col sm:min-h-screen">
+        <SessionExpirationGuard userId={user.id} />
         <WorkspaceHeader
           navigation={navigation}
           userName={user.name || user.email || "Account"}

@@ -9,12 +9,18 @@ import { requirePermission } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
 import { BackLink } from "@/components/ui/back-link";
 import { FormSkeleton } from "@/components/ui/skeletons";
+import { parseAdmissionStep } from "@/lib/admission-form-url";
 
-async function AddApplicantContent() {
+async function AddApplicantContent({
+  searchParams,
+}: {
+  searchParams: Promise<{ step?: string }>;
+}) {
   await connection();
 
   // Only users with Admission write permission can access this page.
-  await requirePermission("admission", "write");
+  const user = await requirePermission("admission", "write");
+  const { step } = await searchParams;
 
   const [referenceData, activeCycle] = await Promise.all([
     getApplicantFormReferenceData(),
@@ -37,7 +43,9 @@ async function AddApplicantContent() {
       </div>
 
       <ApplicantForm
+        userId={user.id}
         mode="create"
+        initialStep={parseAdmissionStep(step)}
         initialValues={emptyApplicantForm}
         activeCycle={activeCycle?.school_year ?? null}
         cancelHref="/admission"
@@ -47,10 +55,14 @@ async function AddApplicantContent() {
   );
 }
 
-export default function AddApplicantPage() {
+export default function AddApplicantPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ step?: string }>;
+}) {
   return (
     <Suspense fallback={<FormSkeleton label="applicant form" />}>
-      <AddApplicantContent />
+      <AddApplicantContent searchParams={searchParams} />
     </Suspense>
   );
 }

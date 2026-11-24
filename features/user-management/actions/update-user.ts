@@ -3,7 +3,7 @@
 import { hash } from "bcryptjs";
 import { revalidatePath } from "next/cache";
 
-import { getAccountId, requirePermission } from "@/lib/authorization";
+import { getAccountId, requireRole } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
 import {
   changeUserRoleSchema,
@@ -15,12 +15,11 @@ import type { UserActionResult } from "@/features/user-management/actions/create
 
 /**
  * Updates an account's name, email, role, status and (optionally) password.
- * Guards: only System Admins can edit System Admin accounts or grant that
- * role, and you can't deactivate your own account or change your own role
- * (either would lock you out of this page).
+ * System Admins can manage every account, but cannot deactivate or change
+ * their own account's role.
  */
 export async function updateUser(input: UpdateUserValues): Promise<UserActionResult> {
-  const currentUser = await requirePermission("users", "write");
+  const currentUser = await requireRole(["SYSTEM_ADMIN"]);
 
   const parsed = updateUserSchema.safeParse(input);
   if (!parsed.success) {
@@ -43,12 +42,6 @@ export async function updateUser(input: UpdateUserValues): Promise<UserActionRes
     if (!target) return { success: false, message: "This account no longer exists." };
 
     const currentRole = target.tbl_role?.role_name;
-    if (
-      currentUser.role !== "SYSTEM_ADMIN" &&
-      (currentRole === "SYSTEM_ADMIN" || role === "SYSTEM_ADMIN")
-    ) {
-      return { success: false, message: "Only a System Admin can manage System Admin accounts." };
-    }
     if (isSelf && !isActive) {
       return {
         success: false,
@@ -84,16 +77,23 @@ export async function updateUser(input: UpdateUserValues): Promise<UserActionRes
       return { success: false, message: "The selected role does not exist. Run the seeder." };
     }
 
-    await prisma.tbl_user_account.update({
-      where: { user_id: userId },
-      data: {
-        username: email,
-        full_name: name,
-        email,
-        is_active: isActive,
-        role_id: selectedRole.role_id,
-        ...(password ? { password_hash: await hash(password, 12) } : {}),
-      },
+    const passwordHash = password ? await hash(password, 12) : undefined;
+    await prisma.$transaction(async (tx) => {
+      await tx.tbl_user_account.update({
+        where: { user_id: userId },
+        data: {
+          username: email,
+          full_name: name,
+          email,
+          is_active: isActive,
+          role_id: selectedRole.role_id,
+          ...(passwordHash ? { password_hash: passwordHash } : {}),
+        },
+      });
+
+      if (role !== currentRole || passwordHash || !isActive) {
+        await tx.tbl_auth_session.deleteMany({ where: { user_id: userId } });
+      }
     });
 
     revalidatePath("/user-management", "layout");
@@ -106,7 +106,7 @@ export async function updateUser(input: UpdateUserValues): Promise<UserActionRes
 
 /** Quick role change for one account (same guards as updateUser). */
 export async function changeUserRole(input: { userId: number; role: RoleName }): Promise<UserActionResult> {
-  const currentUser = await requirePermission("users", "write");
+  const currentUser = await requireRole(["SYSTEM_ADMIN"]);
 
   const parsed = changeUserRoleSchema.safeParse(input);
   if (!parsed.success) return { success: false, message: parsed.error.issues[0].message };
@@ -123,22 +123,21 @@ export async function changeUserRole(input: { userId: number; role: RoleName }):
     });
     if (!target) return { success: false, message: "This account no longer exists." };
 
-    if (
-      currentUser.role !== "SYSTEM_ADMIN" &&
-      (target.tbl_role?.role_name === "SYSTEM_ADMIN" || role === "SYSTEM_ADMIN")
-    ) {
-      return { success: false, message: "Only a System Admin can manage System Admin accounts." };
-    }
-
     const selectedRole = await prisma.tbl_role.findUnique({
       where: { role_name: role },
       select: { role_id: true },
     });
     if (!selectedRole) return { success: false, message: "The selected role does not exist. Run the seeder." };
 
-    await prisma.tbl_user_account.update({
-      where: { user_id: userId },
-      data: { role_id: selectedRole.role_id },
+    await prisma.$transaction(async (tx) => {
+      await tx.tbl_user_account.update({
+        where: { user_id: userId },
+        data: { role_id: selectedRole.role_id },
+      });
+
+      if (target.tbl_role?.role_name !== role) {
+        await tx.tbl_auth_session.deleteMany({ where: { user_id: userId } });
+      }
     });
 
     revalidatePath("/user-management", "layout");

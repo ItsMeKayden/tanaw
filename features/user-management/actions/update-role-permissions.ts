@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import { requirePermission } from "@/lib/authorization";
+import { requireRole } from "@/lib/authorization";
 import { MODULES } from "@/lib/modules";
 import { prisma } from "@/lib/prisma";
 import {
@@ -18,7 +18,7 @@ type ActionResult = { success: true; message: string } | { error: string };
  * write access from your own role (that would lock you out of this page).
  */
 export async function updateRolePermissions(rawInput: RolePermissionsInput): Promise<ActionResult> {
-  const user = await requirePermission("users", "write");
+  const user = await requireRole(["SYSTEM_ADMIN"]);
 
   const parsed = rolePermissionsSchema.safeParse(rawInput);
   if (!parsed.success) return { error: parsed.error.issues[0].message };

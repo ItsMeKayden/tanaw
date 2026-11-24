@@ -3,6 +3,7 @@
 import { useEffect, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { signOut } from "next-auth/react";
 
 import { Modal } from "@/components/ui/modal";
 import { toast } from "@/components/ui/toaster";
@@ -52,7 +53,7 @@ export function ChangePasswordModal({
       const result = await changePassword(values);
       if (result.success) {
         toast.success(result.message);
-        onClose();
+        await signOut({ callbackUrl: "/auth/login" });
         return;
       }
       let placed = false;
