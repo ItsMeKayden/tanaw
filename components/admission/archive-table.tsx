@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 import { Modal } from "@/components/ui/modal";
 import { Pagination } from "@/components/ui/pagination";
+import { tableStyles } from "@/components/ui/table-styles";
 import { recoverApplicant } from "@/features/admission/actions/archive-applicant";
 import { stageBadgeClass } from "@/features/admission/stages";
 import { toast } from "@/components/ui/toaster";
@@ -29,8 +30,8 @@ type RecoverState = { row: ArchivedRow; error: string | null } | null;
 
 const PAGE_SIZE = 10;
 
-const th = "border border-neutral-500 px-3 py-2 text-center font-medium";
-const td = "border border-neutral-500 px-3 py-2 text-center";
+const th = tableStyles.th;
+const td = tableStyles.td;
 const fieldClass =
   "h-9 w-full rounded-md border border-neutral-500 bg-white px-3 text-sm outline-none focus:border-[#191e73] focus:ring-2 focus:ring-[#191e73]/20";
 
@@ -118,10 +119,10 @@ export default function ArchiveTable({ rows, canWrite }: Readonly<{ rows: Archiv
         </p>
       )}
 
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[820px] border-collapse bg-white/90 text-sm">
+      <div className={tableStyles.wrap}>
+        <table className="w-full min-w-[820px] border-collapse text-sm">
           <thead>
-            <tr className="bg-[#b4b7f3]">
+            <tr className={tableStyles.headRow}>
               <th className={th}>Applicant ID</th>
               <th className={th}>Name</th>
               <th className={th}>Preferred Course</th>
@@ -132,10 +133,10 @@ export default function ArchiveTable({ rows, canWrite }: Readonly<{ rows: Archiv
               {canWrite && <th className={th}>Actions</th>}
             </tr>
           </thead>
-          <tbody>
+          <tbody className={tableStyles.body}>
             {visible.length > 0 ? (
               visible.map((row) => (
-                <tr key={row.applicant_id} className="hover:bg-[#e3e4f8]/60">
+                <tr key={row.applicant_id} className={tableStyles.row}>
                   <td className={`${td} whitespace-nowrap tabular-nums`}>{applicantId(row)}</td>
                   <td className={td}>{row.name}</td>
                   <td className={td} title={row.course_name ?? undefined}>
@@ -170,7 +171,7 @@ export default function ArchiveTable({ rows, canWrite }: Readonly<{ rows: Archiv
                           setFeedback(null);
                           setRecovering({ row, error: null });
                         }}
-                        className="rounded-md border border-green-600 bg-white px-2 py-0.5 text-xs text-green-800 hover:bg-green-50"
+                        className="rounded-md border border-green-600 bg-white inline-flex h-7 items-center px-2.5 text-xs font-medium text-green-800 hover:bg-green-50"
                       >
                         Recover
                       </button>
@@ -180,7 +181,7 @@ export default function ArchiveTable({ rows, canWrite }: Readonly<{ rows: Archiv
               ))
             ) : (
               <tr>
-                <td colSpan={canWrite ? 8 : 7} className={`${td} py-10 text-neutral-600`}>
+                <td colSpan={canWrite ? 8 : 7} className={tableStyles.empty}>
                   {query ? "No archived applicants match your search." : "The archive is empty."}
                 </td>
               </tr>

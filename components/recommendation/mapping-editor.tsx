@@ -7,13 +7,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { resetMapping, saveMapping } from "@/features/recommendation/actions";
 import { mappingFormSchema, type MappingFormValues } from "@/features/recommendation/schemas";
+import { tableStyles } from "@/components/ui/table-styles";
 import { toast } from "@/components/ui/toaster";
 
 type Competency = { competency_id: number; label: string; name: string };
 type Program = { program_id: number; program_code: string; program_name: string; min_match: number };
 
-const cell = "border border-neutral-500 px-2 py-1";
-const headCell = `${cell} bg-[#b4b7f3] py-2 text-center font-medium`;
+const cell = "border border-neutral-200 px-2 py-1";
+const headCell = `${cell} bg-[#f4f5fd] py-2.5 text-center text-xs font-semibold tracking-wide text-[#191e73] uppercase`;
 
 // Prefixed keys so React Hook Form doesn't treat numeric ids as array indexes.
 const rowKey = (programId: number) => `p${programId}`;
@@ -135,8 +136,8 @@ export default function MappingEditor({
 
   return (
     <form onSubmit={save} noValidate className="space-y-3">
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse bg-white/90 text-sm">
+      <div className={tableStyles.wrap}>
+        <table className={tableStyles.grid}>
           <thead>
             <tr>
               <th className={`${headCell} text-left`}>Course</th>
@@ -157,7 +158,7 @@ export default function MappingEditor({
                 | undefined;
               const minError = errors.minMatch?.[rowKey(program.program_id)] as FieldError | undefined;
               return (
-                <tr key={program.program_id} className="hover:bg-[#e3e4f8]/50">
+                <tr key={program.program_id} className="hover:bg-[#f4f5fd]">
                   <td className={`${cell} px-3`} title={program.program_code}>
                     {program.program_name}
                   </td>
@@ -227,8 +228,8 @@ export default function MappingEditor({
             minimum match. Advisory only: it never changes an applicant&apos;s admission stage.
           </p>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse bg-white/90 text-sm">
+        <div className={tableStyles.wrap}>
+          <table className={tableStyles.grid}>
             <thead>
               <tr>
                 <th className={`${headCell} text-left`}>Course</th>
@@ -249,7 +250,7 @@ export default function MappingEditor({
                   (c) => (ruleValues[rowKey(program.program_id)]?.[colKey(c.competency_id)] ?? "").trim() !== "",
                 ).length;
                 return (
-                  <tr key={program.program_id} className="hover:bg-[#e3e4f8]/50">
+                  <tr key={program.program_id} className="hover:bg-[#f4f5fd]">
                     <td className={`${cell} px-3`} title={program.program_code}>
                       {program.program_name}
                     </td>

@@ -6,6 +6,7 @@ import { Search } from "lucide-react";
 
 import type { RecommendationRow, RecommendationStatus } from "@/features/recommendation/queries";
 import { Pagination } from "@/components/ui/pagination";
+import { tableStyles } from "@/components/ui/table-styles";
 
 type Filter = "ALL" | Exclude<RecommendationStatus, "NOT_GENERATED">;
 
@@ -17,22 +18,22 @@ const FILTERS: { value: Filter; label: string }[] = [
 ];
 
 const PAGE_SIZE = 10;
-const cell = "border border-neutral-500 px-3 py-2";
-const headCell = `${cell} bg-[#b4b7f3] text-left font-medium whitespace-nowrap`;
+const cell = tableStyles.td;
+const headCell = tableStyles.th;
 const fieldClass =
   "h-9 rounded-full border border-neutral-500 bg-white text-sm outline-none focus:border-[#191e73] focus:ring-2 focus:ring-[#191e73]/20";
 
 function ResultBadge({ status }: Readonly<{ status: RecommendationStatus }>) {
   if (status === "COMPATIBLE") {
-    return <span className="rounded-full bg-green-600 px-2.5 py-0.5 text-xs font-medium whitespace-nowrap text-white">Compatible</span>;
+    return <span className="rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium whitespace-nowrap text-green-800 ring-1 ring-inset ring-green-200">Compatible</span>;
   }
   if (status === "ALTERNATIVE") {
-    return <span className="rounded-full bg-amber-400 px-2.5 py-0.5 text-xs font-medium whitespace-nowrap text-neutral-900">Alternative suggested</span>;
+    return <span className="rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium whitespace-nowrap text-amber-900 ring-1 ring-inset ring-amber-300">Alternative suggested</span>;
   }
   if (status === "BELOW_MINIMUM") {
-    return <span className="rounded-full bg-neutral-500 px-2.5 py-0.5 text-xs font-medium whitespace-nowrap text-white" title="Below the minimum match for every course, including the preferred one">Below minimum</span>;
+    return <span className="rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium whitespace-nowrap text-red-800 ring-1 ring-inset ring-red-200" title="Below the minimum match for every course, including the preferred one">Below minimum</span>;
   }
-  return <span className="rounded-full bg-neutral-200 px-2.5 py-0.5 text-xs whitespace-nowrap text-neutral-700">Not generated</span>;
+  return <span className="rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs whitespace-nowrap text-neutral-600 ring-1 ring-inset ring-neutral-300">Not generated</span>;
 }
 
 /** Course code with its match % on one line and an optional note below. */
@@ -150,8 +151,8 @@ export default function RecommendationTable({
         </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[760px] table-fixed border-collapse bg-white/90 text-sm">
+      <div className={tableStyles.wrap}>
+        <table className="w-full min-w-[760px] table-fixed border-collapse text-sm">
           <colgroup>
             <col className="w-[30%]" />
             <col className="w-[11%]" />
@@ -160,7 +161,7 @@ export default function RecommendationTable({
             <col className="w-[19%]" />
           </colgroup>
           <thead>
-            <tr>
+            <tr className={tableStyles.headRow}>
               <th className={headCell}>Applicant</th>
               <th className={`${headCell} text-right`}>Exam score</th>
               <th className={headCell}>Preferred course</th>
@@ -168,10 +169,10 @@ export default function RecommendationTable({
               <th className={headCell}>Result</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className={tableStyles.body}>
             {pageRows.length > 0 ? (
               pageRows.map((row) => (
-                <tr key={row.application_id} className="hover:bg-[#e3e4f8]/60">
+                <tr key={row.application_id} className={tableStyles.row}>
                   <td className={cell}>
                     <Link
                       href={`/recommendation/${row.application_id}`}
@@ -212,7 +213,7 @@ export default function RecommendationTable({
               ))
             ) : (
               <tr>
-                <td colSpan={5} className={`${cell} py-10 text-center text-neutral-600`}>
+                <td colSpan={5} className={tableStyles.empty}>
                   {rows.length === 0
                     ? "No applicants have taken the exam in this school year."
                     : "No applicants match this filter."}

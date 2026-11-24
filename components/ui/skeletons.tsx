@@ -320,7 +320,7 @@ export function MapSkeleton() {
   );
 }
 
-/** Simple module pages (Dashboard, Analytics, Tracker). */
+/** Simple module pages (Dashboard, Analytics). */
 export function OverviewSkeleton({ label }: Readonly<{ label: string }>) {
   return (
     <Frame label={label}>

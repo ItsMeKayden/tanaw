@@ -9,6 +9,8 @@ import { requireUser } from "@/lib/authorization";
 import { getRoleLabels } from "@/features/user-management/role-labels";
 import { getNavigationItems } from "@/lib/navigation";
 
+export const instant = false;
+
 async function AuthenticatedWorkspace({ children }: { children: ReactNode }) {
   await connection();
 
@@ -25,7 +27,7 @@ async function AuthenticatedWorkspace({ children }: { children: ReactNode }) {
           userName={user.name || user.email || "Account"}
           roleLabel={roleLabels[user.role] ?? null}
         />
-        <main className="m-2 flex-1 border border-neutral-400 print:m-0 print:border-0">
+        <main className="m-2 flex-1 rounded-sm  border border-neutral-400 print:m-0 print:border-0">
           {children}
         </main>
       </div>
@@ -39,7 +41,7 @@ function WorkspaceFallback() {
     <div className="flex min-h-screen flex-col bg-white sm:flex-row">
       <aside className="w-full shrink-0 bg-[#0d1b8c] sm:w-[230px]" />
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="h-[58px] shrink-0 border-b border-neutral-500 bg-[#ededed]" />
+        <header className="h-[58px] shrink-0 border-b border-neutral-300 bg-white" />
         <main className="m-2 flex-1 border border-neutral-400" />
       </div>
     </div>

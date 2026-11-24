@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 
 import { connection } from "next/server";
@@ -5,6 +6,8 @@ import { connection } from "next/server";
 import { auth } from "@/auth";
 import { QcuWatermark } from "@/components/admission/qcu-watermark";
 import { DashboardFilters } from "@/components/dashboard/dashboard-filters";
+import { OverviewSkeleton } from "@/components/ui/skeletons";
+import { tableStyles } from "@/components/ui/table-styles";
 import { resolveCycle } from "@/features/admission/admission-stats";
 import { ADMISSION_STAGES, EXAM_RESULT_PASSED } from "@/features/admission/stages";
 import { requirePermission } from "@/lib/authorization";
@@ -124,7 +127,7 @@ async function DashboardContent({ searchParams }: PageProps) {
 				<QcuWatermark />
 				<div className="relative z-10 flex min-h-[320px] items-center justify-center">
 					<div className="text-center text-neutral-700">
-						<p className="text-xl font-semibold">No admission cycle exists yet.</p>
+						<p className="text-xl font-semibold">No data available</p>
 						<p className="mt-2 text-sm">
 							Create a school year first to populate the dashboard.
 						</p>
@@ -209,6 +212,7 @@ async function DashboardContent({ searchParams }: PageProps) {
 		: 0;
 
 	const applicantTrend = getMonthTrendValues(applications);
+	const hasApplicantTrend = applicantTrend.some((value) => value > 0);
 	const chartMax = Math.max(5000, ...applicantTrend, 1);
 	const yTicks = [0, Math.round(chartMax * 0.25), Math.round(chartMax * 0.5), Math.round(chartMax * 0.75), chartMax];
 	const publicShare = publicSchoolApplicants;
@@ -284,6 +288,7 @@ async function DashboardContent({ searchParams }: PageProps) {
 							<div className="mb-2 pl-10 text-right text-[11px] font-medium text-neutral-700">
 								Applications over time (total {applicants})
 							</div>
+							{hasApplicantTrend ? (
 							<svg viewBox="0 0 420 200" className="h-full w-full" preserveAspectRatio="xMidYMid meet">
 								{yTicks.map((value) => {
 									const y = 135 - (value / chartMax) * 95;
@@ -365,36 +370,47 @@ async function DashboardContent({ searchParams }: PageProps) {
 									</text>
 								))}
 							</svg>
+							) : (
+								<div className="flex h-[200px] items-center justify-center text-sm text-neutral-600">
+									No data available
+								</div>
+							)}
 						</div>
 					</div>
 
 					<div className="rounded-[18px] border-[2px] border-[#1f4a9f] bg-white/80 p-3 shadow-sm">
 						<div className="mb-3 text-sm font-medium text-neutral-700">Public vs private applicants</div>
-						<div className="flex flex-col items-center justify-center pt-2">
-							<div
-								className="relative flex h-36 w-36 items-center justify-center rounded-full"
-								style={{
-									background: `conic-gradient(#5f8cc9 0 ${publicPercent}%, #dfeaf8 ${publicPercent}% 100%)`,
-								}}
-							>
-								<div className="flex h-24 w-24 items-center justify-center rounded-full bg-[#f7f7f7] text-[11px] font-semibold text-neutral-700">
-									{applicants ? publicPercent : 0}%
+						{publicSchoolApplicants + privateSchoolApplicants > 0 ? (
+							<div className="flex flex-col items-center justify-center pt-2">
+								<div
+									className="relative flex h-36 w-36 items-center justify-center rounded-full"
+									style={{
+										background: `conic-gradient(#5f8cc9 0 ${publicPercent}%, #dfeaf8 ${publicPercent}% 100%)`,
+									}}
+								>
+									<div className="flex h-24 w-24 items-center justify-center rounded-full bg-[#f7f7f7] text-[11px] font-semibold text-neutral-700">
+										{applicants ? publicPercent : 0}%
+									</div>
+								</div>
+								<div className="mt-3 flex items-center gap-6 text-[11px] text-neutral-600">
+									<div className="flex items-center gap-2">
+										<span className="h-2.5 w-2.5 rounded-full bg-[#5f8cc9]" />
+										<span>Public {applicants ? publicPercent : 0}%</span>
+									</div>
+									<div className="flex items-center gap-2">
+										<span className="h-2.5 w-2.5 rounded-full bg-[#dfeaf8]" />
+										<span>Private {applicants ? privatePercent : 0}%</span>
+									</div>
+								</div>
+								<div className="mt-3 text-center text-[11px] text-neutral-600">
+									{applicants} applicants
 								</div>
 							</div>
-							<div className="mt-3 flex items-center gap-6 text-[11px] text-neutral-600">
-								<div className="flex items-center gap-2">
-									<span className="h-2.5 w-2.5 rounded-full bg-[#5f8cc9]" />
-									<span>Public {applicants ? publicPercent : 0}%</span>
-								</div>
-								<div className="flex items-center gap-2">
-									<span className="h-2.5 w-2.5 rounded-full bg-[#dfeaf8]" />
-									<span>Private {applicants ? privatePercent : 0}%</span>
-								</div>
+						) : (
+							<div className="flex h-44 items-center justify-center text-sm text-neutral-600">
+								No data available
 							</div>
-							<div className="mt-3 text-center text-[11px] text-neutral-600">
-								{applicants} applicants
-							</div>
-						</div>
+						)}
 					</div>
 				</div>
 
@@ -403,19 +419,23 @@ async function DashboardContent({ searchParams }: PageProps) {
 						<div className="mb-4 text-lg font-semibold text-neutral-800">
 							Admission Funnel
 						</div>
-						<div className="space-y-3">
-							{funnel.map((item) => (
-								<div key={item.label} className="grid grid-cols-[110px_1fr] items-center gap-3">
-									<div className="text-sm text-neutral-700">{item.label}</div>
-									<div className="h-7 overflow-hidden rounded-md bg-[#ebedf5]">
-										<div
-											className="h-full rounded-md"
-											style={{ width: item.width, backgroundColor: item.color }}
-										/>
+						{applicants > 0 ? (
+							<div className="space-y-3">
+								{funnel.map((item) => (
+									<div key={item.label} className="grid grid-cols-[110px_1fr] items-center gap-3">
+										<div className="text-sm text-neutral-700">{item.label}</div>
+										<div className="h-7 overflow-hidden rounded-md bg-[#ebedf5]">
+											<div
+												className="h-full rounded-md"
+												style={{ width: item.width, backgroundColor: item.color }}
+											/>
+										</div>
 									</div>
-								</div>
-							))}
-						</div>
+								))}
+							</div>
+						) : (
+							<div className="py-8 text-center text-sm text-neutral-600">No data available</div>
+						)}
 					</div>
 
 					<div className="rounded-xl border border-[#2f5a8d] bg-white/80 p-4 shadow-sm">
@@ -493,7 +513,7 @@ async function GuidanceDashboard({ searchParams }: PageProps) {
 				<QcuWatermark />
 				<div className="relative z-10 flex min-h-[320px] items-center justify-center">
 					<div className="text-center text-neutral-700">
-						<p className="text-xl font-semibold">No admission cycle exists yet.</p>
+						<p className="text-xl font-semibold">No data available</p>
 						<p className="mt-2 text-sm">Create a school year first to populate guidance recommendations.</p>
 					</div>
 				</div>
@@ -690,25 +710,27 @@ async function GuidanceDashboard({ searchParams }: PageProps) {
 									</div>
 								))
 							) : (
-								<div className="text-sm text-neutral-600">No recommendation data for this cycle yet.</div>
+								<div className="text-sm text-neutral-600">No data available</div>
 							)}
 						</div>
-						<div className="mt-4 ml-[140px] pr-[38px]">
-							<div className="relative h-4">
-								<div className="absolute inset-x-0 top-1 h-px bg-[#333333]" />
-								{[0, 20, 40, 60, 80, 100].map((tick) => (
-									<div key={tick} className="absolute top-0 h-2 w-px bg-[#333333]" style={{ left: `${tick}%` }} />
-								))}
+						{preferredCourses.length > 0 && (
+							<div className="mt-4 ml-[140px] pr-[38px]">
+								<div className="relative h-4">
+									<div className="absolute inset-x-0 top-1 h-px bg-[#333333]" />
+									{[0, 20, 40, 60, 80, 100].map((tick) => (
+										<div key={tick} className="absolute top-0 h-2 w-px bg-[#333333]" style={{ left: `${tick}%` }} />
+									))}
+								</div>
+								<div className="mt-1 flex justify-between text-[10px] font-medium text-neutral-600">
+									<span>0</span>
+									<span>20</span>
+									<span>40</span>
+									<span>60</span>
+									<span>80</span>
+									<span>100</span>
+								</div>
 							</div>
-							<div className="mt-1 flex justify-between text-[10px] font-medium text-neutral-600">
-								<span>0</span>
-								<span>20</span>
-								<span>40</span>
-								<span>60</span>
-								<span>80</span>
-								<span>100</span>
-							</div>
-						</div>
+						)}
 					</div>
 
 					<div className="rounded-xl border border-[#2f5a8d] bg-white/80 p-3 shadow-sm">
@@ -725,7 +747,7 @@ async function GuidanceDashboard({ searchParams }: PageProps) {
 									</div>
 								))
 							) : (
-								<div className="text-sm text-neutral-600">No applicant records need guidance review.</div>
+								<div className="text-sm text-neutral-600">No data available</div>
 							)}
 						</div>
 					</div>
@@ -734,19 +756,23 @@ async function GuidanceDashboard({ searchParams }: PageProps) {
 				<div className="mt-5 grid gap-4 lg:grid-cols-[1.45fr_1fr]">
 					<div className="rounded-xl border border-[#2f5a8d] bg-white/80 p-4 shadow-sm">
 						<div className="mb-4 text-lg font-semibold text-neutral-800">Admission Funnel</div>
-						<div className="space-y-3">
-							{funnel.map((item) => (
-								<div key={item.label} className="grid grid-cols-[110px_1fr] items-center gap-3">
-									<div className="text-sm text-neutral-700">{item.label}</div>
-									<div className="h-7 overflow-hidden rounded-md bg-[#ebedf5]">
-										<div
-											className="h-full rounded-md"
-											style={{ width: item.width, backgroundColor: item.color }}
-										/>
+						{applicationsCount > 0 ? (
+							<div className="space-y-3">
+								{funnel.map((item) => (
+									<div key={item.label} className="grid grid-cols-[110px_1fr] items-center gap-3">
+										<div className="text-sm text-neutral-700">{item.label}</div>
+										<div className="h-7 overflow-hidden rounded-md bg-[#ebedf5]">
+											<div
+												className="h-full rounded-md"
+												style={{ width: item.width, backgroundColor: item.color }}
+											/>
+										</div>
 									</div>
-								</div>
-							))}
-						</div>
+								))}
+							</div>
+						) : (
+							<div className="py-8 text-center text-sm text-neutral-600">No data available</div>
+						)}
 					</div>
 
 					<div className="rounded-xl border border-[#2f5a8d] bg-white/80 p-4 shadow-sm">
@@ -810,7 +836,7 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 				<QcuWatermark />
 				<div className="relative z-10 flex min-h-[320px] items-center justify-center">
 					<div className="text-center text-neutral-700">
-						<p className="text-xl font-semibold">No admission cycle exists yet.</p>
+						<p className="text-xl font-semibold">No data available</p>
 						<p className="mt-2 text-sm">Create a school year first to populate registrar operations.</p>
 					</div>
 				</div>
@@ -978,74 +1004,80 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 						</div>
 					</div>
 
-					<div className="overflow-hidden rounded-lg border border-neutral-300 bg-white/80">
-						<table className="w-full text-left text-sm text-neutral-700">
-							<thead className="bg-[#eef0ff] text-neutral-700">
-								<tr>
-									<th className="px-3 py-2 font-semibold">Applicant ID</th>
-									<th className="px-3 py-2 font-semibold">Name</th>
-									<th className="px-3 py-2 font-semibold">Course</th>
-									<th className="px-3 py-2 font-semibold">Action needed</th>
-									<th className="px-3 py-2 font-semibold">Status</th>
+					<div className={tableStyles.wrap}>
+						<table className="w-full border-collapse text-sm">
+							<thead>
+								<tr className={tableStyles.headRow}>
+									<th className={tableStyles.th}>Applicant ID</th>
+									<th className={tableStyles.th}>Name</th>
+									<th className={tableStyles.th}>Course</th>
+									<th className={tableStyles.th}>Action needed</th>
+									<th className={tableStyles.th}>Status</th>
 								</tr>
 							</thead>
-							<tbody>
+							<tbody className={tableStyles.body}>
 								{queue.length ? queue.map((applicant, index) => (
-									<tr key={`${applicant.applicantId}-${index}`} className="border-t border-neutral-200">
-										<td className="px-3 py-2">{applicant.applicantId}</td>
-										<td className="px-3 py-2">{applicant.name}</td>
-										<td className="px-3 py-2">{applicant.course}</td>
-										<td className="px-3 py-2">{applicant.action}</td>
-										<td className="px-3 py-2">{applicant.status}</td>
+									<tr key={`${applicant.applicantId}-${index}`} className={tableStyles.row}>
+										<td className={`${tableStyles.td} tabular-nums`}>{applicant.applicantId}</td>
+										<td className={`${tableStyles.td} font-medium`}>{applicant.name}</td>
+										<td className={tableStyles.td}>{applicant.course}</td>
+										<td className={tableStyles.td}>{applicant.action}</td>
+										<td className={tableStyles.td}>{applicant.status}</td>
 									</tr>
 								)) : (
 									<tr>
-										<td colSpan={5} className="px-3 py-4 text-center text-neutral-600">No applicants need action in this cycle.</td>
+										<td colSpan={5} className={tableStyles.empty}>No data available</td>
 									</tr>
 								)}
 							</tbody>
 						</table>
 					</div>
 
-					<div className="mt-4 flex items-center justify-end gap-2">
-						<Link
-							href={pageHref(Math.max(1, currentPage - 1))}
-							aria-disabled={currentPage <= 1}
-							className={`flex h-8 w-8 items-center justify-center rounded-md border text-sm ${currentPage <= 1 ? "cursor-not-allowed border-neutral-200 bg-neutral-100 text-neutral-400" : "border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50"}`}
-						>
-							←
-						</Link>
-						<div className="flex items-center gap-2 rounded-md border border-neutral-200 bg-neutral-50 px-2 py-1 text-[10px] font-medium text-neutral-600">
-							<span>Page</span>
-							<span className="rounded border border-neutral-300 bg-white px-1.5 py-0.5 text-neutral-700">{currentPage}</span>
-							<span>of {totalPages}</span>
+					{queueEntries.length > 0 && (
+						<div className="mt-4 flex items-center justify-end gap-2">
+							<Link
+								href={pageHref(Math.max(1, currentPage - 1))}
+								aria-disabled={currentPage <= 1}
+								className={`flex h-8 w-8 items-center justify-center rounded-md border text-sm ${currentPage <= 1 ? "cursor-not-allowed border-neutral-200 bg-neutral-100 text-neutral-400" : "border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50"}`}
+							>
+								←
+							</Link>
+							<div className="flex items-center gap-2 rounded-md border border-neutral-200 bg-neutral-50 px-2 py-1 text-[10px] font-medium text-neutral-600">
+								<span>Page</span>
+								<span className="rounded border border-neutral-300 bg-white px-1.5 py-0.5 text-neutral-700">{currentPage}</span>
+								<span>of {totalPages}</span>
+							</div>
+							<Link
+								href={pageHref(Math.min(totalPages, currentPage + 1))}
+								aria-disabled={currentPage >= totalPages}
+								className={`flex h-8 w-8 items-center justify-center rounded-md border text-sm ${currentPage >= totalPages ? "cursor-not-allowed border-neutral-200 bg-neutral-100 text-neutral-400" : "border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50"}`}
+							>
+								→
+							</Link>
 						</div>
-						<Link
-							href={pageHref(Math.min(totalPages, currentPage + 1))}
-							aria-disabled={currentPage >= totalPages}
-							className={`flex h-8 w-8 items-center justify-center rounded-md border text-sm ${currentPage >= totalPages ? "cursor-not-allowed border-neutral-200 bg-neutral-100 text-neutral-400" : "border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50"}`}
-						>
-							→
-						</Link>
-					</div>
+					)}
 				</div>
 
 				<div className="mt-5 grid gap-4 lg:grid-cols-[1.45fr_1fr]">
 					<div className="rounded-xl border border-[#2f5a8d] bg-white/80 p-4 shadow-sm">
 						<div className="mb-4 text-lg font-semibold text-neutral-800">Admission Funnel</div>
-						<div className="space-y-3">
-							{funnel.map((item) => (
-								<div key={item.label} className="grid grid-cols-[110px_1fr] items-center gap-3">
-									<div className="text-sm text-neutral-700">{item.label}</div>
-									<div className="h-7 overflow-hidden rounded-md bg-[#ebedf5]">
-										<div
-											className="h-full rounded-md"
-											style={{ width: item.width, backgroundColor: item.color }}
-										/>
+						{applicantsCount > 0 ? (
+							<div className="space-y-3">
+								{funnel.map((item) => (
+									<div key={item.label} className="grid grid-cols-[110px_1fr] items-center gap-3">
+										<div className="text-sm text-neutral-700">{item.label}</div>
+										<div className="h-7 overflow-hidden rounded-md bg-[#ebedf5]">
+											<div
+												className="h-full rounded-md"
+												style={{ width: item.width, backgroundColor: item.color }}
+											/>
+										</div>
 									</div>
-								</div>
-							))}
-						</div>
+								))}
+							</div>
+						) : (
+							<div className="py-8 text-center text-sm text-neutral-600">No data available</div>
+						)}
 					</div>
 
 					<div className="rounded-xl border border-[#2f5a8d] bg-white/80 p-4 shadow-sm">
@@ -1074,7 +1106,8 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 	);
 }
 
-export default async function DashboardPage(props: PageProps) {
+async function DashboardForRole(props: PageProps) {
+	await connection();
 	const session = await auth();
 	const role = session?.user?.role;
 
@@ -1091,4 +1124,12 @@ export default async function DashboardPage(props: PageProps) {
 	}
 
 	return <RegistrarDashboard {...props} />;
+}
+
+export default function DashboardPage(props: PageProps) {
+	return (
+		<Suspense fallback={<OverviewSkeleton label="dashboard" />}>
+			<DashboardForRole {...props} />
+		</Suspense>
+	);
 }

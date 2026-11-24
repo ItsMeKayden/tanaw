@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
 import { ensureCycleExam, getExamSubjects, getPassingRule, type PassingRule } from "@/features/admission/exam";
 import { isPassing, scorePercent } from "@/features/admission/exam-scoring";
+import { loadSlotTracker } from "@/features/admission/slots";
 import { ADMISSION_STAGES, EXAM_RESULT_PASSED } from "@/features/admission/stages";
 import { generateRecommendations } from "@/features/recommendation/engine";
 
@@ -23,6 +24,7 @@ const RESULT_DRIVEN_STAGES: readonly string[] = [
   ADMISSION_STAGES.FOR_EXAMINATION,
   ADMISSION_STAGES.EXAM_COMPLETED,
   ADMISSION_STAGES.PASSED,
+  ADMISSION_STAGES.QUALIFIED,
   ADMISSION_STAGES.FAILED,
 ];
 
@@ -36,41 +38,92 @@ function revalidate() {
     "/admission/exam/scores",
     "/admission/exam/schedule",
     "/admission/quota",
-    "/admission/tracker",
     "/admission/enrollment-verification",
+    "/admission/additional-applicants",
     "/recommendation",
   ]) {
     revalidatePath(path);
   }
 }
 
+type ResultEntry = {
+  application: {
+    application_id: number;
+    current_stage_id: number | null;
+    branch_id: number | null;
+    program_id: number | null;
+  };
+  passed: boolean;
+  /** Used to rank passers; the highest score gets a free slot first. */
+  score: number;
+  remarks: string;
+};
+
+const WAITLIST_NOTE = " Course quota is full; added to the waiting list (Qualified).";
+
 /**
- * Moves an application to Passed / Failed to match its result (only from a
- * result-driven stage) and logs the change. Returns true when it moved.
+ * Moves applications to match their exam results (only from a result-driven
+ * stage) and logs each change. Failures go first so their slots are freed;
+ * then passers, highest score first, go to Passed while their course has a
+ * free slot and to Qualified (the waiting list) once its quota is full.
+ * Applicants already Passed or Qualified keep that stage.
  */
-async function syncStage(
+async function syncStages(
   db: Db,
   stages: { stage_id: number; stage_name: string }[],
-  application: { application_id: number; current_stage_id: number | null },
-  passed: boolean,
+  cycleId: number,
+  entries: ResultEntry[],
   accountId: number,
-  remarks: string,
 ) {
-  const current = stages.find((s) => s.stage_id === application.current_stage_id)?.stage_name ?? null;
-  if (current !== null && !RESULT_DRIVEN_STAGES.includes(current)) return false;
+  const tracker = await loadSlotTracker(db, cycleId);
+  const stageName = (id: number | null) => stages.find((s) => s.stage_id === id)?.stage_name ?? null;
+  const ordered = [
+    ...entries.filter((e) => !e.passed),
+    ...entries.filter((e) => e.passed).sort((a, b) => b.score - a.score),
+  ];
 
-  const target = stages.find((s) => s.stage_name === (passed ? ADMISSION_STAGES.PASSED : ADMISSION_STAGES.FAILED));
-  if (!target || target.stage_id === application.current_stage_id) return false;
+  let moved = 0;
+  let waitlisted = 0;
+  for (const { application, passed, remarks } of ordered) {
+    const current = stageName(application.current_stage_id);
+    if (current !== null && !RESULT_DRIVEN_STAGES.includes(current)) continue;
 
-  await db.tbl_application.update({
-    where: { application_id: application.application_id },
-    data: { current_stage_id: target.stage_id },
-  });
-  await db.tbl_application_stage_log.create({
-    data: { application_id: application.application_id, stage_id: target.stage_id, changed_by: accountId, remarks },
-  });
-  return true;
+    let targetName: string;
+    if (!passed) {
+      targetName = ADMISSION_STAGES.FAILED;
+      if (current === ADMISSION_STAGES.PASSED) tracker.release(application);
+    } else if (current === ADMISSION_STAGES.PASSED || current === ADMISSION_STAGES.QUALIFIED) {
+      continue;
+    } else {
+      targetName = tracker.take(application) ? ADMISSION_STAGES.PASSED : ADMISSION_STAGES.QUALIFIED;
+    }
+
+    const target = stages.find((s) => s.stage_name === targetName);
+    if (!target || target.stage_id === application.current_stage_id) continue;
+
+    const waiting = targetName === ADMISSION_STAGES.QUALIFIED;
+    await db.tbl_application.update({
+      where: { application_id: application.application_id },
+      data: { current_stage_id: target.stage_id },
+    });
+    await db.tbl_application_stage_log.create({
+      data: {
+        application_id: application.application_id,
+        stage_id: target.stage_id,
+        changed_by: accountId,
+        remarks: waiting ? remarks + WAITLIST_NOTE : remarks,
+      },
+    });
+    moved++;
+    if (waiting) waitlisted++;
+  }
+  return { moved, waitlisted };
 }
+
+const waitlistMessage = (count: number) =>
+  count
+    ? ` ${count} passer${count === 1 ? " was" : "s were"} added to the waiting list because the course quota is full; admit them from Additional Applicants when slots open.`
+    : "";
 
 /** Regenerates recommendations for the saved applicants; a failure doesn't undo the save. */
 async function refreshRecommendations(cycleId: number, applicationIds: number[]) {
@@ -126,6 +179,8 @@ export async function saveExamScores(cycleIdInput: number, rows: ScoreRowInput[]
             application_id: true,
             application_no: true,
             current_stage_id: true,
+            branch_id: true,
+            program_id: true,
             tbl_exam_result: {
               where: { exam_id: exam.exam_id },
               select: { result_id: true },
@@ -136,7 +191,7 @@ export async function saveExamScores(cycleIdInput: number, rows: ScoreRowInput[]
         if (applications.length !== rows.length) throw new Error("Some applicants are not in this school year. Reload the page.");
 
         let passedCount = 0;
-        let moved = 0;
+        const entries: ResultEntry[] = [];
 
         for (const row of rows) {
           const application = applications.find((a) => a.application_id === row.application_id)!;
@@ -173,14 +228,16 @@ export async function saveExamScores(cycleIdInput: number, rows: ScoreRowInput[]
           });
 
           const remarks = `Exam result saved: ${total}/${maxTotal} (${percentage}%), ${passed ? "passed" : "failed"}.`;
-          if (await syncStage(tx, stages, application, passed, accountId, remarks)) moved++;
+          entries.push({ application, passed, score: total, remarks });
         }
+
+        const { moved, waitlisted } = await syncStages(tx, stages, cycleId, entries, accountId);
 
         if (exam.max_score === null) {
           await tx.tbl_exam.update({ where: { exam_id: exam.exam_id }, data: { max_score: maxTotal } });
         }
 
-        return { saved: rows.length, passed: passedCount, moved };
+        return { saved: rows.length, passed: passedCount, moved, waitlisted };
       },
       { timeout: 60_000, maxWait: 10_000 },
     );
@@ -193,6 +250,7 @@ export async function saveExamScores(cycleIdInput: number, rows: ScoreRowInput[]
       message:
         `Saved ${summary.saved} result${summary.saved === 1 ? "" : "s"} (${summary.passed} passed, ` +
         `${summary.saved - summary.passed} failed).` +
+        waitlistMessage(summary.waitlisted) +
         (recommended ? "" : " Course recommendations could not be refreshed; regenerate them on the Recommendation page."),
     };
   } catch (error) {
@@ -223,7 +281,7 @@ export async function savePassingScore(cycleIdInput: number, rule: PassingRule):
   try {
     const accountId = getAccountId(user);
 
-    const changed = await prisma.$transaction(
+    const { flipped: changed, waitlisted } = await prisma.$transaction(
       async (tx) => {
         const cycle = await tx.tbl_admission_cycle.findUnique({ where: { cycle_id: cycleId }, select: { cycle_id: true } });
         if (!cycle) throw new Error("Admission cycle not found.");
@@ -255,12 +313,15 @@ export async function savePassingScore(cycleIdInput: number, rule: PassingRule):
               raw_score: true,
               percentage: true,
               result_status: true,
-              tbl_application: { select: { application_id: true, current_stage_id: true } },
+              tbl_application: {
+                select: { application_id: true, current_stage_id: true, branch_id: true, program_id: true },
+              },
             },
           }),
         ]);
 
         let flipped = 0;
+        const entries: ResultEntry[] = [];
         for (const result of results) {
           if (!result.tbl_application || result.raw_score === null) continue;
           const pct = result.percentage === null ? null : Number(result.percentage);
@@ -269,17 +330,16 @@ export async function savePassingScore(cycleIdInput: number, rule: PassingRule):
           if (status === result.result_status) continue;
 
           await tx.tbl_exam_result.update({ where: { result_id: result.result_id }, data: { result_status: status } });
-          await syncStage(
-            tx,
-            stages,
-            result.tbl_application,
+          entries.push({
+            application: result.tbl_application,
             passed,
-            accountId,
-            `Passing score changed to ${byPoints ? `${rounded} pts` : `${rounded}%`}; result is now ${passed ? "passed" : "failed"}.`,
-          );
+            score: pct ?? result.raw_score,
+            remarks: `Passing score changed to ${byPoints ? `${rounded} pts` : `${rounded}%`}; result is now ${passed ? "passed" : "failed"}.`,
+          });
           flipped++;
         }
-        return flipped;
+        const { waitlisted } = await syncStages(tx, stages, cycleId, entries, accountId);
+        return { flipped, waitlisted };
       },
       { timeout: 60_000, maxWait: 10_000 },
     );
@@ -287,7 +347,7 @@ export async function savePassingScore(cycleIdInput: number, rule: PassingRule):
     revalidate();
     return {
       success: true,
-      message: `Passing score saved.${changed ? ` ${changed} result${changed === 1 ? "" : "s"} changed between passed and failed.` : ""}`,
+      message: `Passing score saved.${changed ? ` ${changed} result${changed === 1 ? "" : "s"} changed between passed and failed.` : ""}${waitlistMessage(waitlisted)}`,
     };
   } catch (error) {
     console.error("Save passing score error:", error);

@@ -1,6 +1,7 @@
 import { connection } from "next/server";
 
 import { AnalyticsCard, AnalyticsPage, DonutChart, FilterBar, HorizontalBars, LineChart, ScoreHistogram, SelectFilter, VerticalBars } from "@/components/reports/analytics-ui";
+import { tableStyles } from "@/components/ui/table-styles";
 import { resolveCycle } from "@/features/admission/admission-stats";
 import { EXAM_RESULT_PASSED } from "@/features/admission/stages";
 import { requirePermission } from "@/lib/authorization";
@@ -143,7 +144,7 @@ export default async function ReportsPage({ searchParams }: PageProps) {
         <AnalyticsCard><DonutChart passed={passed} failed={examined-passed} title="Exam result" /></AnalyticsCard>
         <AnalyticsCard><VerticalBars title="Public vs Private applicants and exam results" items={schoolBars} /></AnalyticsCard>
         <AnalyticsCard title="Numbers">
-          <table className="w-full border-collapse text-sm"><thead><tr className="bg-[#cfd4f3]"><th className="border border-neutral-600 px-3 py-2 text-left">Metric</th><th className="border border-neutral-600 px-3 py-2">Public</th><th className="border border-neutral-600 px-3 py-2">Private</th></tr></thead><tbody>{[["Applicants",publicApplications,privateApplications],["Took exam",publicExamined,privateExamined],["Passed",publicPassed,privatePassed],["Passing rate",`${pct(publicPassed,publicExamined)}%`,`${pct(privatePassed,privateExamined)}%`],["Average score",publicAverage.toFixed(1),privateAverage.toFixed(1)]].map((row)=><tr key={String(row[0])}><td className="border border-neutral-400 px-3 py-2">{row[0]}</td><td className="border border-neutral-400 px-3 py-2 text-center">{row[1]}</td><td className="border border-neutral-400 px-3 py-2 text-center">{row[2]}</td></tr>)}</tbody></table>
+          <div className={tableStyles.wrap}><table className="w-full border-collapse text-sm"><thead><tr className={tableStyles.headRow}><th className={tableStyles.th}>Metric</th><th className={`${tableStyles.th} text-right`}>Public</th><th className={`${tableStyles.th} text-right`}>Private</th></tr></thead><tbody className={tableStyles.body}>{[["Applicants",publicApplications,privateApplications],["Took exam",publicExamined,privateExamined],["Passed",publicPassed,privatePassed],["Passing rate",`${pct(publicPassed,publicExamined)}%`,`${pct(privatePassed,privateExamined)}%`],["Average score",publicAverage.toFixed(1),privateAverage.toFixed(1)]].map((row)=><tr key={String(row[0])} className={tableStyles.row}><td className={`${tableStyles.td} font-medium text-neutral-800`}>{row[0]}</td><td className={`${tableStyles.td} text-right tabular-nums`}>{row[1]}</td><td className={`${tableStyles.td} text-right tabular-nums`}>{row[2]}</td></tr>)}</tbody></table></div>
         </AnalyticsCard>
         {/* score distribution is shown below in the Figma layout */}
       </div>

@@ -427,7 +427,8 @@ export const ModelName = {
   tbl_exam_session: 'tbl_exam_session',
   tbl_exam_session_applicant: 'tbl_exam_session_applicant',
   tbl_exam_subject_score: 'tbl_exam_subject_score',
-  tbl_recommendation_setting: 'tbl_recommendation_setting'
+  tbl_recommendation_setting: 'tbl_recommendation_setting',
+  tbl_audit_log: 'tbl_audit_log'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -443,7 +444,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "tbl_admission_cycle" | "tbl_admission_stage" | "tbl_applicant" | "tbl_application" | "tbl_application_stage_log" | "tbl_barangay" | "tbl_branch" | "tbl_competency" | "tbl_course_recommendation" | "tbl_district" | "tbl_exam" | "tbl_exam_question" | "tbl_exam_result" | "tbl_import_batch" | "tbl_passing_score_setting" | "tbl_permission" | "tbl_program" | "tbl_program_competency" | "tbl_question_response" | "tbl_quota" | "tbl_role" | "tbl_role_permission" | "tbl_school" | "tbl_user_account" | "tbl_password_reset_token" | "tbl_application_document" | "tbl_exam_session" | "tbl_exam_session_applicant" | "tbl_exam_subject_score" | "tbl_recommendation_setting"
+    modelProps: "user" | "tbl_admission_cycle" | "tbl_admission_stage" | "tbl_applicant" | "tbl_application" | "tbl_application_stage_log" | "tbl_barangay" | "tbl_branch" | "tbl_competency" | "tbl_course_recommendation" | "tbl_district" | "tbl_exam" | "tbl_exam_question" | "tbl_exam_result" | "tbl_import_batch" | "tbl_passing_score_setting" | "tbl_permission" | "tbl_program" | "tbl_program_competency" | "tbl_question_response" | "tbl_quota" | "tbl_role" | "tbl_role_permission" | "tbl_school" | "tbl_user_account" | "tbl_password_reset_token" | "tbl_application_document" | "tbl_exam_session" | "tbl_exam_session_applicant" | "tbl_exam_subject_score" | "tbl_recommendation_setting" | "tbl_audit_log"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2741,6 +2742,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    tbl_audit_log: {
+      payload: Prisma.$tbl_audit_logPayload<ExtArgs>
+      fields: Prisma.tbl_audit_logFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.tbl_audit_logFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_audit_logPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.tbl_audit_logFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_audit_logPayload>
+        }
+        findFirst: {
+          args: Prisma.tbl_audit_logFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_audit_logPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.tbl_audit_logFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_audit_logPayload>
+        }
+        findMany: {
+          args: Prisma.tbl_audit_logFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_audit_logPayload>[]
+        }
+        create: {
+          args: Prisma.tbl_audit_logCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_audit_logPayload>
+        }
+        createMany: {
+          args: Prisma.tbl_audit_logCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.tbl_audit_logCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_audit_logPayload>[]
+        }
+        delete: {
+          args: Prisma.tbl_audit_logDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_audit_logPayload>
+        }
+        update: {
+          args: Prisma.tbl_audit_logUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_audit_logPayload>
+        }
+        deleteMany: {
+          args: Prisma.tbl_audit_logDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.tbl_audit_logUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.tbl_audit_logUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_audit_logPayload>[]
+        }
+        upsert: {
+          args: Prisma.tbl_audit_logUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_audit_logPayload>
+        }
+        aggregate: {
+          args: Prisma.Tbl_audit_logAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTbl_audit_log>
+        }
+        groupBy: {
+          args: Prisma.tbl_audit_logGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tbl_audit_logGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.tbl_audit_logCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tbl_audit_logCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -3145,12 +3220,43 @@ export const Tbl_recommendation_settingScalarFieldEnum = {
 export type Tbl_recommendation_settingScalarFieldEnum = (typeof Tbl_recommendation_settingScalarFieldEnum)[keyof typeof Tbl_recommendation_settingScalarFieldEnum]
 
 
+export const Tbl_audit_logScalarFieldEnum = {
+  audit_id: 'audit_id',
+  occurred_at: 'occurred_at',
+  action: 'action',
+  table_name: 'table_name',
+  record_id: 'record_id',
+  record_label: 'record_label',
+  refs: 'refs',
+  actor_id: 'actor_id',
+  actor_name: 'actor_name',
+  actor_email: 'actor_email',
+  actor_role: 'actor_role',
+  user_agent: 'user_agent',
+  transaction_id: 'transaction_id',
+  old_data: 'old_data',
+  new_data: 'new_data',
+  changed_fields: 'changed_fields',
+  description: 'description'
+} as const
+
+export type Tbl_audit_logScalarFieldEnum = (typeof Tbl_audit_logScalarFieldEnum)[keyof typeof Tbl_audit_logScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {
@@ -3167,6 +3273,15 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 
@@ -3263,6 +3378,34 @@ export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
  * Reference to a field of type 'Bytes[]'
  */
 export type ListBytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes[]'>
+    
+
+
+/**
+ * Reference to a field of type 'BigInt'
+ */
+export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt'>
+    
+
+
+/**
+ * Reference to a field of type 'BigInt[]'
+ */
+export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -3461,6 +3604,7 @@ export type GlobalOmitConfig = {
   tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantOmit
   tbl_exam_subject_score?: Prisma.tbl_exam_subject_scoreOmit
   tbl_recommendation_setting?: Prisma.tbl_recommendation_settingOmit
+  tbl_audit_log?: Prisma.tbl_audit_logOmit
 }
 
 /* Types for Logging */

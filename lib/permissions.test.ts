@@ -21,6 +21,7 @@ const modules: ModuleName[] = [
   "registrar",
   "guidance",
   "reports",
+  "audit",
 ];
 
 async function testPermissions() {

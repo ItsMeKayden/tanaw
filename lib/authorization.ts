@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { redirect } from "next/navigation";
+import { forbidden, redirect } from "next/navigation";
 import {
   hasAnyPermission,
   hasPermission,
@@ -28,7 +28,7 @@ export async function requireRole(allowedRoles: UserRole[]) {
   const user = await requireUser();
 
   if (!allowedRoles.includes(user.role)) {
-    redirect("/dashboard");
+    forbidden();
   }
 
   return user;
@@ -43,7 +43,7 @@ export async function requirePermission(
   const allowed = await hasPermission(user.role, module, permission);
 
   if (!allowed) {
-    redirect("/dashboard");
+    forbidden();
   }
 
   return user;
@@ -58,7 +58,7 @@ export async function requireAnyPermission(
   const allowed = await hasAnyPermission(user.role, modules, permission);
 
   if (!allowed) {
-    redirect("/dashboard");
+    forbidden();
   }
 
   return user;

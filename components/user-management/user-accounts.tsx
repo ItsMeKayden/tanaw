@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { Modal } from "@/components/ui/modal";
 import { Pagination } from "@/components/ui/pagination";
+import { tableStyles } from "@/components/ui/table-styles";
 import { UserFormModal, type EditableUser, type UserFormRequest } from "@/components/user-management/user-form-modal";
 import { changeUserRole } from "@/features/user-management/actions/update-user";
 import { ROLE_NAMES, type RoleName } from "@/lib/modules";
@@ -14,7 +15,7 @@ export type AccountRow = EditableUser & { created_at: string | null };
 
 const PAGE_SIZE = 10;
 
-const cell = "border border-neutral-500 px-3 py-2";
+const cell = tableStyles.td;
 const fieldClass =
   "h-9 w-full rounded-md border border-neutral-500 bg-white px-3 text-sm outline-none focus:border-[#191e73] focus:ring-2 focus:ring-[#191e73]/20";
 
@@ -154,26 +155,26 @@ export function UserAccounts({
       </div>
 
 
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[720px] border-collapse bg-white/90 text-sm">
+      <div className={tableStyles.wrap}>
+        <table className="w-full min-w-[720px] border-collapse text-sm">
           <thead>
-            <tr className="bg-neutral-100 text-left">
+            <tr className={tableStyles.headRow}>
               {["Account", "Role", "Status", "Created", ...(canWrite ? ["Actions"] : [])].map((h) => (
-                <th key={h} className={`${cell} font-medium`}>
+                <th key={h} className={tableStyles.th}>
                   {h}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody>
+          <tbody className={tableStyles.body}>
             {visible.length > 0 ? (
               visible.map((user) => (
-                <tr key={user.user_id} className="hover:bg-[#e3e4f8]/60">
+                <tr key={user.user_id} className={tableStyles.row}>
                   <td className={cell}>
                     <span className="flex items-center gap-3">
                       <span
                         aria-hidden="true"
-                        className="flex size-8 shrink-0 items-center justify-center rounded-full border border-neutral-500 bg-[#e3e4f8] text-sm font-semibold"
+                        className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#e3e4f8] text-sm font-semibold text-[#191e73]"
                       >
                         {user.full_name.charAt(0).toUpperCase()}
                       </span>
@@ -214,7 +215,7 @@ export function UserAccounts({
                             onClick={() => {
                               setRequest({ mode: "edit", user });
                             }}
-                            className="rounded-md border border-neutral-500 bg-white px-2 py-0.5 text-xs hover:bg-neutral-100"
+                            className={tableStyles.action}
                           >
                             Edit
                           </button>
@@ -224,7 +225,7 @@ export function UserAccounts({
                               onClick={() => {
                                 setRoleChange({ user, role: user.role ?? "ADMISSION", error: null });
                               }}
-                              className="rounded-md border border-[#191e73]/60 bg-white px-2 py-0.5 text-xs text-[#191e73] hover:bg-[#e3e4f8]"
+                              className="rounded-md border border-[#191e73]/60 bg-white inline-flex h-7 items-center px-2.5 text-xs font-medium text-[#191e73] hover:bg-[#e3e4f8]"
                             >
                               Change role
                             </button>
@@ -239,7 +240,7 @@ export function UserAccounts({
               ))
             ) : (
               <tr>
-                <td colSpan={canWrite ? 5 : 4} className={`${cell} py-10 text-center text-neutral-600`}>
+                <td colSpan={canWrite ? 5 : 4} className={tableStyles.empty}>
                   {accounts.length === 0 ? "No registered users found." : "No accounts match your search or filters."}
                 </td>
               </tr>
