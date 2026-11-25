@@ -154,11 +154,12 @@ export default function RecommendationTable({
       <div className={tableStyles.wrap}>
         <table className="w-full min-w-[760px] table-fixed border-collapse text-sm">
           <colgroup>
-            <col className="w-[30%]" />
-            <col className="w-[11%]" />
-            <col className="w-[20%]" />
-            <col className="w-[20%]" />
+            <col className="w-[26%]" />
+            <col className="w-[10%]" />
             <col className="w-[19%]" />
+            <col className="w-[19%]" />
+            <col className="w-[16%]" />
+            <col className="w-[10%]" />
           </colgroup>
           <thead>
             <tr className={tableStyles.headRow}>
@@ -167,6 +168,7 @@ export default function RecommendationTable({
               <th className={headCell}>Preferred course</th>
               <th className={headCell}>Recommended course</th>
               <th className={headCell}>Result</th>
+              <th className={`${headCell} text-right`}>Action</th>
             </tr>
           </thead>
           <tbody className={tableStyles.body}>
@@ -209,11 +211,20 @@ export default function RecommendationTable({
                   <td className={cell}>
                     <ResultBadge status={row.status} />
                   </td>
+                  <td className={`${cell} text-right`}>
+                    <Link
+                      href={`/recommendation/${row.application_id}`}
+                      aria-label={`View recommendation for ${row.full_name}`}
+                      className="inline-flex h-7 items-center rounded-md bg-[#191e73] px-3 text-xs font-semibold whitespace-nowrap text-white transition-colors hover:bg-[#232a99] focus-visible:ring-2 focus-visible:ring-[#191e73]/30 focus-visible:outline-none"
+                    >
+                      View
+                    </Link>
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={5} className={tableStyles.empty}>
+                <td colSpan={6} className={tableStyles.empty}>
                   {rows.length === 0
                     ? "No applicants have taken the exam in this school year."
                     : "No applicants match this filter."}

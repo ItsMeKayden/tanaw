@@ -3357,7 +3357,9 @@ export const Tbl_exam_sessionScalarFieldEnum = {
   room: 'room',
   capacity: 'capacity',
   created_by: 'created_by',
-  created_at: 'created_at'
+  created_at: 'created_at',
+  archived_at: 'archived_at',
+  archived_by: 'archived_by'
 } as const
 
 export type Tbl_exam_sessionScalarFieldEnum = (typeof Tbl_exam_sessionScalarFieldEnum)[keyof typeof Tbl_exam_sessionScalarFieldEnum]

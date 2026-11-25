@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import { getQualifiedApplicants } from "@/features/admission/additional-applicants";
+import { getWaitlistedApplicants } from "@/features/admission/additional-applicants";
 import { loadSlotTracker } from "@/features/admission/slots";
 import { ADMISSION_STAGES } from "@/features/admission/stages";
 import { getAccountId, requirePermission } from "@/lib/authorization";
@@ -13,7 +13,7 @@ type ActionResult = { success: true; message: string } | { error: string };
 const MAX_BATCH = 1000;
 
 /**
- * Admits the selected Qualified applicants (waiting list) as an additional
+ * Admits the selected Waitlisted applicants as an additional
  * batch: each moves to Passed if their course still has a free slot. The
  * whole batch is rejected if any of them no longer fits, so nobody is
  * admitted past the quota.
@@ -35,7 +35,7 @@ export async function admitAdditionalBatch(cycleIdInput: number, applicationIds:
     const admitted = await prisma.$transaction(
       async (tx) => {
         const [applicants, tracker, passed] = await Promise.all([
-          getQualifiedApplicants(tx, cycleId, ids),
+          getWaitlistedApplicants(tx, cycleId, ids),
           loadSlotTracker(tx, cycleId),
           tx.tbl_admission_stage.findFirst({
             where: { stage_name: ADMISSION_STAGES.PASSED },

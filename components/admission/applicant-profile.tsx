@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { tableStyles } from "@/components/ui/table-styles";
 import { EditApplicantButton } from "@/components/admission/applicant-form-modal";
+import { DocumentPreview } from "@/components/admission/document-preview";
 import { PrintButton, ProfileTabs } from "@/components/admission/profile-tabs";
 import UpdateApplicationStageForm from "@/components/admission/update-application-stage-form";
 import type { ApplicantProfileData } from "@/features/admission/applicant-profile-query";
@@ -374,17 +375,13 @@ export default function ApplicantProfile({
                   <td className={tableStyles.td}>{slot.label}</td>
                   <td className={tableStyles.td}>
                     {document ? (
-                      <a
-                        href={`/api/documents/${document.document_id}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-[#191e73] hover:underline"
-                      >
-                        {document.file_name}
-                        <span className="ml-1 text-xs text-neutral-500">
-                          ({formatFileSize(document.file_size)})
-                        </span>
-                      </a>
+                      <DocumentPreview
+                        src={`/api/documents/${document.document_id}`}
+                        fileName={document.file_name}
+                        mimeType={document.mime_type}
+                        title={slot.label}
+                        meta={formatFileSize(document.file_size)}
+                      />
                     ) : (
                       <span className="text-amber-700">Missing</span>
                     )}

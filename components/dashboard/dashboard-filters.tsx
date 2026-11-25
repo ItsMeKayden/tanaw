@@ -34,7 +34,7 @@ export function DashboardFilters({
     <form
       action={pathname}
       method="get"
-      className="mb-5 flex flex-wrap items-center gap-2"
+      className="mt-5 mb-5 flex flex-wrap items-center gap-2"
     >
       <label className="inline-flex h-9 items-center gap-2 rounded-md border border-neutral-700 bg-white px-3 text-sm">
         <span>School Year</span>

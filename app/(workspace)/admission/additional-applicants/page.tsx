@@ -42,7 +42,7 @@ async function AdditionalApplicantsContent({ searchParams }: PageProps) {
         <h1 className="text-2xl font-bold tracking-tight">Additional Applicants</h1>
         <p className="text-sm text-neutral-700">
           Applicants who passed the exam after their course&apos;s quota was full wait here as{" "}
-          <span className="font-medium">Qualified</span>. When slots open up — for example when an admitted applicant
+          <span className="font-medium">Waitlisted</span>. When slots open up — for example when an admitted applicant
           is marked Not Enrolled — admit the next ones as an additional batch.
         </p>
       </div>

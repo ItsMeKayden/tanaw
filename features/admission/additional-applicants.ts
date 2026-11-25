@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
 
 type Db = Prisma.TransactionClient | typeof prisma;
 
-export type QualifiedApplicant = {
+export type WaitlistedApplicant = {
   application_id: number;
   application_no: string;
   name: string;
@@ -19,19 +19,19 @@ export type QualifiedApplicant = {
   campus: string | null;
   percentage: number | null;
   raw_score: number | null;
-  qualified_at: string | null;
+  waitlisted_at: string | null;
 };
 
 /**
- * Qualified (waiting list) applications of a cycle, best first: highest exam
+ * Waitlisted applications of a cycle, best first: highest exam
  * percentage, then raw score, then whoever applied earlier.
  */
-export async function getQualifiedApplicants(db: Db, cycleId: number, ids?: number[]): Promise<QualifiedApplicant[]> {
+export async function getWaitlistedApplicants(db: Db, cycleId: number, ids?: number[]): Promise<WaitlistedApplicant[]> {
   const applications = await db.tbl_application.findMany({
     where: {
       ...ACTIVE_APPLICATION,
       cycle_id: cycleId,
-      tbl_admission_stage: { stage_name: ADMISSION_STAGES.QUALIFIED },
+      tbl_admission_stage: { stage_name: ADMISSION_STAGES.WAITLISTED },
       ...(ids ? { application_id: { in: ids } } : {}),
     },
     select: {
@@ -49,7 +49,7 @@ export async function getQualifiedApplicants(db: Db, cycleId: number, ids?: numb
         take: 1,
       },
       tbl_application_stage_log: {
-        where: { tbl_admission_stage: { stage_name: ADMISSION_STAGES.QUALIFIED } },
+        where: { tbl_admission_stage: { stage_name: ADMISSION_STAGES.WAITLISTED } },
         select: { changed_at: true },
         orderBy: { changed_at: "desc" },
         take: 1,
@@ -73,7 +73,7 @@ export async function getQualifiedApplicants(db: Db, cycleId: number, ids?: numb
           campus: application.tbl_branch?.branch_name ?? null,
           percentage: result?.percentage === null || result?.percentage === undefined ? null : Number(result.percentage),
           raw_score: result?.raw_score ?? null,
-          qualified_at: application.tbl_application_stage_log[0]?.changed_at?.toISOString() ?? null,
+          waitlisted_at: application.tbl_application_stage_log[0]?.changed_at?.toISOString() ?? null,
         },
       };
     })
@@ -89,7 +89,7 @@ export async function getQualifiedApplicants(db: Db, cycleId: number, ids?: numb
 /** Everything the page needs for one cycle. */
 export async function getAdditionalApplicantsData(cycleId: number) {
   const [applicants, quotas, programs] = await Promise.all([
-    getQualifiedApplicants(prisma, cycleId),
+    getWaitlistedApplicants(prisma, cycleId),
     getQuotaSlots(prisma, cycleId),
     prisma.tbl_program.findMany({ select: { program_id: true, program_code: true } }),
   ]);

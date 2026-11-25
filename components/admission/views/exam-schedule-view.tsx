@@ -16,11 +16,23 @@ import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
 export type ExamScheduleSearchParams = Promise<{ cycle?: string | string[]; session?: string | string[] }>;
 
 const dateFormat = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+const weekdayFormat = new Intl.DateTimeFormat("en-US", { weekday: "long", timeZone: "UTC" });
 
 function formatTime(value: string | null) {
   if (!value) return null;
   const [h, m] = value.split(":").map(Number);
   return `${((h + 11) % 12) + 1}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
+}
+
+/** Minutes from start to end ("HH:MM"), or null when either is missing. */
+function durationMinutes(start: string | null, end: string | null) {
+  if (!start || !end) return null;
+  const toMin = (t: string) => {
+    const [h, m] = t.split(":").map(Number);
+    return h * 60 + m;
+  };
+  const minutes = toMin(end) - toMin(start);
+  return minutes > 0 ? minutes : null;
 }
 
 /** Exam Schedule shared by the Admission and Registrar modules (write access in that module manages sessions). */
@@ -58,6 +70,7 @@ export async function ExamScheduleView({
         venue: true,
         room: true,
         capacity: true,
+        archived_at: true,
         _count: { select: { tbl_exam_session_applicant: { where: { tbl_application: ACTIVE_APPLICATION } } } },
       },
     }),
@@ -82,8 +95,10 @@ export async function ExamScheduleView({
   const rows: SessionRow[] = sessions.map((s) => ({
     session_id: s.session_id,
     date: dateFormat.format(s.session_date),
+    weekday: weekdayFormat.format(s.session_date),
     time: formatTime(s.start_time),
     end_time: formatTime(s.end_time),
+    duration_minutes: durationMinutes(s.start_time, s.end_time),
     venue: s.venue,
     room: s.room,
     capacity: s.capacity,
@@ -91,10 +106,12 @@ export async function ExamScheduleView({
     present: countOf(s.session_id, ATTENDANCE.PRESENT),
     absent: countOf(s.session_id, ATTENDANCE.ABSENT),
     finished: isSessionFinished(s.session_date, s.end_time),
+    archived: s.archived_at !== null,
   }));
 
   const requested = Number(Array.isArray(params.session) ? params.session[0] : params.session);
-  const selected = rows.find((r) => r.session_id === requested) ?? rows[0] ?? null;
+  // Default to the first active session; an archived one only when asked for.
+  const selected = rows.find((r) => r.session_id === requested) ?? rows.find((r) => !r.archived) ?? null;
 
   const slots: SlotRow[] = selected
     ? (
@@ -106,6 +123,7 @@ export async function ExamScheduleView({
             tbl_application: {
               select: {
                 application_no: true,
+                _count: { select: { tbl_exam_result: true } },
                 tbl_applicant: { select: { first_name: true, middle_name: true, last_name: true, suffix: true } },
               },
             },
@@ -123,6 +141,7 @@ export async function ExamScheduleView({
           name: formatFullName(slot.tbl_application.tbl_applicant),
           attendance:
             slot.attendance === ATTENDANCE.PRESENT || slot.attendance === ATTENDANCE.ABSENT ? slot.attendance : null,
+          scored: slot.tbl_application._count.tbl_exam_result > 0,
         }))
     : [];
 

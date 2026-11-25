@@ -8,7 +8,8 @@ import { EXAM_SCHEDULE_MODULES, EXAM_SCHEDULE_PATHS } from "@/features/admission
 import { prisma } from "@/lib/prisma";
 import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
 import { ensureCycleExam, isSessionFinished } from "@/features/admission/exam";
-import { ATTENDANCE } from "@/features/admission/exam-scoring";
+import { ATTENDANCE, manilaTodayIso } from "@/features/admission/exam-scoring";
+import { describeScheduleEmails, sendExamScheduleEmails } from "@/features/admission/exam-schedule-email";
 import { examSessionSchema, type ExamSessionValues } from "@/features/admission/schemas";
 import { ADMISSION_STAGES } from "@/features/admission/stages";
 
@@ -48,6 +49,8 @@ export async function createExamSession(cycleIdInput: number, input: ExamSession
   const parsed = examSessionSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const data = parsed.data;
+  // "YYYY-MM-DD" strings compare correctly as text.
+  if (data.session_date < manilaTodayIso()) return { error: "The exam date can't be in the past." };
 
   try {
     const accountId = getAccountId(user);
@@ -75,25 +78,102 @@ export async function createExamSession(cycleIdInput: number, input: ExamSession
   }
 }
 
-export async function deleteExamSession(sessionIdInput: number): Promise<ActionResult> {
+const ARCHIVED_ERROR = "This session is archived. Restore it first.";
+
+/**
+ * Archives a session instead of deleting it; it moves to the Archived tab and
+ * can be restored. Nothing is deleted from a finished session (its seats and
+ * attendance are history). For a session that hasn't happened yet, applicants
+ * without an exam score get their seat back, so they return to the waiting
+ * list and can be scheduled in another session.
+ */
+export async function archiveExamSession(sessionIdInput: number): Promise<ActionResult> {
+  const user = await requireAnyPermission(EXAM_SCHEDULE_MODULES, "write");
+
+  const sessionId = validId(sessionIdInput);
+  if (!sessionId) return { error: "Invalid exam session." };
+
+  try {
+    const accountId = getAccountId(user);
+    const released = await prisma.$transaction(async (tx) => {
+      const session = await tx.tbl_exam_session.findUnique({
+        where: { session_id: sessionId },
+        select: { session_date: true, end_time: true, archived_at: true },
+      });
+      if (!session) throw new Error("Exam session not found.");
+      if (session.archived_at) throw new Error("This session is already archived.");
+
+      let count = 0;
+      if (!isSessionFinished(session.session_date, session.end_time)) {
+        const unscored = await tx.tbl_exam_session_applicant.findMany({
+          where: { session_id: sessionId, tbl_application: { tbl_exam_result: { none: {} } } },
+          select: { application_id: true, tbl_application: { select: { current_stage_id: true } } },
+        });
+        const { forExamination, examCompleted } = await stageIds(tx);
+        await tx.tbl_exam_session_applicant.deleteMany({
+          where: { session_id: sessionId, application_id: { in: unscored.map((s) => s.application_id) } },
+        });
+        // Marked present but not scored yet: back to waiting for the exam.
+        const revert = unscored
+          .filter((s) => forExamination && s.tbl_application.current_stage_id === examCompleted)
+          .map((s) => s.application_id);
+        if (forExamination && revert.length > 0) {
+          await tx.tbl_application.updateMany({
+            where: { application_id: { in: revert } },
+            data: { current_stage_id: forExamination },
+          });
+          await tx.tbl_application_stage_log.createMany({
+            data: revert.map((application_id) => ({
+              application_id,
+              stage_id: forExamination,
+              changed_by: accountId,
+              remarks: "Exam session archived; waiting to be scheduled again.",
+            })),
+          });
+        }
+        count = unscored.length;
+      }
+
+      await tx.tbl_exam_session.update({
+        where: { session_id: sessionId },
+        data: { archived_at: new Date(), archived_by: accountId },
+      });
+      return count;
+    });
+
+    revalidate();
+    const who = released === 1 ? "1 applicant was" : `${released} applicants were`;
+    const note = released ? ` ${who} returned to the waiting list.` : "";
+    return { success: true, message: `Exam session archived.${note}` };
+  } catch (error) {
+    return failure("Archive exam session", error);
+  }
+}
+
+/** Brings an archived session back to the schedule (released applicants are not re-seated). */
+export async function restoreExamSession(sessionIdInput: number): Promise<ActionResult> {
   await requireAnyPermission(EXAM_SCHEDULE_MODULES, "write");
 
   const sessionId = validId(sessionIdInput);
   if (!sessionId) return { error: "Invalid exam session." };
 
   try {
-    const deleted = await prisma.tbl_exam_session.deleteMany({ where: { session_id: sessionId } });
-    if (deleted.count === 0) return { error: "Exam session not found." };
+    const restored = await prisma.tbl_exam_session.updateMany({
+      where: { session_id: sessionId, archived_at: { not: null } },
+      data: { archived_at: null, archived_by: null },
+    });
+    if (restored.count === 0) return { error: "Archived session not found." };
     revalidate();
-    return { success: true, message: "Exam session deleted." };
+    return { success: true, message: "Exam session restored.", sessionId };
   } catch (error) {
-    return failure("Delete exam session", error);
+    return failure("Restore exam session", error);
   }
 }
 
 /**
  * Fills unscheduled applicants of the session's cycle who are in the
- * "For Examination" stage, earliest application first, up to capacity.
+ * "For Examination" stage, earliest application first, up to capacity, and
+ * emails each of them the exam date, time and venue.
  */
 export async function fillSessionSlots(sessionIdInput: number): Promise<ActionResult> {
   await requireAnyPermission(EXAM_SCHEDULE_MODULES, "write");
@@ -107,17 +187,24 @@ export async function fillSessionSlots(sessionIdInput: number): Promise<ActionRe
         where: { session_id: sessionId },
         select: {
           capacity: true,
+          session_date: true,
+          end_time: true,
+          archived_at: true,
           tbl_exam: { select: { cycle_id: true } },
           _count: { select: { tbl_exam_session_applicant: { where: { tbl_application: ACTIVE_APPLICATION } } } },
         },
       });
       if (!session) throw new Error("Exam session not found.");
+      if (session.archived_at) throw new Error(ARCHIVED_ERROR);
+      if (isSessionFinished(session.session_date, session.end_time)) {
+        throw new Error("This session has ended; it is locked.");
+      }
 
       const open = session.capacity - session._count.tbl_exam_session_applicant;
       if (open <= 0) throw new Error("This session is already full.");
 
       const { forExamination } = await stageIds(tx);
-      if (!forExamination || !session.tbl_exam.cycle_id) return 0;
+      if (!forExamination || !session.tbl_exam.cycle_id) return [];
 
       const applicants = await tx.tbl_application.findMany({
         where: {
@@ -137,13 +224,17 @@ export async function fillSessionSlots(sessionIdInput: number): Promise<ActionRe
           skipDuplicates: true,
         });
       }
-      return applicants.length;
+      return applicants.map((a) => a.application_id);
     });
 
     revalidate();
-    return added === 0
-      ? { error: "No unscheduled applicants are waiting for the exam." }
-      : { success: true, message: `${added} applicant${added === 1 ? "" : "s"} added to the session.` };
+    if (added.length === 0) return { error: "No unscheduled applicants are waiting for the exam." };
+
+    // Seats are saved; email problems are reported, never undo them.
+    const emails = await sendExamScheduleEmails(sessionId, added).catch(() => null);
+    const note = emails ? describeScheduleEmails(emails) : "Schedule emails could not be sent.";
+    const message = `${added.length} applicant${added.length === 1 ? "" : "s"} added to the session.`;
+    return { success: true, message: note ? `${message} ${note}` : message };
   } catch (error) {
     return failure("Fill exam session", error);
   }
@@ -159,11 +250,17 @@ export async function removeFromSession(sessionIdInput: number, applicationIdInp
   try {
     const session = await prisma.tbl_exam_session.findUnique({
       where: { session_id: sessionId },
-      select: { session_date: true, end_time: true },
+      select: { session_date: true, end_time: true, archived_at: true },
     });
     if (!session) return { error: "Exam session not found." };
+    if (session.archived_at) return { error: ARCHIVED_ERROR };
     if (isSessionFinished(session.session_date, session.end_time)) {
       return { error: "This session has ended; it is locked." };
+    }
+
+    const scored = await prisma.tbl_exam_result.count({ where: { application_id: applicationId } });
+    if (scored > 0) {
+      return { error: "This applicant already has an exam score, so they can't be removed from the session." };
     }
 
     const deleted = await prisma.tbl_exam_session_applicant.deleteMany({
@@ -178,9 +275,36 @@ export async function removeFromSession(sessionIdInput: number, applicationIdInp
 }
 
 /**
+ * Scores require attendance, so a scored applicant can't be changed to absent
+ * (their result, stage and course recommendations would no longer match).
+ */
+function assertNoScoredMarkedAbsent(
+  entries: { application_id: number; present: boolean }[],
+  seats: {
+    application_id: number;
+    attendance: string | null;
+    tbl_application: { application_no: string; _count: { tbl_exam_result: number } };
+  }[],
+) {
+  const blocked = entries
+    .map((entry) => ({ entry, seat: seats.find((s) => s.application_id === entry.application_id)! }))
+    .filter(
+      ({ entry, seat }) =>
+        !entry.present && seat.attendance !== ATTENDANCE.ABSENT && seat.tbl_application._count.tbl_exam_result > 0,
+    )
+    .map(({ seat }) => seat.tbl_application.application_no);
+  if (blocked.length === 0) return;
+  const one = blocked.length === 1;
+  throw new Error(
+    `${blocked.join(", ")} already ${one ? "has an exam score" : "have exam scores"}, so ${one ? "it" : "they"} can't be marked absent.`,
+  );
+}
+
+/**
  * Saves attendance for a session. Present applicants still "For Examination"
  * move to "Exam Completed"; an applicant changed to absent moves back if
- * they have no exam result yet. Stage changes are logged.
+ * they have no exam result yet. An applicant with an exam result can't be
+ * changed to absent. Stage changes are logged.
  */
 export async function saveAttendance(
   sessionIdInput: number,
@@ -201,9 +325,10 @@ export async function saveAttendance(
 
     const session = await prisma.tbl_exam_session.findUnique({
       where: { session_id: sessionId },
-      select: { session_date: true, end_time: true },
+      select: { session_date: true, end_time: true, archived_at: true },
     });
     if (!session) return { error: "Exam session not found." };
+    if (session.archived_at) return { error: ARCHIVED_ERROR };
     if (isSessionFinished(session.session_date, session.end_time)) {
       return { error: "This session has ended; attendance is locked." };
     }
@@ -213,12 +338,15 @@ export async function saveAttendance(
         where: { session_id: sessionId, application_id: { in: entries.map((e) => e.application_id) } },
         select: {
           application_id: true,
+          attendance: true,
           tbl_application: {
-            select: { current_stage_id: true, _count: { select: { tbl_exam_result: true } } },
+            select: { application_no: true, current_stage_id: true, _count: { select: { tbl_exam_result: true } } },
           },
         },
       });
       if (seats.length !== entries.length) throw new Error("The applicant list changed. Reload the page.");
+
+      assertNoScoredMarkedAbsent(entries, seats);
 
       const { forExamination, examCompleted } = await stageIds(tx);
       let stageChanges = 0;

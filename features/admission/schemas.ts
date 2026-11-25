@@ -22,27 +22,35 @@ export const quotaPlanSchema = z.object({
 });
 export type QuotaPlanValues = z.input<typeof quotaPlanSchema>;
 
-const timeField = z
-  .string()
-  .trim()
-  .refine((v) => v === "" || /^([01]\d|2[0-3]):[0-5]\d$/.test(v), "Use a valid time, e.g. 08:00.");
-
-/** "New session" form on the Exam Schedule page. */
-export const examSessionSchema = z.object({
-  session_date: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Choose the exam date.")
-    .refine((v) => !Number.isNaN(Date.parse(`${v}T00:00:00Z`)), "Choose a valid date."),
-  start_time: timeField,
-  end_time: timeField,
-  venue: z.string().trim().min(1, "Enter the venue.").max(150, "Venue must not exceed 150 characters."),
-  room: z.string().trim().max(50, "Room must not exceed 50 characters."),
-  capacity: z
+/** Required "HH:MM" time; an empty value fails the same check, so there's one message. */
+const requiredTime = (label: string) =>
+  z
     .string()
     .trim()
-    .regex(/^\d+$/, "Capacity must be a whole number.")
-    .refine((v) => Number(v) >= 1 && Number(v) <= 1000, "Capacity must be between 1 and 1,000."),
-});
+    .regex(/^([01]\d|2[0-3]):[0-5]\d$/, `Enter the ${label}, e.g. 08:00.`);
+
+/** "New session" form on the Exam Schedule page. Start and end time are required. */
+export const examSessionSchema = z
+  .object({
+    session_date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "Choose the exam date.")
+      .refine((v) => !Number.isNaN(Date.parse(`${v}T00:00:00Z`)), "Choose a valid date."),
+    start_time: requiredTime("start time"),
+    end_time: requiredTime("end time"),
+    venue: z.string().trim().min(1, "Enter the venue.").max(150, "Venue must not exceed 150 characters."),
+    room: z.string().trim().max(50, "Room must not exceed 50 characters."),
+    capacity: z
+      .string()
+      .trim()
+      .regex(/^\d+$/, "Capacity must be a whole number.")
+      .refine((v) => Number(v) >= 1 && Number(v) <= 1000, "Capacity must be between 1 and 1,000."),
+  })
+  // "HH:MM" strings compare correctly as text.
+  .refine((v) => !v.start_time || !v.end_time || v.end_time > v.start_time, {
+    message: "End time must be after the start time.",
+    path: ["end_time"],
+  });
 export type ExamSessionValues = z.input<typeof examSessionSchema>;
 
 /** "Update admission stage" form on the applicant profile. */

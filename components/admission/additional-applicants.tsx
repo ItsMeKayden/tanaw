@@ -8,7 +8,7 @@ import { StatCard } from "@/components/ui/stat-card";
 import { tableStyles } from "@/components/ui/table-styles";
 import { toast } from "@/components/ui/toaster";
 import { admitAdditionalBatch } from "@/features/admission/actions/additional-applicants";
-import type { QualifiedApplicant } from "@/features/admission/additional-applicants";
+import type { WaitlistedApplicant } from "@/features/admission/additional-applicants";
 import { createSlotTracker, totalOpenSlots, type QuotaSlot } from "@/features/admission/slot-math";
 
 const formatCount = (value: number) => (value === Infinity ? "No limit" : value.toLocaleString("en-US"));
@@ -25,7 +25,7 @@ export function AdditionalApplicants({
 }: Readonly<{
   cycleId: number;
   /** Ranked best first. */
-  applicants: QualifiedApplicant[];
+  applicants: WaitlistedApplicant[];
   quotas: QuotaSlot[];
   courseCodes: Record<number, string>;
   canWrite: boolean;
@@ -43,7 +43,7 @@ export function AdditionalApplicants({
     const tracker = createSlotTracker(quotas);
     for (const applicant of applicants) if (selected.has(applicant.application_id)) tracker.take(applicant);
     const free = new Map(applicants.map((a) => [a.application_id, tracker.available(a)]));
-    return { freeFor: (a: QualifiedApplicant) => free.get(a.application_id) ?? 0, selectable: tracker };
+    return { freeFor: (a: WaitlistedApplicant) => free.get(a.application_id) ?? 0, selectable: tracker };
   }, [applicants, quotas, selected]);
 
   // The best-ranked applicants that fit the free slots (each course's quota included).
@@ -70,7 +70,7 @@ export function AdditionalApplicants({
     }, {}),
   ).sort((a, b) => b[1] - a[1]);
 
-  function toggle(applicant: QualifiedApplicant) {
+  function toggle(applicant: WaitlistedApplicant) {
     setSelected((current) => {
       const next = new Set(current);
       if (next.has(applicant.application_id)) next.delete(applicant.application_id);
@@ -111,7 +111,7 @@ export function AdditionalApplicants({
         />
         <StatCard
           icon={Users}
-          label="Qualified, not yet admitted"
+          label="Waitlisted, not yet admitted"
           value={applicants.length}
           note="Passed after their course was full"
           tone="warning"
@@ -129,7 +129,7 @@ export function AdditionalApplicants({
         <div className="flex flex-wrap items-center gap-2">
           {schoolYearSelect}
           <label className="relative">
-            <span className="sr-only">Search qualified applicants</span>
+            <span className="sr-only">Search waitlisted applicants</span>
             <Search
               className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-neutral-500"
               aria-hidden="true"
@@ -204,7 +204,7 @@ export function AdditionalApplicants({
                   <td colSpan={canWrite ? 6 : 5} className={tableStyles.empty}>
                     {applicants.length === 0
                       ? "Nobody is on the waiting list. Applicants who pass the exam after their course's quota is full appear here."
-                      : "No qualified applicants match your search."}
+                      : "No waitlisted applicants match your search."}
                   </td>
                 </tr>
               ) : (
@@ -294,7 +294,7 @@ export function AdditionalApplicants({
       >
         <div className="space-y-4 text-sm">
           <p className="text-neutral-700">
-            They move from <span className="font-medium">Qualified</span> to{" "}
+            They move from <span className="font-medium">Waitlisted</span> to{" "}
             <span className="font-medium">Passed</span>, take a slot in their course, and appear in Enrollment
             Verification.
           </p>

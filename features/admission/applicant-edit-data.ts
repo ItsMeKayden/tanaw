@@ -43,7 +43,7 @@ export async function getApplicantEditData(applicantId: number): Promise<Applica
           tbl_barangay: { select: { district_id: true } },
           // Metadata only — never load file_data here.
           tbl_application_document: {
-            select: { document_id: true, document_type: true, file_name: true, file_size: true },
+            select: { document_id: true, document_type: true, file_name: true, file_size: true, mime_type: true },
           },
         },
       },
@@ -61,6 +61,7 @@ export async function getApplicantEditData(applicantId: number): Promise<Applica
         document_id: document.document_id,
         file_name: document.file_name,
         file_size: document.file_size,
+        mime_type: document.mime_type,
       };
     }
   }

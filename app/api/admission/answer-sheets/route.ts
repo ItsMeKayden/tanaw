@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
       ...ACTIVE_APPLICATION,
       tbl_exam_session_applicant: {
         is: {
-          tbl_exam_session: { exam_id: exam.exam_id },
+          tbl_exam_session: { exam_id: exam.exam_id, archived_at: null },
           ...(sessionIds.length > 0 ? { session_id: { in: sessionIds } } : {}),
         },
       },

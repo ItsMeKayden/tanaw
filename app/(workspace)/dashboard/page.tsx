@@ -256,27 +256,6 @@ async function DashboardContent({ searchParams }: PageProps) {
 			<QcuWatermark />
 
 			<div className="relative z-10">
-				<div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-					<div>
-						<h1 className="text-2xl font-bold tracking-tight text-neutral-900">
-							Dashboard
-						</h1>
-						<p className="text-sm text-neutral-700">
-							Overview of institutional activity
-						</p>
-					</div>
-				</div>
-
-				<DashboardFilters
-					selectedSchoolYear={selectedSchoolYearValue}
-					selectedCampus={selectedCampusValue}
-					selectedCourse={selectedCourseValue}
-					schoolYears={schoolYears}
-					campuses={campusOptions}
-					courses={courseOptions}
-					exportHref={`/api/reports/overview?cycle=${selectedCycleId ?? ""}${selectedCampusId ? `&campus=${selectedCampusId}` : ""}${selectedCourseId ? `&course=${selectedCourseId}` : ""}`}
-				/>
-
 				<div className="grid gap-3 md:grid-cols-5">
 					{stats.map((stat) => (
 						<div
@@ -291,6 +270,16 @@ async function DashboardContent({ searchParams }: PageProps) {
 						</div>
 					))}
 				</div>
+
+				<DashboardFilters
+					selectedSchoolYear={selectedSchoolYearValue}
+					selectedCampus={selectedCampusValue}
+					selectedCourse={selectedCourseValue}
+					schoolYears={schoolYears}
+					campuses={campusOptions}
+					courses={courseOptions}
+					exportHref={`/api/reports/overview?cycle=${selectedCycleId ?? ""}${selectedCampusId ? `&campus=${selectedCampusId}` : ""}${selectedCourseId ? `&course=${selectedCourseId}` : ""}`}
+				/>
 
 				<div className="mt-5 grid gap-4 lg:grid-cols-[1.55fr_1fr]">
 					<div className="rounded-[18px] border-[2px] border-[#1f4a9f] bg-white/80 p-3 shadow-sm">
@@ -672,22 +661,6 @@ async function GuidanceDashboard({ searchParams }: PageProps) {
 		<div className="relative isolate min-h-full space-y-5 p-4 sm:p-6">
 			<QcuWatermark />
 			<div className="relative z-10">
-				<div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-					<div>
-						<h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-900">Dashboard</h1>
-					</div>
-				</div>
-
-				<DashboardFilters
-					selectedSchoolYear={selectedSchoolYearValue}
-					selectedCampus={selectedCampusValue}
-					selectedCourse={selectedCourseValue}
-					schoolYears={schoolYears}
-					campuses={campusOptions}
-					courses={courseOptions}
-					exportHref={`/api/reports/overview?cycle=${selectedCycleId ?? ""}${selectedCampusId ? `&campus=${selectedCampusId}` : ""}${selectedCourseId ? `&course=${selectedCourseId}` : ""}`}
-				/>
-
 				<div className="grid gap-3 md:grid-cols-4">
 					{[
 						{ label: "Generated", value: generated, tone: "bg-[#d9f3e6]" },
@@ -704,6 +677,16 @@ async function GuidanceDashboard({ searchParams }: PageProps) {
 						</div>
 					))}
 				</div>
+
+				<DashboardFilters
+					selectedSchoolYear={selectedSchoolYearValue}
+					selectedCampus={selectedCampusValue}
+					selectedCourse={selectedCourseValue}
+					schoolYears={schoolYears}
+					campuses={campusOptions}
+					courses={courseOptions}
+					exportHref={`/api/reports/overview?cycle=${selectedCycleId ?? ""}${selectedCampusId ? `&campus=${selectedCampusId}` : ""}${selectedCourseId ? `&course=${selectedCourseId}` : ""}`}
+				/>
 
 				<div className="mt-5 grid gap-4 lg:grid-cols-[1.45fr_1fr]">
 					<div className="rounded-xl border border-[#2f5a8d] bg-white/80 p-4 shadow-sm">
@@ -984,23 +967,6 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 		<div className="relative isolate min-h-full space-y-5 p-4 sm:p-6">
 			<QcuWatermark />
 			<div className="relative z-10">
-				<div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-					<div>
-						<h1 className="text-2xl font-bold tracking-tight text-neutral-900">Dashboard</h1>
-						<p className="text-sm text-neutral-700">Overview of institutional activity</p>
-					</div>
-				</div>
-
-				<DashboardFilters
-					selectedSchoolYear={selectedSchoolYearValue}
-					selectedCampus={selectedCampusValue}
-					selectedCourse={selectedCourseValue}
-					schoolYears={schoolYears}
-					campuses={campusOptions}
-					courses={courseOptions}
-					exportHref={`/api/reports/overview?cycle=${selectedCycleId ?? ""}${selectedCampusId ? `&campus=${selectedCampusId}` : ""}${selectedCourseId ? `&course=${selectedCourseId}` : ""}`}
-				/>
-
 				<div className="grid gap-3 md:grid-cols-4">
 					{[
 						{ label: "Awaiting exam schedule", value: awaitingExamSchedule, tone: "bg-[#d9f3e6]" },
@@ -1014,6 +980,16 @@ async function RegistrarDashboard({ searchParams }: PageProps) {
 						</div>
 					))}
 				</div>
+
+				<DashboardFilters
+					selectedSchoolYear={selectedSchoolYearValue}
+					selectedCampus={selectedCampusValue}
+					selectedCourse={selectedCourseValue}
+					schoolYears={schoolYears}
+					campuses={campusOptions}
+					courses={courseOptions}
+					exportHref={`/api/reports/overview?cycle=${selectedCycleId ?? ""}${selectedCampusId ? `&campus=${selectedCampusId}` : ""}${selectedCourseId ? `&course=${selectedCourseId}` : ""}`}
+				/>
 
 				<div className="mt-5 rounded-xl border border-[#2f5a8d] bg-white/80 p-4 shadow-sm">
 					<div className="mb-4 flex items-center justify-between gap-3">
@@ -1167,10 +1143,6 @@ async function AdminDashboard() {
 			<QcuWatermark />
 			<div className="relative z-10">
 				<div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-					<div>
-						<h1 className="text-2xl font-bold tracking-tight text-neutral-900">Dashboard</h1>
-						<p className="text-sm text-neutral-700">Account management and audit trail overview</p>
-					</div>
 					<div className="flex flex-wrap items-center gap-2">
 						<Link
 							href="/user-management/accounts"
