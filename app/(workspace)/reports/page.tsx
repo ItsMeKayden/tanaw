@@ -1,6 +1,6 @@
 import { connection } from "next/server";
 
-import { AnalyticsCard, AnalyticsPage, DonutChart, FilterBar, HorizontalBars, LineChart, ScoreHistogram, SelectFilter, VerticalBars } from "@/components/reports/analytics-ui";
+import { AnalyticsCard, AnalyticsPage, DonutChart, FilterBar, HorizontalBars, Insight, LineChart, ScoreHistogram, SelectFilter, VerticalBars } from "@/components/reports/analytics-ui";
 import { tableStyles } from "@/components/ui/table-styles";
 import { resolveCycle } from "@/features/admission/admission-stats";
 import { EXAM_RESULT_PASSED } from "@/features/admission/stages";
@@ -53,11 +53,15 @@ export default async function ReportsPage({ searchParams }: PageProps) {
   const scoreBins = Array.from({ length: 10 }, (_, index) => {
     const min = index * 10;
     const max = min + 9;
-    const inBin = scores.filter((score) => score >= min && (index === 9 ? score <= 100 : score <= max));
+    const inBin = results.filter((r) => { const score = num(r.percentage); return score >= min && (index === 9 ? score <= 100 : score <= max); });
+    // Split by each examinee's real pass/fail (result_status), which the app sets
+    // against the cycle's configured passing score — never a hardcoded cutoff.
+    // ScoreHistogram paints publicValue as "Passed" (dark) and privateValue as
+    // "Below passing score" (light).
     return {
       label: String(min),
-      publicValue: inBin.filter((score) => score < 50).length,
-      privateValue: inBin.filter((score) => score >= 50).length,
+      publicValue: inBin.filter((r) => r.result_status === EXAM_RESULT_PASSED).length,
+      privateValue: inBin.filter((r) => r.result_status !== EXAM_RESULT_PASSED).length,
     };
   });
 
@@ -129,6 +133,25 @@ export default async function ReportsPage({ searchParams }: PageProps) {
     {label:"Took exam",publicValue:publicExamined,privateValue:privateExamined},
     {label:"Passed",publicValue:publicPassed,privateValue:privatePassed},
   ];
+
+  // --- Insights ---
+  const passRate = pct(passed, examined);
+  const trendWithData = trend.filter((point) => point.value > 0);
+  const trendDelta = trendWithData.length >= 2
+    ? Math.round((trendWithData[trendWithData.length - 1].value - trendWithData[0].value) * 10) / 10
+    : null;
+  const publicRate = pct(publicPassed, publicExamined);
+  const privateRate = pct(privatePassed, privateExamined);
+  const strongestSubject = subjectAverages[0];
+  const weakestSubject = subjectAverages.length > 1 ? subjectAverages[subjectAverages.length - 1] : null;
+  const modalBin = scoreBins
+    .map((bin) => ({ label: bin.label, count: bin.publicValue + bin.privateValue }))
+    .sort((a, b) => b.count - a.count)[0];
+  const yearsWithScores = averageScoreByYear.filter((year) => year.value > 0);
+  const scoreYearDelta = yearsWithScores.length >= 2
+    ? Math.round((yearsWithScores[yearsWithScores.length - 1].value - yearsWithScores[0].value) * 10) / 10
+    : null;
+
   return (
     <AnalyticsPage>
       <FilterBar action="/reports" exportHref={`/api/reports/overview?cycle=${cycle?.cycle_id ?? ""}${campusId ? `&campus=${campusId}` : ""}${courseId ? `&course=${courseId}` : ""}`}>
@@ -139,10 +162,24 @@ export default async function ReportsPage({ searchParams }: PageProps) {
       <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[{label:"Passing rate",value:`${pct(passed,examined)}%`,note:"of examinees"},{label:"Average score",value:average.toFixed(1),note:"out of 100"},{label:"Highest score",value:highest.toFixed(1),note:"out of 100"},{label:"Examinees",value:examined,note:`${pct(examined,applications.length)}% of applicants`}].map((stat)=><div key={stat.label} className="rounded-xl border border-neutral-400 bg-white p-4"><p className="text-sm text-neutral-700">{stat.label}</p><p className="mt-1 text-3xl font-bold">{stat.value}</p><p className="text-xs text-neutral-500">{stat.note}</p></div>)}
       </div>
+      {examined > 0 && (
+        <div className="mb-4">
+          <Insight tone={passRate >= 50 ? "positive" : "warning"}>
+            {examined.toLocaleString()} of {applications.length.toLocaleString()} applicants sat the exam and {passRate}% passed, averaging {average.toFixed(1)}/100.
+            {" "}{trendDelta !== null ? (trendDelta > 0 ? `The passing rate is up ${trendDelta} points over the years shown.` : trendDelta < 0 ? `The passing rate is down ${Math.abs(trendDelta)} points over the years shown.` : "The passing rate has held steady across the years shown.") : ""}
+          </Insight>
+        </div>
+      )}
       <div className="grid gap-4 lg:grid-cols-2">
-        <AnalyticsCard><LineChart title="Passing rate by year (%)" points={trend} /></AnalyticsCard>
+        <AnalyticsCard>
+          <LineChart title="Passing rate by year (%)" points={trend} />
+          {trendWithData.length >= 2 && <div className="mt-3"><Insight tone={trendDelta !== null && trendDelta < 0 ? "warning" : "neutral"}>{trendDelta !== null && trendDelta > 0 ? `Trending upward — from ${trendWithData[0].value}% in ${trendWithData[0].label} to ${trendWithData[trendWithData.length-1].value}% in ${trendWithData[trendWithData.length-1].label}.` : trendDelta !== null && trendDelta < 0 ? `Trending downward — from ${trendWithData[0].value}% in ${trendWithData[0].label} to ${trendWithData[trendWithData.length-1].value}% in ${trendWithData[trendWithData.length-1].label}.` : `Broadly flat across ${trendWithData[0].label}–${trendWithData[trendWithData.length-1].label}.`}</Insight></div>}
+        </AnalyticsCard>
         <AnalyticsCard><DonutChart passed={passed} failed={examined-passed} title="Exam result" /></AnalyticsCard>
-        <AnalyticsCard><VerticalBars title="Public vs Private applicants and exam results" items={schoolBars} /></AnalyticsCard>
+        <AnalyticsCard>
+          <VerticalBars title="Public vs Private applicants and exam results" items={schoolBars} />
+          {(publicExamined > 0 || privateExamined > 0) && <div className="mt-3"><Insight>{publicRate === privateRate ? `Public and private schools pass at the same ${publicRate}% rate.` : publicRate > privateRate ? `Public-school examinees pass at ${publicRate}% versus ${privateRate}% for private — a ${Math.round((publicRate - privateRate) * 10) / 10}-point edge.` : `Private-school examinees pass at ${privateRate}% versus ${publicRate}% for public — a ${Math.round((privateRate - publicRate) * 10) / 10}-point edge.`}</Insight></div>}
+        </AnalyticsCard>
         <AnalyticsCard title="Numbers">
           <div className={tableStyles.wrap}><table className="w-full border-collapse text-sm"><thead><tr className={tableStyles.headRow}><th className={tableStyles.th}>Metric</th><th className={`${tableStyles.th} text-right`}>Public</th><th className={`${tableStyles.th} text-right`}>Private</th></tr></thead><tbody className={tableStyles.body}>{[["Applicants",publicApplications,privateApplications],["Took exam",publicExamined,privateExamined],["Passed",publicPassed,privatePassed],["Passing rate",`${pct(publicPassed,publicExamined)}%`,`${pct(privatePassed,privateExamined)}%`],["Average score",publicAverage.toFixed(1),privateAverage.toFixed(1)]].map((row)=><tr key={String(row[0])} className={tableStyles.row}><td className={`${tableStyles.td} font-medium text-neutral-800`}>{row[0]}</td><td className={`${tableStyles.td} text-right tabular-nums`}>{row[1]}</td><td className={`${tableStyles.td} text-right tabular-nums`}>{row[2]}</td></tr>)}</tbody></table></div>
         </AnalyticsCard>
@@ -151,7 +188,7 @@ export default async function ReportsPage({ searchParams }: PageProps) {
       <div className="mt-5 grid gap-4 lg:grid-cols-[2fr_1fr]">
         <AnalyticsCard title="Exam scores per score range">
           <ScoreHistogram title="Examinees per score range" items={scoreBins} />
-          <p className="mt-1 text-center text-sm">Below passing score vs passed shown in two tones</p>
+          {examined > 0 && modalBin && <div className="mt-3"><Insight>Most examinees score in the {modalBin.label}–{modalBin.label === "90" ? 100 : Number(modalBin.label) + 9} range. The median is {medianScore.toFixed(1)} with a standard deviation of {deviation.toFixed(1)} — {deviation >= 15 ? "a wide spread of performance" : "scores cluster fairly tightly"}.</Insight></div>}
         </AnalyticsCard>
         <AnalyticsCard title="Summary">
           <dl className="grid gap-4 py-3 text-sm">
@@ -171,12 +208,15 @@ export default async function ReportsPage({ searchParams }: PageProps) {
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
-        <AnalyticsCard title="Average score by subject">
+        <AnalyticsCard title="Average score by subject" className="flex flex-col">
           {subjectAverages.length ? (
-            <HorizontalBars title="Average score by subject" items={subjectAverages.slice(0, 8)} />
+            <div className="flex flex-1 flex-col">
+              <HorizontalBars title="Average score by subject" items={subjectAverages.slice(0, 8)} fill />
+            </div>
           ) : (
-            <p className="py-16 text-center text-sm text-neutral-500">No subject response data available.</p>
+            <p className="flex flex-1 items-center justify-center py-16 text-center text-sm text-neutral-500">No subject response data available.</p>
           )}
+          {strongestSubject && <div className="mt-3"><Insight>{weakestSubject ? `${strongestSubject.label} is the strongest area (${strongestSubject.value}% avg), while ${weakestSubject.label} is weakest (${weakestSubject.value}%) — the clearest target for exam prep.` : `${strongestSubject.label} averages ${strongestSubject.value}% across examinees.`}</Insight></div>}
         </AnalyticsCard>
         <AnalyticsCard title="Average score by year">
           {averageScoreByYear.length ? (
@@ -184,6 +224,7 @@ export default async function ReportsPage({ searchParams }: PageProps) {
           ) : (
             <p className="py-16 text-center text-sm text-neutral-500">No exam score data available.</p>
           )}
+          {scoreYearDelta !== null && <div className="mt-3"><Insight tone={scoreYearDelta < 0 ? "warning" : "neutral"}>{scoreYearDelta > 0 ? `Average score rose ${scoreYearDelta} points, from ${yearsWithScores[0].value.toFixed(1)} in ${yearsWithScores[0].label} to ${yearsWithScores[yearsWithScores.length-1].value.toFixed(1)} in ${yearsWithScores[yearsWithScores.length-1].label}.` : scoreYearDelta < 0 ? `Average score slipped ${Math.abs(scoreYearDelta)} points since ${yearsWithScores[0].label}, down to ${yearsWithScores[yearsWithScores.length-1].value.toFixed(1)}.` : `Average score has held near ${yearsWithScores[yearsWithScores.length-1].value.toFixed(1)} across the years shown.`}</Insight></div>}
         </AnalyticsCard>
       </div>
     </AnalyticsPage>

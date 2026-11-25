@@ -91,7 +91,6 @@ const navigationItems: NavigationItem[] = [
     permission: "reports",
     children: [
       { label: "Overview", href: "/reports", permission: "reports" },
-      { label: "Passing Rate", href: "/reports/passing-rate", permission: "reports" },
       { label: "Top Schools", href: "/reports/top-schools", permission: "reports" },
       { label: "Item Analysis", href: "/reports/item-analysis", permission: "reports" },
     ],

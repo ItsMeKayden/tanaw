@@ -1,6 +1,6 @@
 import { connection } from "next/server";
 
-import { AnalyticsCard, AnalyticsPage, FilterBar, SelectFilter } from "@/components/reports/analytics-ui";
+import { AnalyticsCard, AnalyticsPage, FilterBar, Insight, PieChart, SelectFilter } from "@/components/reports/analytics-ui";
 import { tableStyles } from "@/components/ui/table-styles";
 import { resolveCycle } from "@/features/admission/admission-stats";
 import { EXAM_RESULT_PASSED } from "@/features/admission/stages";
@@ -10,6 +10,14 @@ import { prisma } from "@/lib/prisma";
 type PageProps=Readonly<{searchParams:Promise<{cycle?:string;type?:string}>}>;
 
 const RANK_BADGES = ["bg-[#191e73] text-white", "bg-[#3a41a8] text-white", "bg-[#6b71c9] text-white"];
+
+// CVD-safe categorical hues (validated) for the top-5 slices; Others stays neutral gray.
+const PIE_COLORS = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4"];
+const OTHERS_COLOR = "#9ca3af";
+
+function pct(part: number, whole: number) {
+  return whole ? Math.round((part / whole) * 1000) / 10 : 0;
+}
 
 /** Ranked schools with a bar showing each count against the top one. */
 function RankTable({ rows, unit, empty }: Readonly<{ rows: { name: string; value: number }[]; unit: string; empty: string }>) {
@@ -82,6 +90,21 @@ export default async function TopSchoolsPage({searchParams}:PageProps){
  const most=ranked.slice().sort((a,b)=>b.applicants-a.applicants).slice(0,6);
  const successful=ranked.slice().sort((a,b)=>b.passed-a.passed).slice(0,6);
 
+ // Pie: share of passers held by the top 5 schools, with the rest folded into "Others".
+ const passedRanked=ranked.filter((s)=>s.passed>0).sort((a,b)=>b.passed-a.passed);
+ const totalPassed=passedRanked.reduce((sum,s)=>sum+s.passed,0);
+ const topPassed=passedRanked.slice(0,5);
+ const othersPassed=passedRanked.slice(5).reduce((sum,s)=>sum+s.passed,0);
+ const othersCount=Math.max(0,passedRanked.length-5);
+ const pieItems=[
+  ...topPassed.map((s,index)=>({label:s.school_name,value:s.passed,color:PIE_COLORS[index]})),
+  ...(othersPassed>0?[{label:`Others (${othersCount} ${othersCount===1?"school":"schools"})`,value:othersPassed,color:OTHERS_COLOR}]:[]),
+ ];
+ const top5Share=pct(topPassed.reduce((sum,s)=>sum+s.passed,0),totalPassed);
+ const topApplicantSchool=most.find((s)=>s.applicants>0);
+ const totalApplicants=ranked.reduce((sum,s)=>sum+s.applicants,0);
+ const scopeLabel=type?`${type.toLowerCase()} schools`:"schools";
+
  return <AnalyticsPage>
   <FilterBar action="/reports/top-schools">
    <input type="hidden" name="type" value={type ?? "all"} />
@@ -90,12 +113,20 @@ export default async function TopSchoolsPage({searchParams}:PageProps){
    </div>
    <div className="ml-auto"><SelectFilter name="cycle" label="School Year" value={cycle?String(cycle.cycle_id):""} options={cycles.map((c)=>({value:String(c.cycle_id),label:c.school_year}))}/></div>
   </FilterBar>
-  <div className="grid gap-5 lg:grid-cols-2">
+  <div className="grid items-start gap-5 lg:grid-cols-2">
    <AnalyticsCard title="Most applicants">
     <RankTable unit="Applicants" empty="No applicant data yet." rows={most.map((row)=>({name:row.school_name,value:row.applicants}))}/>
+    {topApplicantSchool&&<div className="mt-3"><Insight>{topApplicantSchool.school_name} sends the most applicants ({topApplicantSchool.applicants.toLocaleString("en-US")}), about {pct(topApplicantSchool.applicants,totalApplicants)}% of all applicants across {scopeLabel} this school year.</Insight></div>}
    </AnalyticsCard>
    <AnalyticsCard title="Most successful examiners">
     <RankTable unit="Passed" empty="No successful examiner data yet." rows={successful.filter((row)=>row.passed>0).map((row)=>({name:row.school_name,value:row.passed}))}/>
+    {passedRanked.length>0&&<div className="mt-3"><Insight tone="positive">{passedRanked[0].school_name} leads on passers ({passedRanked[0].passed.toLocaleString("en-US")}){passedRanked[0].applicants>0?`, a ${pct(passedRanked[0].passed,passedRanked[0].applicants)}% pass rate for its applicants`:""}.</Insight></div>}
+   </AnalyticsCard>
+  </div>
+  <div className="mt-5">
+   <AnalyticsCard title="Share of passers — top 5 schools">
+    <PieChart title="Passers by school (top 5 + Others)" unit="passers" empty="No passer data yet." items={pieItems}/>
+    {totalPassed>0&&<div className="mt-4"><Insight>{othersCount>0?`The top 5 ${scopeLabel} account for ${top5Share}% of all passers; the remaining ${othersCount} ${othersCount===1?"school contributes":"schools contribute"} the other ${pct(othersPassed,totalPassed)}%.${top5Share>=60?" Passers cluster in a few feeder schools — a clear focus for outreach.":""}`:`All ${totalPassed.toLocaleString("en-US")} passers come from just ${passedRanked.length} ${passedRanked.length===1?"school":"schools"} this school year.`}</Insight></div>}
    </AnalyticsCard>
   </div>
  </AnalyticsPage>

@@ -1,3 +1,4 @@
+import { Lightbulb, TrendingUp, TriangleAlert } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { ExportMenu } from "@/components/reports/export-menu";
@@ -69,20 +70,25 @@ export function DonutChart({
   passed,
   failed,
   title,
-}: Readonly<{ passed: number; failed: number; title: string }>) {
+  size = 180,
+}: Readonly<{ passed: number; failed: number; title: string; size?: number }>) {
   const total = passed + failed;
   const passedPct = total ? (passed / total) * 100 : 0;
   const failedPct = total ? (failed / total) * 100 : 0;
+  const hole = Math.round(size * 0.19);
   return (
     <div>
       {title && <p className="mb-2 text-center text-xs font-semibold">{title}</p>}
-      <div className="flex items-center justify-center gap-5">
+      <div className="flex flex-wrap items-center justify-center gap-6">
         <div
-          className="relative size-[180px] rounded-full"
-          style={{ background: `conic-gradient(#1f4a9f 0 ${passedPct}%, #93baf4 ${passedPct}% 100%)` }}
+          className="relative rounded-full"
+          style={{ width: size, height: size, background: `conic-gradient(#1f4a9f 0 ${passedPct}%, #93baf4 ${passedPct}% 100%)` }}
         >
-          <div className="absolute inset-[34px] flex flex-col items-center justify-center rounded-full bg-white text-center">
-            <strong className="text-base">{total.toLocaleString()}</strong>
+          <div
+            className="absolute flex flex-col items-center justify-center rounded-full bg-white text-center"
+            style={{ inset: hole }}
+          >
+            <strong className="text-lg">{total.toLocaleString()}</strong>
             <span className="text-xs">examinees</span>
           </div>
         </div>
@@ -136,15 +142,16 @@ export function HorizontalBars({
   items,
   title,
   max = 100,
-}: Readonly<{ items: { label: string; value: number }[]; title: string; max?: number }>) {
+  fill = false,
+}: Readonly<{ items: { label: string; value: number }[]; title: string; max?: number; fill?: boolean }>) {
   return (
-    <div>
+    <div className={fill ? "flex h-full flex-col" : ""}>
       {title && <p className="mb-3 text-center text-xs font-semibold">{title}</p>}
-      <div className="space-y-3">
+      <div className={fill ? "flex flex-1 flex-col justify-around gap-3 py-1" : "space-y-3"}>
         {items.map((item) => (
           <div key={item.label} className="grid grid-cols-[120px_1fr_42px] items-center gap-2 text-xs">
             <span className="truncate text-right">{item.label}</span>
-            <div className="h-5 bg-neutral-100"><div className="h-full bg-[#1f4a9f]" style={{ width: `${Math.max(0, Math.min(100, (item.value / max) * 100))}%` }} /></div>
+            <div className={`${fill ? "h-6" : "h-5"} bg-neutral-100`}><div className="h-full bg-[#1f4a9f]" style={{ width: `${Math.max(0, Math.min(100, (item.value / max) * 100))}%` }} /></div>
             <span>{item.value}%</span>
           </div>
         ))}
@@ -210,6 +217,102 @@ export function ScoreHistogram({
         <text x={left + (width - left) / 2} y={height - 1} textAnchor="middle" fontSize="8">Exam score</text>
       </svg>
       <div className="mt-1 flex justify-center gap-5 text-xs"><span><i className="mr-1 inline-block size-3 bg-[#93baf4]" />Below passing score</span><span><i className="mr-1 inline-block size-3 bg-[#1f4a9f]" />Passed</span></div>
+    </div>
+  );
+}
+
+const INSIGHT_TONES = {
+  neutral: { wrap: "border-[#c7cbe8] bg-[#eef0fa] text-[#2c317a]", Icon: Lightbulb },
+  positive: { wrap: "border-green-200 bg-green-50 text-green-800", Icon: TrendingUp },
+  warning: { wrap: "border-amber-200 bg-amber-50 text-amber-800", Icon: TriangleAlert },
+} as const;
+
+/**
+ * Small callout that explains what a chart or metric is telling the reader.
+ * Keep the text to a sentence or two — it sits under a card or beside an element.
+ */
+export function Insight({
+  children,
+  tone = "neutral",
+  label = "Insight",
+}: Readonly<{ children: ReactNode; tone?: keyof typeof INSIGHT_TONES; label?: string }>) {
+  const { wrap, Icon } = INSIGHT_TONES[tone];
+  return (
+    <div className={`flex items-start gap-2.5 rounded-lg border px-3 py-2.5 text-xs leading-relaxed ${wrap}`}>
+      <Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+      <p>
+        <span className="font-semibold">{label}:</span> {children}
+      </p>
+    </div>
+  );
+}
+
+/**
+ * Part-to-whole pie with a legend that carries each slice's value and share.
+ * Slice colors are passed in (the caller owns a CVD-safe categorical order);
+ * the legend's direct values cover the slices whose fill is low-contrast.
+ */
+export function PieChart({
+  items,
+  title,
+  unit = "",
+  empty = "No data available.",
+}: Readonly<{ items: { label: string; value: number; color: string }[]; title: string; unit?: string; empty?: string }>) {
+  const total = items.reduce((sum, item) => sum + item.value, 0);
+  const cx = 100;
+  const cy = 100;
+  const radius = 92;
+  const point = (deg: number) => [cx + radius * Math.cos((deg * Math.PI) / 180), cy + radius * Math.sin((deg * Math.PI) / 180)];
+  const positive = items.filter((item) => item.value > 0);
+  const slices = positive
+    .map((item, index) => {
+      const prior = positive.slice(0, index).reduce((sum, earlier) => sum + earlier.value, 0);
+      const sweep = (item.value / total) * 360;
+      const start = -90 + (prior / total) * 360;
+      const end = start + sweep;
+      const [x1, y1] = point(start);
+      const [x2, y2] = point(end);
+      const large = sweep > 180 ? 1 : 0;
+      const pct = (item.value / total) * 100;
+      const full = sweep >= 359.999;
+      const path = full
+        ? `M ${cx} ${cy - radius} A ${radius} ${radius} 0 1 1 ${cx - 0.01} ${cy - radius} Z`
+        : `M ${cx} ${cy} L ${x1} ${y1} A ${radius} ${radius} 0 ${large} 1 ${x2} ${y2} Z`;
+      const [lx, ly] = point(start + sweep / 2).map((value, index) => cx + (value - (index ? cy : cx)) * 0.62);
+      return { ...item, path, pct, lx, ly, showLabel: pct >= 8 };
+    });
+
+  return (
+    <div>
+      {title && <p className="mb-3 text-center text-xs font-semibold">{title}</p>}
+      {total > 0 ? (
+        <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center sm:justify-center">
+          <svg viewBox="0 0 200 200" className="h-[200px] w-[200px] shrink-0" role="img" aria-label={title}>
+            {slices.map((slice) => (
+              <path key={slice.label} d={slice.path} fill={slice.color} stroke="#ffffff" strokeWidth="2">
+                <title>{`${slice.label}: ${slice.value.toLocaleString("en-US")}${unit ? ` ${unit}` : ""} (${slice.pct.toFixed(1)}%)`}</title>
+              </path>
+            ))}
+            {slices.filter((slice) => slice.showLabel).map((slice) => (
+              <text key={`${slice.label}-label`} x={slice.lx} y={slice.ly} textAnchor="middle" dominantBaseline="central" fontSize="10" fontWeight="600" fill="#ffffff">
+                {Math.round(slice.pct)}%
+              </text>
+            ))}
+          </svg>
+          <ul className="w-full max-w-[16rem] space-y-1.5 text-xs">
+            {slices.map((slice) => (
+              <li key={slice.label} className="flex items-center gap-2">
+                <span className="size-3 shrink-0 rounded-sm" style={{ backgroundColor: slice.color }} aria-hidden="true" />
+                <span className="min-w-0 flex-1 truncate text-neutral-800">{slice.label}</span>
+                <span className="shrink-0 font-semibold tabular-nums text-neutral-900">{slice.value.toLocaleString("en-US")}</span>
+                <span className="w-12 shrink-0 text-right tabular-nums text-neutral-500">{slice.pct.toFixed(1)}%</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <p className="py-16 text-center text-sm text-neutral-500">{empty}</p>
+      )}
     </div>
   );
 }
