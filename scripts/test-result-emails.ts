@@ -27,7 +27,7 @@ const preview = args.includes("--preview");
 const onlyNew = args.includes("--new");
 const onlyIndex = args.indexOf("--only");
 const only = onlyIndex >= 0 ? args[onlyIndex + 1]?.toLowerCase() : null;
-const to = args.find((arg, index) => !arg.startsWith("--") && index !== onlyIndex + 1);
+const to = args.find((arg, index) => !arg.startsWith("--") && (onlyIndex < 0 || index !== onlyIndex + 1));
 
 function fail(message: string): never {
   console.error(`${message}\n\nUsage: npm run email:test-results -- you@example.com [--only passed|waitlisted|failed] [--new] [--preview]`);
