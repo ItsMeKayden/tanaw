@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import Papa from "papaparse";
 
 import type { Prisma } from "@/generated/prisma/client";
@@ -17,6 +18,11 @@ import {
   type ScannedPreviewRow,
   type ScanSubject,
 } from "@/features/admission/exam-grading";
+import {
+  describeResultEmails,
+  sendResultEmailsInBackground,
+  type ResultChange,
+} from "@/features/admission/result-email";
 import { loadSlotTracker } from "@/features/admission/slots";
 import { ADMISSION_STAGES, EXAM_RESULT_PASSED } from "@/features/admission/stages";
 import { generateRecommendations } from "@/features/recommendation/engine";
@@ -91,8 +97,8 @@ async function syncStages(
     ...entries.filter((e) => e.passed).sort((a, b) => b.score - a.score),
   ];
 
-  let moved = 0;
   let waitlisted = 0;
+  const changes: ResultChange[] = [];
   for (const { application, passed, remarks } of ordered) {
     const current = stageName(application.current_stage_id);
     if (current !== null && !RESULT_DRIVEN_STAGES.includes(current)) continue;
@@ -123,10 +129,10 @@ async function syncStages(
         remarks: waiting ? remarks + WAITLIST_NOTE : remarks,
       },
     });
-    moved++;
+    changes.push({ applicationId: application.application_id, from: current, to: targetName });
     if (waiting) waitlisted++;
   }
-  return { moved, waitlisted };
+  return { moved: changes.length, waitlisted, changes };
 }
 
 const waitlistMessage = (count: number) =>
@@ -537,16 +543,19 @@ export async function saveExamScores(cycleIdInput: number, rows: ScoreRowInput[]
           entries.push({ application, passed, score: total, remarks });
         }
 
-        const { moved, waitlisted } = await syncStages(tx, stages, cycleId, entries, accountId);
+        const { moved, waitlisted, changes } = await syncStages(tx, stages, cycleId, entries, accountId);
 
         if (exam.max_score === null) {
           await tx.tbl_exam.update({ where: { exam_id: exam.exam_id }, data: { max_score: maxTotal } });
         }
 
-        return { saved: rows.length, passed: passedCount, moved, waitlisted };
+        return { saved: rows.length, passed: passedCount, moved, waitlisted, changes };
       },
       { timeout: 60_000, maxWait: 10_000 },
     );
+
+    // Committed: email the new results without holding up the response.
+    after(() => sendResultEmailsInBackground(summary.changes));
 
     const recommended = await refreshRecommendations(cycleId, ids as number[]);
     revalidate();
@@ -557,6 +566,7 @@ export async function saveExamScores(cycleIdInput: number, rows: ScoreRowInput[]
         `Saved ${summary.saved} result${summary.saved === 1 ? "" : "s"} (${summary.passed} passed, ` +
         `${summary.saved - summary.passed} failed).` +
         waitlistMessage(summary.waitlisted) +
+        describeResultEmails(summary.changes) +
         (recommended ? "" : " Course recommendations could not be refreshed; regenerate them on the Recommendation page."),
     };
   } catch (error) {
@@ -587,7 +597,7 @@ export async function savePassingScore(cycleIdInput: number, rule: PassingRule):
   try {
     const accountId = getAccountId(user);
 
-    const { flipped: changed, waitlisted } = await prisma.$transaction(
+    const { flipped: changed, waitlisted, changes } = await prisma.$transaction(
       async (tx) => {
         const cycle = await tx.tbl_admission_cycle.findUnique({ where: { cycle_id: cycleId }, select: { cycle_id: true } });
         if (!cycle) throw new Error("Admission cycle not found.");
@@ -644,16 +654,18 @@ export async function savePassingScore(cycleIdInput: number, rule: PassingRule):
           });
           flipped++;
         }
-        const { waitlisted } = await syncStages(tx, stages, cycleId, entries, accountId);
-        return { flipped, waitlisted };
+        const { waitlisted, changes } = await syncStages(tx, stages, cycleId, entries, accountId);
+        return { flipped, waitlisted, changes };
       },
       { timeout: 60_000, maxWait: 10_000 },
     );
 
+    after(() => sendResultEmailsInBackground(changes));
+
     revalidate();
     return {
       success: true,
-      message: `Passing score saved.${changed ? ` ${changed} result${changed === 1 ? "" : "s"} changed between passed and failed.` : ""}${waitlistMessage(waitlisted)}`,
+      message: `Passing score saved.${changed ? ` ${changed} result${changed === 1 ? "" : "s"} changed between passed and failed.` : ""}${waitlistMessage(waitlisted)}${describeResultEmails(changes)}`,
     };
   } catch (error) {
     console.error("Save passing score error:", error);
