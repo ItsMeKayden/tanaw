@@ -18,7 +18,8 @@
     "db:seed:demo-data": "tsx prisma/seeds/demo-data.ts",
     "db:seed:demo-exams": "tsx prisma/seeds/demo-exams.ts",
     "db:setup": "npm run db:migrate && npm run db:generate && npm run db:seed",
-    "archive:purge": "tsx scripts/purge-archive.ts"
+    "archive:purge": "tsx scripts/purge-archive.ts",
+    "email:test-results": "tsx scripts/test-result-emails.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
