@@ -15,6 +15,10 @@ import { ADMISSION_STAGES } from "../../features/admission/stages";
 import { generateRecommendations } from "../../features/recommendation/engine";
 import { log, prisma, warn } from "./client";
 import { resetDemoExamSessions, seedDemoExamSchedule, seedDemoSubjectScores } from "./demo-exams";
+import { seedDemoQuestionContent } from "./demo-questions";
+
+// House no. / street for demo applications.
+const DEMO_STREETS = ["Mabini St.", "Rizal Ave.", "Kalayaan Ave.", "Maginhawa St.", "Tandang Sora Ave.", "Aurora Blvd.", "Commonwealth Ave.", "Visayas Ave."];
 
 export const DEMO_PREFIX = "DEMO-";
 const DEMO_EMAIL_DOMAIN = "@example.test";
@@ -190,6 +194,7 @@ export async function seedDemoData() {
           application_date: applicationDate,
           cycle_id: cycle.cycle_id,
           barangay_id: barangays[(i * 13) % barangays.length].barangay_id,
+          street_address: `${10 + ((i * 37) % 990)} ${DEMO_STREETS[i % DEMO_STREETS.length]}`,
           branch_id: branches[i % branches.length].branch_id,
           program_id: programs[i % programs.length].program_id,
           program_choice_2_id: choice2,
@@ -254,6 +259,7 @@ export async function seedDemoData() {
   log("demo", `${DEMO_COUNT} demo applicants (${created} new) in ${cycle.school_year}`);
 
   await seedExamAnswers(exam.exam_id);
+  await seedDemoQuestionContent(exam.exam_id);
   await seedDemoExamSchedule(exam.exam_id, actor?.user_id ?? null);
   await seedDemoSubjectScores(exam.exam_id);
 

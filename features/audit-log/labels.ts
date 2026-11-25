@@ -50,6 +50,7 @@ export const AUDIT_TABLES: Record<string, TableInfo> = {
   tbl_applicant: { label: "Applicant", module: "Admission", rank: 1 },
   tbl_application: { label: "Application", module: "Admission", rank: 2 },
   tbl_application_document: { label: "Document", module: "Admission", rank: 5 },
+  tbl_application_requirement: { label: "Requirement", module: "Admission", rank: 5 },
   tbl_application_stage_log: { label: "Status change", module: "Admission", rank: 8 },
   tbl_quota: { label: "Quota", module: "Admission", rank: 3 },
   tbl_admission_cycle: { label: "Admission cycle", module: "Admission", rank: 3 },
@@ -103,6 +104,7 @@ const FIELD_NAMES: Record<string, string> = {
   cycle_id: "Admission cycle",
   application_no: "Application no.",
   mobile_no: "Mobile no.",
+  street_address: "House no. / street",
   password_hash: "Password",
   token_hash: "Reset token",
   file_data: "File",
@@ -336,6 +338,10 @@ export function describeChange(change: AuditChange): ChangeDescription {
     }
     case "tbl_application_document":
       if (change.action === "INSERT") return { ...generic, badge: "Uploaded", verb: "uploaded document" };
+      break;
+    case "tbl_application_requirement":
+      if (change.action === "INSERT") return { ...generic, badge: "Verified", tone: "green", verb: "verified requirement" };
+      if (change.action === "DELETE") return { ...generic, badge: "Unverified", tone: "red", verb: "unverified requirement" };
       break;
   }
   return generic;

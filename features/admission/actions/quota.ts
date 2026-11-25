@@ -26,6 +26,15 @@ export async function saveQuotaPlan(cycleIdInput: number, input: QuotaPlanValues
   const { overall, courses } = parsed.data;
   const programIds = courses.map((c) => c.program_id);
   if (new Set(programIds).size !== programIds.length) return { error: "A course is listed twice." };
+  // Course quotas share the overall target, so together they can't exceed it.
+  if (overall !== "") {
+    const allocated = courses.reduce((sum, c) => sum + (c.slots === "" ? 0 : Number(c.slots)), 0);
+    if (allocated > Number(overall)) {
+      return {
+        error: `Course quotas add up to ${allocated.toLocaleString("en-US")}, more than the overall target of ${Number(overall).toLocaleString("en-US")}.`,
+      };
+    }
+  }
 
   try {
     const accountId = getAccountId(user);

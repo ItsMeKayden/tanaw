@@ -1,143 +1,318 @@
 import { connection } from "next/server";
+import { BarChart3, ClipboardList, ListChecks, Users } from "lucide-react";
 
-import { AnalyticsCard, AnalyticsPage, DonutChart, FilterBar, HorizontalBars, Insight, SelectFilter } from "@/components/reports/analytics-ui";
-import { PaginatedBars } from "@/components/reports/paginated-bars";
+import { AutoSubmitSelect } from "@/components/reports/auto-submit-select";
+import { StatCard } from "@/components/ui/stat-card";
 import { tableStyles } from "@/components/ui/table-styles";
 import { resolveCycle } from "@/features/admission/admission-stats";
-import { EXAM_RESULT_PASSED } from "@/features/admission/stages";
+import { toExamSet } from "@/features/admission/exam-scoring";
+import { CHOICES, difficultyLabel, getItemAnalysis, type ItemStat } from "@/features/reports/item-analysis";
 import { requirePermission } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
 
-function pct(part: number, whole: number) { return whole ? Math.round((part / whole) * 1000) / 10 : 0; }
-type PageProps = Readonly<{ searchParams: Promise<{ cycle?: string; campus?: string; exam?: string; subject?: string }> }>;
+type SearchParams = { cycle?: string; set?: string; subject?: string };
+type PageProps = Readonly<{ searchParams: Promise<SearchParams> }>;
+
+const BAR = "#191e73";
+const selectClass =
+  "h-9 rounded-md border border-neutral-400 bg-white px-2.5 text-sm outline-none focus:border-[#191e73] focus:ring-2 focus:ring-[#191e73]/20";
+
+function difficultyTone(p: number | null) {
+  const label = difficultyLabel(p);
+  if (label === "Easy") return "bg-green-100 text-green-800";
+  if (label === "Moderate") return "bg-amber-100 text-amber-800";
+  if (label === "Hard") return "bg-red-100 text-red-800";
+  return "bg-neutral-100 text-neutral-600";
+}
+
+function Section({ title, description, children }: Readonly<{ title: string; description?: string; children: React.ReactNode }>) {
+  return (
+    <section className="rounded-xl border border-neutral-300 bg-white p-4 shadow-sm">
+      <div className="mb-3">
+        <h2 className="font-semibold text-neutral-900">{title}</h2>
+        {description && <p className="text-xs text-neutral-600">{description}</p>}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+/**
+ * Average % correct per subject: one horizontal bar each (single series, so
+ * no legend), value labeled at the bar end, hover for the item count.
+ */
+function SubjectBars({ items }: Readonly<{ items: ItemStat[] }>) {
+  const subjects = [...new Set(items.map((i) => i.subject))].map((subject) => {
+    const answered = items.filter((i) => i.subject === subject && i.difficulty !== null);
+    const average = answered.length
+      ? Math.round(answered.reduce((s, i) => s + (i.difficulty ?? 0), 0) / answered.length)
+      : null;
+    return { subject, average, count: items.filter((i) => i.subject === subject).length };
+  });
+
+  return (
+    <figure>
+      <div className="relative">
+        {/* Recessive grid at 0 / 25 / 50 / 75 / 100%, aligned with the bar track. */}
+        <div className="pointer-events-none absolute inset-y-0 right-14 left-40" aria-hidden="true">
+          {[0, 25, 50, 75, 100].map((tick) => (
+            <span key={tick} className="absolute inset-y-0 border-l border-neutral-100" style={{ left: `${tick}%` }} />
+          ))}
+        </div>
+        <ul className="relative space-y-3">
+          {subjects.map((row) => (
+            <li key={row.subject} className="group flex items-center gap-3">
+              <span className="w-37 shrink-0 truncate text-sm text-neutral-800">{row.subject}</span>
+              <span className="relative h-6 min-w-0 flex-1">
+                <span
+                  className="absolute inset-y-0 left-0 rounded-r-[4px] transition-opacity group-hover:opacity-80"
+                  style={{ width: `${row.average ?? 0}%`, background: BAR }}
+                />
+                <span className="pointer-events-none absolute -top-8 left-0 z-10 hidden rounded-md bg-neutral-900 px-2 py-1 text-[11px] whitespace-nowrap text-white shadow-lg group-hover:block">
+                  {row.subject}: {row.average === null ? "no answers" : `${row.average}% average`} · {row.count} questions
+                </span>
+              </span>
+              <span className="w-11 shrink-0 text-right text-sm font-semibold text-neutral-900 tabular-nums">
+                {row.average === null ? "—" : `${row.average}%`}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="mt-2 flex pr-14 pl-40 text-[10px] text-neutral-500 tabular-nums" aria-hidden="true">
+        {[0, 25, 50, 75, 100].map((tick, index) => (
+          <span key={tick} className={`flex-1 ${index === 4 ? "text-right" : ""}`} style={index === 4 ? { flex: 0 } : undefined}>
+            {tick}%
+          </span>
+        ))}
+      </div>
+      <figcaption className="sr-only">Average percent correct by subject</figcaption>
+    </figure>
+  );
+}
+
+function RankList({ rows }: Readonly<{ rows: ItemStat[] }>) {
+  return (
+    <ol className="space-y-2">
+      {rows.map((row, index) => (
+        <li key={row.question_id} className="flex items-center gap-3 text-sm">
+          <span className="w-4 shrink-0 text-right text-xs text-neutral-400 tabular-nums">{index + 1}</span>
+          <span className="w-12 shrink-0 font-semibold text-[#191e73] tabular-nums">Q{row.question_no}</span>
+          <span className="w-28 shrink-0 truncate text-xs text-neutral-600">{row.subject}</span>
+          <span className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-neutral-100" aria-hidden="true">
+            <span className="block h-full rounded-full" style={{ width: `${row.difficulty ?? 0}%`, background: BAR }} />
+          </span>
+          <span className="w-20 shrink-0 text-right tabular-nums">
+            {row.difficulty}%<span className="ml-1 text-[11px] text-neutral-500">{row.correct}/{row.answered}</span>
+          </span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function ChoiceBoxes({ item }: Readonly<{ item: ItemStat }>) {
+  return (
+    <div className="flex items-center gap-1">
+      {CHOICES.map((c) => {
+        const isKey = c === item.correct_answer;
+        return (
+          <span
+            key={c}
+            title={`${c}: ${item.distribution[c]}${isKey ? " (correct answer)" : ""}`}
+            className={`flex w-9 flex-col items-center rounded-md border py-0.5 leading-tight ${
+              isKey ? "border-green-500 bg-green-50 text-green-900" : "border-neutral-200 bg-white text-neutral-700"
+            }`}
+          >
+            <span className="text-[10px] font-semibold">{c}</span>
+            <span className="text-xs tabular-nums">{item.distribution[c]}</span>
+          </span>
+        );
+      })}
+      {item.distribution.blank > 0 && (
+        <span className="ml-1 text-[11px] text-neutral-500 tabular-nums">{item.distribution.blank} blank</span>
+      )}
+    </div>
+  );
+}
 
 export default async function ItemAnalysisPage({ searchParams }: PageProps) {
- await connection(); await requirePermission("reports", "read");
- const params = await searchParams; const { cycles, cycle } = await resolveCycle(params.cycle);
- const campusId = params.campus && params.campus !== "all" ? Number(params.campus) : null;
- const [exams, competencies, campuses, programs] = await Promise.all([
-  prisma.tbl_exam.findMany({ where: { ...(cycle ? { cycle_id: cycle.cycle_id } : {}) }, orderBy: { exam_name: "asc" }, select: { exam_id: true, exam_name: true } }),
-  prisma.tbl_competency.findMany({ orderBy: { competency_name: "asc" }, select: { competency_id: true, competency_name: true, subject_area: true } }),
-  prisma.tbl_branch.findMany({ orderBy: { branch_name: "asc" }, select: { branch_id: true, branch_name: true } }),
-  prisma.tbl_program.findMany({ orderBy: { program_code: "asc" }, select: { program_id: true, program_code: true } }),
- ]);
- const examId = params.exam && params.exam !== "all" ? Number(params.exam) : null;
- const subject = params.subject && params.subject !== "all" ? params.subject : null;
- const campusLabel = campusId ? campuses.find((c) => c.branch_id === campusId)?.branch_name : null;
- const campusClause = campusLabel ? ` at ${campusLabel}` : "";
+  await connection();
+  await requirePermission("reports", "read");
 
- // --- Passing rate (scoped by school year + campus) ---
- const base = { ...(cycle ? { cycle_id: cycle.cycle_id } : {}), ...(campusId ? { branch_id: campusId } : {}) };
- const [examined, passed] = await Promise.all([
-  prisma.tbl_exam_result.count({ where: { tbl_application: base } }),
-  prisma.tbl_exam_result.count({ where: { tbl_application: base, result_status: EXAM_RESULT_PASSED } }),
- ]);
- const courses = await Promise.all(programs.map(async (p) => {
-  const [e, t] = await Promise.all([
-   prisma.tbl_exam_result.count({ where: { tbl_application: { ...base, program_id: p.program_id } } }),
-   prisma.tbl_exam_result.count({ where: { tbl_application: { ...base, program_id: p.program_id }, result_status: EXAM_RESULT_PASSED } }),
-  ]);
-  return { label: p.program_code, value: pct(t, e), examined: e };
- }));
- const coursesWithData = courses.filter((c) => c.examined > 0);
- // Show every course that had examinees (highest rate first), so the chart and the
- // insight agree — the weakest course is on the chart, not hidden behind a top-N cut.
- const shownCourses = coursesWithData.slice().sort((a, b) => b.value - a.value).slice(0, 12);
+  const params = await searchParams;
+  const { cycles, cycle } = await resolveCycle(params.cycle);
+  const set = toExamSet(params.set);
+  const competencies = await prisma.tbl_competency.findMany({
+    orderBy: { competency_name: "asc" },
+    select: { competency_id: true, competency_name: true },
+  });
+  const competencyId =
+    params.subject && params.subject !== "all" && Number.isSafeInteger(Number(params.subject)) ? Number(params.subject) : null;
 
- // --- Item analysis (scoped by school year + exam + subject) ---
- const questions = await prisma.tbl_exam_question.findMany({
-  where: { ...(examId ? { exam_id: examId } : cycle ? { tbl_exam: { cycle_id: cycle.cycle_id } } : {}), ...(subject ? { tbl_competency: { subject_area: subject } } : {}) },
-  orderBy: { question_no: "asc" }, select: { question_id: true, question_no: true, tbl_competency: { select: { competency_name: true, subject_area: true } } },
- });
- const itemData = await Promise.all(questions.map(async (q) => {
-  // Scope responses to the same school-year + campus cohort as the passing-rate side,
-  // so the campus filter actually moves the item numbers (base is {} when "All").
-  const responses = await prisma.tbl_question_response.findMany({ where: { question_id: q.question_id, tbl_exam_result: { tbl_application: base } }, select: { is_correct: true } });
-  const correct = responses.filter((r) => r.is_correct).length;
-  const percent = responses.length ? Math.round(correct / responses.length * 100) : 0;
-  return { label: `Q${q.question_no}`, competency: q.tbl_competency?.competency_name ?? "General", percent, correct, total: responses.length };
- }));
- const subjects = [...new Set(competencies.map((c) => c.subject_area).filter((v): v is string => Boolean(v)))];
- // Only questions that were actually answered carry difficulty signal — a question
- // with no responses is not "hard", so it must not rank or chart as 0%.
- const answered = itemData.filter((q) => q.total > 0);
- // Answered questions go to the chart; it pages through them on the client (no reload).
- const chartItems = answered.map((q) => ({ label: q.label, value: q.correct }));
- const sorted = answered.slice().sort((a, b) => a.percent - b.percent);
- const hardest = sorted.slice(0, 4);
- const easiest = sorted.slice().reverse().slice(0, 4);
+  const { exam, items, examinees } = cycle
+    ? await getItemAnalysis({ cycleId: cycle.cycle_id, set, competencyId })
+    : { exam: null, items: [] as ItemStat[], examinees: 0 };
 
- // --- Insights ---
- const overallRate = pct(passed, examined);
- const bestCourse = shownCourses[0];
- const weakestCourse = shownCourses[shownCourses.length - 1];
- const courseGap = bestCourse && weakestCourse ? Math.round((bestCourse.value - weakestCourse.value) * 10) / 10 : 0;
- const avgCorrect = answered.length ? Math.round(answered.reduce((sum, q) => sum + q.percent, 0) / answered.length) : 0;
- const belowHalf = answered.filter((q) => q.percent < 50).length;
- const hardestQ = answered.slice().sort((a, b) => a.percent - b.percent)[0];
- const easiestQ = answered.slice().sort((a, b) => b.percent - a.percent)[0];
- const itemGap = hardestQ && easiestQ ? easiestQ.percent - hardestQ.percent : 0;
- // Weakest competency as a group — points to the area most worth reviewing.
- const competencyScores = new Map<string, { sum: number; count: number }>();
- for (const q of answered) {
-  const entry = competencyScores.get(q.competency) ?? { sum: 0, count: 0 };
-  entry.sum += q.percent; entry.count += 1;
-  competencyScores.set(q.competency, entry);
- }
- const competencyAverages = [...competencyScores.entries()].map(([name, v]) => ({ name, avg: Math.round(v.sum / v.count), count: v.count })).sort((a, b) => a.avg - b.avg);
- const weakestCompetency = competencyAverages.length > 1 ? competencyAverages[0] : null;
+  const withData = items.filter((i) => i.difficulty !== null);
+  const average = withData.length
+    ? Math.round(withData.reduce((sum, i) => sum + (i.difficulty ?? 0), 0) / withData.length)
+    : null;
+  const byDifficulty = [...withData].sort((a, b) => (a.difficulty ?? 0) - (b.difficulty ?? 0));
 
- // Item-analysis-focused KPIs (passing rate / examinees live in the donut below,
- // and on the Overview page — these surface what only item analysis can tell you).
- const kpis = [
-  { label: "Questions", value: itemData.length.toLocaleString(), note: `${answered.length.toLocaleString()} with responses${subject ? ` · ${subject}` : ""}` },
-  { label: "Avg correct / item", value: answered.length ? `${avgCorrect}%` : "—", note: "chosen correctly, per item" },
-  { label: "Hardest item", value: hardestQ ? hardestQ.label : "—", note: hardestQ ? `${hardestQ.percent}% answered it right` : "no responses yet" },
-  { label: "Easiest item", value: easiestQ ? easiestQ.label : "—", note: easiestQ ? `${easiestQ.percent}% answered it right` : "no responses yet" },
- ];
+  return (
+    <div className="min-h-full space-y-4 bg-neutral-50/60 p-3 sm:p-5">
+      <header>
+        <h1 className="text-xl font-bold text-neutral-900">Item Analysis</h1>
+        <p className="text-sm text-neutral-600">
+          How each exam question performed: how many got it right, whether it separates strong from weak examinees,
+          and which choices they picked.
+        </p>
+      </header>
 
- return <AnalyticsPage>
-  <FilterBar action="/reports/item-analysis" exportHref={`/api/reports/item-analysis?cycle=${cycle?.cycle_id ?? ""}${campusId ? `&campus=${campusId}` : ""}${examId ? `&exam=${examId}` : ""}${subject ? `&subject=${encodeURIComponent(subject)}` : ""}`}>
-   <SelectFilter name="cycle" label="School Year" value={cycle ? String(cycle.cycle_id) : ""} options={cycles.map((c) => ({ value: String(c.cycle_id), label: c.school_year }))} />
-   <SelectFilter name="campus" label="Campus" value={campusId ? String(campusId) : "all"} options={[{ value: "all", label: "All" }, ...campuses.map((c) => ({ value: String(c.branch_id), label: c.branch_name }))]} />
-   <SelectFilter name="exam" label="Exam" value={examId ? String(examId) : "all"} options={[{ value: "all", label: "All" }, ...exams.map((e) => ({ value: String(e.exam_id), label: e.exam_name }))]} />
-   <SelectFilter name="subject" label="Subject" value={subject ?? "all"} options={[{ value: "all", label: "All" }, ...subjects.map((s) => ({ value: s, label: s }))]} />
-  </FilterBar>
+      {/* Filters apply as soon as one changes. */}
+      <form
+        action="/reports/item-analysis"
+        method="get"
+        className="flex flex-wrap items-end gap-3 rounded-xl border border-neutral-300 bg-white px-4 py-3 shadow-sm"
+      >
+        <label className="flex flex-col gap-1 text-xs font-medium text-neutral-600">
+          School year
+          <AutoSubmitSelect name="cycle" defaultValue={cycle ? String(cycle.cycle_id) : ""} className={`${selectClass} w-44`}>
+            {cycles.map((c) => (
+              <option key={c.cycle_id} value={String(c.cycle_id)}>
+                S.Y. {c.school_year}
+              </option>
+            ))}
+          </AutoSubmitSelect>
+        </label>
+        <label className="flex flex-col gap-1 text-xs font-medium text-neutral-600">
+          Exam set
+          <AutoSubmitSelect name="set" defaultValue={set} className={`${selectClass} w-28`}>
+            <option value="A">Set A</option>
+            <option value="B">Set B</option>
+          </AutoSubmitSelect>
+        </label>
+        <label className="flex flex-col gap-1 text-xs font-medium text-neutral-600">
+          Subject
+          <AutoSubmitSelect
+            name="subject"
+            defaultValue={competencyId ? String(competencyId) : "all"}
+            className={`${selectClass} w-48`}
+          >
+            <option value="all">All subjects</option>
+            {competencies.map((c) => (
+              <option key={c.competency_id} value={String(c.competency_id)}>
+                {c.competency_name}
+              </option>
+            ))}
+          </AutoSubmitSelect>
+        </label>
+        <noscript>
+          <button type="submit" className="h-9 rounded-md bg-[#191e73] px-4 text-sm font-semibold text-white">
+            Apply
+          </button>
+        </noscript>
+      </form>
 
-  <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
-   {kpis.map((stat) => <div key={stat.label} className="rounded-xl border border-neutral-400 bg-white p-4"><p className="text-sm text-neutral-700">{stat.label}</p><p className="mt-1 text-3xl font-bold">{stat.value}</p><p className="text-xs text-neutral-500">{stat.note}</p></div>)}
-  </div>
+      {!exam || items.length === 0 ? (
+        <p className="rounded-xl border border-neutral-300 bg-white p-8 text-center text-sm text-neutral-600">
+          {exam ? `Set ${set} has no questions${competencyId ? " for this subject" : ""}.` : "No exam exists for this school year yet."}
+        </p>
+      ) : (
+        <>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <StatCard icon={ListChecks} label="Items" value={items.length} note={`Set ${set}`} />
+            <StatCard icon={Users} label="Examinees" value={examinees} note="with scanned answers" tone="info" />
+            <StatCard
+              icon={BarChart3}
+              label="Average correct"
+              value={average === null ? "—" : `${average}%`}
+              note={average === null ? null : difficultyLabel(average)}
+              tone="success"
+            />
+          </div>
 
-  <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-neutral-500">Passing rate</h2>
-  <div className="grid gap-5 lg:grid-cols-2">
-   <AnalyticsCard title="Overall result" className="flex flex-col">
-    <div className="flex flex-1 items-center justify-center rounded-xl border border-neutral-500 p-4">
-     <DonutChart passed={passed} failed={examined - passed} title="" size={220} />
+          {withData.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-neutral-400 bg-white px-6 py-12 text-center">
+              <ClipboardList className="mx-auto size-8 text-neutral-400" aria-hidden="true" />
+              <p className="mt-2 font-medium">No answers recorded yet</p>
+              <p className="mx-auto mt-1 max-w-md text-sm text-neutral-600">
+                Item analysis uses each applicant&apos;s answer per question. They are saved when scanned answer sheets
+                are imported on Exam Scores (&ldquo;Import scanned results&rdquo;).
+              </p>
+            </div>
+          ) : (
+            <>
+              <Section title="Average correct by subject" description="Share of correct answers per subject. Hover a bar for details.">
+                <SubjectBars items={items} />
+              </Section>
+
+              <div className="grid gap-4 lg:grid-cols-2">
+                <Section title="Hardest questions" description="Lowest share of correct answers">
+                  <RankList rows={byDifficulty.slice(0, 5)} />
+                </Section>
+                <Section title="Easiest questions" description="Highest share of correct answers">
+                  <RankList rows={byDifficulty.slice(-5).reverse()} />
+                </Section>
+              </div>
+
+              <Section
+                title="Item details"
+                description="% correct per question and how many examinees picked each choice. The green box is the correct answer."
+              >
+                  <div className={`${tableStyles.wrap} max-h-[70vh] overflow-y-auto`}>
+                    <table className="w-full border-collapse text-sm">
+                      <thead className="sticky top-0 z-10">
+                        <tr className={tableStyles.headRow}>
+                          <th className={`${tableStyles.th} w-14`}>Q#</th>
+                          <th className={tableStyles.th}>Question</th>
+                          <th className={`${tableStyles.th} w-44`}>Correct</th>
+                          <th className={`${tableStyles.th} w-56`}>Choices picked</th>
+                        </tr>
+                      </thead>
+                      <tbody className={tableStyles.body}>
+                        {items.map((item) => {
+                          return (
+                            <tr key={item.question_id} className={`${tableStyles.row} align-top`}>
+                              <td className={`${tableStyles.td} font-semibold text-[#191e73] tabular-nums`}>Q{item.question_no}</td>
+                              <td className={`${tableStyles.td} max-w-sm`}>
+                                <span className="line-clamp-2 text-neutral-900" title={item.question_text ?? undefined}>
+                                  {item.question_text ?? <span className="text-neutral-400 italic">Answer key only</span>}
+                                </span>
+                                <span className="text-xs text-neutral-500">{item.subject}</span>
+                              </td>
+                              <td className={tableStyles.td}>
+                                {item.difficulty === null ? (
+                                  <span className="text-xs text-neutral-400">No answers</span>
+                                ) : (
+                                  <div className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                      <span className="h-2 w-20 overflow-hidden rounded-full bg-neutral-100" aria-hidden="true">
+                                        <span className="block h-full rounded-full" style={{ width: `${item.difficulty}%`, background: BAR }} />
+                                      </span>
+                                      <span className="text-sm font-medium tabular-nums">{item.difficulty}%</span>
+                                    </div>
+                                    <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${difficultyTone(item.difficulty)}`}>
+                                      {difficultyLabel(item.difficulty)}
+                                    </span>
+                                  </div>
+                                )}
+                              </td>
+                              <td className={tableStyles.td}>
+                                <ChoiceBoxes item={item} />
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+              </Section>
+            </>
+          )}
+        </>
+      )}
     </div>
-    {examined > 0
-     ? <div className="mt-4"><Insight tone={overallRate >= 50 ? "positive" : "warning"}>{overallRate >= 50 ? `${passed.toLocaleString()} of ${examined.toLocaleString()} examinees cleared the cut-off — a ${overallRate}% pass rate${campusClause}.` : `Fewer than half passed${campusClause}: ${overallRate}% of ${examined.toLocaleString()} examinees, with ${(examined - passed).toLocaleString()} falling short of the cut-off.`}</Insight></div>
-     : <p className="mt-4 text-center text-sm text-neutral-500">No exam results for this selection.</p>}
-   </AnalyticsCard>
-   <AnalyticsCard title="Passing rate by course (%)" className="flex flex-col">
-    <div className="flex flex-1 flex-col justify-center rounded-xl border border-neutral-500 p-4">
-     <HorizontalBars title="Passing rate by course (%)" items={shownCourses.length ? shownCourses : [{ label: "No course data", value: 0 }]} />
-    </div>
-    {bestCourse && weakestCourse && <div className="mt-4"><Insight>{bestCourse.label === weakestCourse.label ? `${bestCourse.label} is the only course with exam data so far, passing at ${bestCourse.value}%.` : `${bestCourse.label} passes at ${bestCourse.value}% while ${weakestCourse.label} manages ${weakestCourse.value}% — a ${courseGap}-point spread across ${shownCourses.length} courses.`}</Insight></div>}
-   </AnalyticsCard>
-  </div>
-
-  <h2 className="mb-3 mt-7 text-xs font-semibold uppercase tracking-wider text-neutral-500">Item analysis</h2>
-  <div className="grid items-start gap-5 lg:grid-cols-[1.6fr_1fr]">
-   <AnalyticsCard title="Correct answers per question">
-    {chartItems.length ? <PaginatedBars title="Correct answers per question" items={chartItems} /> : <div className="rounded-xl border border-neutral-500 p-3"><p className="py-16 text-center text-sm text-neutral-500">No question response data available.</p></div>}
-    {answered.length > 0 && <div className="mt-4"><Insight>Examinees answered {avgCorrect}% of items correctly on average{belowHalf > 0 ? `, but ${belowHalf} of ${answered.length} items stumped more than half of them` : ` and cleared every item above 50%`}.{weakestCompetency ? ` Items under ${weakestCompetency.name} were hardest as a group (${weakestCompetency.avg}% avg).` : ""}</Insight></div>}
-   </AnalyticsCard>
-   <AnalyticsCard title="Hardest and easiest">
-    <div className="space-y-5">
-     {[{ title: "Hardest", rows: hardest }, { title: "Easiest", rows: easiest }].map((section) => <div key={section.title}><p className="mb-2 text-sm font-semibold text-neutral-800">{section.title}</p><div className={tableStyles.wrap}><table className="w-full border-collapse text-sm"><thead><tr className={tableStyles.headRow}><th className={tableStyles.th}>Question</th><th className={`${tableStyles.th} text-right`}>Correct</th><th className={`${tableStyles.th} text-right`}>Rate</th></tr></thead><tbody className={tableStyles.body}>{(section.rows.length ? section.rows : Array.from({ length: 4 }, (_, i) => ({ label: `Q${i + 1}`, percent: 0, correct: 0, total: 0 }))).map((row, index) => <tr key={`${section.title}-${row.label}-${index}`} className={tableStyles.row}><td className={`${tableStyles.td} font-medium`}>{row.label}</td><td className={`${tableStyles.td} text-right tabular-nums text-neutral-700`}>{row.correct}/{row.total}</td><td className={`${tableStyles.td} text-right`}><span className={`inline-flex min-w-12 justify-center rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums ${row.percent >= 75 ? "bg-green-100 text-green-800" : row.percent >= 40 ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800"}`}>{row.percent}%</span></td></tr>)}</tbody></table></div></div>)}
-    </div>
-    {hardestQ && easiestQ && <div className="mt-4"><Insight>{hardestQ.label === easiestQ.label ? `Only ${hardestQ.label} has responses so far (${hardestQ.percent}% correct).` : `${hardestQ.label}${hardestQ.competency !== "General" ? ` (${hardestQ.competency})` : ""} was toughest at ${hardestQ.percent}% correct — ${itemGap} points below the easiest, ${easiestQ.label} (${easiestQ.percent}%). Wide gaps can flag unclear wording or uneven coverage.`}</Insight></div>}
-   </AnalyticsCard>
-  </div>
- </AnalyticsPage>;
+  );
 }

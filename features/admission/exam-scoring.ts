@@ -12,6 +12,14 @@ export function manilaTodayIso(now = new Date()) {
   return now.toLocaleDateString("en-CA", { timeZone: "Asia/Manila" });
 }
 
+/** Exam sets. Set A is the original; Set B is a copy with reshuffled choices. */
+export const EXAM_SETS = ["A", "B"] as const;
+export type ExamSet = (typeof EXAM_SETS)[number];
+export const BASE_SET: ExamSet = "A";
+export function toExamSet(value: unknown): ExamSet {
+  return value === "B" ? "B" : "A";
+}
+
 /** tbl_exam_session_applicant.attendance values (null = not marked yet). */
 export const ATTENDANCE = { PRESENT: "PRESENT", ABSENT: "ABSENT" } as const;
 

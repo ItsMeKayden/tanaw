@@ -9,6 +9,7 @@ import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
 import { ADMISSION_STAGES, EXAM_RESULT_PASSED } from "@/features/admission/stages";
 import { enrollmentDecisionSchema, notEnrolledSchema } from "@/features/admission/schemas";
 import { describeEnrollmentEmail, sendEnrollmentEmail } from "@/features/admission/enrollment-email";
+import { documentLabel, EXAM_REQUIREMENTS } from "@/features/admission/documents";
 
 /**
  * Enrollment verification records its decisions as stage changes
@@ -42,6 +43,7 @@ async function transitionStage(options: {
   accountId: number;
   remarks: string;
   requirePassedExam?: boolean;
+  requireDocumentsVerified?: boolean;
 }) {
   const { applicationId, from, to, accountId, remarks } = options;
 
@@ -64,6 +66,17 @@ async function transitionStage(options: {
       });
       if (!passed) {
         throw new Error("This application has no PASSED examination result on record.");
+      }
+    }
+
+    if (options.requireDocumentsVerified) {
+      const verified = await tx.tbl_application_requirement.findMany({
+        where: { application_id: applicationId, requirement: { in: [...EXAM_REQUIREMENTS] } },
+        select: { requirement: true },
+      });
+      const missing = EXAM_REQUIREMENTS.filter((req) => !verified.some((v) => v.requirement === req));
+      if (missing.length > 0) {
+        throw new Error(`Verify ${missing.map(documentLabel).join(" and ")} before marking as enrolled.`);
       }
     }
 
@@ -97,6 +110,7 @@ async function runTransition(
     schema: typeof enrollmentDecisionSchema | typeof notEnrolledSchema;
     defaultRemarks: string;
     requirePassedExam?: boolean;
+    requireDocumentsVerified?: boolean;
     successMessage: string;
     /** Runs after the change is saved; its text is added to the success message. */
     afterSave?: (applicationId: number) => Promise<string>;
@@ -119,6 +133,7 @@ async function runTransition(
       accountId: getAccountId(user),
       remarks: remarks ?? config.defaultRemarks,
       requirePassedExam: config.requirePassedExam,
+      requireDocumentsVerified: config.requireDocumentsVerified,
     });
   } catch (error) {
     console.error(`Enrollment transition ${config.from} → ${config.to} error:`, error);
@@ -133,7 +148,7 @@ async function runTransition(
   return { success: true, message: note ? `${config.successMessage} ${note}` : config.successMessage };
 }
 
-/** Passed → Enrolled. Requires a PASSED exam result. Emails the applicant. */
+/** Passed → Enrolled. Requires a PASSED exam result and verified documents. Emails the applicant. */
 export async function verifyEnrollment(input: {
   application_id: number;
   remarks?: string;
@@ -144,6 +159,7 @@ export async function verifyEnrollment(input: {
     schema: enrollmentDecisionSchema,
     defaultRemarks: "Enrollment verified.",
     requirePassedExam: true,
+    requireDocumentsVerified: true,
     successMessage: "Applicant verified as enrolled.",
     afterSave: async (applicationId) => describeEnrollmentEmail(await sendEnrollmentEmail(applicationId)),
   });

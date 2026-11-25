@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, type ComponentProps, type ReactNode } from "react";
+import { useEffect, useState, useTransition, type ComponentProps, type ReactNode } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,6 +21,7 @@ import {
 
 import { tableStyles } from "@/components/ui/table-styles";
 import { DatePicker } from "@/components/ui/date-picker";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { Modal } from "@/components/ui/modal";
 import { StatCard } from "@/components/ui/stat-card";
 import {
@@ -30,6 +31,7 @@ import {
   removeFromSession,
   restoreExamSession,
   saveAttendance,
+  setSessionExamSet,
 } from "@/features/admission/actions/exam-schedule";
 import { manilaTodayIso } from "@/features/admission/exam-scoring";
 import { examSessionSchema, type ExamSessionValues } from "@/features/admission/schemas";
@@ -51,9 +53,25 @@ export type SessionRow = {
   present: number;
   absent: number;
   finished: boolean;
+  /** Start time has passed (In progress until it finishes). */
+  started: boolean;
   /** Archived (instead of deleted): read-only until restored. */
   archived: boolean;
+  /** Exam set (question version) the session takes. */
+  exam_set: "A" | "B";
 };
+
+function SetChip({ set }: Readonly<{ set: "A" | "B" }>) {
+  return (
+    <span
+      className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[11px] font-semibold ring-1 ring-inset ${
+        set === "B" ? "bg-violet-50 text-violet-800 ring-violet-200" : "bg-[#e3e4f8] text-[#191e73] ring-[#191e73]/20"
+      }`}
+    >
+      Set {set}
+    </span>
+  );
+}
 
 export type SlotRow = {
   application_id: number;
@@ -62,6 +80,9 @@ export type SlotRow = {
   attendance: "PRESENT" | "ABSENT" | null;
   /** Has an exam score: can't be changed to absent or removed from the session. */
   scored: boolean;
+  /** When the saved attendance was marked, e.g. "8:12 AM" (Manila time). */
+  marked_at: string | null;
+  marked_by: string | null;
 };
 
 type Feedback = { type: "success" | "error"; text: string } | null;
@@ -114,12 +135,26 @@ function StatusBadge({ session }: Readonly<{ session: SessionRow }>) {
       </span>
     );
   }
-  return session.finished ? (
-    <span className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-700 ring-1 ring-neutral-300 ring-inset">
-      <Lock className="size-3" aria-hidden="true" />
-      Finished
-    </span>
-  ) : (
+  if (session.finished) {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-700 ring-1 ring-neutral-300 ring-inset">
+        <Lock className="size-3" aria-hidden="true" />
+        Finished
+      </span>
+    );
+  }
+  if (session.started) {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium whitespace-nowrap text-green-800 ring-1 ring-green-300 ring-inset">
+        <span className="relative flex size-2" aria-hidden="true">
+          <span className="absolute inline-flex size-full animate-ping rounded-full bg-green-500 opacity-60 motion-reduce:animate-none" />
+          <span className="relative inline-flex size-2 rounded-full bg-green-600" />
+        </span>
+        In progress
+      </span>
+    );
+  }
+  return (
     <span className="rounded-full bg-sky-50 px-2 py-0.5 text-xs font-medium text-sky-800 ring-1 ring-sky-200 ring-inset">
       Upcoming
     </span>
@@ -130,7 +165,15 @@ function StatusBadge({ session }: Readonly<{ session: SessionRow }>) {
 // New session (modal)
 // ---------------------------------------------------------------------------
 
-const EMPTY_SESSION: ExamSessionValues = { session_date: "", start_time: "", end_time: "", venue: "", room: "", capacity: "" };
+const EMPTY_SESSION: ExamSessionValues = {
+  session_date: "",
+  start_time: "",
+  end_time: "",
+  venue: "",
+  room: "",
+  capacity: "",
+  exam_set: "A",
+};
 
 function toMinutes(value: string) {
   const match = /^(\d{2}):(\d{2})$/.exec(value);
@@ -140,8 +183,9 @@ function toMinutes(value: string) {
 function NewSessionModal({
   open,
   cycleId,
+  hasSetB,
   onClose,
-}: Readonly<{ open: boolean; cycleId: number; onClose: (sessionId?: number) => void }>) {
+}: Readonly<{ open: boolean; cycleId: number; hasSetB: boolean; onClose: (sessionId?: number) => void }>) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const {
@@ -259,6 +303,16 @@ function NewSessionModal({
         {field("venue", "Venue", { placeholder: "e.g. QCU San Bartolome Campus, Main Building", maxLength: 150 }, { className: "sm:col-span-2" })}
         {field("room", "Room", { placeholder: "e.g. 204", maxLength: 50 }, { optional: true })}
         {field("capacity", "Capacity", { type: "number", min: 1, max: 1000, inputMode: "numeric", placeholder: "e.g. 40" })}
+        <label className="flex flex-col gap-1 text-sm text-neutral-800 sm:col-span-2">
+          <span className="font-medium">Exam set</span>
+          <select {...register("exam_set")} className={`${fieldClass} ${border("exam_set")}`}>
+            <option value="A">Set A</option>
+            <option value="B" disabled={!hasSetB}>
+              Set B{hasSetB ? "" : " (create it on Exam Questions first)"}
+            </option>
+          </select>
+          <span className="text-xs text-neutral-500">Everyone in this session takes the same set; their sheets are graded with its answer key.</span>
+        </label>
 
         {error && (
           <p role="alert" className="rounded-sm border border-red-300 bg-red-50 p-2 text-xs text-red-800 sm:col-span-2">
@@ -288,6 +342,7 @@ function AttendancePanel({
   slots,
   waiting,
   canWrite,
+  hasSetB,
   feedback,
   setFeedback,
 }: Readonly<{
@@ -295,6 +350,7 @@ function AttendancePanel({
   slots: SlotRow[];
   waiting: number;
   canWrite: boolean;
+  hasSetB: boolean;
   feedback: Feedback;
   setFeedback: (feedback: Feedback) => void;
 }>) {
@@ -323,6 +379,8 @@ function AttendancePanel({
   const duration = formatDuration(session.duration_minutes);
   // Finished and archived sessions are read-only.
   const locked = session.finished || session.archived;
+  // Attendance can only be taken once the session has started.
+  const attendanceOpen = session.started && !locked;
 
   return (
     <section className="flex flex-col overflow-hidden rounded-xl border border-neutral-500 bg-white/95">
@@ -334,6 +392,24 @@ function AttendancePanel({
             <p className="text-sm text-neutral-600">{session.weekday}</p>
           </div>
           <StatusBadge session={session} />
+        </div>
+        <div className="mt-2 flex items-center gap-2 text-sm">
+          <SetChip set={session.exam_set} />
+          {canWrite && hasSetB && !session.started && !session.archived && (
+            <label className="flex items-center gap-1.5 text-xs text-neutral-600">
+              <span>Change to</span>
+              <select
+                value={session.exam_set}
+                disabled={isPending}
+                onChange={(e) => run(() => setSessionExamSet(session.session_id, e.target.value))}
+                className="h-7 rounded-md border border-neutral-400 bg-white px-1.5 text-xs"
+                aria-label="Exam set for this session"
+              >
+                <option value="A">Set A</option>
+                <option value="B">Set B</option>
+              </select>
+            </label>
+          )}
         </div>
         <dl className="mt-3 space-y-1.5 text-sm">
           <div className="flex items-start gap-2">
@@ -387,13 +463,26 @@ function AttendancePanel({
           <ul className="scrollbar-none max-h-[50vh] space-y-1 overflow-y-auto pr-1 text-sm">
             {slots.map((slot) => {
               const checked = present[slot.application_id];
-              // Attendance is only finalized once the session has ended; until then
-              // the status stays blank even when the checkbox is ticked.
+              // Saving sends every row, so once edited an unticked row will be saved as absent.
+              const willBe = checked ? "PRESENT" : "ABSENT";
+              const dirty = touched && !locked && willBe !== slot.attendance;
+              const shown = dirty ? willBe : slot.attendance;
+              // No status before the session starts: nobody can be marked yet.
               let status: string | null = null;
-              if (session.finished) status = touched || slot.attendance ? (checked ? "Present" : "Absent") : "Not marked";
+              if (session.started || slot.attendance) {
+                status = shown === "PRESENT" ? "Present" : shown === "ABSENT" ? "Absent" : "Not marked";
+              }
               let badge = "border-neutral-400 bg-neutral-100 text-neutral-700";
               if (status === "Present") badge = "border-green-600 bg-green-100 text-green-900";
               if (status === "Absent") badge = "border-red-400 bg-red-100 text-red-900";
+              if (dirty) badge += " border-dashed";
+              let statusNote: string | null = null;
+              if (dirty) statusNote = "Unsaved";
+              else if (slot.attendance && slot.marked_at) statusNote = slot.marked_at;
+              const statusTitle =
+                !dirty && slot.attendance && slot.marked_at
+                  ? `Marked ${status?.toLowerCase()} at ${slot.marked_at}${slot.marked_by ? ` by ${slot.marked_by}` : ""}`
+                  : undefined;
               // A scored applicant stays present and stays in the session.
               const scoredLock = slot.scored && slot.attendance === "PRESENT";
               return (
@@ -402,8 +491,14 @@ function AttendancePanel({
                     type="checkbox"
                     id={`slot-${slot.application_id}`}
                     checked={checked}
-                    disabled={!canWrite || locked || scoredLock}
-                    title={scoredLock ? "Has an exam score, so attendance stays Present" : undefined}
+                    disabled={!canWrite || !attendanceOpen || scoredLock}
+                    title={
+                      scoredLock
+                        ? "Has an exam score, so attendance stays Present"
+                        : !session.started
+                          ? "Attendance opens when the session starts"
+                          : undefined
+                    }
                     onChange={(e) => {
                       setTouched(true);
                       setPresent((prev) => ({ ...prev, [slot.application_id]: e.target.checked }));
@@ -419,7 +514,16 @@ function AttendancePanel({
                       Scored
                     </span>
                   )}
-                  {status && <span className={`rounded-full border px-2 text-[11px] ${badge}`}>{status}</span>}
+                  {status && (
+                    <span className="flex shrink-0 flex-col items-end leading-tight" title={statusTitle}>
+                      <span className={`rounded-full border px-2 text-[11px] ${badge}`}>{status}</span>
+                      {statusNote && (
+                        <span className={`mt-0.5 text-[10px] tabular-nums ${dirty ? "text-amber-700" : "text-neutral-500"}`}>
+                          {statusNote}
+                        </span>
+                      )}
+                    </span>
+                  )}
                   {canWrite && !locked && !slot.scored && (
                     <button
                       type="button"
@@ -448,16 +552,23 @@ function AttendancePanel({
               <Archive className="size-3.5" aria-hidden="true" />
               This session is archived and read-only. Restore it from the Archived tab to make changes.
             </p>
-          ) : (
-            session.finished &&
+          ) : session.finished ? (
             slots.length > 0 && (
               <p className="flex items-center gap-1.5 text-xs text-neutral-500">
                 <Lock className="size-3.5" aria-hidden="true" />
                 This session has ended; attendance is locked.
               </p>
             )
+          ) : (
+            !session.started &&
+            slots.length > 0 && (
+              <p className="flex items-center gap-1.5 text-xs text-neutral-500">
+                <Clock className="size-3.5" aria-hidden="true" />
+                Attendance opens when the session starts{session.time ? ` (${session.date}, ${session.time})` : ""}.
+              </p>
+            )
           )}
-          {canWrite && slots.length > 0 && !locked && (
+          {canWrite && slots.length > 0 && attendanceOpen && (
             <div className="flex flex-wrap justify-end gap-2 border-t border-neutral-200 pt-3">
               <button
                 type="button"
@@ -568,8 +679,9 @@ function SessionsTable({
                     aria-current={active ? "true" : undefined}
                     className="text-left underline-offset-2 hover:underline"
                   >
-                    <span className={`block font-medium ${active ? "text-[#191e73]" : "text-neutral-900"}`}>
+                    <span className={`flex items-center gap-1.5 font-medium ${active ? "text-[#191e73]" : "text-neutral-900"}`}>
                       {session.date}
+                      <SetChip set={session.exam_set} />
                     </span>
                     <span className="block text-xs text-neutral-600">{session.weekday}</span>
                   </button>
@@ -666,6 +778,8 @@ export function ExamSchedule({
   slots,
   waiting,
   canWrite,
+  nextStatusChangeAt,
+  hasSetB,
   yearFilter,
 }: Readonly<{
   cycleId: number;
@@ -674,10 +788,24 @@ export function ExamSchedule({
   slots: SlotRow[];
   waiting: number;
   canWrite: boolean;
+  /** Epoch ms of the next session start/end; the page refreshes then so statuses update. */
+  nextStatusChangeAt: number | null;
+  /** Whether the exam has a Set B that sessions can take. */
+  hasSetB: boolean;
   /** School year dropdown, shown in the sessions header. */
   yearFilter?: ReactNode;
 }>) {
   const router = useRouter();
+
+  // Upcoming → In progress → Finished happens at the start/end time: refresh then.
+  useEffect(() => {
+    if (nextStatusChangeAt === null) return;
+    const delay = nextStatusChangeAt - Date.now() + 1000;
+    // Timers over ~24 days overflow; a far-off change is picked up on a later visit.
+    if (delay > 24 * 60 * 60 * 1000) return;
+    const timer = window.setTimeout(() => router.refresh(), Math.max(delay, 0));
+    return () => window.clearTimeout(timer);
+  }, [nextStatusChangeAt, router]);
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [adding, setAdding] = useState(false);
@@ -707,23 +835,33 @@ export function ExamSchedule({
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
   }
 
-  function runSessionAction(action: () => Promise<ActionResult>) {
+  function runSessionAction(action: () => Promise<ActionResult>, onDone?: () => void) {
     setFeedback(null);
     startTransition(async () => {
       const result = await action();
       toast.fromResult(result);
       setFeedback("error" in result ? { type: "error", text: result.error } : null);
+      onDone?.();
       router.refresh();
     });
   }
 
+  /** Session waiting for the archive confirmation (null = dialog closed). */
+  const [archiving, setArchiving] = useState<SessionRow | null>(null);
+
   function archive(session: SessionRow) {
-    const note =
-      !session.finished && session.registered
-        ? " Applicants without an exam score will get their slot back and return to the waiting list."
-        : " Its slots and attendance are kept.";
-    if (!window.confirm(`Archive the ${session.date} session at ${session.venue}?${note} You can restore it later.`)) return;
-    runSessionAction(() => archiveExamSession(session.session_id));
+    setArchiving(session);
+  }
+
+  function confirmArchive() {
+    if (!archiving) return;
+    runSessionAction(() => archiveExamSession(archiving.session_id), () => setArchiving(null));
+  }
+
+  // What archiving does to this session's applicants.
+  let archiveNote = "Its slots and attendance are kept.";
+  if (archiving && !archiving.finished && archiving.registered > 0) {
+    archiveNote = `${archiving.registered} seated applicant${archiving.registered === 1 ? "" : "s"} without an exam score will get their slot back and return to the waiting list.`;
   }
 
   function restore(session: SessionRow) {
@@ -831,6 +969,7 @@ export function ExamSchedule({
             slots={slots}
             waiting={waiting}
             canWrite={canWrite}
+            hasSetB={hasSetB}
             feedback={panelFeedback}
             setFeedback={setPanelFeedback}
           />
@@ -847,6 +986,7 @@ export function ExamSchedule({
         <NewSessionModal
           open={adding}
           cycleId={cycleId}
+          hasSetB={hasSetB}
           onClose={(sessionId) => {
             setAdding(false);
             if (sessionId) {
@@ -856,6 +996,22 @@ export function ExamSchedule({
           }}
         />
       )}
+
+      <ConfirmModal
+        open={archiving !== null}
+        onCancel={() => setArchiving(null)}
+        onConfirm={confirmArchive}
+        isPending={isPending}
+        tone="warning"
+        title="Archive exam session"
+        heading={
+          archiving
+            ? `${archiving.date} · ${archiving.time ?? ""}${archiving.end_time ? `–${archiving.end_time}` : ""} · ${archiving.venue}${archiving.room ? `, Room ${archiving.room}` : ""}`
+            : undefined
+        }
+        description={`${archiveNote} The session moves to the Archived tab and can be restored later; nothing is deleted.`}
+        confirmLabel={isPending ? "Archiving…" : "Archive session"}
+      />
     </div>
   );
 }

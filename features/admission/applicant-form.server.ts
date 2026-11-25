@@ -37,6 +37,7 @@ export type ParsedApplicantForm = {
   };
   application: {
     barangay_id: number;
+    street_address: string;
     branch_id: number;
     program_id: number;
     program_choice_2_id: number | null;
@@ -137,6 +138,7 @@ export async function parseApplicantForm(
       },
       application: {
         barangay_id: Number(values.barangay_id),
+        street_address: values.street_address,
         branch_id: Number(values.branch_id),
         program_id: Number(values.program_id),
         program_choice_2_id: values.program_choice_2_id

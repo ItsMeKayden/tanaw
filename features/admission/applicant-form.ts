@@ -4,7 +4,7 @@
  *
  * Fields map to the TANAW data dictionary:
  *   tbl_applicant   – name, sex, birth date, email, mobile
- *   tbl_application – barangay, branch, program (+ 2nd/3rd choice)
+ *   tbl_application – street address, barangay, branch, program (+ 2nd/3rd choice)
  *   tbl_school      – school name, type, city/municipality
  */
 import { z } from "zod";
@@ -131,6 +131,12 @@ export const applicantFormSchema = z
         "Mobile number must be exactly 11 digits starting with 09 (e.g. 09171234567).",
       ),
     barangay_id: requiredId("Barangay is required."),
+    street_address: z
+      .string()
+      .trim()
+      .min(1, "House no. / street is required.")
+      .max(150, "House no. / street must not exceed 150 characters.")
+      .refine((v) => /[\p{L}\d]/u.test(v), "Enter a valid house no. / street."),
 
     // (2) Course and campus
     program_id: requiredId("1st choice program is required."),
@@ -198,6 +204,7 @@ export const emptyApplicantForm: ApplicantFormValues = {
   email: "",
   mobile_no: "",
   barangay_id: "",
+  street_address: "",
   program_id: "",
   program_choice_2_id: "",
   program_choice_3_id: "",

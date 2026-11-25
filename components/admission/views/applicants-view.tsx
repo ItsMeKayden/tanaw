@@ -45,6 +45,7 @@ export async function ApplicantsView({ module }: Readonly<{ module: "admission" 
           orderBy: { application_date: "desc" },
           take: 1,
           select: {
+            application_id: true,
             application_no: true,
             tbl_program: { select: { program_code: true, program_name: true } },
             tbl_school: { select: { school_name: true, school_type: true } },
@@ -70,6 +71,7 @@ export async function ApplicantsView({ module }: Readonly<{ module: "admission" 
     const application = applicant.tbl_application[0];
     return {
       applicant_id: applicant.applicant_id,
+      application_id: application?.application_id ?? null,
       application_no: application?.application_no ?? null,
       name: [applicant.first_name, applicant.middle_name, applicant.last_name, applicant.suffix]
         .filter(Boolean)

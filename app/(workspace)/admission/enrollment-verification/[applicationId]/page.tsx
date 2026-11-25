@@ -6,7 +6,8 @@ import { connection } from "next/server";
 import EnrollmentDecision from "@/components/admission/enrollment-decision";
 import { QcuWatermark } from "@/components/admission/qcu-watermark";
 import { DocumentPreview } from "@/components/admission/document-preview";
-import { DOCUMENT_SLOTS, formatFileSize } from "@/features/admission/documents";
+import { RequirementToggle } from "@/components/admission/requirement-toggle";
+import { DOCUMENT_SLOTS, EXAM_REQUIREMENTS, formatFileSize } from "@/features/admission/documents";
 import { formatFullName } from "@/features/admission/enrollment-queries";
 import {
   ADMISSION_STAGES,
@@ -24,6 +25,15 @@ import { ProfileSkeleton } from "@/components/ui/skeletons";
 type PageProps = Readonly<{
   params: Promise<{ applicationId: string }>;
 }>;
+
+const verifiedAtFormat = new Intl.DateTimeFormat("en-PH", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+  hour: "numeric",
+  minute: "2-digit",
+  timeZone: "Asia/Manila",
+});
 
 function InfoLine({ label, value }: Readonly<{ label: string; value: string | null | undefined }>) {
   return (
@@ -81,6 +91,10 @@ async function EnrollmentDetailContent({ params }: PageProps) {
       tbl_application_document: {
         select: { document_id: true, document_type: true, file_name: true, file_size: true, mime_type: true },
       },
+      // Checked on the applicant profile before the exam (Form 138, PSA).
+      tbl_application_requirement: {
+        select: { requirement: true, verified_at: true, tbl_user_account: { select: { full_name: true } } },
+      },
       tbl_application_stage_log: {
         where: {
           tbl_admission_stage: {
@@ -108,6 +122,9 @@ async function EnrollmentDetailContent({ params }: PageProps) {
     (result) => result.result_status === EXAM_RESULT_PASSED,
   );
   const decision = application.tbl_application_stage_log[0];
+  const documentsVerified = EXAM_REQUIREMENTS.every((req) =>
+    application.tbl_application_requirement.some((r) => r.requirement === req),
+  );
 
   const isPassed = stageName === ADMISSION_STAGES.PASSED;
   const isAdmitted =
@@ -183,15 +200,33 @@ async function EnrollmentDetailContent({ params }: PageProps) {
           <InfoLine label="Mobile" value={applicant?.mobile_no} />
         </dl>
 
-        <h3 className="mt-4 mb-2 font-semibold">Documents</h3>
+        <h3 className="mt-4 font-semibold">Documents</h3>
+        <p className="mb-2 text-xs text-neutral-600">
+          Check each document against the original. All must be verified before the applicant can be marked as
+          enrolled.
+        </p>
         <ul className="grid gap-3 text-sm sm:grid-cols-2">
           {DOCUMENT_SLOTS.map((slot) => {
             const document = application.tbl_application_document.find(
               (doc) => doc.document_type === slot.documentType,
             );
+            const verification = application.tbl_application_requirement.find(
+              (r) => r.requirement === slot.documentType,
+            );
             return (
-              <li key={slot.key} className="flex min-w-0 flex-col gap-1">
-                <span className="text-neutral-700">{slot.label}</span>
+              <li key={slot.key} className="flex min-w-0 flex-col gap-1.5">
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <span className="pt-1 text-neutral-700">{slot.label}</span>
+                  <RequirementToggle
+                    applicationId={application.application_id}
+                    requirement={slot.documentType}
+                    label={slot.label}
+                    verified={Boolean(verification)}
+                    verifiedBy={verification?.tbl_user_account?.full_name ?? null}
+                    verifiedAt={verification ? verifiedAtFormat.format(verification.verified_at) : null}
+                    canWrite={canWrite && isPassed}
+                  />
+                </div>
                 {document ? (
                   <DocumentPreview
                     src={`/api/documents/${document.document_id}`}
@@ -230,7 +265,10 @@ async function EnrollmentDetailContent({ params }: PageProps) {
         applicationId={application.application_id}
         stageName={stageName}
         canDecide={canWrite}
-        canEnroll={canWrite && isPassed && Boolean(passedResult)}
+        canEnroll={canWrite && isPassed && Boolean(passedResult) && documentsVerified}
+        enrollBlockedReason={
+          isPassed && passedResult && !documentsVerified ? "Verify all documents above before marking as enrolled." : null
+        }
         decision={
           decision
             ? {

@@ -47,6 +47,7 @@ export type Tbl_examMinAggregateOutputType = {
   exam_date: Date | null
   total_items: number | null
   max_score: number | null
+  edit_unlocked: boolean | null
 }
 
 export type Tbl_examMaxAggregateOutputType = {
@@ -56,6 +57,7 @@ export type Tbl_examMaxAggregateOutputType = {
   exam_date: Date | null
   total_items: number | null
   max_score: number | null
+  edit_unlocked: boolean | null
 }
 
 export type Tbl_examCountAggregateOutputType = {
@@ -65,6 +67,7 @@ export type Tbl_examCountAggregateOutputType = {
   exam_date: number
   total_items: number
   max_score: number
+  edit_unlocked: number
   _all: number
 }
 
@@ -90,6 +93,7 @@ export type Tbl_examMinAggregateInputType = {
   exam_date?: true
   total_items?: true
   max_score?: true
+  edit_unlocked?: true
 }
 
 export type Tbl_examMaxAggregateInputType = {
@@ -99,6 +103,7 @@ export type Tbl_examMaxAggregateInputType = {
   exam_date?: true
   total_items?: true
   max_score?: true
+  edit_unlocked?: true
 }
 
 export type Tbl_examCountAggregateInputType = {
@@ -108,6 +113,7 @@ export type Tbl_examCountAggregateInputType = {
   exam_date?: true
   total_items?: true
   max_score?: true
+  edit_unlocked?: true
   _all?: true
 }
 
@@ -204,6 +210,7 @@ export type Tbl_examGroupByOutputType = {
   exam_date: Date | null
   total_items: number | null
   max_score: number | null
+  edit_unlocked: boolean
   _count: Tbl_examCountAggregateOutputType | null
   _avg: Tbl_examAvgAggregateOutputType | null
   _sum: Tbl_examSumAggregateOutputType | null
@@ -236,6 +243,7 @@ export type tbl_examWhereInput = {
   exam_date?: Prisma.DateTimeNullableFilter<"tbl_exam"> | Date | string | null
   total_items?: Prisma.IntNullableFilter<"tbl_exam"> | number | null
   max_score?: Prisma.IntNullableFilter<"tbl_exam"> | number | null
+  edit_unlocked?: Prisma.BoolFilter<"tbl_exam"> | boolean
   tbl_admission_cycle?: Prisma.XOR<Prisma.Tbl_admission_cycleNullableScalarRelationFilter, Prisma.tbl_admission_cycleWhereInput> | null
   tbl_exam_question?: Prisma.Tbl_exam_questionListRelationFilter
   tbl_exam_result?: Prisma.Tbl_exam_resultListRelationFilter
@@ -249,6 +257,7 @@ export type tbl_examOrderByWithRelationInput = {
   exam_date?: Prisma.SortOrderInput | Prisma.SortOrder
   total_items?: Prisma.SortOrderInput | Prisma.SortOrder
   max_score?: Prisma.SortOrderInput | Prisma.SortOrder
+  edit_unlocked?: Prisma.SortOrder
   tbl_admission_cycle?: Prisma.tbl_admission_cycleOrderByWithRelationInput
   tbl_exam_question?: Prisma.tbl_exam_questionOrderByRelationAggregateInput
   tbl_exam_result?: Prisma.tbl_exam_resultOrderByRelationAggregateInput
@@ -265,6 +274,7 @@ export type tbl_examWhereUniqueInput = Prisma.AtLeast<{
   exam_date?: Prisma.DateTimeNullableFilter<"tbl_exam"> | Date | string | null
   total_items?: Prisma.IntNullableFilter<"tbl_exam"> | number | null
   max_score?: Prisma.IntNullableFilter<"tbl_exam"> | number | null
+  edit_unlocked?: Prisma.BoolFilter<"tbl_exam"> | boolean
   tbl_admission_cycle?: Prisma.XOR<Prisma.Tbl_admission_cycleNullableScalarRelationFilter, Prisma.tbl_admission_cycleWhereInput> | null
   tbl_exam_question?: Prisma.Tbl_exam_questionListRelationFilter
   tbl_exam_result?: Prisma.Tbl_exam_resultListRelationFilter
@@ -278,6 +288,7 @@ export type tbl_examOrderByWithAggregationInput = {
   exam_date?: Prisma.SortOrderInput | Prisma.SortOrder
   total_items?: Prisma.SortOrderInput | Prisma.SortOrder
   max_score?: Prisma.SortOrderInput | Prisma.SortOrder
+  edit_unlocked?: Prisma.SortOrder
   _count?: Prisma.tbl_examCountOrderByAggregateInput
   _avg?: Prisma.tbl_examAvgOrderByAggregateInput
   _max?: Prisma.tbl_examMaxOrderByAggregateInput
@@ -295,6 +306,7 @@ export type tbl_examScalarWhereWithAggregatesInput = {
   exam_date?: Prisma.DateTimeNullableWithAggregatesFilter<"tbl_exam"> | Date | string | null
   total_items?: Prisma.IntNullableWithAggregatesFilter<"tbl_exam"> | number | null
   max_score?: Prisma.IntNullableWithAggregatesFilter<"tbl_exam"> | number | null
+  edit_unlocked?: Prisma.BoolWithAggregatesFilter<"tbl_exam"> | boolean
 }
 
 export type tbl_examCreateInput = {
@@ -302,6 +314,7 @@ export type tbl_examCreateInput = {
   exam_date?: Date | string | null
   total_items?: number | null
   max_score?: number | null
+  edit_unlocked?: boolean
   tbl_admission_cycle?: Prisma.tbl_admission_cycleCreateNestedOneWithoutTbl_examInput
   tbl_exam_question?: Prisma.tbl_exam_questionCreateNestedManyWithoutTbl_examInput
   tbl_exam_result?: Prisma.tbl_exam_resultCreateNestedManyWithoutTbl_examInput
@@ -315,6 +328,7 @@ export type tbl_examUncheckedCreateInput = {
   exam_date?: Date | string | null
   total_items?: number | null
   max_score?: number | null
+  edit_unlocked?: boolean
   tbl_exam_question?: Prisma.tbl_exam_questionUncheckedCreateNestedManyWithoutTbl_examInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_examInput
   tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedCreateNestedManyWithoutTbl_examInput
@@ -325,6 +339,7 @@ export type tbl_examUpdateInput = {
   exam_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   total_items?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   max_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  edit_unlocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tbl_admission_cycle?: Prisma.tbl_admission_cycleUpdateOneWithoutTbl_examNestedInput
   tbl_exam_question?: Prisma.tbl_exam_questionUpdateManyWithoutTbl_examNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUpdateManyWithoutTbl_examNestedInput
@@ -338,6 +353,7 @@ export type tbl_examUncheckedUpdateInput = {
   exam_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   total_items?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   max_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  edit_unlocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tbl_exam_question?: Prisma.tbl_exam_questionUncheckedUpdateManyWithoutTbl_examNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_examNestedInput
   tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedUpdateManyWithoutTbl_examNestedInput
@@ -350,6 +366,7 @@ export type tbl_examCreateManyInput = {
   exam_date?: Date | string | null
   total_items?: number | null
   max_score?: number | null
+  edit_unlocked?: boolean
 }
 
 export type tbl_examUpdateManyMutationInput = {
@@ -357,6 +374,7 @@ export type tbl_examUpdateManyMutationInput = {
   exam_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   total_items?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   max_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  edit_unlocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type tbl_examUncheckedUpdateManyInput = {
@@ -366,6 +384,7 @@ export type tbl_examUncheckedUpdateManyInput = {
   exam_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   total_items?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   max_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  edit_unlocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type Tbl_examListRelationFilter = {
@@ -385,6 +404,7 @@ export type tbl_examCountOrderByAggregateInput = {
   exam_date?: Prisma.SortOrder
   total_items?: Prisma.SortOrder
   max_score?: Prisma.SortOrder
+  edit_unlocked?: Prisma.SortOrder
 }
 
 export type tbl_examAvgOrderByAggregateInput = {
@@ -401,6 +421,7 @@ export type tbl_examMaxOrderByAggregateInput = {
   exam_date?: Prisma.SortOrder
   total_items?: Prisma.SortOrder
   max_score?: Prisma.SortOrder
+  edit_unlocked?: Prisma.SortOrder
 }
 
 export type tbl_examMinOrderByAggregateInput = {
@@ -410,6 +431,7 @@ export type tbl_examMinOrderByAggregateInput = {
   exam_date?: Prisma.SortOrder
   total_items?: Prisma.SortOrder
   max_score?: Prisma.SortOrder
+  edit_unlocked?: Prisma.SortOrder
 }
 
 export type tbl_examSumOrderByAggregateInput = {
@@ -522,6 +544,7 @@ export type tbl_examCreateWithoutTbl_admission_cycleInput = {
   exam_date?: Date | string | null
   total_items?: number | null
   max_score?: number | null
+  edit_unlocked?: boolean
   tbl_exam_question?: Prisma.tbl_exam_questionCreateNestedManyWithoutTbl_examInput
   tbl_exam_result?: Prisma.tbl_exam_resultCreateNestedManyWithoutTbl_examInput
   tbl_exam_session?: Prisma.tbl_exam_sessionCreateNestedManyWithoutTbl_examInput
@@ -533,6 +556,7 @@ export type tbl_examUncheckedCreateWithoutTbl_admission_cycleInput = {
   exam_date?: Date | string | null
   total_items?: number | null
   max_score?: number | null
+  edit_unlocked?: boolean
   tbl_exam_question?: Prisma.tbl_exam_questionUncheckedCreateNestedManyWithoutTbl_examInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_examInput
   tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedCreateNestedManyWithoutTbl_examInput
@@ -574,6 +598,7 @@ export type tbl_examScalarWhereInput = {
   exam_date?: Prisma.DateTimeNullableFilter<"tbl_exam"> | Date | string | null
   total_items?: Prisma.IntNullableFilter<"tbl_exam"> | number | null
   max_score?: Prisma.IntNullableFilter<"tbl_exam"> | number | null
+  edit_unlocked?: Prisma.BoolFilter<"tbl_exam"> | boolean
 }
 
 export type tbl_examCreateWithoutTbl_exam_questionInput = {
@@ -581,6 +606,7 @@ export type tbl_examCreateWithoutTbl_exam_questionInput = {
   exam_date?: Date | string | null
   total_items?: number | null
   max_score?: number | null
+  edit_unlocked?: boolean
   tbl_admission_cycle?: Prisma.tbl_admission_cycleCreateNestedOneWithoutTbl_examInput
   tbl_exam_result?: Prisma.tbl_exam_resultCreateNestedManyWithoutTbl_examInput
   tbl_exam_session?: Prisma.tbl_exam_sessionCreateNestedManyWithoutTbl_examInput
@@ -593,6 +619,7 @@ export type tbl_examUncheckedCreateWithoutTbl_exam_questionInput = {
   exam_date?: Date | string | null
   total_items?: number | null
   max_score?: number | null
+  edit_unlocked?: boolean
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_examInput
   tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedCreateNestedManyWithoutTbl_examInput
 }
@@ -618,6 +645,7 @@ export type tbl_examUpdateWithoutTbl_exam_questionInput = {
   exam_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   total_items?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   max_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  edit_unlocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tbl_admission_cycle?: Prisma.tbl_admission_cycleUpdateOneWithoutTbl_examNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUpdateManyWithoutTbl_examNestedInput
   tbl_exam_session?: Prisma.tbl_exam_sessionUpdateManyWithoutTbl_examNestedInput
@@ -630,6 +658,7 @@ export type tbl_examUncheckedUpdateWithoutTbl_exam_questionInput = {
   exam_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   total_items?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   max_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  edit_unlocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_examNestedInput
   tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedUpdateManyWithoutTbl_examNestedInput
 }
@@ -639,6 +668,7 @@ export type tbl_examCreateWithoutTbl_exam_resultInput = {
   exam_date?: Date | string | null
   total_items?: number | null
   max_score?: number | null
+  edit_unlocked?: boolean
   tbl_admission_cycle?: Prisma.tbl_admission_cycleCreateNestedOneWithoutTbl_examInput
   tbl_exam_question?: Prisma.tbl_exam_questionCreateNestedManyWithoutTbl_examInput
   tbl_exam_session?: Prisma.tbl_exam_sessionCreateNestedManyWithoutTbl_examInput
@@ -651,6 +681,7 @@ export type tbl_examUncheckedCreateWithoutTbl_exam_resultInput = {
   exam_date?: Date | string | null
   total_items?: number | null
   max_score?: number | null
+  edit_unlocked?: boolean
   tbl_exam_question?: Prisma.tbl_exam_questionUncheckedCreateNestedManyWithoutTbl_examInput
   tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedCreateNestedManyWithoutTbl_examInput
 }
@@ -676,6 +707,7 @@ export type tbl_examUpdateWithoutTbl_exam_resultInput = {
   exam_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   total_items?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   max_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  edit_unlocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tbl_admission_cycle?: Prisma.tbl_admission_cycleUpdateOneWithoutTbl_examNestedInput
   tbl_exam_question?: Prisma.tbl_exam_questionUpdateManyWithoutTbl_examNestedInput
   tbl_exam_session?: Prisma.tbl_exam_sessionUpdateManyWithoutTbl_examNestedInput
@@ -688,6 +720,7 @@ export type tbl_examUncheckedUpdateWithoutTbl_exam_resultInput = {
   exam_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   total_items?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   max_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  edit_unlocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tbl_exam_question?: Prisma.tbl_exam_questionUncheckedUpdateManyWithoutTbl_examNestedInput
   tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedUpdateManyWithoutTbl_examNestedInput
 }
@@ -697,6 +730,7 @@ export type tbl_examCreateWithoutTbl_exam_sessionInput = {
   exam_date?: Date | string | null
   total_items?: number | null
   max_score?: number | null
+  edit_unlocked?: boolean
   tbl_admission_cycle?: Prisma.tbl_admission_cycleCreateNestedOneWithoutTbl_examInput
   tbl_exam_question?: Prisma.tbl_exam_questionCreateNestedManyWithoutTbl_examInput
   tbl_exam_result?: Prisma.tbl_exam_resultCreateNestedManyWithoutTbl_examInput
@@ -709,6 +743,7 @@ export type tbl_examUncheckedCreateWithoutTbl_exam_sessionInput = {
   exam_date?: Date | string | null
   total_items?: number | null
   max_score?: number | null
+  edit_unlocked?: boolean
   tbl_exam_question?: Prisma.tbl_exam_questionUncheckedCreateNestedManyWithoutTbl_examInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_examInput
 }
@@ -734,6 +769,7 @@ export type tbl_examUpdateWithoutTbl_exam_sessionInput = {
   exam_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   total_items?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   max_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  edit_unlocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tbl_admission_cycle?: Prisma.tbl_admission_cycleUpdateOneWithoutTbl_examNestedInput
   tbl_exam_question?: Prisma.tbl_exam_questionUpdateManyWithoutTbl_examNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUpdateManyWithoutTbl_examNestedInput
@@ -746,6 +782,7 @@ export type tbl_examUncheckedUpdateWithoutTbl_exam_sessionInput = {
   exam_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   total_items?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   max_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  edit_unlocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tbl_exam_question?: Prisma.tbl_exam_questionUncheckedUpdateManyWithoutTbl_examNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_examNestedInput
 }
@@ -756,6 +793,7 @@ export type tbl_examCreateManyTbl_admission_cycleInput = {
   exam_date?: Date | string | null
   total_items?: number | null
   max_score?: number | null
+  edit_unlocked?: boolean
 }
 
 export type tbl_examUpdateWithoutTbl_admission_cycleInput = {
@@ -763,6 +801,7 @@ export type tbl_examUpdateWithoutTbl_admission_cycleInput = {
   exam_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   total_items?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   max_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  edit_unlocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tbl_exam_question?: Prisma.tbl_exam_questionUpdateManyWithoutTbl_examNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUpdateManyWithoutTbl_examNestedInput
   tbl_exam_session?: Prisma.tbl_exam_sessionUpdateManyWithoutTbl_examNestedInput
@@ -774,6 +813,7 @@ export type tbl_examUncheckedUpdateWithoutTbl_admission_cycleInput = {
   exam_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   total_items?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   max_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  edit_unlocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tbl_exam_question?: Prisma.tbl_exam_questionUncheckedUpdateManyWithoutTbl_examNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_examNestedInput
   tbl_exam_session?: Prisma.tbl_exam_sessionUncheckedUpdateManyWithoutTbl_examNestedInput
@@ -785,6 +825,7 @@ export type tbl_examUncheckedUpdateManyWithoutTbl_admission_cycleInput = {
   exam_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   total_items?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   max_score?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  edit_unlocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 
@@ -843,6 +884,7 @@ export type tbl_examSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   exam_date?: boolean
   total_items?: boolean
   max_score?: boolean
+  edit_unlocked?: boolean
   tbl_admission_cycle?: boolean | Prisma.tbl_exam$tbl_admission_cycleArgs<ExtArgs>
   tbl_exam_question?: boolean | Prisma.tbl_exam$tbl_exam_questionArgs<ExtArgs>
   tbl_exam_result?: boolean | Prisma.tbl_exam$tbl_exam_resultArgs<ExtArgs>
@@ -857,6 +899,7 @@ export type tbl_examSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   exam_date?: boolean
   total_items?: boolean
   max_score?: boolean
+  edit_unlocked?: boolean
   tbl_admission_cycle?: boolean | Prisma.tbl_exam$tbl_admission_cycleArgs<ExtArgs>
 }, ExtArgs["result"]["tbl_exam"]>
 
@@ -867,6 +910,7 @@ export type tbl_examSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   exam_date?: boolean
   total_items?: boolean
   max_score?: boolean
+  edit_unlocked?: boolean
   tbl_admission_cycle?: boolean | Prisma.tbl_exam$tbl_admission_cycleArgs<ExtArgs>
 }, ExtArgs["result"]["tbl_exam"]>
 
@@ -877,9 +921,10 @@ export type tbl_examSelectScalar = {
   exam_date?: boolean
   total_items?: boolean
   max_score?: boolean
+  edit_unlocked?: boolean
 }
 
-export type tbl_examOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"exam_id" | "cycle_id" | "exam_name" | "exam_date" | "total_items" | "max_score", ExtArgs["result"]["tbl_exam"]>
+export type tbl_examOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"exam_id" | "cycle_id" | "exam_name" | "exam_date" | "total_items" | "max_score" | "edit_unlocked", ExtArgs["result"]["tbl_exam"]>
 export type tbl_examInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tbl_admission_cycle?: boolean | Prisma.tbl_exam$tbl_admission_cycleArgs<ExtArgs>
   tbl_exam_question?: boolean | Prisma.tbl_exam$tbl_exam_questionArgs<ExtArgs>
@@ -909,6 +954,7 @@ export type $tbl_examPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     exam_date: Date | null
     total_items: number | null
     max_score: number | null
+    edit_unlocked: boolean
   }, ExtArgs["result"]["tbl_exam"]>
   composites: {}
 }
@@ -1342,6 +1388,7 @@ export interface tbl_examFieldRefs {
   readonly exam_date: Prisma.FieldRef<"tbl_exam", 'DateTime'>
   readonly total_items: Prisma.FieldRef<"tbl_exam", 'Int'>
   readonly max_score: Prisma.FieldRef<"tbl_exam", 'Int'>
+  readonly edit_unlocked: Prisma.FieldRef<"tbl_exam", 'Boolean'>
 }
     
 

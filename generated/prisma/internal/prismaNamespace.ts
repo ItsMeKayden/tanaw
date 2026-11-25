@@ -425,6 +425,7 @@ export const ModelName = {
   tbl_admission_draft: 'tbl_admission_draft',
   tbl_auth_session: 'tbl_auth_session',
   tbl_password_reset_token: 'tbl_password_reset_token',
+  tbl_application_requirement: 'tbl_application_requirement',
   tbl_application_document: 'tbl_application_document',
   tbl_exam_session: 'tbl_exam_session',
   tbl_exam_session_applicant: 'tbl_exam_session_applicant',
@@ -446,7 +447,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "tbl_admission_cycle" | "tbl_admission_stage" | "tbl_applicant" | "tbl_application" | "tbl_application_stage_log" | "tbl_barangay" | "tbl_branch" | "tbl_competency" | "tbl_course_recommendation" | "tbl_district" | "tbl_exam" | "tbl_exam_question" | "tbl_exam_result" | "tbl_import_batch" | "tbl_passing_score_setting" | "tbl_permission" | "tbl_program" | "tbl_program_competency" | "tbl_question_response" | "tbl_quota" | "tbl_role" | "tbl_role_permission" | "tbl_school" | "tbl_user_account" | "tbl_admission_draft" | "tbl_auth_session" | "tbl_password_reset_token" | "tbl_application_document" | "tbl_exam_session" | "tbl_exam_session_applicant" | "tbl_exam_subject_score" | "tbl_recommendation_setting" | "tbl_audit_log"
+    modelProps: "user" | "tbl_admission_cycle" | "tbl_admission_stage" | "tbl_applicant" | "tbl_application" | "tbl_application_stage_log" | "tbl_barangay" | "tbl_branch" | "tbl_competency" | "tbl_course_recommendation" | "tbl_district" | "tbl_exam" | "tbl_exam_question" | "tbl_exam_result" | "tbl_import_batch" | "tbl_passing_score_setting" | "tbl_permission" | "tbl_program" | "tbl_program_competency" | "tbl_question_response" | "tbl_quota" | "tbl_role" | "tbl_role_permission" | "tbl_school" | "tbl_user_account" | "tbl_admission_draft" | "tbl_auth_session" | "tbl_password_reset_token" | "tbl_application_requirement" | "tbl_application_document" | "tbl_exam_session" | "tbl_exam_session_applicant" | "tbl_exam_subject_score" | "tbl_recommendation_setting" | "tbl_audit_log"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2522,6 +2523,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    tbl_application_requirement: {
+      payload: Prisma.$tbl_application_requirementPayload<ExtArgs>
+      fields: Prisma.tbl_application_requirementFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.tbl_application_requirementFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_application_requirementPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.tbl_application_requirementFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_application_requirementPayload>
+        }
+        findFirst: {
+          args: Prisma.tbl_application_requirementFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_application_requirementPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.tbl_application_requirementFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_application_requirementPayload>
+        }
+        findMany: {
+          args: Prisma.tbl_application_requirementFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_application_requirementPayload>[]
+        }
+        create: {
+          args: Prisma.tbl_application_requirementCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_application_requirementPayload>
+        }
+        createMany: {
+          args: Prisma.tbl_application_requirementCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.tbl_application_requirementCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_application_requirementPayload>[]
+        }
+        delete: {
+          args: Prisma.tbl_application_requirementDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_application_requirementPayload>
+        }
+        update: {
+          args: Prisma.tbl_application_requirementUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_application_requirementPayload>
+        }
+        deleteMany: {
+          args: Prisma.tbl_application_requirementDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.tbl_application_requirementUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.tbl_application_requirementUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_application_requirementPayload>[]
+        }
+        upsert: {
+          args: Prisma.tbl_application_requirementUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$tbl_application_requirementPayload>
+        }
+        aggregate: {
+          args: Prisma.Tbl_application_requirementAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTbl_application_requirement>
+        }
+        groupBy: {
+          args: Prisma.tbl_application_requirementGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tbl_application_requirementGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.tbl_application_requirementCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Tbl_application_requirementCountAggregateOutputType> | number
+        }
+      }
+    }
     tbl_application_document: {
       payload: Prisma.$tbl_application_documentPayload<ExtArgs>
       fields: Prisma.tbl_application_documentFieldRefs
@@ -3069,7 +3144,8 @@ export const Tbl_applicationScalarFieldEnum = {
   cycle_id: 'cycle_id',
   current_stage_id: 'current_stage_id',
   application_no: 'application_no',
-  application_date: 'application_date'
+  application_date: 'application_date',
+  street_address: 'street_address'
 } as const
 
 export type Tbl_applicationScalarFieldEnum = (typeof Tbl_applicationScalarFieldEnum)[keyof typeof Tbl_applicationScalarFieldEnum]
@@ -3144,7 +3220,8 @@ export const Tbl_examScalarFieldEnum = {
   exam_name: 'exam_name',
   exam_date: 'exam_date',
   total_items: 'total_items',
-  max_score: 'max_score'
+  max_score: 'max_score',
+  edit_unlocked: 'edit_unlocked'
 } as const
 
 export type Tbl_examScalarFieldEnum = (typeof Tbl_examScalarFieldEnum)[keyof typeof Tbl_examScalarFieldEnum]
@@ -3155,6 +3232,12 @@ export const Tbl_exam_questionScalarFieldEnum = {
   exam_id: 'exam_id',
   competency_id: 'competency_id',
   question_no: 'question_no',
+  set_label: 'set_label',
+  question_text: 'question_text',
+  choice_a: 'choice_a',
+  choice_b: 'choice_b',
+  choice_c: 'choice_c',
+  choice_d: 'choice_d',
   correct_answer: 'correct_answer',
   points: 'points'
 } as const
@@ -3332,6 +3415,16 @@ export const Tbl_password_reset_tokenScalarFieldEnum = {
 export type Tbl_password_reset_tokenScalarFieldEnum = (typeof Tbl_password_reset_tokenScalarFieldEnum)[keyof typeof Tbl_password_reset_tokenScalarFieldEnum]
 
 
+export const Tbl_application_requirementScalarFieldEnum = {
+  application_id: 'application_id',
+  requirement: 'requirement',
+  verified_by: 'verified_by',
+  verified_at: 'verified_at'
+} as const
+
+export type Tbl_application_requirementScalarFieldEnum = (typeof Tbl_application_requirementScalarFieldEnum)[keyof typeof Tbl_application_requirementScalarFieldEnum]
+
+
 export const Tbl_application_documentScalarFieldEnum = {
   document_id: 'document_id',
   application_id: 'application_id',
@@ -3356,6 +3449,7 @@ export const Tbl_exam_sessionScalarFieldEnum = {
   venue: 'venue',
   room: 'room',
   capacity: 'capacity',
+  exam_set: 'exam_set',
   created_by: 'created_by',
   created_at: 'created_at',
   archived_at: 'archived_at',
@@ -3784,6 +3878,7 @@ export type GlobalOmitConfig = {
   tbl_admission_draft?: Prisma.tbl_admission_draftOmit
   tbl_auth_session?: Prisma.tbl_auth_sessionOmit
   tbl_password_reset_token?: Prisma.tbl_password_reset_tokenOmit
+  tbl_application_requirement?: Prisma.tbl_application_requirementOmit
   tbl_application_document?: Prisma.tbl_application_documentOmit
   tbl_exam_session?: Prisma.tbl_exam_sessionOmit
   tbl_exam_session_applicant?: Prisma.tbl_exam_session_applicantOmit

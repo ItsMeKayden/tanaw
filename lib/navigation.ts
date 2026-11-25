@@ -92,6 +92,7 @@ const navigationItems: NavigationItem[] = [
     permission: "reports",
     children: [
       { label: "Overview", href: "/reports", permission: "reports" },
+      { label: "Passing Rate", href: "/reports/passing-rate", permission: "reports" },
       { label: "Top Schools", href: "/reports/top-schools", permission: "reports" },
       { label: "Item Analysis", href: "/reports/item-analysis", permission: "reports" },
     ],
@@ -184,6 +185,25 @@ async function filterNavigation(
     seenLabels.add(item.label);
     return true;
   });
+}
+
+function flatten(items: NavigationItem[]): NavigationItem[] {
+  return items.flatMap((item) => [item, ...(item.children ? flatten(item.children) : [])]);
+}
+
+/**
+ * Whether the role may open a sidebar page (exact href match), using the
+ * same rule as the sidebar. Returns null for paths that aren't sidebar
+ * entries (detail pages etc.), which the page itself checks. Used by the
+ * proxy so a denied page is handled before streaming starts.
+ */
+export async function canOpenNavigationPath(role: UserRole, pathname: string): Promise<boolean | null> {
+  const normalized = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
+  const item = flatten(navigationItems).find((entry) => entry.href === normalized);
+  if (!item) return null;
+  if (item.requiredRole) return item.requiredRole === role;
+  const modules = Array.isArray(item.permission) ? item.permission : [item.permission];
+  return hasAnyPermission(role, modules, "read");
 }
 
 export async function getNavigationItems(

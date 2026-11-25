@@ -35,6 +35,7 @@ export async function getApplicantEditData(applicantId: number): Promise<Applica
         select: {
           application_id: true,
           barangay_id: true,
+          street_address: true,
           branch_id: true,
           program_id: true,
           program_choice_2_id: true,
@@ -77,6 +78,7 @@ export async function getApplicantEditData(applicantId: number): Promise<Applica
       email: str(applicant.email),
       mobile_no: str(applicant.mobile_no),
       barangay_id: str(application.barangay_id),
+      street_address: str(application.street_address),
       branch_id: str(application.branch_id),
       program_id: str(application.program_id),
       program_choice_2_id: str(application.program_choice_2_id),

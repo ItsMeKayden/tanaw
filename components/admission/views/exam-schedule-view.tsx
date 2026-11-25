@@ -5,9 +5,13 @@ import { FilterSelect } from "@/components/admission/filter-select";
 import { QcuWatermark } from "@/components/admission/qcu-watermark";
 import { resolveCycle } from "@/features/admission/admission-stats";
 import { formatFullName } from "@/features/admission/enrollment-queries";
-import { isSessionFinished } from "@/features/admission/exam";
+import {
+  getApplicantsToSchedule,
+  isSessionFinished,
+  isSessionStarted,
+  nextSessionChangeAt,
+} from "@/features/admission/exam";
 import { ATTENDANCE } from "@/features/admission/exam-scoring";
-import { ADMISSION_STAGES } from "@/features/admission/stages";
 import { requirePermission } from "@/lib/authorization";
 import { hasPermission } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
@@ -17,6 +21,12 @@ export type ExamScheduleSearchParams = Promise<{ cycle?: string | string[]; sess
 
 const dateFormat = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
 const weekdayFormat = new Intl.DateTimeFormat("en-US", { weekday: "long", timeZone: "UTC" });
+// marked_at is a real timestamp, so show it in Manila time.
+const markedAtFormat = new Intl.DateTimeFormat("en-US", {
+  hour: "numeric",
+  minute: "2-digit",
+  timeZone: "Asia/Manila",
+});
 
 function formatTime(value: string | null) {
   if (!value) return null;
@@ -70,6 +80,7 @@ export async function ExamScheduleView({
         venue: true,
         room: true,
         capacity: true,
+        exam_set: true,
         archived_at: true,
         _count: { select: { tbl_exam_session_applicant: { where: { tbl_application: ACTIVE_APPLICATION } } } },
       },
@@ -79,14 +90,8 @@ export async function ExamScheduleView({
       where: { tbl_exam_session: { tbl_exam: { cycle_id: cycle.cycle_id } }, tbl_application: ACTIVE_APPLICATION },
       _count: { _all: true },
     }),
-    prisma.tbl_application.count({
-      where: {
-        cycle_id: cycle.cycle_id,
-        ...ACTIVE_APPLICATION,
-        tbl_admission_stage: { stage_name: ADMISSION_STAGES.FOR_EXAMINATION },
-        tbl_exam_session_applicant: { is: null },
-      },
-    }),
+    // Same rule as "Fill slots": no seat yet, or missed / archived session.
+    getApplicantsToSchedule(prisma, cycle.cycle_id).then((list) => list.length),
   ]);
 
   const countOf = (sessionId: number, status: string) =>
@@ -106,10 +111,19 @@ export async function ExamScheduleView({
     present: countOf(s.session_id, ATTENDANCE.PRESENT),
     absent: countOf(s.session_id, ATTENDANCE.ABSENT),
     finished: isSessionFinished(s.session_date, s.end_time),
+    started: isSessionStarted(s.session_date, s.start_time),
     archived: s.archived_at !== null,
+    exam_set: s.exam_set === "B" ? "B" : "A",
   }));
 
+  // Set B can be chosen for a session once it exists on the Exam Questions page.
+  const hasSetB =
+    (await prisma.tbl_exam_question.count({ where: { tbl_exam: { cycle_id: cycle.cycle_id }, set_label: "B" } })) > 0;
+
   const requested = Number(Array.isArray(params.session) ? params.session[0] : params.session);
+  // When the next session starts or ends, so the page can refresh its statuses then.
+  const nextStatusChangeAt = nextSessionChangeAt(sessions.filter((s) => s.archived_at === null));
+
   // Default to the first active session; an archived one only when asked for.
   const selected = rows.find((r) => r.session_id === requested) ?? rows.find((r) => !r.archived) ?? null;
 
@@ -120,6 +134,8 @@ export async function ExamScheduleView({
           select: {
             application_id: true,
             attendance: true,
+            marked_at: true,
+            tbl_user_account: { select: { full_name: true } },
             tbl_application: {
               select: {
                 application_no: true,
@@ -142,6 +158,8 @@ export async function ExamScheduleView({
           attendance:
             slot.attendance === ATTENDANCE.PRESENT || slot.attendance === ATTENDANCE.ABSENT ? slot.attendance : null,
           scored: slot.tbl_application._count.tbl_exam_result > 0,
+          marked_at: slot.attendance && slot.marked_at ? markedAtFormat.format(slot.marked_at) : null,
+          marked_by: slot.attendance ? (slot.tbl_user_account?.full_name ?? null) : null,
         }))
     : [];
 
@@ -157,8 +175,11 @@ export async function ExamScheduleView({
         slots={slots}
         waiting={waiting}
         canWrite={canWrite}
+        nextStatusChangeAt={nextStatusChangeAt}
+        hasSetB={hasSetB}
         yearFilter={
           <FilterSelect
+            key="school-year"
             param="cycle"
             label="School year"
             value={String(cycle.cycle_id)}

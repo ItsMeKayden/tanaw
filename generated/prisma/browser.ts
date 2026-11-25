@@ -158,6 +158,13 @@ export type tbl_auth_session = Prisma.tbl_auth_sessionModel
  */
 export type tbl_password_reset_token = Prisma.tbl_password_reset_tokenModel
 /**
+ * Model tbl_application_requirement
+ * Requirements staff have verified for an application (e.g. Form 138, PSA
+ * birth certificate; requirement = the document type). Verifying every
+ * required one moves the applicant to "For Examination" automatically.
+ */
+export type tbl_application_requirement = Prisma.tbl_application_requirementModel
+/**
  * Model tbl_application_document
  * 
  */

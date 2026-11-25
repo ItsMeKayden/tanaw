@@ -23,6 +23,7 @@ export function getApplicantProfile(applicantId: number) {
           application_id: true,
           application_no: true,
           application_date: true,
+          street_address: true,
           tbl_school: {
             select: { school_name: true, school_type: true, city_municipality: true },
           },
@@ -68,6 +69,13 @@ export function getApplicantProfile(applicantId: number) {
               file_size: true,
               mime_type: true,
               uploaded_at: true,
+              tbl_user_account: { select: { full_name: true } },
+            },
+          },
+          tbl_application_requirement: {
+            select: {
+              requirement: true,
+              verified_at: true,
               tbl_user_account: { select: { full_name: true } },
             },
           },

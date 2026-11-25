@@ -79,6 +79,7 @@ export const ModelName = {
   tbl_admission_draft: 'tbl_admission_draft',
   tbl_auth_session: 'tbl_auth_session',
   tbl_password_reset_token: 'tbl_password_reset_token',
+  tbl_application_requirement: 'tbl_application_requirement',
   tbl_application_document: 'tbl_application_document',
   tbl_exam_session: 'tbl_exam_session',
   tbl_exam_session_applicant: 'tbl_exam_session_applicant',
@@ -167,7 +168,8 @@ export const Tbl_applicationScalarFieldEnum = {
   cycle_id: 'cycle_id',
   current_stage_id: 'current_stage_id',
   application_no: 'application_no',
-  application_date: 'application_date'
+  application_date: 'application_date',
+  street_address: 'street_address'
 } as const
 
 export type Tbl_applicationScalarFieldEnum = (typeof Tbl_applicationScalarFieldEnum)[keyof typeof Tbl_applicationScalarFieldEnum]
@@ -242,7 +244,8 @@ export const Tbl_examScalarFieldEnum = {
   exam_name: 'exam_name',
   exam_date: 'exam_date',
   total_items: 'total_items',
-  max_score: 'max_score'
+  max_score: 'max_score',
+  edit_unlocked: 'edit_unlocked'
 } as const
 
 export type Tbl_examScalarFieldEnum = (typeof Tbl_examScalarFieldEnum)[keyof typeof Tbl_examScalarFieldEnum]
@@ -253,6 +256,12 @@ export const Tbl_exam_questionScalarFieldEnum = {
   exam_id: 'exam_id',
   competency_id: 'competency_id',
   question_no: 'question_no',
+  set_label: 'set_label',
+  question_text: 'question_text',
+  choice_a: 'choice_a',
+  choice_b: 'choice_b',
+  choice_c: 'choice_c',
+  choice_d: 'choice_d',
   correct_answer: 'correct_answer',
   points: 'points'
 } as const
@@ -430,6 +439,16 @@ export const Tbl_password_reset_tokenScalarFieldEnum = {
 export type Tbl_password_reset_tokenScalarFieldEnum = (typeof Tbl_password_reset_tokenScalarFieldEnum)[keyof typeof Tbl_password_reset_tokenScalarFieldEnum]
 
 
+export const Tbl_application_requirementScalarFieldEnum = {
+  application_id: 'application_id',
+  requirement: 'requirement',
+  verified_by: 'verified_by',
+  verified_at: 'verified_at'
+} as const
+
+export type Tbl_application_requirementScalarFieldEnum = (typeof Tbl_application_requirementScalarFieldEnum)[keyof typeof Tbl_application_requirementScalarFieldEnum]
+
+
 export const Tbl_application_documentScalarFieldEnum = {
   document_id: 'document_id',
   application_id: 'application_id',
@@ -454,6 +473,7 @@ export const Tbl_exam_sessionScalarFieldEnum = {
   venue: 'venue',
   room: 'room',
   capacity: 'capacity',
+  exam_set: 'exam_set',
   created_by: 'created_by',
   created_at: 'created_at',
   archived_at: 'archived_at',

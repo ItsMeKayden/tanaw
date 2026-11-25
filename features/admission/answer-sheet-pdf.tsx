@@ -26,6 +26,8 @@ export type AnswerSheetApplicant = {
   application_no: string;
   full_name: string;
   room: string | null;
+  /** Exam set the applicant's session takes ("A" / "B"). */
+  set: string;
 };
 
 export type AnswerSheetData = {
@@ -51,6 +53,7 @@ const styles = StyleSheet.create({
   qr: { width: 64, height: 64 },
   idText: { fontSize: 9 },
   idName: { fontSize: 11, fontFamily: "Helvetica-Bold" },
+  setLabel: { fontSize: 14, fontFamily: "Helvetica-Bold", marginTop: 2, letterSpacing: 1 },
   instructions: { fontSize: 8, color: "#444444", marginBottom: 8, borderTopWidth: 0.5, borderBottomWidth: 0.5, borderColor: "#999999", paddingVertical: 3 },
   body: { flexDirection: "row", gap: 14 },
   timingCol: { width: 10, flexDirection: "column", justifyContent: "flex-start" },
@@ -154,6 +157,7 @@ function AnswerSheetPage({
             <Text style={styles.idName}>{applicant.full_name}</Text>
             <Text style={styles.idText}>No. {applicant.application_no}</Text>
             {applicant.room && <Text style={styles.idText}>Room: {applicant.room}</Text>}
+            <Text style={styles.setLabel}>SET {applicant.set}</Text>
           </View>
         </View>
       </View>

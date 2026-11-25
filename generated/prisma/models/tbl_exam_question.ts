@@ -47,6 +47,12 @@ export type Tbl_exam_questionMinAggregateOutputType = {
   exam_id: number | null
   competency_id: number | null
   question_no: number | null
+  set_label: string | null
+  question_text: string | null
+  choice_a: string | null
+  choice_b: string | null
+  choice_c: string | null
+  choice_d: string | null
   correct_answer: string | null
   points: number | null
 }
@@ -56,6 +62,12 @@ export type Tbl_exam_questionMaxAggregateOutputType = {
   exam_id: number | null
   competency_id: number | null
   question_no: number | null
+  set_label: string | null
+  question_text: string | null
+  choice_a: string | null
+  choice_b: string | null
+  choice_c: string | null
+  choice_d: string | null
   correct_answer: string | null
   points: number | null
 }
@@ -65,6 +77,12 @@ export type Tbl_exam_questionCountAggregateOutputType = {
   exam_id: number
   competency_id: number
   question_no: number
+  set_label: number
+  question_text: number
+  choice_a: number
+  choice_b: number
+  choice_c: number
+  choice_d: number
   correct_answer: number
   points: number
   _all: number
@@ -92,6 +110,12 @@ export type Tbl_exam_questionMinAggregateInputType = {
   exam_id?: true
   competency_id?: true
   question_no?: true
+  set_label?: true
+  question_text?: true
+  choice_a?: true
+  choice_b?: true
+  choice_c?: true
+  choice_d?: true
   correct_answer?: true
   points?: true
 }
@@ -101,6 +125,12 @@ export type Tbl_exam_questionMaxAggregateInputType = {
   exam_id?: true
   competency_id?: true
   question_no?: true
+  set_label?: true
+  question_text?: true
+  choice_a?: true
+  choice_b?: true
+  choice_c?: true
+  choice_d?: true
   correct_answer?: true
   points?: true
 }
@@ -110,6 +140,12 @@ export type Tbl_exam_questionCountAggregateInputType = {
   exam_id?: true
   competency_id?: true
   question_no?: true
+  set_label?: true
+  question_text?: true
+  choice_a?: true
+  choice_b?: true
+  choice_c?: true
+  choice_d?: true
   correct_answer?: true
   points?: true
   _all?: true
@@ -206,6 +242,12 @@ export type Tbl_exam_questionGroupByOutputType = {
   exam_id: number | null
   competency_id: number | null
   question_no: number
+  set_label: string
+  question_text: string | null
+  choice_a: string | null
+  choice_b: string | null
+  choice_c: string | null
+  choice_d: string | null
   correct_answer: string
   points: number
   _count: Tbl_exam_questionCountAggregateOutputType | null
@@ -238,6 +280,12 @@ export type tbl_exam_questionWhereInput = {
   exam_id?: Prisma.IntNullableFilter<"tbl_exam_question"> | number | null
   competency_id?: Prisma.IntNullableFilter<"tbl_exam_question"> | number | null
   question_no?: Prisma.IntFilter<"tbl_exam_question"> | number
+  set_label?: Prisma.StringFilter<"tbl_exam_question"> | string
+  question_text?: Prisma.StringNullableFilter<"tbl_exam_question"> | string | null
+  choice_a?: Prisma.StringNullableFilter<"tbl_exam_question"> | string | null
+  choice_b?: Prisma.StringNullableFilter<"tbl_exam_question"> | string | null
+  choice_c?: Prisma.StringNullableFilter<"tbl_exam_question"> | string | null
+  choice_d?: Prisma.StringNullableFilter<"tbl_exam_question"> | string | null
   correct_answer?: Prisma.StringFilter<"tbl_exam_question"> | string
   points?: Prisma.IntFilter<"tbl_exam_question"> | number
   tbl_competency?: Prisma.XOR<Prisma.Tbl_competencyNullableScalarRelationFilter, Prisma.tbl_competencyWhereInput> | null
@@ -250,6 +298,12 @@ export type tbl_exam_questionOrderByWithRelationInput = {
   exam_id?: Prisma.SortOrderInput | Prisma.SortOrder
   competency_id?: Prisma.SortOrderInput | Prisma.SortOrder
   question_no?: Prisma.SortOrder
+  set_label?: Prisma.SortOrder
+  question_text?: Prisma.SortOrderInput | Prisma.SortOrder
+  choice_a?: Prisma.SortOrderInput | Prisma.SortOrder
+  choice_b?: Prisma.SortOrderInput | Prisma.SortOrder
+  choice_c?: Prisma.SortOrderInput | Prisma.SortOrder
+  choice_d?: Prisma.SortOrderInput | Prisma.SortOrder
   correct_answer?: Prisma.SortOrder
   points?: Prisma.SortOrder
   tbl_competency?: Prisma.tbl_competencyOrderByWithRelationInput
@@ -265,6 +319,12 @@ export type tbl_exam_questionWhereUniqueInput = Prisma.AtLeast<{
   exam_id?: Prisma.IntNullableFilter<"tbl_exam_question"> | number | null
   competency_id?: Prisma.IntNullableFilter<"tbl_exam_question"> | number | null
   question_no?: Prisma.IntFilter<"tbl_exam_question"> | number
+  set_label?: Prisma.StringFilter<"tbl_exam_question"> | string
+  question_text?: Prisma.StringNullableFilter<"tbl_exam_question"> | string | null
+  choice_a?: Prisma.StringNullableFilter<"tbl_exam_question"> | string | null
+  choice_b?: Prisma.StringNullableFilter<"tbl_exam_question"> | string | null
+  choice_c?: Prisma.StringNullableFilter<"tbl_exam_question"> | string | null
+  choice_d?: Prisma.StringNullableFilter<"tbl_exam_question"> | string | null
   correct_answer?: Prisma.StringFilter<"tbl_exam_question"> | string
   points?: Prisma.IntFilter<"tbl_exam_question"> | number
   tbl_competency?: Prisma.XOR<Prisma.Tbl_competencyNullableScalarRelationFilter, Prisma.tbl_competencyWhereInput> | null
@@ -277,6 +337,12 @@ export type tbl_exam_questionOrderByWithAggregationInput = {
   exam_id?: Prisma.SortOrderInput | Prisma.SortOrder
   competency_id?: Prisma.SortOrderInput | Prisma.SortOrder
   question_no?: Prisma.SortOrder
+  set_label?: Prisma.SortOrder
+  question_text?: Prisma.SortOrderInput | Prisma.SortOrder
+  choice_a?: Prisma.SortOrderInput | Prisma.SortOrder
+  choice_b?: Prisma.SortOrderInput | Prisma.SortOrder
+  choice_c?: Prisma.SortOrderInput | Prisma.SortOrder
+  choice_d?: Prisma.SortOrderInput | Prisma.SortOrder
   correct_answer?: Prisma.SortOrder
   points?: Prisma.SortOrder
   _count?: Prisma.tbl_exam_questionCountOrderByAggregateInput
@@ -294,12 +360,24 @@ export type tbl_exam_questionScalarWhereWithAggregatesInput = {
   exam_id?: Prisma.IntNullableWithAggregatesFilter<"tbl_exam_question"> | number | null
   competency_id?: Prisma.IntNullableWithAggregatesFilter<"tbl_exam_question"> | number | null
   question_no?: Prisma.IntWithAggregatesFilter<"tbl_exam_question"> | number
+  set_label?: Prisma.StringWithAggregatesFilter<"tbl_exam_question"> | string
+  question_text?: Prisma.StringNullableWithAggregatesFilter<"tbl_exam_question"> | string | null
+  choice_a?: Prisma.StringNullableWithAggregatesFilter<"tbl_exam_question"> | string | null
+  choice_b?: Prisma.StringNullableWithAggregatesFilter<"tbl_exam_question"> | string | null
+  choice_c?: Prisma.StringNullableWithAggregatesFilter<"tbl_exam_question"> | string | null
+  choice_d?: Prisma.StringNullableWithAggregatesFilter<"tbl_exam_question"> | string | null
   correct_answer?: Prisma.StringWithAggregatesFilter<"tbl_exam_question"> | string
   points?: Prisma.IntWithAggregatesFilter<"tbl_exam_question"> | number
 }
 
 export type tbl_exam_questionCreateInput = {
   question_no: number
+  set_label?: string
+  question_text?: string | null
+  choice_a?: string | null
+  choice_b?: string | null
+  choice_c?: string | null
+  choice_d?: string | null
   correct_answer: string
   points: number
   tbl_competency?: Prisma.tbl_competencyCreateNestedOneWithoutTbl_exam_questionInput
@@ -312,6 +390,12 @@ export type tbl_exam_questionUncheckedCreateInput = {
   exam_id?: number | null
   competency_id?: number | null
   question_no: number
+  set_label?: string
+  question_text?: string | null
+  choice_a?: string | null
+  choice_b?: string | null
+  choice_c?: string | null
+  choice_d?: string | null
   correct_answer: string
   points: number
   tbl_question_response?: Prisma.tbl_question_responseUncheckedCreateNestedManyWithoutTbl_exam_questionInput
@@ -319,6 +403,12 @@ export type tbl_exam_questionUncheckedCreateInput = {
 
 export type tbl_exam_questionUpdateInput = {
   question_no?: Prisma.IntFieldUpdateOperationsInput | number
+  set_label?: Prisma.StringFieldUpdateOperationsInput | string
+  question_text?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_a?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_b?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_c?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_d?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   correct_answer?: Prisma.StringFieldUpdateOperationsInput | string
   points?: Prisma.IntFieldUpdateOperationsInput | number
   tbl_competency?: Prisma.tbl_competencyUpdateOneWithoutTbl_exam_questionNestedInput
@@ -331,6 +421,12 @@ export type tbl_exam_questionUncheckedUpdateInput = {
   exam_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   competency_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   question_no?: Prisma.IntFieldUpdateOperationsInput | number
+  set_label?: Prisma.StringFieldUpdateOperationsInput | string
+  question_text?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_a?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_b?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_c?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_d?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   correct_answer?: Prisma.StringFieldUpdateOperationsInput | string
   points?: Prisma.IntFieldUpdateOperationsInput | number
   tbl_question_response?: Prisma.tbl_question_responseUncheckedUpdateManyWithoutTbl_exam_questionNestedInput
@@ -341,12 +437,24 @@ export type tbl_exam_questionCreateManyInput = {
   exam_id?: number | null
   competency_id?: number | null
   question_no: number
+  set_label?: string
+  question_text?: string | null
+  choice_a?: string | null
+  choice_b?: string | null
+  choice_c?: string | null
+  choice_d?: string | null
   correct_answer: string
   points: number
 }
 
 export type tbl_exam_questionUpdateManyMutationInput = {
   question_no?: Prisma.IntFieldUpdateOperationsInput | number
+  set_label?: Prisma.StringFieldUpdateOperationsInput | string
+  question_text?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_a?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_b?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_c?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_d?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   correct_answer?: Prisma.StringFieldUpdateOperationsInput | string
   points?: Prisma.IntFieldUpdateOperationsInput | number
 }
@@ -356,6 +464,12 @@ export type tbl_exam_questionUncheckedUpdateManyInput = {
   exam_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   competency_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   question_no?: Prisma.IntFieldUpdateOperationsInput | number
+  set_label?: Prisma.StringFieldUpdateOperationsInput | string
+  question_text?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_a?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_b?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_c?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_d?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   correct_answer?: Prisma.StringFieldUpdateOperationsInput | string
   points?: Prisma.IntFieldUpdateOperationsInput | number
 }
@@ -375,6 +489,12 @@ export type tbl_exam_questionCountOrderByAggregateInput = {
   exam_id?: Prisma.SortOrder
   competency_id?: Prisma.SortOrder
   question_no?: Prisma.SortOrder
+  set_label?: Prisma.SortOrder
+  question_text?: Prisma.SortOrder
+  choice_a?: Prisma.SortOrder
+  choice_b?: Prisma.SortOrder
+  choice_c?: Prisma.SortOrder
+  choice_d?: Prisma.SortOrder
   correct_answer?: Prisma.SortOrder
   points?: Prisma.SortOrder
 }
@@ -392,6 +512,12 @@ export type tbl_exam_questionMaxOrderByAggregateInput = {
   exam_id?: Prisma.SortOrder
   competency_id?: Prisma.SortOrder
   question_no?: Prisma.SortOrder
+  set_label?: Prisma.SortOrder
+  question_text?: Prisma.SortOrder
+  choice_a?: Prisma.SortOrder
+  choice_b?: Prisma.SortOrder
+  choice_c?: Prisma.SortOrder
+  choice_d?: Prisma.SortOrder
   correct_answer?: Prisma.SortOrder
   points?: Prisma.SortOrder
 }
@@ -401,6 +527,12 @@ export type tbl_exam_questionMinOrderByAggregateInput = {
   exam_id?: Prisma.SortOrder
   competency_id?: Prisma.SortOrder
   question_no?: Prisma.SortOrder
+  set_label?: Prisma.SortOrder
+  question_text?: Prisma.SortOrder
+  choice_a?: Prisma.SortOrder
+  choice_b?: Prisma.SortOrder
+  choice_c?: Prisma.SortOrder
+  choice_d?: Prisma.SortOrder
   correct_answer?: Prisma.SortOrder
   points?: Prisma.SortOrder
 }
@@ -518,6 +650,12 @@ export type tbl_exam_questionUpdateOneRequiredWithoutTbl_question_responseNested
 
 export type tbl_exam_questionCreateWithoutTbl_competencyInput = {
   question_no: number
+  set_label?: string
+  question_text?: string | null
+  choice_a?: string | null
+  choice_b?: string | null
+  choice_c?: string | null
+  choice_d?: string | null
   correct_answer: string
   points: number
   tbl_exam?: Prisma.tbl_examCreateNestedOneWithoutTbl_exam_questionInput
@@ -528,6 +666,12 @@ export type tbl_exam_questionUncheckedCreateWithoutTbl_competencyInput = {
   question_id?: number
   exam_id?: number | null
   question_no: number
+  set_label?: string
+  question_text?: string | null
+  choice_a?: string | null
+  choice_b?: string | null
+  choice_c?: string | null
+  choice_d?: string | null
   correct_answer: string
   points: number
   tbl_question_response?: Prisma.tbl_question_responseUncheckedCreateNestedManyWithoutTbl_exam_questionInput
@@ -567,12 +711,24 @@ export type tbl_exam_questionScalarWhereInput = {
   exam_id?: Prisma.IntNullableFilter<"tbl_exam_question"> | number | null
   competency_id?: Prisma.IntNullableFilter<"tbl_exam_question"> | number | null
   question_no?: Prisma.IntFilter<"tbl_exam_question"> | number
+  set_label?: Prisma.StringFilter<"tbl_exam_question"> | string
+  question_text?: Prisma.StringNullableFilter<"tbl_exam_question"> | string | null
+  choice_a?: Prisma.StringNullableFilter<"tbl_exam_question"> | string | null
+  choice_b?: Prisma.StringNullableFilter<"tbl_exam_question"> | string | null
+  choice_c?: Prisma.StringNullableFilter<"tbl_exam_question"> | string | null
+  choice_d?: Prisma.StringNullableFilter<"tbl_exam_question"> | string | null
   correct_answer?: Prisma.StringFilter<"tbl_exam_question"> | string
   points?: Prisma.IntFilter<"tbl_exam_question"> | number
 }
 
 export type tbl_exam_questionCreateWithoutTbl_examInput = {
   question_no: number
+  set_label?: string
+  question_text?: string | null
+  choice_a?: string | null
+  choice_b?: string | null
+  choice_c?: string | null
+  choice_d?: string | null
   correct_answer: string
   points: number
   tbl_competency?: Prisma.tbl_competencyCreateNestedOneWithoutTbl_exam_questionInput
@@ -583,6 +739,12 @@ export type tbl_exam_questionUncheckedCreateWithoutTbl_examInput = {
   question_id?: number
   competency_id?: number | null
   question_no: number
+  set_label?: string
+  question_text?: string | null
+  choice_a?: string | null
+  choice_b?: string | null
+  choice_c?: string | null
+  choice_d?: string | null
   correct_answer: string
   points: number
   tbl_question_response?: Prisma.tbl_question_responseUncheckedCreateNestedManyWithoutTbl_exam_questionInput
@@ -616,6 +778,12 @@ export type tbl_exam_questionUpdateManyWithWhereWithoutTbl_examInput = {
 
 export type tbl_exam_questionCreateWithoutTbl_question_responseInput = {
   question_no: number
+  set_label?: string
+  question_text?: string | null
+  choice_a?: string | null
+  choice_b?: string | null
+  choice_c?: string | null
+  choice_d?: string | null
   correct_answer: string
   points: number
   tbl_competency?: Prisma.tbl_competencyCreateNestedOneWithoutTbl_exam_questionInput
@@ -627,6 +795,12 @@ export type tbl_exam_questionUncheckedCreateWithoutTbl_question_responseInput = 
   exam_id?: number | null
   competency_id?: number | null
   question_no: number
+  set_label?: string
+  question_text?: string | null
+  choice_a?: string | null
+  choice_b?: string | null
+  choice_c?: string | null
+  choice_d?: string | null
   correct_answer: string
   points: number
 }
@@ -649,6 +823,12 @@ export type tbl_exam_questionUpdateToOneWithWhereWithoutTbl_question_responseInp
 
 export type tbl_exam_questionUpdateWithoutTbl_question_responseInput = {
   question_no?: Prisma.IntFieldUpdateOperationsInput | number
+  set_label?: Prisma.StringFieldUpdateOperationsInput | string
+  question_text?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_a?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_b?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_c?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_d?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   correct_answer?: Prisma.StringFieldUpdateOperationsInput | string
   points?: Prisma.IntFieldUpdateOperationsInput | number
   tbl_competency?: Prisma.tbl_competencyUpdateOneWithoutTbl_exam_questionNestedInput
@@ -660,6 +840,12 @@ export type tbl_exam_questionUncheckedUpdateWithoutTbl_question_responseInput = 
   exam_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   competency_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   question_no?: Prisma.IntFieldUpdateOperationsInput | number
+  set_label?: Prisma.StringFieldUpdateOperationsInput | string
+  question_text?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_a?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_b?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_c?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_d?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   correct_answer?: Prisma.StringFieldUpdateOperationsInput | string
   points?: Prisma.IntFieldUpdateOperationsInput | number
 }
@@ -668,12 +854,24 @@ export type tbl_exam_questionCreateManyTbl_competencyInput = {
   question_id?: number
   exam_id?: number | null
   question_no: number
+  set_label?: string
+  question_text?: string | null
+  choice_a?: string | null
+  choice_b?: string | null
+  choice_c?: string | null
+  choice_d?: string | null
   correct_answer: string
   points: number
 }
 
 export type tbl_exam_questionUpdateWithoutTbl_competencyInput = {
   question_no?: Prisma.IntFieldUpdateOperationsInput | number
+  set_label?: Prisma.StringFieldUpdateOperationsInput | string
+  question_text?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_a?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_b?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_c?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_d?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   correct_answer?: Prisma.StringFieldUpdateOperationsInput | string
   points?: Prisma.IntFieldUpdateOperationsInput | number
   tbl_exam?: Prisma.tbl_examUpdateOneWithoutTbl_exam_questionNestedInput
@@ -684,6 +882,12 @@ export type tbl_exam_questionUncheckedUpdateWithoutTbl_competencyInput = {
   question_id?: Prisma.IntFieldUpdateOperationsInput | number
   exam_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   question_no?: Prisma.IntFieldUpdateOperationsInput | number
+  set_label?: Prisma.StringFieldUpdateOperationsInput | string
+  question_text?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_a?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_b?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_c?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_d?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   correct_answer?: Prisma.StringFieldUpdateOperationsInput | string
   points?: Prisma.IntFieldUpdateOperationsInput | number
   tbl_question_response?: Prisma.tbl_question_responseUncheckedUpdateManyWithoutTbl_exam_questionNestedInput
@@ -693,6 +897,12 @@ export type tbl_exam_questionUncheckedUpdateManyWithoutTbl_competencyInput = {
   question_id?: Prisma.IntFieldUpdateOperationsInput | number
   exam_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   question_no?: Prisma.IntFieldUpdateOperationsInput | number
+  set_label?: Prisma.StringFieldUpdateOperationsInput | string
+  question_text?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_a?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_b?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_c?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_d?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   correct_answer?: Prisma.StringFieldUpdateOperationsInput | string
   points?: Prisma.IntFieldUpdateOperationsInput | number
 }
@@ -701,12 +911,24 @@ export type tbl_exam_questionCreateManyTbl_examInput = {
   question_id?: number
   competency_id?: number | null
   question_no: number
+  set_label?: string
+  question_text?: string | null
+  choice_a?: string | null
+  choice_b?: string | null
+  choice_c?: string | null
+  choice_d?: string | null
   correct_answer: string
   points: number
 }
 
 export type tbl_exam_questionUpdateWithoutTbl_examInput = {
   question_no?: Prisma.IntFieldUpdateOperationsInput | number
+  set_label?: Prisma.StringFieldUpdateOperationsInput | string
+  question_text?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_a?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_b?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_c?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_d?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   correct_answer?: Prisma.StringFieldUpdateOperationsInput | string
   points?: Prisma.IntFieldUpdateOperationsInput | number
   tbl_competency?: Prisma.tbl_competencyUpdateOneWithoutTbl_exam_questionNestedInput
@@ -717,6 +939,12 @@ export type tbl_exam_questionUncheckedUpdateWithoutTbl_examInput = {
   question_id?: Prisma.IntFieldUpdateOperationsInput | number
   competency_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   question_no?: Prisma.IntFieldUpdateOperationsInput | number
+  set_label?: Prisma.StringFieldUpdateOperationsInput | string
+  question_text?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_a?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_b?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_c?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_d?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   correct_answer?: Prisma.StringFieldUpdateOperationsInput | string
   points?: Prisma.IntFieldUpdateOperationsInput | number
   tbl_question_response?: Prisma.tbl_question_responseUncheckedUpdateManyWithoutTbl_exam_questionNestedInput
@@ -726,6 +954,12 @@ export type tbl_exam_questionUncheckedUpdateManyWithoutTbl_examInput = {
   question_id?: Prisma.IntFieldUpdateOperationsInput | number
   competency_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   question_no?: Prisma.IntFieldUpdateOperationsInput | number
+  set_label?: Prisma.StringFieldUpdateOperationsInput | string
+  question_text?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_a?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_b?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_c?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choice_d?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   correct_answer?: Prisma.StringFieldUpdateOperationsInput | string
   points?: Prisma.IntFieldUpdateOperationsInput | number
 }
@@ -766,6 +1000,12 @@ export type tbl_exam_questionSelect<ExtArgs extends runtime.Types.Extensions.Int
   exam_id?: boolean
   competency_id?: boolean
   question_no?: boolean
+  set_label?: boolean
+  question_text?: boolean
+  choice_a?: boolean
+  choice_b?: boolean
+  choice_c?: boolean
+  choice_d?: boolean
   correct_answer?: boolean
   points?: boolean
   tbl_competency?: boolean | Prisma.tbl_exam_question$tbl_competencyArgs<ExtArgs>
@@ -779,6 +1019,12 @@ export type tbl_exam_questionSelectCreateManyAndReturn<ExtArgs extends runtime.T
   exam_id?: boolean
   competency_id?: boolean
   question_no?: boolean
+  set_label?: boolean
+  question_text?: boolean
+  choice_a?: boolean
+  choice_b?: boolean
+  choice_c?: boolean
+  choice_d?: boolean
   correct_answer?: boolean
   points?: boolean
   tbl_competency?: boolean | Prisma.tbl_exam_question$tbl_competencyArgs<ExtArgs>
@@ -790,6 +1036,12 @@ export type tbl_exam_questionSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   exam_id?: boolean
   competency_id?: boolean
   question_no?: boolean
+  set_label?: boolean
+  question_text?: boolean
+  choice_a?: boolean
+  choice_b?: boolean
+  choice_c?: boolean
+  choice_d?: boolean
   correct_answer?: boolean
   points?: boolean
   tbl_competency?: boolean | Prisma.tbl_exam_question$tbl_competencyArgs<ExtArgs>
@@ -801,11 +1053,17 @@ export type tbl_exam_questionSelectScalar = {
   exam_id?: boolean
   competency_id?: boolean
   question_no?: boolean
+  set_label?: boolean
+  question_text?: boolean
+  choice_a?: boolean
+  choice_b?: boolean
+  choice_c?: boolean
+  choice_d?: boolean
   correct_answer?: boolean
   points?: boolean
 }
 
-export type tbl_exam_questionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"question_id" | "exam_id" | "competency_id" | "question_no" | "correct_answer" | "points", ExtArgs["result"]["tbl_exam_question"]>
+export type tbl_exam_questionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"question_id" | "exam_id" | "competency_id" | "question_no" | "set_label" | "question_text" | "choice_a" | "choice_b" | "choice_c" | "choice_d" | "correct_answer" | "points", ExtArgs["result"]["tbl_exam_question"]>
 export type tbl_exam_questionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tbl_competency?: boolean | Prisma.tbl_exam_question$tbl_competencyArgs<ExtArgs>
   tbl_exam?: boolean | Prisma.tbl_exam_question$tbl_examArgs<ExtArgs>
@@ -833,6 +1091,12 @@ export type $tbl_exam_questionPayload<ExtArgs extends runtime.Types.Extensions.I
     exam_id: number | null
     competency_id: number | null
     question_no: number
+    set_label: string
+    question_text: string | null
+    choice_a: string | null
+    choice_b: string | null
+    choice_c: string | null
+    choice_d: string | null
     correct_answer: string
     points: number
   }, ExtArgs["result"]["tbl_exam_question"]>
@@ -1265,6 +1529,12 @@ export interface tbl_exam_questionFieldRefs {
   readonly exam_id: Prisma.FieldRef<"tbl_exam_question", 'Int'>
   readonly competency_id: Prisma.FieldRef<"tbl_exam_question", 'Int'>
   readonly question_no: Prisma.FieldRef<"tbl_exam_question", 'Int'>
+  readonly set_label: Prisma.FieldRef<"tbl_exam_question", 'String'>
+  readonly question_text: Prisma.FieldRef<"tbl_exam_question", 'String'>
+  readonly choice_a: Prisma.FieldRef<"tbl_exam_question", 'String'>
+  readonly choice_b: Prisma.FieldRef<"tbl_exam_question", 'String'>
+  readonly choice_c: Prisma.FieldRef<"tbl_exam_question", 'String'>
+  readonly choice_d: Prisma.FieldRef<"tbl_exam_question", 'String'>
   readonly correct_answer: Prisma.FieldRef<"tbl_exam_question", 'String'>
   readonly points: Prisma.FieldRef<"tbl_exam_question", 'Int'>
 }
