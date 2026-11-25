@@ -18,25 +18,12 @@ export function isMailConfigured() {
 }
 
 /**
- * Testing aid: with MAIL_REDIRECT_TO set (outside production), every email
- * goes to that address instead of the real recipient, with the intended
- * recipient shown in the subject. Lets you test real flows without
- * emailing applicants.
- */
-function applyRedirect(message: MailMessage): MailMessage {
-  const redirect = process.env.MAIL_REDIRECT_TO?.trim();
-  if (!redirect || process.env.NODE_ENV === "production") return message;
-  return { ...message, to: redirect, subject: `[TEST → ${message.to}] ${message.subject}` };
-}
-
-/**
  * Sends an email through the SMTP server in .env (SMTP_HOST, SMTP_PORT,
  * SMTP_USER, SMTP_PASS, MAIL_FROM). Outside production, when SMTP isn't
  * configured, the message is printed to the server console instead so the
  * flow can be tested locally.
  */
-export async function sendMail(original: MailMessage) {
-  const message = applyRedirect(original);
+export async function sendMail(message: MailMessage) {
   const host = process.env.SMTP_HOST;
 
   if (!host) {

@@ -1,5 +1,4 @@
 // Wording and layout of the exam result emails (Passed / Waitlisted / Failed).
-// Kept free of database access so scripts/test-result-emails.ts can render it.
 import { ADMISSION_STAGES } from "@/features/admission/stages";
 import { escapeHtml, type MailMessage } from "@/lib/mailer";
 
