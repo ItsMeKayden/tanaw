@@ -71,6 +71,13 @@ export function getApplicantProfile(applicantId: number) {
               tbl_user_account: { select: { full_name: true } },
             },
           },
+          tbl_application_requirement: {
+            select: {
+              requirement: true,
+              verified_at: true,
+              tbl_user_account: { select: { full_name: true } },
+            },
+          },
           tbl_application_stage_log: {
             orderBy: { changed_at: "desc" },
             select: {

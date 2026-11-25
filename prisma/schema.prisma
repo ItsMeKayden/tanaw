@@ -94,6 +94,7 @@ model tbl_application {
   tbl_course_recommendation  tbl_course_recommendation[]
   tbl_exam_result            tbl_exam_result[]
   tbl_application_document   tbl_application_document[]
+  tbl_application_requirement tbl_application_requirement[]
   tbl_exam_session_applicant tbl_exam_session_applicant?
 }
 
@@ -165,6 +166,8 @@ model tbl_exam {
   exam_date           DateTime?            @db.Date
   total_items         Int?
   max_score           Int?
+  // Questions lock after the exam date; Admission can unlock them for editing.
+  edit_unlocked       Boolean              @default(false)
   tbl_admission_cycle tbl_admission_cycle? @relation(fields: [cycle_id], references: [cycle_id], onDelete: NoAction, onUpdate: NoAction)
   tbl_exam_question   tbl_exam_question[]
   tbl_exam_result     tbl_exam_result[]
@@ -176,11 +179,23 @@ model tbl_exam_question {
   exam_id               Int?
   competency_id         Int?
   question_no           Int
+  // Exam set: "A" is the original; "B" is a copy with reshuffled choices.
+  // Each exam session is given one set (tbl_exam_session.exam_set).
+  set_label             String                  @default("A") @db.VarChar(5)
+  // Question content (optional: an answer-key-only question has none).
+  // correct_answer is the letter (A–D) of the right choice when choices are set.
+  question_text         String?                 @db.Text
+  choice_a              String?                 @db.VarChar(500)
+  choice_b              String?                 @db.VarChar(500)
+  choice_c              String?                 @db.VarChar(500)
+  choice_d              String?                 @db.VarChar(500)
   correct_answer        String                  @db.VarChar(255)
   points                Int
   tbl_competency        tbl_competency?         @relation(fields: [competency_id], references: [competency_id], onDelete: NoAction, onUpdate: NoAction)
   tbl_exam              tbl_exam?               @relation(fields: [exam_id], references: [exam_id], onDelete: Cascade, onUpdate: NoAction)
   tbl_question_response tbl_question_response[]
+
+  @@index([exam_id, set_label])
 }
 
 model tbl_exam_result {
@@ -324,6 +339,7 @@ model tbl_user_account {
   tbl_quota                  tbl_quota[]
   tbl_application_stage_log  tbl_application_stage_log[]
   tbl_application_document   tbl_application_document[]
+  tbl_application_requirement tbl_application_requirement[]
   tbl_exam_session           tbl_exam_session[]
   tbl_exam_session_applicant tbl_exam_session_applicant[]
   archived_applicants        tbl_applicant[]              @relation("applicant_archived_by")
@@ -377,6 +393,20 @@ model tbl_password_reset_token {
 // Supporting documents uploaded with an application (Form 138, PSA birth
 // certificate). One file per document type per application; re-uploading
 // replaces it.
+/// Requirements staff have verified for an application (e.g. Form 138, PSA
+/// birth certificate; requirement = the document type). Verifying every
+/// required one moves the applicant to "For Examination" automatically.
+model tbl_application_requirement {
+  application_id   Int
+  requirement      String            @db.VarChar(50)
+  verified_by      Int?
+  verified_at      DateTime          @default(now()) @db.Timestamp(6)
+  tbl_application  tbl_application   @relation(fields: [application_id], references: [application_id], onDelete: Cascade, onUpdate: NoAction)
+  tbl_user_account tbl_user_account? @relation(fields: [verified_by], references: [user_id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@id([application_id, requirement])
+}
+
 model tbl_application_document {
   document_id      Int               @id @default(autoincrement())
   application_id   Int
@@ -403,6 +433,8 @@ model tbl_exam_session {
   venue                      String                       @db.VarChar(150)
   room                       String?                      @db.VarChar(50)
   capacity                   Int
+  // Exam set (question version) everyone in this session takes: "A" or "B".
+  exam_set                   String                       @default("A") @db.VarChar(5)
   created_by                 Int?
   created_at                 DateTime                     @default(now()) @db.Timestamp(6)
   // Archived sessions are hidden from the schedule (Archived tab) instead of

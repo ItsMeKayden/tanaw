@@ -2,6 +2,9 @@
 import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { shortCompetencyName } from "@/features/recommendation/config";
+import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
+import { ATTENDANCE, BASE_SET, manilaTodayIso } from "@/features/admission/exam-scoring";
+import { ADMISSION_STAGES } from "@/features/admission/stages";
 
 type Db = Prisma.TransactionClient;
 
@@ -20,6 +23,87 @@ export function isSessionFinished(sessionDate: Date, endTime: string | null): bo
   const [h, m] = endTime.split(":").map(Number);
   const finishStr = `${dateStr}T${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:00+08:00`;
   return new Date(finishStr).getTime() < Date.now();
+}
+
+/** Epoch ms of a session's date + "HH:MM" time in Asia/Manila (null without a time). */
+export function sessionInstant(sessionDate: Date, time: string | null): number | null {
+  if (!time) return null;
+  const dateStr = sessionDate.toISOString().slice(0, 10);
+  const [h, m] = time.split(":").map(Number);
+  return new Date(`${dateStr}T${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:00+08:00`).getTime();
+}
+
+/** The next future start or end time (epoch ms) among the sessions, or null. */
+export function nextSessionChangeAt(
+  sessions: { session_date: Date; start_time: string | null; end_time: string | null }[],
+): number | null {
+  const now = Date.now();
+  const upcoming = sessions
+    .flatMap((s) => [sessionInstant(s.session_date, s.start_time), sessionInstant(s.session_date, s.end_time)])
+    .filter((t): t is number => t !== null && t > now);
+  return upcoming.length > 0 ? Math.min(...upcoming) : null;
+}
+
+/**
+ * True once a session's start time (date + time, Asia/Manila) has passed.
+ * Without a start time it counts as started at the beginning of its day.
+ */
+export function isSessionStarted(sessionDate: Date, startTime: string | null): boolean {
+  const dateStr = sessionDate.toISOString().slice(0, 10);
+  const [h, m] = (startTime ?? "00:00").split(":").map(Number);
+  const startStr = `${dateStr}T${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:00+08:00`;
+  return new Date(startStr).getTime() <= Date.now();
+}
+
+/**
+ * "For Examination" applicants of a cycle (no exam score) who need a seat,
+ * earliest application first: no seat yet, or their seat is in an archived
+ * session, or in a finished session they weren't marked present at (missed
+ * it). previousSessionId is set when their seat has to be moved.
+ */
+export async function getApplicantsToSchedule(db: Db | typeof prisma, cycleId: number) {
+  const applications = await db.tbl_application.findMany({
+    where: {
+      ...ACTIVE_APPLICATION,
+      cycle_id: cycleId,
+      tbl_admission_stage: { stage_name: ADMISSION_STAGES.FOR_EXAMINATION },
+      tbl_exam_result: { none: {} },
+    },
+    orderBy: [{ application_date: "asc" }, { application_id: "asc" }],
+    select: {
+      application_id: true,
+      tbl_exam_session_applicant: {
+        select: {
+          session_id: true,
+          attendance: true,
+          tbl_exam_session: { select: { session_date: true, end_time: true, archived_at: true } },
+        },
+      },
+    },
+  });
+
+  return applications.flatMap((application) => {
+    const seat = application.tbl_exam_session_applicant;
+    if (!seat) return [{ application_id: application.application_id, previousSessionId: null as number | null }];
+    const session = seat.tbl_exam_session;
+    const missed =
+      session.archived_at !== null ||
+      (isSessionFinished(session.session_date, session.end_time) && seat.attendance !== ATTENDANCE.PRESENT);
+    return missed ? [{ application_id: application.application_id, previousSessionId: seat.session_id }] : [];
+  });
+}
+
+/** True when the exam date (Asia/Manila) is before today; the exam day itself stays open. */
+export function isExamDatePassed(examDate: Date | null): boolean {
+  return examDate !== null && examDate.toISOString().slice(0, 10) < manilaTodayIso();
+}
+
+/**
+ * Questions lock once the exam date has passed, so the answer key stays
+ * stable for applicants who took it, unless Admission unlocked them.
+ */
+export function isExamLocked(exam: { exam_date: Date | null; edit_unlocked: boolean }): boolean {
+  return isExamDatePassed(exam.exam_date) && !exam.edit_unlocked;
 }
 
 /** Default exam size when the exam has no max_score and no questions. */
@@ -75,7 +159,8 @@ export async function getExamSubjects(
     exam
       ? db.tbl_exam_question.groupBy({
           by: ["competency_id"],
-          where: { exam_id: exam.exam_id },
+          // Sets are copies with the same subjects and points: Set A defines the totals.
+          where: { exam_id: exam.exam_id, set_label: BASE_SET },
           _sum: { points: true },
         })
       : Promise.resolve([]),

@@ -2,21 +2,25 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { ListChecks } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { ApplicantFormModal, type ApplicantFormRequest } from "@/components/admission/applicant-form-modal";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { Modal } from "@/components/ui/modal";
 import { Pagination } from "@/components/ui/pagination";
 import { tableStyles } from "@/components/ui/table-styles";
 import { archiveApplicant } from "@/features/admission/actions/archive-applicant";
+import { clearForExam } from "@/features/admission/actions/requirements";
 import type { ApplicantFormReference } from "@/features/admission/actions/load-applicant";
-import { ADMISSION_STAGE_ORDER, stageBadgeClass } from "@/features/admission/stages";
+import { ADMISSION_STAGES, ADMISSION_STAGE_ORDER, stageBadgeClass } from "@/features/admission/stages";
 import { toast } from "@/components/ui/toaster";
 import { useSearchParams } from "next/navigation";
 import { parseAdmissionStep } from "@/lib/admission-form-url";
 
 export type ApplicantRow = {
   applicant_id: number;
+  application_id: number | null;
   application_no: string | null;
   name: string;
   course_code: string | null;
@@ -75,6 +79,10 @@ export default function ApplicantTable({
   const [archiving, setArchiving] = useState<ArchiveState>(null);
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [isPending, startTransition] = useTransition();
+  // Bulk "Clear for exam": checkboxes appear after clicking the button.
+  const [clearMode, setClearMode] = useState(false);
+  const [selected, setSelected] = useState<Set<number>>(() => new Set());
+  const [confirmingClear, setConfirmingClear] = useState(false);
 
   const query = searchQuery.trim().toLowerCase();
   const filteredApplicants = applicants.filter((row) => {
@@ -97,6 +105,50 @@ export default function ApplicantTable({
   function openForm(request: ApplicantFormRequest) {
     setFeedback(null);
     setFormRequest(request);
+  }
+
+  /** Only applicants still in Application Submitted can be cleared for the exam. */
+  const canClear = (row: ApplicantRow) => row.application_id !== null && row.stage === ADMISSION_STAGES.APPLICATION_SUBMITTED;
+  const readyOnPage = currentApplicants.filter(canClear);
+  const allReadyOnPageSelected = readyOnPage.length > 0 && readyOnPage.every((row) => selected.has(row.application_id!));
+  const selectedRows = applicants.filter((row) => row.application_id !== null && selected.has(row.application_id));
+
+  function toggleRow(applicationId: number) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(applicationId)) next.delete(applicationId);
+      else next.add(applicationId);
+      return next;
+    });
+  }
+
+  function toggleReadyOnPage() {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      for (const row of readyOnPage) {
+        if (allReadyOnPageSelected) next.delete(row.application_id!);
+        else next.add(row.application_id!);
+      }
+      return next;
+    });
+  }
+
+  function exitClearMode() {
+    setClearMode(false);
+    setSelected(new Set());
+  }
+
+  function confirmClear() {
+    const ids = selectedRows.map((row) => row.application_id!);
+    startTransition(async () => {
+      const result = await clearForExam(ids);
+      toast.fromResult(result);
+      setConfirmingClear(false);
+      if (!("error" in result)) {
+        exitClearMode();
+        router.refresh();
+      }
+    });
   }
 
   function confirmArchive(row: ApplicantRow) {
@@ -153,16 +205,71 @@ export default function ApplicantTable({
           </label>
         </div>
 
-        {canEdit && formData && (
-          <button
-            type="button"
-            onClick={() => openForm({ mode: "create" })}
-            className="inline-flex h-9 w-full shrink-0 items-center justify-center rounded-md bg-[#191e73] px-4 text-sm font-semibold text-white hover:bg-[#232a99] sm:w-40"
-          >
-            + Add Applicant
-          </button>
-        )}
+        <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+          {canEdit && !clearMode && (
+            <button
+              type="button"
+              onClick={() => {
+                setClearMode(true);
+                setStageFilter(ADMISSION_STAGES.APPLICATION_SUBMITTED);
+                setCurrentPage(1);
+              }}
+              className="inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-md border border-[#191e73] bg-white px-4 text-sm font-semibold text-[#191e73] hover:bg-[#eef0fd] sm:w-auto"
+              title="Move several Application Submitted applicants to For Examination at once"
+            >
+              <ListChecks className="size-4" aria-hidden="true" />
+              Clear for exam
+            </button>
+          )}
+          {canEdit && formData && (
+            <button
+              type="button"
+              onClick={() => openForm({ mode: "create" })}
+              className="inline-flex h-9 w-full items-center justify-center rounded-md bg-[#191e73] px-4 text-sm font-semibold text-white hover:bg-[#232a99] sm:w-40"
+            >
+              + Add Applicant
+            </button>
+          )}
+        </div>
       </div>
+
+      {clearMode && (
+        <div className="flex flex-wrap items-center gap-3 rounded-lg border border-[#191e73]/30 bg-[#f4f5fd] px-3 py-2 text-sm">
+          <label className="flex cursor-pointer items-center gap-2 text-neutral-800">
+            <input
+              type="checkbox"
+              checked={allReadyOnPageSelected}
+              onChange={toggleReadyOnPage}
+              disabled={readyOnPage.length === 0}
+              className="size-4 cursor-pointer accent-[#191e73]"
+            />
+            Select all ready on this page ({readyOnPage.length})
+          </label>
+          <span className={selectedRows.length ? "font-semibold text-[#191e73] tabular-nums" : "text-neutral-600"}>
+            {selectedRows.length
+              ? `${selectedRows.length} selected`
+              : "Tick applicants in Application Submitted. Normally they're cleared automatically when their requirements are verified."}
+          </span>
+          <div className="ml-auto flex gap-2">
+            <button
+              type="button"
+              onClick={exitClearMode}
+              disabled={isPending}
+              className="inline-flex h-8 items-center rounded-md border border-neutral-500 bg-white px-3 text-sm hover:bg-neutral-100"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirmingClear(true)}
+              disabled={isPending || selectedRows.length === 0}
+              className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#191e73] px-3 text-sm font-semibold text-white hover:bg-[#232a99] disabled:opacity-50"
+            >
+              Clear {selectedRows.length || ""} for exam
+            </button>
+          </div>
+        </div>
+      )}
 
       {feedback && (
         <p
@@ -198,6 +305,11 @@ export default function ApplicantTable({
         <table className="w-full border-collapse text-sm">
           <thead>
             <tr className={tableStyles.headRow}>
+              {clearMode && (
+                <th className={`${th} w-10`}>
+                  <span className="sr-only">Select</span>
+                </th>
+              )}
               <th className={th}>Applicant ID</th>
               <th className={th}>Name</th>
               <th className={th}>Preferred Course</th>
@@ -212,6 +324,23 @@ export default function ApplicantTable({
             {currentApplicants.length > 0 ? (
               currentApplicants.map((row) => (
                 <tr key={row.applicant_id} className={tableStyles.row}>
+                  {clearMode && (
+                    <td className={td}>
+                      {canClear(row) ? (
+                        <input
+                          type="checkbox"
+                          checked={selected.has(row.application_id!)}
+                          onChange={() => toggleRow(row.application_id!)}
+                          aria-label={`Select ${row.name}`}
+                          className="size-4 cursor-pointer accent-[#191e73]"
+                        />
+                      ) : (
+                        <span className="text-xs text-neutral-300" title="Only Application Submitted can be cleared">
+                          —
+                        </span>
+                      )}
+                    </td>
+                  )}
                   <td className={`${td} whitespace-nowrap tabular-nums`}>{applicantId(row)}</td>
                   <td className={td}>{row.name}</td>
                   <td className={td} title={row.course_name ?? undefined}>
@@ -270,7 +399,7 @@ export default function ApplicantTable({
               ))
             ) : (
               <tr>
-                <td colSpan={7} className={tableStyles.empty}>
+                <td colSpan={clearMode ? 8 : 7} className={tableStyles.empty}>
                   {query || stageFilter !== "ALL" ? "No applicants match your search or filter." : "No applicants found."}
                 </td>
               </tr>
@@ -307,6 +436,22 @@ export default function ApplicantTable({
           }}
         />
       )}
+
+      {/* Bulk clear for exam */}
+      <ConfirmModal
+        open={confirmingClear}
+        onCancel={() => setConfirmingClear(false)}
+        onConfirm={confirmClear}
+        isPending={isPending}
+        tone="primary"
+        title="Clear for exam"
+        heading={`Move ${selectedRows.length} applicant${selectedRows.length === 1 ? "" : "s"} to For Examination?`}
+        description={`${selectedRows
+          .slice(0, 5)
+          .map((row) => row.name)
+          .join(", ")}${selectedRows.length > 5 ? ` and ${selectedRows.length - 5} more` : ""}. They can then be seated in an exam session. Each change is recorded in the applicant's history.`}
+        confirmLabel={isPending ? "Clearing…" : "Clear for exam"}
+      />
 
       {/* Archive applicant */}
       <Modal

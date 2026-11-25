@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { FileDown, FileUp, ScanLine, X } from "lucide-react";
 
-import { previewScannedResults, saveExamScores } from "@/features/admission/actions/exam-scores";
+import { previewScannedResults, saveScannedResults } from "@/features/admission/actions/exam-scores";
 import type { ScannedPreviewRow } from "@/features/admission/exam-grading";
 import { toast } from "@/components/ui/toaster";
 
@@ -78,9 +78,10 @@ export function ScanResultsImport({ cycleId, onClose }: Readonly<{ cycleId: numb
   function confirmImport() {
     if (importable.length === 0) return;
     setFeedback(null);
-    const payload = importable.map((r) => ({ application_id: r.application_id as number, scores: r.scores }));
+    // The server re-grades the marks with each applicant's set and keeps every answer.
+    const payload = importable.map((r) => ({ application_id: r.application_id as number, answers: r.answers }));
     startImport(async () => {
-      const result = await saveExamScores(cycleId, payload);
+      const result = await saveScannedResults(cycleId, payload);
       toast.fromResult(result);
       if ("error" in result) setFeedback({ type: "error", text: result.error });
       else {
@@ -148,6 +149,7 @@ export function ScanResultsImport({ cycleId, onClose }: Readonly<{ cycleId: numb
                   <th className="px-2 py-1 text-left font-medium">Row</th>
                   <th className="px-2 py-1 text-left font-medium">App No.</th>
                   <th className="px-2 py-1 text-left font-medium">Name</th>
+                  <th className="px-2 py-1 text-left font-medium">Set</th>
                   <th className="px-2 py-1 text-right font-medium">Answered</th>
                   <th className="px-2 py-1 text-right font-medium">Score</th>
                   <th className="px-2 py-1 text-left font-medium">Status</th>
@@ -162,6 +164,7 @@ export function ScanResultsImport({ cycleId, onClose }: Readonly<{ cycleId: numb
                     <td className="px-2 py-1 tabular-nums text-neutral-500">{r.rowNumber}</td>
                     <td className="px-2 py-1">{r.application_no || "—"}</td>
                     <td className="px-2 py-1">{r.applicant_name ?? "—"}</td>
+                    <td className="px-2 py-1 font-semibold text-[#191e73]">{r.set}</td>
                     <td className="px-2 py-1 text-right tabular-nums">
                       {r.answered}/{r.questionCount}
                     </td>

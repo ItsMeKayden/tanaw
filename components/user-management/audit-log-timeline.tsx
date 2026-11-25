@@ -183,12 +183,18 @@ export function AuditLogTimeline({
     );
   }
 
-  const days: { key: string; title: string; sub: string | null; items: AuditActivity[] }[] = [];
+  // One section per day. Activities are ordered by audit id, which can differ
+  // slightly from occurred_at order (it is the transaction's start time), so a
+  // day can reappear later in the list: merge it into its existing section
+  // instead of adding a second one with the same key.
+  const byDay = new Map<string, { key: string; title: string; sub: string | null; items: AuditActivity[] }>();
   for (const activity of activities) {
     const heading = dayHeading(activity.occurred_at);
-    if (days.at(-1)?.key !== heading.key) days.push({ ...heading, items: [] });
-    days.at(-1)!.items.push(activity);
+    const day = byDay.get(heading.key) ?? { ...heading, items: [] };
+    if (!byDay.has(heading.key)) byDay.set(heading.key, day);
+    day.items.push(activity);
   }
+  const days = [...byDay.values()];
 
   return (
     <>
