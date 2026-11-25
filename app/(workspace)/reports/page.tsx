@@ -131,14 +131,14 @@ export default async function ReportsPage({ searchParams }: PageProps) {
   ];
   return (
     <AnalyticsPage>
+      <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {[{label:"Passing rate",value:`${pct(passed,examined)}%`,note:"of examinees"},{label:"Average score",value:average.toFixed(1),note:"out of 100"},{label:"Highest score",value:highest.toFixed(1),note:"out of 100"},{label:"Examinees",value:examined,note:`${pct(examined,applications.length)}% of applicants`}].map((stat)=><div key={stat.label} className="rounded-xl border border-neutral-400 bg-white p-4"><p className="text-sm text-neutral-700">{stat.label}</p><p className="mt-1 text-3xl font-bold">{stat.value}</p><p className="text-xs text-neutral-500">{stat.note}</p></div>)}
+      </div>
       <FilterBar action="/reports" exportHref={`/api/reports/overview?cycle=${cycle?.cycle_id ?? ""}${campusId ? `&campus=${campusId}` : ""}${courseId ? `&course=${courseId}` : ""}`}>
         <SelectFilter name="cycle" label="School Year" value={cycle?String(cycle.cycle_id):""} options={cycles.map((c)=>({value:String(c.cycle_id),label:c.school_year}))} />
         <SelectFilter name="campus" label="Campus" value={campusId?String(campusId):"all"} options={[{value:"all",label:"All"},...campuses.map((c)=>({value:String(c.branch_id),label:c.branch_name}))]} />
         <SelectFilter name="course" label="Course" value={courseId?String(courseId):"all"} options={[{value:"all",label:"All"},...programs.map((p)=>({value:String(p.program_id),label:p.program_code}))]} />
       </FilterBar>
-      <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {[{label:"Passing rate",value:`${pct(passed,examined)}%`,note:"of examinees"},{label:"Average score",value:average.toFixed(1),note:"out of 100"},{label:"Highest score",value:highest.toFixed(1),note:"out of 100"},{label:"Examinees",value:examined,note:`${pct(examined,applications.length)}% of applicants`}].map((stat)=><div key={stat.label} className="rounded-xl border border-neutral-400 bg-white p-4"><p className="text-sm text-neutral-700">{stat.label}</p><p className="mt-1 text-3xl font-bold">{stat.value}</p><p className="text-xs text-neutral-500">{stat.note}</p></div>)}
-      </div>
       <div className="grid gap-4 lg:grid-cols-2">
         <AnalyticsCard><LineChart title="Passing rate by year (%)" points={trend} /></AnalyticsCard>
         <AnalyticsCard><DonutChart passed={passed} failed={examined-passed} title="Exam result" /></AnalyticsCard>
