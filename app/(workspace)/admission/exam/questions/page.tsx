@@ -131,7 +131,7 @@ async function QuestionsContent({ searchParams }: PageProps) {
   // Upcoming exam sessions (today or later) offered in the "Answer sheets" picker.
   const rawSessions = exam
     ? await prisma.tbl_exam_session.findMany({
-        where: { exam_id: exam.exam_id, session_date: { gte: new Date(`${manilaToday}T00:00:00Z`) } },
+        where: { exam_id: exam.exam_id, archived_at: null, session_date: { gte: new Date(`${manilaToday}T00:00:00Z`) } },
         orderBy: [{ session_date: "asc" }, { start_time: "asc" }],
         select: {
           session_id: true,
