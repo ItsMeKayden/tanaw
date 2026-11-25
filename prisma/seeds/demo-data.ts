@@ -15,6 +15,7 @@ import { ADMISSION_STAGES } from "../../features/admission/stages";
 import { generateRecommendations } from "../../features/recommendation/engine";
 import { log, prisma, warn } from "./client";
 import { resetDemoExamSessions, seedDemoExamSchedule, seedDemoSubjectScores } from "./demo-exams";
+import { seedDemoQuestionContent } from "./demo-questions";
 
 export const DEMO_PREFIX = "DEMO-";
 const DEMO_EMAIL_DOMAIN = "@example.test";
@@ -254,6 +255,7 @@ export async function seedDemoData() {
   log("demo", `${DEMO_COUNT} demo applicants (${created} new) in ${cycle.school_year}`);
 
   await seedExamAnswers(exam.exam_id);
+  await seedDemoQuestionContent(exam.exam_id);
   await seedDemoExamSchedule(exam.exam_id, actor?.user_id ?? null);
   await seedDemoSubjectScores(exam.exam_id);
 

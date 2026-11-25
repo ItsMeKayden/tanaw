@@ -30,6 +30,13 @@ export const DOCUMENT_SLOTS = [
 
 export type DocumentSlotKey = (typeof DOCUMENT_SLOTS)[number]["key"];
 
+/**
+ * Requirements staff verify before an applicant can take the exam (the
+ * document types above). When all are verified, the applicant moves to
+ * "For Examination" automatically.
+ */
+export const EXAM_REQUIREMENTS: readonly string[] = DOCUMENT_SLOTS.map((slot) => slot.documentType);
+
 export function documentLabel(documentType: string) {
   return (
     DOCUMENT_SLOTS.find((slot) => slot.documentType === documentType)?.label ??

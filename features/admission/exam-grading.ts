@@ -60,8 +60,48 @@ export type ScannedPreviewRow = {
   questionCount: number;
   /** Aligned to the official subject list; safe to pass to saveExamScores. */
   scores: { competency_id: number; score: number }[];
+  /** Exam set the applicant's session takes ("A" / "B"); graded with that key. */
+  set: string;
+  /** Marked letter per question number (blank marks left out), saved as answers. */
+  answers: Record<number, string>;
   error: string | null;
   warning: string | null;
 };
 
 export type ScanSubject = { competency_id: number; short: string; max: number };
+
+const SHUFFLE_LETTERS = ["A", "B", "C", "D"] as const;
+
+/**
+ * Reshuffles a question's choices so the correct one lands on a different
+ * letter than before (others random). Returns null when it has no choices.
+ */
+export function reshuffledChoices(q: {
+  choice_a: string | null;
+  choice_b: string | null;
+  choice_c: string | null;
+  choice_d: string | null;
+  correct_answer: string;
+}) {
+  const choices = [q.choice_a, q.choice_b, q.choice_c, q.choice_d];
+  const correctIndex = SHUFFLE_LETTERS.indexOf(q.correct_answer.trim().toUpperCase() as (typeof SHUFFLE_LETTERS)[number]);
+  if (choices.some((c) => !c) || correctIndex === -1) return null;
+
+  const others = SHUFFLE_LETTERS.map((_, i) => i).filter((i) => i !== correctIndex);
+  const newCorrect = others[Math.floor(Math.random() * others.length)];
+  const wrong = choices.filter((_, i) => i !== correctIndex) as string[];
+  for (let i = wrong.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [wrong[i], wrong[j]] = [wrong[j], wrong[i]];
+  }
+  const next: string[] = [];
+  let w = 0;
+  for (let i = 0; i < SHUFFLE_LETTERS.length; i++) next.push(i === newCorrect ? (choices[correctIndex] as string) : wrong[w++]);
+  return {
+    choice_a: next[0],
+    choice_b: next[1],
+    choice_c: next[2],
+    choice_d: next[3],
+    correct_answer: SHUFFLE_LETTERS[newCorrect],
+  };
+}

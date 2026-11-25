@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { resolveCycle } from "@/features/admission/admission-stats";
 import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
 import { getCycleExam } from "@/features/admission/exam";
+import { BASE_SET, toExamSet } from "@/features/admission/exam-scoring";
 import {
   answerSheetQrPayload,
   renderAnswerSheets,
@@ -37,7 +38,8 @@ export async function GET(request: NextRequest) {
   const exam = await getCycleExam(cycle.cycle_id);
   if (!exam) return new Response("Create the exam for this school year first.", { status: 400 });
 
-  const questionCount = await prisma.tbl_exam_question.count({ where: { exam_id: exam.exam_id } });
+  // Every set has the same items; only the answer key differs.
+  const questionCount = await prisma.tbl_exam_question.count({ where: { exam_id: exam.exam_id, set_label: BASE_SET } });
   if (questionCount === 0) return new Response("Add questions before printing answer sheets.", { status: 400 });
 
   // Optional ?sessions=1,2,3 narrows the print to those exam sessions.
@@ -62,7 +64,7 @@ export async function GET(request: NextRequest) {
       application_id: true,
       application_no: true,
       tbl_applicant: { select: { last_name: true, first_name: true, middle_name: true } },
-      tbl_exam_session_applicant: { select: { tbl_exam_session: { select: { room: true } } } },
+      tbl_exam_session_applicant: { select: { tbl_exam_session: { select: { room: true, exam_set: true } } } },
     },
   });
   if (applications.length === 0) {
@@ -87,6 +89,7 @@ export async function GET(request: NextRequest) {
       application_no: a.application_no,
       full_name: a.tbl_applicant ? fullName(a.tbl_applicant) : a.application_no,
       room: a.tbl_exam_session_applicant?.tbl_exam_session?.room ?? null,
+      set: toExamSet(a.tbl_exam_session_applicant?.tbl_exam_session?.exam_set),
       qr: answerSheetQrPayload(a.application_no, exam.exam_id),
     })),
   };

@@ -8,7 +8,7 @@ import { getAccountId, requirePermission } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
 import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
 import { ensureCycleExam, getCycleExam, getExamSubjects, getPassingRule, type PassingRule } from "@/features/admission/exam";
-import { ATTENDANCE, isPassing, scorePercent } from "@/features/admission/exam-scoring";
+import { ATTENDANCE, BASE_SET, isPassing, scorePercent, toExamSet, type ExamSet } from "@/features/admission/exam-scoring";
 import { formatFullName } from "@/features/admission/enrollment-queries";
 import {
   gradeMarked,
@@ -161,6 +161,112 @@ function assertAllPresent(
   );
 }
 
+type KeyItem = AnswerKeyItem & { question_id: number };
+
+/** The exam's answer key per set ("A", "B"), in question order. */
+async function loadAnswerKeys(db: Prisma.TransactionClient | typeof prisma, examId: number) {
+  const questions = await db.tbl_exam_question.findMany({
+    where: { exam_id: examId },
+    orderBy: { question_no: "asc" },
+    select: { question_id: true, set_label: true, question_no: true, correct_answer: true, points: true, competency_id: true },
+  });
+  const keys = new Map<ExamSet, KeyItem[]>();
+  for (const q of questions) {
+    const set = toExamSet(q.set_label);
+    keys.set(set, [...(keys.get(set) ?? []), q]);
+  }
+  return keys;
+}
+
+/**
+ * Saves scanned answer sheets: re-grades each applicant's marks on the
+ * server with their session's set, saves the scores like the Exam Scores
+ * grid (same attendance and stage rules), then stores every answer per
+ * question for Item Analysis.
+ */
+export async function saveScannedResults(
+  cycleIdInput: number,
+  rowsInput: { application_id: number; answers: Record<string, string> }[],
+): Promise<ActionResult> {
+  await requirePermission("admission", "write");
+
+  const cycleId = validId(cycleIdInput);
+  if (!cycleId) return { error: "Invalid admission cycle." };
+  if (!Array.isArray(rowsInput) || rowsInput.length === 0) return { error: "There are no rows to import." };
+  if (rowsInput.length > MAX_ROWS) return { error: `Import at most ${MAX_ROWS} rows at a time.` };
+  const ids = rowsInput.map((r) => validId(r?.application_id));
+  if (ids.some((id) => id === null)) return { error: "Invalid applicant in the import." };
+
+  const exam = await getCycleExam(cycleId);
+  if (!exam) return { error: "Create the exam for this school year first." };
+  const [keys, subjects, seats] = await Promise.all([
+    loadAnswerKeys(prisma, exam.exam_id),
+    getExamSubjects(exam),
+    prisma.tbl_exam_session_applicant.findMany({
+      where: { application_id: { in: ids as number[] } },
+      select: { application_id: true, tbl_exam_session: { select: { exam_set: true } } },
+    }),
+  ]);
+  const setOf = (applicationId: number) =>
+    toExamSet(seats.find((s) => s.application_id === applicationId)?.tbl_exam_session.exam_set);
+
+  // Re-grade here: the browser only sends the marks.
+  const graded = rowsInput.map((row) => {
+    const set = setOf(row.application_id);
+    const key = keys.get(set) ?? [];
+    const marked = new Map<number, string>();
+    for (const [no, letter] of Object.entries(row.answers ?? {})) {
+      const mark = normalizeAnswer(String(letter));
+      if (mark && Number.isInteger(Number(no))) marked.set(Number(no), mark);
+    }
+    const result = gradeMarked(key, marked);
+    return { application_id: row.application_id, set, key, marked, byCompetency: result.byCompetency };
+  });
+  const missing = graded.find((g) => g.key.length === 0);
+  if (missing) return { error: `Set ${missing.set} has no questions yet.` };
+
+  const saved = await saveExamScores(
+    cycleId,
+    graded.map((g) => ({
+      application_id: g.application_id,
+      scores: subjects.map((s) => ({ competency_id: s.competency_id, score: g.byCompetency.get(s.competency_id) ?? 0 })),
+    })),
+  );
+  if ("error" in saved) return saved;
+
+  try {
+    const results = await prisma.tbl_exam_result.findMany({
+      where: { exam_id: exam.exam_id, application_id: { in: ids as number[] } },
+      orderBy: { result_id: "desc" },
+      select: { result_id: true, application_id: true },
+    });
+    await prisma.$transaction(async (tx) => {
+      for (const g of graded) {
+        const result = results.find((r) => r.application_id === g.application_id);
+        if (!result) continue;
+        await tx.tbl_question_response.deleteMany({ where: { result_id: result.result_id } });
+        await tx.tbl_question_response.createMany({
+          data: g.key.map((item) => {
+            const mark = g.marked.get(item.question_no) ?? null;
+            const correct = mark !== null && mark === normalizeAnswer(item.correct_answer);
+            return {
+              result_id: result.result_id,
+              question_id: item.question_id,
+              selected_answer: mark,
+              is_correct: correct,
+              points_earned: correct ? item.points : 0,
+            };
+          }),
+        });
+      }
+    });
+    return { success: true, message: `${saved.message} Answers saved for Item Analysis.` };
+  } catch (error) {
+    console.error("Save scanned answers error:", error);
+    return { success: true, message: `${saved.message} The per-question answers could not be saved.` };
+  }
+}
+
 type ScanPreviewResult =
   | { rows: ScannedPreviewRow[]; subjects: ScanSubject[]; maxTotal: number }
   | { error: string };
@@ -206,25 +312,14 @@ export async function previewScannedResults(
     const exam = await getCycleExam(cycleId);
     if (!exam) return { error: "Create the exam for this school year first." };
 
-    const [key, subjects] = await Promise.all([
-      prisma.tbl_exam_question.findMany({
-        where: { exam_id: exam.exam_id },
-        orderBy: { question_no: "asc" },
-        select: { question_no: true, correct_answer: true, points: true, competency_id: true },
-      }),
-      getExamSubjects(exam),
-    ]);
-    if (key.length === 0) return { error: "This exam has no questions. Add the answer key first." };
+    const [keys, subjects] = await Promise.all([loadAnswerKeys(prisma, exam.exam_id), getExamSubjects(exam)]);
+    const baseKey = keys.get(BASE_SET) ?? [];
+    if (baseKey.length === 0) return { error: "This exam has no questions. Add the answer key first." };
     if (subjects.length === 0) return { error: "The exam has no subjects (competencies) set up." };
 
     const maxTotal = subjects.reduce((s, x) => s + x.max, 0);
-    const questionNos = key.map((k) => k.question_no);
-    const keyItems: AnswerKeyItem[] = key.map((k) => ({
-      question_no: k.question_no,
-      correct_answer: k.correct_answer,
-      points: k.points,
-      competency_id: k.competency_id,
-    }));
+    // Every set has the same question numbers; only the answer key differs.
+    const questionNos = baseKey.map((k) => k.question_no);
 
     const parsed = Papa.parse<Record<string, string>>(Buffer.from(base64, "base64").toString("utf8"), {
       header: true,
@@ -257,7 +352,9 @@ export async function previewScannedResults(
         application_id: true,
         application_no: true,
         tbl_applicant: { select: { first_name: true, middle_name: true, last_name: true, suffix: true } },
-        tbl_exam_session_applicant: { select: { attendance: true } },
+        tbl_exam_session_applicant: {
+          select: { attendance: true, tbl_exam_session: { select: { exam_set: true } } },
+        },
       },
     });
     const byAppNo = new Map(applications.map((a) => [a.application_no.trim().toLowerCase(), a]));
@@ -297,6 +394,11 @@ export async function previewScannedResults(
       }
       if (app) seen.add(appKey);
 
+      // Grade with the answer key of the set the applicant's session took.
+      const set = toExamSet(app?.tbl_exam_session_applicant?.tbl_exam_session.exam_set);
+      const keyItems = keys.get(set) ?? [];
+      if (!error && keyItems.length === 0) error = `Set ${set} has no questions yet.`;
+
       const graded = gradeMarked(keyItems, marked);
       const scores = subjects.map((s) => ({
         competency_id: s.competency_id,
@@ -314,6 +416,8 @@ export async function previewScannedResults(
         answered: graded.answered,
         questionCount: questionNos.length,
         scores,
+        set,
+        answers: Object.fromEntries(marked),
         error,
         warning,
       };
@@ -426,6 +530,8 @@ export async function saveExamScores(cycleIdInput: number, rows: ScoreRowInput[]
           await tx.tbl_exam_subject_score.createMany({
             data: values.map((v) => ({ ...v, result_id: result.result_id })),
           });
+          // Per-question answers no longer match typed totals; a scanned import re-adds its own.
+          await tx.tbl_question_response.deleteMany({ where: { result_id: result.result_id } });
 
           const remarks = `Exam result saved: ${total}/${maxTotal} (${percentage}%), ${passed ? "passed" : "failed"}.`;
           entries.push({ application, passed, score: total, remarks });

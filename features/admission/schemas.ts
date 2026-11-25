@@ -40,6 +40,7 @@ export const examSessionSchema = z
     end_time: requiredTime("end time"),
     venue: z.string().trim().min(1, "Enter the venue.").max(150, "Venue must not exceed 150 characters."),
     room: z.string().trim().max(50, "Room must not exceed 50 characters."),
+    exam_set: z.enum(["A", "B"], "Choose the exam set."),
     capacity: z
       .string()
       .trim()
@@ -91,12 +92,28 @@ export const examSchema = z.object({
 export type ExamValues = z.input<typeof examSchema>;
 
 /** One structured row for a file-based answer-key import (post-parse). */
-export const bulkQuestionRowSchema = z.object({
-  question_no: z.number().int().positive().max(10_000).nullable(),
-  correct_answer: z.string().trim().min(1, "Enter the correct answer.").max(255),
-  points: z.number().int().positive().max(1000),
-  competency_id: z.number().int().positive().nullable(),
-});
+const bulkChoice = z.string().trim().min(1).max(500).nullable();
+
+export const bulkQuestionRowSchema = z
+  .object({
+    question_no: z.number().int().positive().max(10_000).nullable(),
+    question_text: z.string().trim().min(1).max(2000).nullable(),
+    choice_a: bulkChoice,
+    choice_b: bulkChoice,
+    choice_c: bulkChoice,
+    choice_d: bulkChoice,
+    correct_answer: z.string().trim().min(1, "Enter the correct answer.").max(255),
+    points: z.number().int().positive().max(1000),
+    competency_id: z.number().int().positive().nullable(),
+  })
+  .refine(
+    (r) => {
+      const choices = [r.choice_a, r.choice_b, r.choice_c, r.choice_d];
+      if (choices.every((c) => c === null)) return true;
+      return choices.every((c) => c !== null) && /^[A-D]$/.test(r.correct_answer);
+    },
+    { message: "A question with choices needs all four (A–D) and an answer of A, B, C or D." },
+  );
 export const bulkQuestionRowsSchema = z
   .array(bulkQuestionRowSchema)
   .min(1, "No rows to import.")
@@ -107,6 +124,11 @@ export type BulkQuestionRow = z.infer<typeof bulkQuestionRowSchema>;
 export type ParsedAnswerRow = {
   rowNumber: number;
   question_no: number | null;
+  question_text: string | null;
+  choice_a: string | null;
+  choice_b: string | null;
+  choice_c: string | null;
+  choice_d: string | null;
   correct_answer: string;
   points: number;
   competency_id: number | null;
@@ -116,18 +138,42 @@ export type ParsedAnswerRow = {
 };
 
 /** Single row on the Exam Questions page (add or edit). */
-export const examQuestionSchema = z.object({
-  question_no: z
-    .string()
-    .trim()
-    .regex(/^[1-9]\d*$/, "Question number must be a positive whole number.")
-    .refine((v) => Number(v) <= 10_000, "Question number must not exceed 10,000."),
-  correct_answer: z.string().trim().min(1, "Enter the correct answer.").max(255, "Answer must not exceed 255 characters."),
-  points: z
-    .string()
-    .trim()
-    .regex(/^[1-9]\d*$/, "Points must be a positive whole number.")
-    .refine((v) => Number(v) <= 1000, "Points must not exceed 1,000."),
-  competency_id: z.string().trim(),
-});
+const choiceField = z.string().trim().max(500, "A choice must not exceed 500 characters.");
+export const CHOICE_KEYS = ["choice_a", "choice_b", "choice_c", "choice_d"] as const;
+
+/**
+ * Add / edit question. Text and choices are optional (answer-key-only
+ * questions); when any choice is filled, all four are required and the
+ * correct answer must be the letter A–D of one of them.
+ */
+export const examQuestionSchema = z
+  .object({
+    question_no: z
+      .string()
+      .trim()
+      .regex(/^[1-9]\d*$/, "Question number must be a positive whole number.")
+      .refine((v) => Number(v) <= 10_000, "Question number must not exceed 10,000."),
+    question_text: z.string().trim().max(2000, "The question must not exceed 2,000 characters."),
+    choice_a: choiceField,
+    choice_b: choiceField,
+    choice_c: choiceField,
+    choice_d: choiceField,
+    correct_answer: z.string().trim().min(1, "Enter the correct answer.").max(255, "Answer must not exceed 255 characters."),
+    points: z
+      .string()
+      .trim()
+      .regex(/^[1-9]\d*$/, "Points must be a positive whole number.")
+      .refine((v) => Number(v) <= 1000, "Points must not exceed 1,000."),
+    competency_id: z.string().trim(),
+  })
+  .superRefine((v, ctx) => {
+    const filled = CHOICE_KEYS.filter((k) => v[k] !== "");
+    if (filled.length === 0) return;
+    for (const key of CHOICE_KEYS) {
+      if (v[key] === "") ctx.addIssue({ code: "custom", path: [key], message: "Fill in all four choices, or leave them all empty." });
+    }
+    if (!/^[A-D]$/i.test(v.correct_answer)) {
+      ctx.addIssue({ code: "custom", path: ["correct_answer"], message: "Choose the correct letter (A–D)." });
+    }
+  });
 export type ExamQuestionValues = z.input<typeof examQuestionSchema>;

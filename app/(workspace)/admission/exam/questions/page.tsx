@@ -12,12 +12,14 @@ import {
 import { FilterSelect } from "@/components/admission/filter-select";
 import { QcuWatermark } from "@/components/admission/qcu-watermark";
 import { resolveCycle } from "@/features/admission/admission-stats";
+import { isExamDatePassed, isExamLocked } from "@/features/admission/exam";
+import { manilaTodayIso, toExamSet } from "@/features/admission/exam-scoring";
 import { requirePermission } from "@/lib/authorization";
 import { hasPermission } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { TablePageSkeleton } from "@/components/ui/skeletons";
 
-type PageProps = Readonly<{ searchParams: Promise<{ cycle?: string | string[] }> }>;
+type PageProps = Readonly<{ searchParams: Promise<{ cycle?: string | string[]; set?: string | string[] }> }>;
 
 const dateFormat = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -31,7 +33,9 @@ async function QuestionsContent({ searchParams }: PageProps) {
   const user = await requirePermission("admission", "read");
   const canWrite = await hasPermission(user.role, "admission", "write");
 
-  const { cycles, cycle } = await resolveCycle((await searchParams).cycle);
+  const params = await searchParams;
+  const { cycles, cycle } = await resolveCycle(params.cycle);
+  const requestedSet = toExamSet(Array.isArray(params.set) ? params.set[0] : params.set);
 
   if (!cycle) {
     return (
@@ -48,17 +52,30 @@ async function QuestionsContent({ searchParams }: PageProps) {
   const exam = await prisma.tbl_exam.findFirst({
     where: { cycle_id: cycle.cycle_id },
     orderBy: [{ exam_date: { sort: "desc", nulls: "last" } }, { exam_id: "desc" }],
-    select: { exam_id: true, exam_name: true, exam_date: true, max_score: true, total_items: true },
+    select: { exam_id: true, exam_name: true, exam_date: true, max_score: true, total_items: true, edit_unlocked: true },
   });
+
+  // Questions per set; show the requested set (Set A when Set B doesn't exist).
+  const setCounts = exam
+    ? await prisma.tbl_exam_question.groupBy({ by: ["set_label"], where: { exam_id: exam.exam_id }, _count: { _all: true } })
+    : [];
+  const countOf = (set: string) => setCounts.find((s) => s.set_label === set)?._count._all ?? 0;
+  const hasSetB = countOf("B") > 0;
+  const currentSet = requestedSet === "B" && hasSetB ? "B" : "A";
 
   const [rawQuestions, rawCompetencies, responseGroups] = await Promise.all([
     exam
       ? prisma.tbl_exam_question.findMany({
-          where: { exam_id: exam.exam_id },
+          where: { exam_id: exam.exam_id, set_label: currentSet },
           orderBy: { question_no: "asc" },
           select: {
             question_id: true,
             question_no: true,
+            question_text: true,
+            choice_a: true,
+            choice_b: true,
+            choice_c: true,
+            choice_d: true,
             correct_answer: true,
             points: true,
             competency_id: true,
@@ -73,7 +90,7 @@ async function QuestionsContent({ searchParams }: PageProps) {
     exam
       ? prisma.tbl_question_response.groupBy({
           by: ["question_id", "is_correct"],
-          where: { tbl_exam_question: { exam_id: exam.exam_id } },
+          where: { tbl_exam_question: { exam_id: exam.exam_id, set_label: currentSet } },
           _count: { _all: true },
         })
       : Promise.resolve([]),
@@ -82,6 +99,10 @@ async function QuestionsContent({ searchParams }: PageProps) {
   const questions: QuestionRow[] = rawQuestions.map((q) => ({
     question_id: q.question_id,
     question_no: q.question_no,
+    question_text: q.question_text,
+    choices: [q.choice_a, q.choice_b, q.choice_c, q.choice_d].every((c) => c)
+      ? [q.choice_a!, q.choice_b!, q.choice_c!, q.choice_d!]
+      : null,
     correct_answer: q.correct_answer,
     points: q.points,
     competency_id: q.competency_id,
@@ -124,9 +145,10 @@ async function QuestionsContent({ searchParams }: PageProps) {
 
   // An exam is locked for editing once its exam date has passed (Manila time).
   // On the exam day itself it stays editable; only strictly-past dates lock it.
-  const manilaToday = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Manila" });
-  const examDay = exam?.exam_date ? exam.exam_date.toISOString().slice(0, 10) : null;
-  const isLocked = examDay !== null && examDay < manilaToday;
+  // Admission can unlock a locked exam for editing (same rule as the server actions).
+  const manilaToday = manilaTodayIso();
+  const datePassed = exam ? isExamDatePassed(exam.exam_date) : false;
+  const isLocked = exam ? isExamLocked(exam) : false;
 
   // Upcoming exam sessions (today or later) offered in the "Answer sheets" picker.
   const rawSessions = exam
@@ -169,9 +191,14 @@ async function QuestionsContent({ searchParams }: PageProps) {
         responseStats={responseStats}
         examSessions={examSessions}
         canWrite={canWrite && !isLocked}
+        canManage={canWrite}
         isLocked={isLocked}
+        isUnlocked={datePassed && !isLocked}
+        currentSet={currentSet}
+        setCounts={{ A: countOf("A"), B: countOf("B") }}
         yearFilter={
           <FilterSelect
+            key="school-year"
             param="cycle"
             label="School year"
             value={String(cycle.cycle_id)}

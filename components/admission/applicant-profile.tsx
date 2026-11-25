@@ -4,10 +4,12 @@ import type { ReactNode } from "react";
 import { tableStyles } from "@/components/ui/table-styles";
 import { EditApplicantButton } from "@/components/admission/applicant-form-modal";
 import { DocumentPreview } from "@/components/admission/document-preview";
+import { RequirementToggle } from "@/components/admission/requirement-toggle";
+import { ClipboardCheck } from "lucide-react";
 import { PrintButton, ProfileTabs } from "@/components/admission/profile-tabs";
 import UpdateApplicationStageForm from "@/components/admission/update-application-stage-form";
 import type { ApplicantProfileData } from "@/features/admission/applicant-profile-query";
-import { DOCUMENT_SLOTS, formatFileSize } from "@/features/admission/documents";
+import { DOCUMENT_SLOTS, EXAM_REQUIREMENTS, formatFileSize } from "@/features/admission/documents";
 import {
   ADMISSION_STAGES,
   ADMITTED_STAGES,
@@ -337,7 +339,10 @@ export default function ApplicantProfile({
     </div>
   );
 
-  // ----- Documents -----
+  // ----- Documents & requirements -----
+  const verifiedCount = application
+    ? EXAM_REQUIREMENTS.filter((req) => application.tbl_application_requirement.some((r) => r.requirement === req)).length
+    : 0;
   const documents = (
     <section className={cardClass}>
       <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -354,11 +359,28 @@ export default function ApplicantProfile({
           </EditApplicantButton>
         )}
       </div>
+      <div
+        className={`mb-3 flex flex-wrap items-center gap-2 rounded-lg border px-3 py-2 text-sm ${
+          verifiedCount === EXAM_REQUIREMENTS.length ? "border-green-200 bg-green-50 text-green-900" : "border-amber-200 bg-amber-50 text-amber-900"
+        }`}
+      >
+        <ClipboardCheck className="size-4 shrink-0" aria-hidden="true" />
+        <span className="font-semibold tabular-nums">
+          {verifiedCount} of {EXAM_REQUIREMENTS.length} requirements verified
+        </span>
+        <span className="text-xs opacity-90">
+          {stageName === ADMISSION_STAGES.APPLICATION_SUBMITTED
+            ? "When all are verified, the applicant moves to For Examination automatically."
+            : verifiedCount === EXAM_REQUIREMENTS.length
+              ? "Complete."
+              : "Verification is recorded with who checked it."}
+        </span>
+      </div>
       <div className={tableStyles.wrap}>
         <table className="w-full border-collapse text-sm">
           <thead>
             <tr className={tableStyles.headRow}>
-              {["Document", "File", "Uploaded"].map((heading) => (
+              {["Document", "File", "Uploaded", "Verified"].map((heading) => (
                 <th key={heading} className={tableStyles.th}>
                   {heading}
                 </th>
@@ -369,6 +391,9 @@ export default function ApplicantProfile({
             {DOCUMENT_SLOTS.map((slot) => {
               const document = application.tbl_application_document.find(
                 (doc) => doc.document_type === slot.documentType,
+              );
+              const verification = application.tbl_application_requirement.find(
+                (r) => r.requirement === slot.documentType,
               );
               return (
                 <tr key={slot.key} className={tableStyles.row}>
@@ -390,6 +415,17 @@ export default function ApplicantProfile({
                     {document
                       ? `${formatDateTime(document.uploaded_at)}${document.tbl_user_account ? ` · ${document.tbl_user_account.full_name}` : ""}`
                       : "--"}
+                  </td>
+                  <td className={tableStyles.td}>
+                    <RequirementToggle
+                      applicationId={application.application_id}
+                      requirement={slot.documentType}
+                      label={slot.label}
+                      verified={Boolean(verification)}
+                      verifiedBy={verification?.tbl_user_account?.full_name ?? null}
+                      verifiedAt={verification ? formatDateTime(verification.verified_at) : null}
+                      canWrite={canWrite}
+                    />
                   </td>
                 </tr>
               );
