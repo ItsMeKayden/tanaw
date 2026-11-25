@@ -23,6 +23,7 @@ export function getApplicantProfile(applicantId: number) {
           application_id: true,
           application_no: true,
           application_date: true,
+          street_address: true,
           tbl_school: {
             select: { school_name: true, school_type: true, city_municipality: true },
           },

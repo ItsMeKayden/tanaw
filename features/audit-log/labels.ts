@@ -104,6 +104,7 @@ const FIELD_NAMES: Record<string, string> = {
   cycle_id: "Admission cycle",
   application_no: "Application no.",
   mobile_no: "Mobile no.",
+  street_address: "House no. / street",
   password_hash: "Password",
   token_hash: "Reset token",
   file_data: "File",

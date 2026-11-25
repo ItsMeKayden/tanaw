@@ -80,6 +80,8 @@ model tbl_application {
   current_stage_id           Int?
   application_no             String                      @unique @db.VarChar(50)
   application_date           DateTime                    @db.Date
+  // House no. / street / subdivision; barangay_id holds the rest of the address.
+  street_address             String?                     @db.VarChar(150)
   tbl_applicant              tbl_applicant?              @relation(fields: [applicant_id], references: [applicant_id], onDelete: NoAction, onUpdate: NoAction)
   tbl_barangay               tbl_barangay?               @relation(fields: [barangay_id], references: [barangay_id], onDelete: NoAction, onUpdate: NoAction)
   tbl_branch                 tbl_branch?                 @relation(fields: [branch_id], references: [branch_id], onDelete: NoAction, onUpdate: NoAction)

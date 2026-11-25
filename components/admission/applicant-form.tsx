@@ -104,6 +104,7 @@ const STEP_FIELDS: ApplicantFormField[][] = [
     "email",
     "mobile_no",
     "barangay_id",
+    "street_address",
   ],
   ["program_id", "program_choice_2_id", "program_choice_3_id", "branch_id"],
   [
@@ -741,7 +742,8 @@ export default function ApplicantForm({
 
     if (!valid || !districtOk) {
       const order: ErrorKey[] =
-        index === 0 ? [...fields.slice(0, -1), "district_id", "barangay_id"] : fields;
+        // District has no form field; it sits on screen just before the barangay.
+        index === 0 ? fields.flatMap((key): ErrorKey[] => (key === "barangay_id" ? ["district_id", key] : [key])) : fields;
       const invalid = order.filter((key) =>
         key === "district_id" ? !districtOk : getFieldState(key).invalid,
       );
@@ -881,6 +883,7 @@ export default function ApplicantForm({
     .filter(Boolean)
     .join(" ");
   const address = [
+    values.street_address,
     selectedBarangay && `Brgy. ${selectedBarangay.barangay_name}`,
     selectedDistrict?.district_name,
     "Quezon City",
@@ -1139,6 +1142,21 @@ export default function ApplicantForm({
                   </option>
                 ))}
               </select>
+            </Field>
+            <Field
+              id="field-street_address"
+              label="House no. / Street / Subdivision"
+              required
+              error={errors.street_address}
+              className="sm:col-span-2 lg:col-span-4"
+            >
+              <input
+                {...control("street_address")}
+                onChange={(e) => update({ street_address: e.target.value.replace(/^\s+/, "") })}
+                maxLength={150}
+                placeholder="e.g. 123 Mabini St., Villa Verde Subd."
+                autoComplete="address-line1"
+              />
             </Field>
           </div>
         </section>

@@ -65,6 +65,7 @@ export type Tbl_applicationMinAggregateOutputType = {
   current_stage_id: number | null
   application_no: string | null
   application_date: Date | null
+  street_address: string | null
 }
 
 export type Tbl_applicationMaxAggregateOutputType = {
@@ -80,6 +81,7 @@ export type Tbl_applicationMaxAggregateOutputType = {
   current_stage_id: number | null
   application_no: string | null
   application_date: Date | null
+  street_address: string | null
 }
 
 export type Tbl_applicationCountAggregateOutputType = {
@@ -95,6 +97,7 @@ export type Tbl_applicationCountAggregateOutputType = {
   current_stage_id: number
   application_no: number
   application_date: number
+  street_address: number
   _all: number
 }
 
@@ -138,6 +141,7 @@ export type Tbl_applicationMinAggregateInputType = {
   current_stage_id?: true
   application_no?: true
   application_date?: true
+  street_address?: true
 }
 
 export type Tbl_applicationMaxAggregateInputType = {
@@ -153,6 +157,7 @@ export type Tbl_applicationMaxAggregateInputType = {
   current_stage_id?: true
   application_no?: true
   application_date?: true
+  street_address?: true
 }
 
 export type Tbl_applicationCountAggregateInputType = {
@@ -168,6 +173,7 @@ export type Tbl_applicationCountAggregateInputType = {
   current_stage_id?: true
   application_no?: true
   application_date?: true
+  street_address?: true
   _all?: true
 }
 
@@ -270,6 +276,7 @@ export type Tbl_applicationGroupByOutputType = {
   current_stage_id: number | null
   application_no: string
   application_date: Date
+  street_address: string | null
   _count: Tbl_applicationCountAggregateOutputType | null
   _avg: Tbl_applicationAvgAggregateOutputType | null
   _sum: Tbl_applicationSumAggregateOutputType | null
@@ -308,6 +315,7 @@ export type tbl_applicationWhereInput = {
   current_stage_id?: Prisma.IntNullableFilter<"tbl_application"> | number | null
   application_no?: Prisma.StringFilter<"tbl_application"> | string
   application_date?: Prisma.DateTimeFilter<"tbl_application"> | Date | string
+  street_address?: Prisma.StringNullableFilter<"tbl_application"> | string | null
   tbl_applicant?: Prisma.XOR<Prisma.Tbl_applicantNullableScalarRelationFilter, Prisma.tbl_applicantWhereInput> | null
   tbl_barangay?: Prisma.XOR<Prisma.Tbl_barangayNullableScalarRelationFilter, Prisma.tbl_barangayWhereInput> | null
   tbl_branch?: Prisma.XOR<Prisma.Tbl_branchNullableScalarRelationFilter, Prisma.tbl_branchWhereInput> | null
@@ -338,6 +346,7 @@ export type tbl_applicationOrderByWithRelationInput = {
   current_stage_id?: Prisma.SortOrderInput | Prisma.SortOrder
   application_no?: Prisma.SortOrder
   application_date?: Prisma.SortOrder
+  street_address?: Prisma.SortOrderInput | Prisma.SortOrder
   tbl_applicant?: Prisma.tbl_applicantOrderByWithRelationInput
   tbl_barangay?: Prisma.tbl_barangayOrderByWithRelationInput
   tbl_branch?: Prisma.tbl_branchOrderByWithRelationInput
@@ -371,6 +380,7 @@ export type tbl_applicationWhereUniqueInput = Prisma.AtLeast<{
   cycle_id?: Prisma.IntNullableFilter<"tbl_application"> | number | null
   current_stage_id?: Prisma.IntNullableFilter<"tbl_application"> | number | null
   application_date?: Prisma.DateTimeFilter<"tbl_application"> | Date | string
+  street_address?: Prisma.StringNullableFilter<"tbl_application"> | string | null
   tbl_applicant?: Prisma.XOR<Prisma.Tbl_applicantNullableScalarRelationFilter, Prisma.tbl_applicantWhereInput> | null
   tbl_barangay?: Prisma.XOR<Prisma.Tbl_barangayNullableScalarRelationFilter, Prisma.tbl_barangayWhereInput> | null
   tbl_branch?: Prisma.XOR<Prisma.Tbl_branchNullableScalarRelationFilter, Prisma.tbl_branchWhereInput> | null
@@ -401,6 +411,7 @@ export type tbl_applicationOrderByWithAggregationInput = {
   current_stage_id?: Prisma.SortOrderInput | Prisma.SortOrder
   application_no?: Prisma.SortOrder
   application_date?: Prisma.SortOrder
+  street_address?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.tbl_applicationCountOrderByAggregateInput
   _avg?: Prisma.tbl_applicationAvgOrderByAggregateInput
   _max?: Prisma.tbl_applicationMaxOrderByAggregateInput
@@ -424,11 +435,13 @@ export type tbl_applicationScalarWhereWithAggregatesInput = {
   current_stage_id?: Prisma.IntNullableWithAggregatesFilter<"tbl_application"> | number | null
   application_no?: Prisma.StringWithAggregatesFilter<"tbl_application"> | string
   application_date?: Prisma.DateTimeWithAggregatesFilter<"tbl_application"> | Date | string
+  street_address?: Prisma.StringNullableWithAggregatesFilter<"tbl_application"> | string | null
 }
 
 export type tbl_applicationCreateInput = {
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_applicant?: Prisma.tbl_applicantCreateNestedOneWithoutTbl_applicationInput
   tbl_barangay?: Prisma.tbl_barangayCreateNestedOneWithoutTbl_applicationInput
   tbl_branch?: Prisma.tbl_branchCreateNestedOneWithoutTbl_applicationInput
@@ -459,6 +472,7 @@ export type tbl_applicationUncheckedCreateInput = {
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_applicationInput
@@ -470,6 +484,7 @@ export type tbl_applicationUncheckedCreateInput = {
 export type tbl_applicationUpdateInput = {
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_applicant?: Prisma.tbl_applicantUpdateOneWithoutTbl_applicationNestedInput
   tbl_barangay?: Prisma.tbl_barangayUpdateOneWithoutTbl_applicationNestedInput
   tbl_branch?: Prisma.tbl_branchUpdateOneWithoutTbl_applicationNestedInput
@@ -500,6 +515,7 @@ export type tbl_applicationUncheckedUpdateInput = {
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_applicationNestedInput
@@ -521,11 +537,13 @@ export type tbl_applicationCreateManyInput = {
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
 }
 
 export type tbl_applicationUpdateManyMutationInput = {
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type tbl_applicationUncheckedUpdateManyInput = {
@@ -541,6 +559,7 @@ export type tbl_applicationUncheckedUpdateManyInput = {
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type Tbl_applicationListRelationFilter = {
@@ -566,6 +585,7 @@ export type tbl_applicationCountOrderByAggregateInput = {
   current_stage_id?: Prisma.SortOrder
   application_no?: Prisma.SortOrder
   application_date?: Prisma.SortOrder
+  street_address?: Prisma.SortOrder
 }
 
 export type tbl_applicationAvgOrderByAggregateInput = {
@@ -594,6 +614,7 @@ export type tbl_applicationMaxOrderByAggregateInput = {
   current_stage_id?: Prisma.SortOrder
   application_no?: Prisma.SortOrder
   application_date?: Prisma.SortOrder
+  street_address?: Prisma.SortOrder
 }
 
 export type tbl_applicationMinOrderByAggregateInput = {
@@ -609,6 +630,7 @@ export type tbl_applicationMinOrderByAggregateInput = {
   current_stage_id?: Prisma.SortOrder
   application_no?: Prisma.SortOrder
   application_date?: Prisma.SortOrder
+  street_address?: Prisma.SortOrder
 }
 
 export type tbl_applicationSumOrderByAggregateInput = {
@@ -1103,6 +1125,7 @@ export type tbl_applicationUpdateOneRequiredWithoutTbl_exam_session_applicantNes
 export type tbl_applicationCreateWithoutTbl_admission_cycleInput = {
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_applicant?: Prisma.tbl_applicantCreateNestedOneWithoutTbl_applicationInput
   tbl_barangay?: Prisma.tbl_barangayCreateNestedOneWithoutTbl_applicationInput
   tbl_branch?: Prisma.tbl_branchCreateNestedOneWithoutTbl_applicationInput
@@ -1131,6 +1154,7 @@ export type tbl_applicationUncheckedCreateWithoutTbl_admission_cycleInput = {
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_applicationInput
@@ -1181,11 +1205,13 @@ export type tbl_applicationScalarWhereInput = {
   current_stage_id?: Prisma.IntNullableFilter<"tbl_application"> | number | null
   application_no?: Prisma.StringFilter<"tbl_application"> | string
   application_date?: Prisma.DateTimeFilter<"tbl_application"> | Date | string
+  street_address?: Prisma.StringNullableFilter<"tbl_application"> | string | null
 }
 
 export type tbl_applicationCreateWithoutTbl_admission_stageInput = {
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_applicant?: Prisma.tbl_applicantCreateNestedOneWithoutTbl_applicationInput
   tbl_barangay?: Prisma.tbl_barangayCreateNestedOneWithoutTbl_applicationInput
   tbl_branch?: Prisma.tbl_branchCreateNestedOneWithoutTbl_applicationInput
@@ -1214,6 +1240,7 @@ export type tbl_applicationUncheckedCreateWithoutTbl_admission_stageInput = {
   cycle_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_applicationInput
@@ -1251,6 +1278,7 @@ export type tbl_applicationUpdateManyWithWhereWithoutTbl_admission_stageInput = 
 export type tbl_applicationCreateWithoutTbl_applicantInput = {
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_barangay?: Prisma.tbl_barangayCreateNestedOneWithoutTbl_applicationInput
   tbl_branch?: Prisma.tbl_branchCreateNestedOneWithoutTbl_applicationInput
   tbl_admission_stage?: Prisma.tbl_admission_stageCreateNestedOneWithoutTbl_applicationInput
@@ -1279,6 +1307,7 @@ export type tbl_applicationUncheckedCreateWithoutTbl_applicantInput = {
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_applicationInput
@@ -1316,6 +1345,7 @@ export type tbl_applicationUpdateManyWithWhereWithoutTbl_applicantInput = {
 export type tbl_applicationCreateWithoutTbl_application_stage_logInput = {
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_applicant?: Prisma.tbl_applicantCreateNestedOneWithoutTbl_applicationInput
   tbl_barangay?: Prisma.tbl_barangayCreateNestedOneWithoutTbl_applicationInput
   tbl_branch?: Prisma.tbl_branchCreateNestedOneWithoutTbl_applicationInput
@@ -1345,6 +1375,7 @@ export type tbl_applicationUncheckedCreateWithoutTbl_application_stage_logInput 
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_application_document?: Prisma.tbl_application_documentUncheckedCreateNestedManyWithoutTbl_applicationInput
@@ -1371,6 +1402,7 @@ export type tbl_applicationUpdateToOneWithWhereWithoutTbl_application_stage_logI
 export type tbl_applicationUpdateWithoutTbl_application_stage_logInput = {
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_applicant?: Prisma.tbl_applicantUpdateOneWithoutTbl_applicationNestedInput
   tbl_barangay?: Prisma.tbl_barangayUpdateOneWithoutTbl_applicationNestedInput
   tbl_branch?: Prisma.tbl_branchUpdateOneWithoutTbl_applicationNestedInput
@@ -1400,6 +1432,7 @@ export type tbl_applicationUncheckedUpdateWithoutTbl_application_stage_logInput 
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_application_document?: Prisma.tbl_application_documentUncheckedUpdateManyWithoutTbl_applicationNestedInput
@@ -1410,6 +1443,7 @@ export type tbl_applicationUncheckedUpdateWithoutTbl_application_stage_logInput 
 export type tbl_applicationCreateWithoutTbl_barangayInput = {
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_applicant?: Prisma.tbl_applicantCreateNestedOneWithoutTbl_applicationInput
   tbl_branch?: Prisma.tbl_branchCreateNestedOneWithoutTbl_applicationInput
   tbl_admission_stage?: Prisma.tbl_admission_stageCreateNestedOneWithoutTbl_applicationInput
@@ -1438,6 +1472,7 @@ export type tbl_applicationUncheckedCreateWithoutTbl_barangayInput = {
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_applicationInput
@@ -1475,6 +1510,7 @@ export type tbl_applicationUpdateManyWithWhereWithoutTbl_barangayInput = {
 export type tbl_applicationCreateWithoutTbl_branchInput = {
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_applicant?: Prisma.tbl_applicantCreateNestedOneWithoutTbl_applicationInput
   tbl_barangay?: Prisma.tbl_barangayCreateNestedOneWithoutTbl_applicationInput
   tbl_admission_stage?: Prisma.tbl_admission_stageCreateNestedOneWithoutTbl_applicationInput
@@ -1503,6 +1539,7 @@ export type tbl_applicationUncheckedCreateWithoutTbl_branchInput = {
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_applicationInput
@@ -1540,6 +1577,7 @@ export type tbl_applicationUpdateManyWithWhereWithoutTbl_branchInput = {
 export type tbl_applicationCreateWithoutTbl_course_recommendationInput = {
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_applicant?: Prisma.tbl_applicantCreateNestedOneWithoutTbl_applicationInput
   tbl_barangay?: Prisma.tbl_barangayCreateNestedOneWithoutTbl_applicationInput
   tbl_branch?: Prisma.tbl_branchCreateNestedOneWithoutTbl_applicationInput
@@ -1569,6 +1607,7 @@ export type tbl_applicationUncheckedCreateWithoutTbl_course_recommendationInput 
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_application_document?: Prisma.tbl_application_documentUncheckedCreateNestedManyWithoutTbl_applicationInput
@@ -1595,6 +1634,7 @@ export type tbl_applicationUpdateToOneWithWhereWithoutTbl_course_recommendationI
 export type tbl_applicationUpdateWithoutTbl_course_recommendationInput = {
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_applicant?: Prisma.tbl_applicantUpdateOneWithoutTbl_applicationNestedInput
   tbl_barangay?: Prisma.tbl_barangayUpdateOneWithoutTbl_applicationNestedInput
   tbl_branch?: Prisma.tbl_branchUpdateOneWithoutTbl_applicationNestedInput
@@ -1624,6 +1664,7 @@ export type tbl_applicationUncheckedUpdateWithoutTbl_course_recommendationInput 
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_application_document?: Prisma.tbl_application_documentUncheckedUpdateManyWithoutTbl_applicationNestedInput
@@ -1634,6 +1675,7 @@ export type tbl_applicationUncheckedUpdateWithoutTbl_course_recommendationInput 
 export type tbl_applicationCreateWithoutTbl_exam_resultInput = {
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_applicant?: Prisma.tbl_applicantCreateNestedOneWithoutTbl_applicationInput
   tbl_barangay?: Prisma.tbl_barangayCreateNestedOneWithoutTbl_applicationInput
   tbl_branch?: Prisma.tbl_branchCreateNestedOneWithoutTbl_applicationInput
@@ -1663,6 +1705,7 @@ export type tbl_applicationUncheckedCreateWithoutTbl_exam_resultInput = {
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_application_document?: Prisma.tbl_application_documentUncheckedCreateNestedManyWithoutTbl_applicationInput
@@ -1689,6 +1732,7 @@ export type tbl_applicationUpdateToOneWithWhereWithoutTbl_exam_resultInput = {
 export type tbl_applicationUpdateWithoutTbl_exam_resultInput = {
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_applicant?: Prisma.tbl_applicantUpdateOneWithoutTbl_applicationNestedInput
   tbl_barangay?: Prisma.tbl_barangayUpdateOneWithoutTbl_applicationNestedInput
   tbl_branch?: Prisma.tbl_branchUpdateOneWithoutTbl_applicationNestedInput
@@ -1718,6 +1762,7 @@ export type tbl_applicationUncheckedUpdateWithoutTbl_exam_resultInput = {
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_application_document?: Prisma.tbl_application_documentUncheckedUpdateManyWithoutTbl_applicationNestedInput
@@ -1728,6 +1773,7 @@ export type tbl_applicationUncheckedUpdateWithoutTbl_exam_resultInput = {
 export type tbl_applicationCreateWithoutTbl_programInput = {
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_applicant?: Prisma.tbl_applicantCreateNestedOneWithoutTbl_applicationInput
   tbl_barangay?: Prisma.tbl_barangayCreateNestedOneWithoutTbl_applicationInput
   tbl_branch?: Prisma.tbl_branchCreateNestedOneWithoutTbl_applicationInput
@@ -1756,6 +1802,7 @@ export type tbl_applicationUncheckedCreateWithoutTbl_programInput = {
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_applicationInput
@@ -1777,6 +1824,7 @@ export type tbl_applicationCreateManyTbl_programInputEnvelope = {
 export type tbl_applicationCreateWithoutProgram_choice_2Input = {
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_applicant?: Prisma.tbl_applicantCreateNestedOneWithoutTbl_applicationInput
   tbl_barangay?: Prisma.tbl_barangayCreateNestedOneWithoutTbl_applicationInput
   tbl_branch?: Prisma.tbl_branchCreateNestedOneWithoutTbl_applicationInput
@@ -1805,6 +1853,7 @@ export type tbl_applicationUncheckedCreateWithoutProgram_choice_2Input = {
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_applicationInput
@@ -1826,6 +1875,7 @@ export type tbl_applicationCreateManyProgram_choice_2InputEnvelope = {
 export type tbl_applicationCreateWithoutProgram_choice_3Input = {
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_applicant?: Prisma.tbl_applicantCreateNestedOneWithoutTbl_applicationInput
   tbl_barangay?: Prisma.tbl_barangayCreateNestedOneWithoutTbl_applicationInput
   tbl_branch?: Prisma.tbl_branchCreateNestedOneWithoutTbl_applicationInput
@@ -1854,6 +1904,7 @@ export type tbl_applicationUncheckedCreateWithoutProgram_choice_3Input = {
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_applicationInput
@@ -1923,6 +1974,7 @@ export type tbl_applicationUpdateManyWithWhereWithoutProgram_choice_3Input = {
 export type tbl_applicationCreateWithoutTbl_schoolInput = {
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_applicant?: Prisma.tbl_applicantCreateNestedOneWithoutTbl_applicationInput
   tbl_barangay?: Prisma.tbl_barangayCreateNestedOneWithoutTbl_applicationInput
   tbl_branch?: Prisma.tbl_branchCreateNestedOneWithoutTbl_applicationInput
@@ -1951,6 +2003,7 @@ export type tbl_applicationUncheckedCreateWithoutTbl_schoolInput = {
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_applicationInput
@@ -1988,6 +2041,7 @@ export type tbl_applicationUpdateManyWithWhereWithoutTbl_schoolInput = {
 export type tbl_applicationCreateWithoutTbl_application_requirementInput = {
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_applicant?: Prisma.tbl_applicantCreateNestedOneWithoutTbl_applicationInput
   tbl_barangay?: Prisma.tbl_barangayCreateNestedOneWithoutTbl_applicationInput
   tbl_branch?: Prisma.tbl_branchCreateNestedOneWithoutTbl_applicationInput
@@ -2017,6 +2071,7 @@ export type tbl_applicationUncheckedCreateWithoutTbl_application_requirementInpu
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_applicationInput
@@ -2043,6 +2098,7 @@ export type tbl_applicationUpdateToOneWithWhereWithoutTbl_application_requiremen
 export type tbl_applicationUpdateWithoutTbl_application_requirementInput = {
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_applicant?: Prisma.tbl_applicantUpdateOneWithoutTbl_applicationNestedInput
   tbl_barangay?: Prisma.tbl_barangayUpdateOneWithoutTbl_applicationNestedInput
   tbl_branch?: Prisma.tbl_branchUpdateOneWithoutTbl_applicationNestedInput
@@ -2072,6 +2128,7 @@ export type tbl_applicationUncheckedUpdateWithoutTbl_application_requirementInpu
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_applicationNestedInput
@@ -2082,6 +2139,7 @@ export type tbl_applicationUncheckedUpdateWithoutTbl_application_requirementInpu
 export type tbl_applicationCreateWithoutTbl_application_documentInput = {
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_applicant?: Prisma.tbl_applicantCreateNestedOneWithoutTbl_applicationInput
   tbl_barangay?: Prisma.tbl_barangayCreateNestedOneWithoutTbl_applicationInput
   tbl_branch?: Prisma.tbl_branchCreateNestedOneWithoutTbl_applicationInput
@@ -2111,6 +2169,7 @@ export type tbl_applicationUncheckedCreateWithoutTbl_application_documentInput =
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_applicationInput
@@ -2137,6 +2196,7 @@ export type tbl_applicationUpdateToOneWithWhereWithoutTbl_application_documentIn
 export type tbl_applicationUpdateWithoutTbl_application_documentInput = {
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_applicant?: Prisma.tbl_applicantUpdateOneWithoutTbl_applicationNestedInput
   tbl_barangay?: Prisma.tbl_barangayUpdateOneWithoutTbl_applicationNestedInput
   tbl_branch?: Prisma.tbl_branchUpdateOneWithoutTbl_applicationNestedInput
@@ -2166,6 +2226,7 @@ export type tbl_applicationUncheckedUpdateWithoutTbl_application_documentInput =
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_applicationNestedInput
@@ -2176,6 +2237,7 @@ export type tbl_applicationUncheckedUpdateWithoutTbl_application_documentInput =
 export type tbl_applicationCreateWithoutTbl_exam_session_applicantInput = {
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_applicant?: Prisma.tbl_applicantCreateNestedOneWithoutTbl_applicationInput
   tbl_barangay?: Prisma.tbl_barangayCreateNestedOneWithoutTbl_applicationInput
   tbl_branch?: Prisma.tbl_branchCreateNestedOneWithoutTbl_applicationInput
@@ -2205,6 +2267,7 @@ export type tbl_applicationUncheckedCreateWithoutTbl_exam_session_applicantInput
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedCreateNestedManyWithoutTbl_applicationInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedCreateNestedManyWithoutTbl_applicationInput
@@ -2231,6 +2294,7 @@ export type tbl_applicationUpdateToOneWithWhereWithoutTbl_exam_session_applicant
 export type tbl_applicationUpdateWithoutTbl_exam_session_applicantInput = {
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_applicant?: Prisma.tbl_applicantUpdateOneWithoutTbl_applicationNestedInput
   tbl_barangay?: Prisma.tbl_barangayUpdateOneWithoutTbl_applicationNestedInput
   tbl_branch?: Prisma.tbl_branchUpdateOneWithoutTbl_applicationNestedInput
@@ -2260,6 +2324,7 @@ export type tbl_applicationUncheckedUpdateWithoutTbl_exam_session_applicantInput
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_applicationNestedInput
@@ -2279,11 +2344,13 @@ export type tbl_applicationCreateManyTbl_admission_cycleInput = {
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
 }
 
 export type tbl_applicationUpdateWithoutTbl_admission_cycleInput = {
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_applicant?: Prisma.tbl_applicantUpdateOneWithoutTbl_applicationNestedInput
   tbl_barangay?: Prisma.tbl_barangayUpdateOneWithoutTbl_applicationNestedInput
   tbl_branch?: Prisma.tbl_branchUpdateOneWithoutTbl_applicationNestedInput
@@ -2312,6 +2379,7 @@ export type tbl_applicationUncheckedUpdateWithoutTbl_admission_cycleInput = {
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_applicationNestedInput
@@ -2332,6 +2400,7 @@ export type tbl_applicationUncheckedUpdateManyWithoutTbl_admission_cycleInput = 
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type tbl_applicationCreateManyTbl_admission_stageInput = {
@@ -2346,11 +2415,13 @@ export type tbl_applicationCreateManyTbl_admission_stageInput = {
   cycle_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
 }
 
 export type tbl_applicationUpdateWithoutTbl_admission_stageInput = {
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_applicant?: Prisma.tbl_applicantUpdateOneWithoutTbl_applicationNestedInput
   tbl_barangay?: Prisma.tbl_barangayUpdateOneWithoutTbl_applicationNestedInput
   tbl_branch?: Prisma.tbl_branchUpdateOneWithoutTbl_applicationNestedInput
@@ -2379,6 +2450,7 @@ export type tbl_applicationUncheckedUpdateWithoutTbl_admission_stageInput = {
   cycle_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_applicationNestedInput
@@ -2399,6 +2471,7 @@ export type tbl_applicationUncheckedUpdateManyWithoutTbl_admission_stageInput = 
   cycle_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type tbl_applicationCreateManyTbl_applicantInput = {
@@ -2413,11 +2486,13 @@ export type tbl_applicationCreateManyTbl_applicantInput = {
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
 }
 
 export type tbl_applicationUpdateWithoutTbl_applicantInput = {
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_barangay?: Prisma.tbl_barangayUpdateOneWithoutTbl_applicationNestedInput
   tbl_branch?: Prisma.tbl_branchUpdateOneWithoutTbl_applicationNestedInput
   tbl_admission_stage?: Prisma.tbl_admission_stageUpdateOneWithoutTbl_applicationNestedInput
@@ -2446,6 +2521,7 @@ export type tbl_applicationUncheckedUpdateWithoutTbl_applicantInput = {
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_applicationNestedInput
@@ -2466,6 +2542,7 @@ export type tbl_applicationUncheckedUpdateManyWithoutTbl_applicantInput = {
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type tbl_applicationCreateManyTbl_barangayInput = {
@@ -2480,11 +2557,13 @@ export type tbl_applicationCreateManyTbl_barangayInput = {
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
 }
 
 export type tbl_applicationUpdateWithoutTbl_barangayInput = {
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_applicant?: Prisma.tbl_applicantUpdateOneWithoutTbl_applicationNestedInput
   tbl_branch?: Prisma.tbl_branchUpdateOneWithoutTbl_applicationNestedInput
   tbl_admission_stage?: Prisma.tbl_admission_stageUpdateOneWithoutTbl_applicationNestedInput
@@ -2513,6 +2592,7 @@ export type tbl_applicationUncheckedUpdateWithoutTbl_barangayInput = {
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_applicationNestedInput
@@ -2533,6 +2613,7 @@ export type tbl_applicationUncheckedUpdateManyWithoutTbl_barangayInput = {
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type tbl_applicationCreateManyTbl_branchInput = {
@@ -2547,11 +2628,13 @@ export type tbl_applicationCreateManyTbl_branchInput = {
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
 }
 
 export type tbl_applicationUpdateWithoutTbl_branchInput = {
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_applicant?: Prisma.tbl_applicantUpdateOneWithoutTbl_applicationNestedInput
   tbl_barangay?: Prisma.tbl_barangayUpdateOneWithoutTbl_applicationNestedInput
   tbl_admission_stage?: Prisma.tbl_admission_stageUpdateOneWithoutTbl_applicationNestedInput
@@ -2580,6 +2663,7 @@ export type tbl_applicationUncheckedUpdateWithoutTbl_branchInput = {
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_applicationNestedInput
@@ -2600,6 +2684,7 @@ export type tbl_applicationUncheckedUpdateManyWithoutTbl_branchInput = {
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type tbl_applicationCreateManyTbl_programInput = {
@@ -2614,6 +2699,7 @@ export type tbl_applicationCreateManyTbl_programInput = {
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
 }
 
 export type tbl_applicationCreateManyProgram_choice_2Input = {
@@ -2628,6 +2714,7 @@ export type tbl_applicationCreateManyProgram_choice_2Input = {
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
 }
 
 export type tbl_applicationCreateManyProgram_choice_3Input = {
@@ -2642,11 +2729,13 @@ export type tbl_applicationCreateManyProgram_choice_3Input = {
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
 }
 
 export type tbl_applicationUpdateWithoutTbl_programInput = {
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_applicant?: Prisma.tbl_applicantUpdateOneWithoutTbl_applicationNestedInput
   tbl_barangay?: Prisma.tbl_barangayUpdateOneWithoutTbl_applicationNestedInput
   tbl_branch?: Prisma.tbl_branchUpdateOneWithoutTbl_applicationNestedInput
@@ -2675,6 +2764,7 @@ export type tbl_applicationUncheckedUpdateWithoutTbl_programInput = {
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_applicationNestedInput
@@ -2695,11 +2785,13 @@ export type tbl_applicationUncheckedUpdateManyWithoutTbl_programInput = {
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type tbl_applicationUpdateWithoutProgram_choice_2Input = {
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_applicant?: Prisma.tbl_applicantUpdateOneWithoutTbl_applicationNestedInput
   tbl_barangay?: Prisma.tbl_barangayUpdateOneWithoutTbl_applicationNestedInput
   tbl_branch?: Prisma.tbl_branchUpdateOneWithoutTbl_applicationNestedInput
@@ -2728,6 +2820,7 @@ export type tbl_applicationUncheckedUpdateWithoutProgram_choice_2Input = {
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_applicationNestedInput
@@ -2748,11 +2841,13 @@ export type tbl_applicationUncheckedUpdateManyWithoutProgram_choice_2Input = {
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type tbl_applicationUpdateWithoutProgram_choice_3Input = {
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_applicant?: Prisma.tbl_applicantUpdateOneWithoutTbl_applicationNestedInput
   tbl_barangay?: Prisma.tbl_barangayUpdateOneWithoutTbl_applicationNestedInput
   tbl_branch?: Prisma.tbl_branchUpdateOneWithoutTbl_applicationNestedInput
@@ -2781,6 +2876,7 @@ export type tbl_applicationUncheckedUpdateWithoutProgram_choice_3Input = {
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_applicationNestedInput
@@ -2801,6 +2897,7 @@ export type tbl_applicationUncheckedUpdateManyWithoutProgram_choice_3Input = {
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type tbl_applicationCreateManyTbl_schoolInput = {
@@ -2815,11 +2912,13 @@ export type tbl_applicationCreateManyTbl_schoolInput = {
   current_stage_id?: number | null
   application_no: string
   application_date: Date | string
+  street_address?: string | null
 }
 
 export type tbl_applicationUpdateWithoutTbl_schoolInput = {
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_applicant?: Prisma.tbl_applicantUpdateOneWithoutTbl_applicationNestedInput
   tbl_barangay?: Prisma.tbl_barangayUpdateOneWithoutTbl_applicationNestedInput
   tbl_branch?: Prisma.tbl_branchUpdateOneWithoutTbl_applicationNestedInput
@@ -2848,6 +2947,7 @@ export type tbl_applicationUncheckedUpdateWithoutTbl_schoolInput = {
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tbl_application_stage_log?: Prisma.tbl_application_stage_logUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_course_recommendation?: Prisma.tbl_course_recommendationUncheckedUpdateManyWithoutTbl_applicationNestedInput
   tbl_exam_result?: Prisma.tbl_exam_resultUncheckedUpdateManyWithoutTbl_applicationNestedInput
@@ -2868,6 +2968,7 @@ export type tbl_applicationUncheckedUpdateManyWithoutTbl_schoolInput = {
   current_stage_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   application_no?: Prisma.StringFieldUpdateOperationsInput | string
   application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  street_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -2950,6 +3051,7 @@ export type tbl_applicationSelect<ExtArgs extends runtime.Types.Extensions.Inter
   current_stage_id?: boolean
   application_no?: boolean
   application_date?: boolean
+  street_address?: boolean
   tbl_applicant?: boolean | Prisma.tbl_application$tbl_applicantArgs<ExtArgs>
   tbl_barangay?: boolean | Prisma.tbl_application$tbl_barangayArgs<ExtArgs>
   tbl_branch?: boolean | Prisma.tbl_application$tbl_branchArgs<ExtArgs>
@@ -2981,6 +3083,7 @@ export type tbl_applicationSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   current_stage_id?: boolean
   application_no?: boolean
   application_date?: boolean
+  street_address?: boolean
   tbl_applicant?: boolean | Prisma.tbl_application$tbl_applicantArgs<ExtArgs>
   tbl_barangay?: boolean | Prisma.tbl_application$tbl_barangayArgs<ExtArgs>
   tbl_branch?: boolean | Prisma.tbl_application$tbl_branchArgs<ExtArgs>
@@ -3005,6 +3108,7 @@ export type tbl_applicationSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   current_stage_id?: boolean
   application_no?: boolean
   application_date?: boolean
+  street_address?: boolean
   tbl_applicant?: boolean | Prisma.tbl_application$tbl_applicantArgs<ExtArgs>
   tbl_barangay?: boolean | Prisma.tbl_application$tbl_barangayArgs<ExtArgs>
   tbl_branch?: boolean | Prisma.tbl_application$tbl_branchArgs<ExtArgs>
@@ -3029,9 +3133,10 @@ export type tbl_applicationSelectScalar = {
   current_stage_id?: boolean
   application_no?: boolean
   application_date?: boolean
+  street_address?: boolean
 }
 
-export type tbl_applicationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"application_id" | "applicant_id" | "school_id" | "barangay_id" | "branch_id" | "program_id" | "program_choice_2_id" | "program_choice_3_id" | "cycle_id" | "current_stage_id" | "application_no" | "application_date", ExtArgs["result"]["tbl_application"]>
+export type tbl_applicationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"application_id" | "applicant_id" | "school_id" | "barangay_id" | "branch_id" | "program_id" | "program_choice_2_id" | "program_choice_3_id" | "cycle_id" | "current_stage_id" | "application_no" | "application_date" | "street_address", ExtArgs["result"]["tbl_application"]>
 export type tbl_applicationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tbl_applicant?: boolean | Prisma.tbl_application$tbl_applicantArgs<ExtArgs>
   tbl_barangay?: boolean | Prisma.tbl_application$tbl_barangayArgs<ExtArgs>
@@ -3105,6 +3210,7 @@ export type $tbl_applicationPayload<ExtArgs extends runtime.Types.Extensions.Int
     current_stage_id: number | null
     application_no: string
     application_date: Date
+    street_address: string | null
   }, ExtArgs["result"]["tbl_application"]>
   composites: {}
 }
@@ -3555,6 +3661,7 @@ export interface tbl_applicationFieldRefs {
   readonly current_stage_id: Prisma.FieldRef<"tbl_application", 'Int'>
   readonly application_no: Prisma.FieldRef<"tbl_application", 'String'>
   readonly application_date: Prisma.FieldRef<"tbl_application", 'DateTime'>
+  readonly street_address: Prisma.FieldRef<"tbl_application", 'String'>
 }
     
 

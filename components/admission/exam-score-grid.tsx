@@ -309,7 +309,7 @@ export function ExamScoreGrid({
             />
             <button
               type="button"
-              onClick={() => setScanOpen((v) => !v)}
+              onClick={() => setScanOpen(true)}
               disabled={isPending}
               className="inline-flex h-8 items-center gap-1.5 rounded-md border border-neutral-500 bg-white px-3 text-sm hover:bg-neutral-100 disabled:opacity-60"
               title="Upload raw A–D answers and auto-grade them against the answer key"
@@ -339,7 +339,7 @@ export function ExamScoreGrid({
         )}
       </div>
 
-      {canWrite && scanOpen && <ScanResultsImport cycleId={cycleId} onClose={() => setScanOpen(false)} />}
+      {canWrite && <ScanResultsImport cycleId={cycleId} open={scanOpen} onClose={() => setScanOpen(false)} />}
 
       <div className="flex flex-wrap items-center gap-2">
         {yearFilter}

@@ -41,10 +41,10 @@ async function stageIds(tx: Prisma.TransactionClient) {
 }
 
 /**
- * Marks one requirement (e.g. Form 138) as verified or not. When every exam
- * requirement is verified and the applicant is still "Application
- * Submitted", they move to "For Examination" (logged with who verified).
- * Unverifying later doesn't move them back.
+ * Marks one document (Form 138, PSA) as verified or not. The Registrar checks
+ * them on Enrollment Verification while the applicant is "Passed"; an
+ * applicant can only be marked Enrolled once every one is verified. It never
+ * changes the stage (Clear for exam moves applicants to For Examination).
  */
 export async function setRequirementVerified(
   applicationIdInput: number,
@@ -59,52 +59,30 @@ export async function setRequirementVerified(
 
   try {
     const accountId = getAccountId(user);
-    const cleared = await prisma.$transaction(async (tx) => {
-      const application = await tx.tbl_application.findFirst({
-        where: { application_id: applicationId, ...ACTIVE_APPLICATION },
-        select: { current_stage_id: true },
-      });
-      if (!application) throw new Error("Application not found.");
-
-      if (verified) {
-        await tx.tbl_application_requirement.upsert({
-          where: { application_id_requirement: { application_id: applicationId, requirement } },
-          update: {},
-          create: { application_id: applicationId, requirement, verified_by: accountId },
-        });
-      } else {
-        await tx.tbl_application_requirement.deleteMany({ where: { application_id: applicationId, requirement } });
-        return false;
-      }
-
-      // All requirements verified → cleared for the exam.
-      const done = await tx.tbl_application_requirement.count({
-        where: { application_id: applicationId, requirement: { in: [...EXAM_REQUIREMENTS] } },
-      });
-      const { submitted, forExam } = await stageIds(tx);
-      if (done < EXAM_REQUIREMENTS.length || application.current_stage_id !== submitted) return false;
-
-      await tx.tbl_application.update({ where: { application_id: applicationId }, data: { current_stage_id: forExam } });
-      await tx.tbl_application_stage_log.create({
-        data: {
-          application_id: applicationId,
-          stage_id: forExam,
-          changed_by: accountId,
-          remarks: `Requirements verified (${EXAM_REQUIREMENTS.map(documentLabel).join(", ")}); cleared for the exam.`,
-        },
-      });
-      return true;
+    const application = await prisma.tbl_application.findFirst({
+      where: { application_id: applicationId, ...ACTIVE_APPLICATION },
+      select: { tbl_admission_stage: { select: { stage_name: true } } },
     });
+    if (!application) return { error: "Application not found." };
+    if (application.tbl_admission_stage?.stage_name !== ADMISSION_STAGES.PASSED) {
+      return { error: "Documents are verified during enrollment, while the applicant is in the Passed stage." };
+    }
+
+    if (verified) {
+      await prisma.tbl_application_requirement.upsert({
+        where: { application_id_requirement: { application_id: applicationId, requirement } },
+        update: {},
+        create: { application_id: applicationId, requirement, verified_by: accountId },
+      });
+    } else {
+      await prisma.tbl_application_requirement.deleteMany({ where: { application_id: applicationId, requirement } });
+    }
 
     revalidate();
+    revalidatePath("/admission/enrollment-verification");
+    revalidatePath(`/admission/enrollment-verification/${applicationId}`);
     const label = documentLabel(requirement);
-    if (!verified) return { success: true, message: `${label} marked as not verified.` };
-    return {
-      success: true,
-      message: cleared
-        ? `${label} verified. All requirements are complete, so the applicant is now For Examination.`
-        : `${label} verified.`,
-    };
+    return { success: true, message: verified ? `${label} verified.` : `${label} marked as not verified.` };
   } catch (error) {
     console.error("Verify requirement error:", error);
     return { error: error instanceof Error ? error.message : "Something went wrong." };
@@ -113,8 +91,8 @@ export async function setRequirementVerified(
 
 /**
  * Bulk "Clear for exam": moves the selected "Application Submitted"
- * applicants to "For Examination" (for exceptions, e.g. requirements checked
- * outside the system). Applicants in any other stage are skipped.
+ * applicants to "For Examination". This is the only way into that stage.
+ * Applicants in any other stage are skipped.
  */
 export async function clearForExam(applicationIdsInput: number[]): Promise<ActionResult> {
   const user = await requireAnyPermission(APPLICANT_EDIT_MODULES, "write");

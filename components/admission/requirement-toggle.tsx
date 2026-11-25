@@ -8,8 +8,8 @@ import { setRequirementVerified } from "@/features/admission/actions/requirement
 import { toast } from "@/components/ui/toaster";
 
 /**
- * Verified / not verified for one requirement (Form 138, PSA). Verifying the
- * last one clears the applicant for the exam (done on the server).
+ * Verified / not verified for one document (Form 138, PSA), used on
+ * Enrollment Verification. All must be verified before marking as enrolled.
  */
 export function RequirementToggle({
   applicationId,

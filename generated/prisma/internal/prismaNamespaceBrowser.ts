@@ -168,7 +168,8 @@ export const Tbl_applicationScalarFieldEnum = {
   cycle_id: 'cycle_id',
   current_stage_id: 'current_stage_id',
   application_no: 'application_no',
-  application_date: 'application_date'
+  application_date: 'application_date',
+  street_address: 'street_address'
 } as const
 
 export type Tbl_applicationScalarFieldEnum = (typeof Tbl_applicationScalarFieldEnum)[keyof typeof Tbl_applicationScalarFieldEnum]

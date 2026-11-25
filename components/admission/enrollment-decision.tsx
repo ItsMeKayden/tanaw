@@ -52,12 +52,15 @@ export default function EnrollmentDecision({
   stageName,
   canDecide,
   canEnroll,
+  enrollBlockedReason = null,
   decision,
 }: Readonly<{
   applicationId: number;
   stageName: string | null;
   canDecide: boolean;
   canEnroll: boolean;
+  /** Shown next to a disabled "Mark as Enrolled" (e.g. documents not verified). */
+  enrollBlockedReason?: string | null;
   decision: { by: string | null; at: string | null; remarks: string | null } | null;
 }>) {
   const router = useRouter();
@@ -183,6 +186,11 @@ export default function EnrollmentDecision({
             </p>
           )}
 
+          {enrollBlockedReason && (
+            <p className="rounded-lg border border-amber-300 bg-amber-50 p-2 text-xs text-amber-800">
+              {enrollBlockedReason}
+            </p>
+          )}
           <div className="flex flex-wrap justify-end gap-3">
             <button
               type="button"
@@ -215,6 +223,7 @@ export default function EnrollmentDecision({
             <button
               type="button"
               disabled={isPending || !canEnroll}
+              title={enrollBlockedReason ?? undefined}
               onClick={handleSubmit((values) =>
                 setPendingConfirm({
                   title: "Mark as Enrolled?",

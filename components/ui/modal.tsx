@@ -6,6 +6,7 @@ import { X } from "lucide-react";
 
 const SIZES = {
   sm: "max-w-md",
+  md: "max-w-3xl",
   lg: "max-w-5xl",
 } as const;
 

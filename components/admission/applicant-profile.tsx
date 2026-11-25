@@ -207,6 +207,7 @@ export default function ApplicantProfile({
 
   // ----- Overview -----
   const address = [
+    application.street_address,
     application.tbl_barangay && `Brgy. ${application.tbl_barangay.barangay_name}`,
     application.tbl_barangay?.tbl_district?.district_name,
     "Quezon City",
@@ -366,14 +367,12 @@ export default function ApplicantProfile({
       >
         <ClipboardCheck className="size-4 shrink-0" aria-hidden="true" />
         <span className="font-semibold tabular-nums">
-          {verifiedCount} of {EXAM_REQUIREMENTS.length} requirements verified
+          {verifiedCount} of {EXAM_REQUIREMENTS.length} documents verified
         </span>
         <span className="text-xs opacity-90">
-          {stageName === ADMISSION_STAGES.APPLICATION_SUBMITTED
-            ? "When all are verified, the applicant moves to For Examination automatically."
-            : verifiedCount === EXAM_REQUIREMENTS.length
-              ? "Complete."
-              : "Verification is recorded with who checked it."}
+          {verifiedCount === EXAM_REQUIREMENTS.length
+            ? "Complete."
+            : "The Registrar verifies documents on Enrollment Verification before the applicant is enrolled."}
         </span>
       </div>
       <div className={tableStyles.wrap}>
@@ -424,7 +423,7 @@ export default function ApplicantProfile({
                       verified={Boolean(verification)}
                       verifiedBy={verification?.tbl_user_account?.full_name ?? null}
                       verifiedAt={verification ? formatDateTime(verification.verified_at) : null}
-                      canWrite={canWrite}
+                      canWrite={false}
                     />
                   </td>
                 </tr>

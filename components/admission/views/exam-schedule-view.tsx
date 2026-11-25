@@ -21,6 +21,12 @@ export type ExamScheduleSearchParams = Promise<{ cycle?: string | string[]; sess
 
 const dateFormat = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
 const weekdayFormat = new Intl.DateTimeFormat("en-US", { weekday: "long", timeZone: "UTC" });
+// marked_at is a real timestamp, so show it in Manila time.
+const markedAtFormat = new Intl.DateTimeFormat("en-US", {
+  hour: "numeric",
+  minute: "2-digit",
+  timeZone: "Asia/Manila",
+});
 
 function formatTime(value: string | null) {
   if (!value) return null;
@@ -128,6 +134,8 @@ export async function ExamScheduleView({
           select: {
             application_id: true,
             attendance: true,
+            marked_at: true,
+            tbl_user_account: { select: { full_name: true } },
             tbl_application: {
               select: {
                 application_no: true,
@@ -150,6 +158,8 @@ export async function ExamScheduleView({
           attendance:
             slot.attendance === ATTENDANCE.PRESENT || slot.attendance === ATTENDANCE.ABSENT ? slot.attendance : null,
           scored: slot.tbl_application._count.tbl_exam_result > 0,
+          marked_at: slot.attendance && slot.marked_at ? markedAtFormat.format(slot.marked_at) : null,
+          marked_by: slot.attendance ? (slot.tbl_user_account?.full_name ?? null) : null,
         }))
     : [];
 

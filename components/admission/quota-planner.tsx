@@ -72,7 +72,13 @@ export function QuotaPlanner({
   const anyQuota = quotas.some((q) => q !== null);
   const target = overallNumber ?? (anyQuota ? totalQuota : null);
   const admittedPct = target ? pct(totalAdmitted, target) : 0;
-  const mismatch = !split && overallNumber !== null && anyQuota && totalQuota !== overallNumber;
+  // Manual course quotas share the overall target: they may leave some unallocated, never exceed it.
+  const capped = !split && overallNumber !== null;
+  const overTarget = capped && totalQuota > overallNumber;
+  const unallocated = capped && anyQuota && totalQuota < overallNumber ? overallNumber - totalQuota : 0;
+  /** Most course i can take without the course total passing the overall target. */
+  const maxFor = (i: number) =>
+    overallNumber === null ? 100000 : Math.max(0, overallNumber - (totalQuota - (quotas[i] ?? 0)));
 
   function cancel() {
     setOverall(toInput(overallSlots));
@@ -172,10 +178,16 @@ export function QuotaPlanner({
             {target === null && <p className="text-xs text-neutral-600">No target set yet.</p>}
           </div>
 
-          {mismatch && (
+          {overTarget && (
+            <p role="alert" className="rounded-sm border border-red-300 bg-red-50 p-2 text-xs text-red-800">
+              Course quotas add up to {totalQuota.toLocaleString("en-US")}, more than the overall target of{" "}
+              {overallNumber?.toLocaleString("en-US")}. Lower some course quotas or raise the target.
+            </p>
+          )}
+          {unallocated > 0 && (
             <p className="rounded-sm border border-amber-300 bg-amber-50 p-2 text-xs text-amber-900">
-              Course quotas add up to {totalQuota.toLocaleString("en-US")}, not the overall target of{" "}
-              {overallNumber?.toLocaleString("en-US")}.
+              {totalQuota.toLocaleString("en-US")} of {overallNumber?.toLocaleString("en-US")} allocated to
+              courses; {unallocated.toLocaleString("en-US")} not yet assigned.
             </p>
           )}
         </div>
@@ -206,7 +218,8 @@ export function QuotaPlanner({
             <button
               type="button"
               onClick={save}
-              disabled={isPending}
+              disabled={isPending || overTarget}
+              title={overTarget ? "Course quotas are more than the overall target" : undefined}
               className="h-8 w-full rounded-md bg-[#191e73] text-sm font-semibold text-white hover:bg-[#232a99] disabled:opacity-60"
             >
               {isPending ? "Saving…" : "Save quota"}
@@ -251,13 +264,18 @@ export function QuotaPlanner({
                         <input
                           type="number"
                           min={0}
-                          max={100000}
+                          max={maxFor(i)}
                           inputMode="numeric"
                           aria-label={`${course.program_code} quota`}
+                          title={overallNumber === null ? undefined : `At most ${maxFor(i)} (overall target)`}
                           value={manual[i]}
-                          onChange={(e) =>
-                            setManual((prev) => prev.map((v, j) => (j === i ? e.target.value : v)))
-                          }
+                          onChange={(e) => {
+                            // Typing past what's left of the overall target stops at the limit.
+                            const typed = parse(e.target.value);
+                            const value =
+                              typed !== null && typed > maxFor(i) ? String(maxFor(i)) : e.target.value;
+                            setManual((prev) => prev.map((v, j) => (j === i ? value : v)));
+                          }}
                           placeholder="--"
                           className="h-7 w-20 rounded-sm border border-neutral-400 px-1.5 text-center text-sm tabular-nums"
                         />

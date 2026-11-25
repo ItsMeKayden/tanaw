@@ -348,7 +348,8 @@ function assertNoScoredMarkedAbsent(
  * Saves attendance for a session. Present applicants still "For Examination"
  * move to "Exam Completed"; an applicant changed to absent moves back if
  * they have no exam result yet. An applicant with an exam result can't be
- * changed to absent. Stage changes are logged.
+ * changed to absent. Only open from the session's start until its end, and
+ * only changed rows get a new marked_at. Stage changes are logged.
  */
 export async function saveAttendance(
   sessionIdInput: number,
@@ -369,10 +370,13 @@ export async function saveAttendance(
 
     const session = await prisma.tbl_exam_session.findUnique({
       where: { session_id: sessionId },
-      select: { session_date: true, end_time: true, archived_at: true },
+      select: { session_date: true, start_time: true, end_time: true, archived_at: true },
     });
     if (!session) return { error: "Exam session not found." };
     if (session.archived_at) return { error: ARCHIVED_ERROR };
+    if (!isSessionStarted(session.session_date, session.start_time)) {
+      return { error: "This session hasn't started yet. Attendance opens at its start time." };
+    }
     if (isSessionFinished(session.session_date, session.end_time)) {
       return { error: "This session has ended; attendance is locked." };
     }
@@ -397,14 +401,14 @@ export async function saveAttendance(
 
       for (const entry of entries) {
         const seat = seats.find((s) => s.application_id === entry.application_id)!;
-        await tx.tbl_exam_session_applicant.update({
-          where: { session_id_application_id: { session_id: sessionId, application_id: entry.application_id } },
-          data: {
-            attendance: entry.present ? ATTENDANCE.PRESENT : ATTENDANCE.ABSENT,
-            marked_by: accountId,
-            marked_at: now,
-          },
-        });
+        const attendance = entry.present ? ATTENDANCE.PRESENT : ATTENDANCE.ABSENT;
+        // Unchanged rows keep the time (and person) they were first marked with.
+        if (seat.attendance !== attendance) {
+          await tx.tbl_exam_session_applicant.update({
+            where: { session_id_application_id: { session_id: sessionId, application_id: entry.application_id } },
+            data: { attendance, marked_by: accountId, marked_at: now },
+          });
+        }
 
         const stage = seat.tbl_application.current_stage_id;
         let nextStage: number | null = null;

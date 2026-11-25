@@ -80,6 +80,9 @@ export type SlotRow = {
   attendance: "PRESENT" | "ABSENT" | null;
   /** Has an exam score: can't be changed to absent or removed from the session. */
   scored: boolean;
+  /** When the saved attendance was marked, e.g. "8:12 AM" (Manila time). */
+  marked_at: string | null;
+  marked_by: string | null;
 };
 
 type Feedback = { type: "success" | "error"; text: string } | null;
@@ -376,6 +379,8 @@ function AttendancePanel({
   const duration = formatDuration(session.duration_minutes);
   // Finished and archived sessions are read-only.
   const locked = session.finished || session.archived;
+  // Attendance can only be taken once the session has started.
+  const attendanceOpen = session.started && !locked;
 
   return (
     <section className="flex flex-col overflow-hidden rounded-xl border border-neutral-500 bg-white/95">
@@ -458,13 +463,26 @@ function AttendancePanel({
           <ul className="scrollbar-none max-h-[50vh] space-y-1 overflow-y-auto pr-1 text-sm">
             {slots.map((slot) => {
               const checked = present[slot.application_id];
-              // Attendance is only finalized once the session has ended; until then
-              // the status stays blank even when the checkbox is ticked.
+              // Saving sends every row, so once edited an unticked row will be saved as absent.
+              const willBe = checked ? "PRESENT" : "ABSENT";
+              const dirty = touched && !locked && willBe !== slot.attendance;
+              const shown = dirty ? willBe : slot.attendance;
+              // No status before the session starts: nobody can be marked yet.
               let status: string | null = null;
-              if (session.finished) status = touched || slot.attendance ? (checked ? "Present" : "Absent") : "Not marked";
+              if (session.started || slot.attendance) {
+                status = shown === "PRESENT" ? "Present" : shown === "ABSENT" ? "Absent" : "Not marked";
+              }
               let badge = "border-neutral-400 bg-neutral-100 text-neutral-700";
               if (status === "Present") badge = "border-green-600 bg-green-100 text-green-900";
               if (status === "Absent") badge = "border-red-400 bg-red-100 text-red-900";
+              if (dirty) badge += " border-dashed";
+              let statusNote: string | null = null;
+              if (dirty) statusNote = "Unsaved";
+              else if (slot.attendance && slot.marked_at) statusNote = slot.marked_at;
+              const statusTitle =
+                !dirty && slot.attendance && slot.marked_at
+                  ? `Marked ${status?.toLowerCase()} at ${slot.marked_at}${slot.marked_by ? ` by ${slot.marked_by}` : ""}`
+                  : undefined;
               // A scored applicant stays present and stays in the session.
               const scoredLock = slot.scored && slot.attendance === "PRESENT";
               return (
@@ -473,8 +491,14 @@ function AttendancePanel({
                     type="checkbox"
                     id={`slot-${slot.application_id}`}
                     checked={checked}
-                    disabled={!canWrite || locked || scoredLock}
-                    title={scoredLock ? "Has an exam score, so attendance stays Present" : undefined}
+                    disabled={!canWrite || !attendanceOpen || scoredLock}
+                    title={
+                      scoredLock
+                        ? "Has an exam score, so attendance stays Present"
+                        : !session.started
+                          ? "Attendance opens when the session starts"
+                          : undefined
+                    }
                     onChange={(e) => {
                       setTouched(true);
                       setPresent((prev) => ({ ...prev, [slot.application_id]: e.target.checked }));
@@ -490,7 +514,16 @@ function AttendancePanel({
                       Scored
                     </span>
                   )}
-                  {status && <span className={`rounded-full border px-2 text-[11px] ${badge}`}>{status}</span>}
+                  {status && (
+                    <span className="flex shrink-0 flex-col items-end leading-tight" title={statusTitle}>
+                      <span className={`rounded-full border px-2 text-[11px] ${badge}`}>{status}</span>
+                      {statusNote && (
+                        <span className={`mt-0.5 text-[10px] tabular-nums ${dirty ? "text-amber-700" : "text-neutral-500"}`}>
+                          {statusNote}
+                        </span>
+                      )}
+                    </span>
+                  )}
                   {canWrite && !locked && !slot.scored && (
                     <button
                       type="button"
@@ -519,16 +552,23 @@ function AttendancePanel({
               <Archive className="size-3.5" aria-hidden="true" />
               This session is archived and read-only. Restore it from the Archived tab to make changes.
             </p>
-          ) : (
-            session.finished &&
+          ) : session.finished ? (
             slots.length > 0 && (
               <p className="flex items-center gap-1.5 text-xs text-neutral-500">
                 <Lock className="size-3.5" aria-hidden="true" />
                 This session has ended; attendance is locked.
               </p>
             )
+          ) : (
+            !session.started &&
+            slots.length > 0 && (
+              <p className="flex items-center gap-1.5 text-xs text-neutral-500">
+                <Clock className="size-3.5" aria-hidden="true" />
+                Attendance opens when the session starts{session.time ? ` (${session.date}, ${session.time})` : ""}.
+              </p>
+            )
           )}
-          {canWrite && slots.length > 0 && !locked && (
+          {canWrite && slots.length > 0 && attendanceOpen && (
             <div className="flex flex-wrap justify-end gap-2 border-t border-neutral-200 pt-3">
               <button
                 type="button"
