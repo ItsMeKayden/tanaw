@@ -1,19 +1,15 @@
 // Plain-language insights for the Analytics → Overview cards, generated from the
 // same figures the charts show. Each returns null when there is nothing to say.
+import { fmt, percent, plural, type Insight } from "@/features/reports/insight";
 import type { getOverview } from "@/features/reports/overview";
-import { NEAR_MISS_MARGIN, pct } from "@/features/reports/overview";
-
-export type InsightTone = "positive" | "attention" | "neutral";
-export type Insight = { tone: InsightTone; text: string };
+import { NEAR_MISS_MARGIN } from "@/features/reports/overview";
+import { pct } from "@/features/reports/stats";
 
 type Overview = Awaited<ReturnType<typeof getOverview>>;
 
 /** Subjects closer than this many points are described as "about the same". */
 const SIMILAR_SUBJECTS_GAP = 5;
 
-const fmt = (value: number) => value.toLocaleString("en-US");
-const percent = (value: number) => `${value.toFixed(1)}%`;
-const plural = (count: number, one: string, many = `${one}s`) => `${fmt(count)} ${count === 1 ? one : many}`;
 const signed = (value: number) => `${value > 0 ? "+" : ""}${value.toFixed(1)}`;
 
 /** Where the pipeline loses the most applicants. */
@@ -94,7 +90,7 @@ export function distributionInsight(d: Overview): Insight | null {
 
 /** Change between the two most recent school years that have results. */
 export function trendInsight(d: Overview): Insight | null {
-  const years = d.yearly.filter((year) => year.passingRate !== null && year.average !== null);
+  const years = d.yearly.filter((year) => year.passingRate !== null);
   if (years.length === 0) return null;
   if (years.length === 1) {
     return {
@@ -104,14 +100,12 @@ export function trendInsight(d: Overview): Insight | null {
   }
   const [before, latest] = years.slice(-2);
   const rateChange = latest.passingRate! - before.passingRate!;
-  const averageChange = latest.average! - before.average!;
-  const direction = (change: number) => (change > 0.05 ? "rose" : change < -0.05 ? "fell" : "held steady");
+  const direction = rateChange > 0.05 ? "rose" : rateChange < -0.05 ? "fell" : "held steady";
   return {
     tone: rateChange > 0.05 ? "positive" : rateChange < -0.05 ? "attention" : "neutral",
     text:
-      `From ${before.label} to ${latest.label}, the passing rate ${direction(rateChange)} ` +
-      `(${percent(before.passingRate!)} → ${percent(latest.passingRate!)}, ${signed(rateChange)} pts) and the average score ` +
-      `${direction(averageChange)} (${before.average!.toFixed(1)} → ${latest.average!.toFixed(1)}).`,
+      `From ${before.label} to ${latest.label}, the passing rate ${direction} ` +
+      `(${percent(before.passingRate!)} → ${percent(latest.passingRate!)}, ${signed(rateChange)} percentage points).`,
   };
 }
 
@@ -134,6 +128,6 @@ export function subjectInsight(d: Overview): Insight | null {
     tone: weakest.value < 50 ? "attention" : "neutral",
     text:
       `Examinees did worst in ${weakest.label} (${percent(weakest.value)}) and best in ${strongest.label} (${percent(strongest.value)}), ` +
-      `a ${gap.toFixed(1)}-point gap.${weakest.value < 50 ? ` Fewer than half the ${weakest.label} points were earned.` : ""}`,
+      `a gap of ${gap.toFixed(1)} points.${weakest.value < 50 ? ` Fewer than half the ${weakest.label} points were earned.` : ""}`,
   };
 }

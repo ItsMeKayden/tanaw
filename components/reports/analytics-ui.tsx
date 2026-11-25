@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import { AutoSubmitSelect } from "@/components/reports/auto-submit-select";
 import { ExportMenu } from "@/components/reports/export-menu";
-import type { Insight, InsightTone } from "@/features/reports/overview-insights";
+import type { Insight, InsightTone } from "@/features/reports/insight";
 
 /**
  * Chart colors, validated together for color-blind safety (dataviz
@@ -14,8 +14,6 @@ export const CHART_COLORS = {
   passed: "#1f4a9f",
   waitlisted: "#d97706",
   failed: "#5598e7",
-  /** Second line in a two-series chart (pairs with "passed" blue). */
-  secondary: "#eb6834",
 } as const;
 
 const fmt = (value: number) => value.toLocaleString("en-US");
@@ -199,7 +197,8 @@ export function MeterList({
   color = CHART_COLORS.passed,
   fill = false,
 }: Readonly<{
-  rows: { label: string; value: number; figure: string; note?: string; detail?: string }[];
+  /** `sublabel` sits muted beside the label on the same line; `detail` goes on its own line under the bar. */
+  rows: { label: string; sublabel?: string; value: number; figure: string; note?: string; detail?: string }[];
   max: number;
   color?: string;
   fill?: boolean;
@@ -208,9 +207,15 @@ export function MeterList({
   return (
     <ul className={fill ? "flex flex-1 flex-col justify-around gap-4" : "space-y-3"}>
       {rows.map((row) => (
-        <li key={row.label} title={`${row.label}: ${row.figure}${row.note ? ` (${row.note})` : ""}${row.detail ? `. ${row.detail}` : ""}`}>
+        <li
+          key={row.label}
+          title={`${row.label}${row.sublabel ? ` (${row.sublabel})` : ""}: ${row.figure}${row.note ? ` (${row.note})` : ""}${row.detail ? `. ${row.detail}` : ""}`}
+        >
           <div className="mb-1 flex items-baseline justify-between gap-3 text-sm">
-            <span className="truncate text-neutral-700">{row.label}</span>
+            <span className="min-w-0 truncate text-neutral-700">
+              {row.sublabel ? <span className="font-medium text-neutral-900">{row.label}</span> : row.label}
+              {row.sublabel ? <span className="ml-2 text-xs text-neutral-500">{row.sublabel}</span> : null}
+            </span>
             <span className="shrink-0 font-semibold text-neutral-900 tabular-nums">
               {row.figure}
               {row.note ? <span className="ml-1.5 text-xs font-normal text-neutral-500">{row.note}</span> : null}
@@ -347,10 +352,13 @@ export function TrendChart({
   labels,
   series,
   max = 100,
+  tickSuffix = "",
 }: Readonly<{
   labels: string[];
   series: { label: string; color: string; values: (number | null)[]; format: (value: number) => string }[];
   max?: number;
+  /** Appended to the y-axis numbers, e.g. "%". */
+  tickSuffix?: string;
 }>) {
   if (labels.length === 0 || series.every((s) => s.values.every((v) => v === null))) {
     return <EmptyChart>No exam results in recent school years.</EmptyChart>;
@@ -383,7 +391,7 @@ export function TrendChart({
       {[0, 25, 50, 75, 100].map((tick) => (
         <g key={tick}>
           <line x1={left} x2={width - right} y1={y(tick)} y2={y(tick)} stroke="#e5e5e5" />
-          <text x={left - 8} y={y(tick) + 4} textAnchor="end" fontSize="11" fill="#737373">{tick}</text>
+          <text x={left - 8} y={y(tick) + 4} textAnchor="end" fontSize="11" fill="#737373">{`${tick}${tickSuffix}`}</text>
         </g>
       ))}
       {labels.map((label, index) => (
@@ -418,151 +426,85 @@ export function TrendChart({
   );
 }
 
-export function DonutChart({
-  passed,
-  failed,
-  title,
-}: Readonly<{ passed: number; failed: number; title: string }>) {
-  const total = passed + failed;
-  const passedPct = total ? (passed / total) * 100 : 0;
-  const failedPct = total ? (failed / total) * 100 : 0;
+/** A row of links that works like a tab switcher (e.g. All / Public / Private). */
+export function SegmentedLinks({
+  label,
+  options,
+}: Readonly<{ label: string; options: { label: string; href: string; active: boolean }[] }>) {
   return (
-    <div>
-      {title && <p className="mb-2 text-center text-xs font-semibold">{title}</p>}
-      <div className="flex items-center justify-center gap-5">
-        <div
-          className="relative size-[180px] rounded-full"
-          style={{ background: `conic-gradient(#1f4a9f 0 ${passedPct}%, #93baf4 ${passedPct}% 100%)` }}
+    <nav aria-label={label} className="inline-flex h-9 items-center rounded-lg border border-neutral-300 bg-white p-0.5 shadow-xs">
+      {options.map((option) => (
+        <a
+          key={option.label}
+          href={option.href}
+          aria-current={option.active ? "page" : undefined}
+          className={`rounded-md px-3.5 py-1 text-sm font-medium transition-colors ${
+            option.active ? "bg-[#191e73] text-white" : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
+          }`}
         >
-          <div className="absolute inset-[34px] flex flex-col items-center justify-center rounded-full bg-white text-center">
-            <strong className="text-base">{total.toLocaleString()}</strong>
-            <span className="text-xs">examinees</span>
-          </div>
-        </div>
-        <div className="space-y-2 text-xs">
-          <div><span className="mr-2 inline-block size-3 bg-[#1f4a9f]" />Passed: {passed.toLocaleString()} ({passedPct.toFixed(1)}%)</div>
-          <div><span className="mr-2 inline-block size-3 bg-[#93baf4]" />Failed: {failed.toLocaleString()} ({failedPct.toFixed(1)}%)</div>
-        </div>
-      </div>
-    </div>
+          {option.label}
+        </a>
+      ))}
+    </nav>
   );
 }
 
-export function LineChart({
-  points,
-  title,
-}: Readonly<{ points: { label: string; value: number }[]; title: string }>) {
-  const max = 100;
-  const width = 420;
-  const height = 190;
-  const left = 45;
-  const right = 12;
-  const top = 20;
-  const bottom = 35;
-  const plotW = width - left - right;
-  const plotH = height - top - bottom;
-  const step = points.length > 1 ? plotW / (points.length - 1) : 0;
-  const coords = points.map((point, index) => ({
-    x: left + step * index,
-    y: top + plotH - (point.value / max) * plotH,
-    ...point,
-  }));
-  const path = coords.map((point, index) => `${index ? "L" : "M"}${point.x} ${point.y}`).join(" ");
-  return (
-    <div>
-      <p className="mb-1 text-center text-xs font-semibold">{title}</p>
-      <svg viewBox={`0 0 ${width} ${height}`} className="h-[260px] w-full" role="img" aria-label={title}>
-        {[0, 25, 50, 75, 100].map((tick) => {
-          const y = top + plotH - (tick / max) * plotH;
-          return <g key={tick}><line x1={left} x2={width-right} y1={y} y2={y} stroke="#d1d5db" strokeDasharray="4 4" /><text x={left-8} y={y+3} textAnchor="end" fontSize="9" fill="#4b5563">{tick}</text></g>;
-        })}
-        <line x1={left} x2={left} y1={top} y2={top+plotH} stroke="#374151" />
-        <line x1={left} x2={width-right} y1={top+plotH} y2={top+plotH} stroke="#374151" />
-        {coords.length > 1 && <path d={path} fill="none" stroke="#1f4a9f" strokeWidth="2.5" />}
-        {coords.map((point) => <g key={point.label}><circle cx={point.x} cy={point.y} r="4" fill="#1f4a9f" /><text x={point.x} y={point.y-8} textAnchor="middle" fontSize="8" fill="#111827">{point.value.toFixed(1)}%</text><text x={point.x} y={height-8} textAnchor="middle" fontSize="8" fill="#374151">{point.label}</text></g>)}
-      </svg>
-    </div>
-  );
-}
+const RANK_BADGES = ["bg-[#191e73] text-white", "bg-[#3a41a8] text-white", "bg-[#6b71c9] text-white"];
 
-export function HorizontalBars({
-  items,
-  title,
-  max = 100,
-}: Readonly<{ items: { label: string; value: number }[]; title: string; max?: number }>) {
+/** Ranked schools: the ranked figure with a bar against the top school, plus the pass rate. */
+export function RankTable({
+  rows,
+  unit,
+  empty,
+}: Readonly<{
+  rows: { name: string; type: string | null; value: number; passingRate: number; examinees: number }[];
+  unit: string;
+  empty: string;
+}>) {
+  if (rows.length === 0) return <EmptyChart>{empty}</EmptyChart>;
+  const max = Math.max(1, ...rows.map((row) => row.value));
+  // Competition ranking: tied schools share a rank (1, 1, 3 …).
+  const rankOf = (value: number) => 1 + rows.filter((row) => row.value > value).length;
   return (
-    <div>
-      {title && <p className="mb-3 text-center text-xs font-semibold">{title}</p>}
-      <div className="space-y-3">
-        {items.map((item) => (
-          <div key={item.label} className="grid grid-cols-[120px_1fr_42px] items-center gap-2 text-xs">
-            <span className="truncate text-right">{item.label}</span>
-            <div className="h-5 bg-neutral-100"><div className="h-full bg-[#1f4a9f]" style={{ width: `${Math.max(0, Math.min(100, (item.value / max) * 100))}%` }} /></div>
-            <span>{item.value}%</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-export function VerticalBars({
-  items,
-  title,
-}: Readonly<{ items: { label: string; publicValue: number; privateValue: number }[]; title: string }>) {
-  const max = Math.max(1, ...items.flatMap((item) => [item.publicValue, item.privateValue])) * 1.15;
-  const width = 430;
-  const height = 210;
-  const base = 170;
-  const left = 50;
-  const slot = (width - left - 20) / Math.max(items.length, 1);
-  return (
-    <div>
-      <p className="mb-2 text-center text-xs font-semibold">{title}</p>
-      <svg viewBox={`0 0 ${width} ${height}`} className="h-[220px] w-full" role="img" aria-label={title}>
-        {[0, .25, .5, .75, 1].map((tick) => { const y=base-tick*(base-20); return <g key={tick}><line x1={left} x2={width-10} y1={y} y2={y} stroke="#d1d5db" strokeDasharray="4 4" /><text x={left-8} y={y+3} textAnchor="end" fontSize="8">{Math.round(max*tick)}</text></g>; })}
-        {items.map((item,index) => { const x=left+index*slot+18; const ph=(item.publicValue/max)*(base-20); const pr=(item.privateValue/max)*(base-20); return <g key={item.label}><rect x={x} y={base-ph} width="28" height={ph} fill="#1f4a9f"/><rect x={x+31} y={base-pr} width="28" height={pr} fill="#93baf4"/><text x={x+29} y={base+14} textAnchor="middle" fontSize="8">{item.label}</text><text x={x+14} y={base-ph-4} textAnchor="middle" fontSize="7">{item.publicValue}</text><text x={x+45} y={base-pr-4} textAnchor="middle" fontSize="7">{item.privateValue}</text></g>; })}
-      </svg>
-      <div className="mt-1 flex justify-center gap-5 text-xs"><span><i className="mr-1 inline-block size-3 bg-[#1f4a9f]" />Public</span><span><i className="mr-1 inline-block size-3 bg-[#93baf4]" />Private</span></div>
-    </div>
-  );
-}
-
-export function ScoreHistogram({
-  items,
-  title,
-}: Readonly<{ items: { label: string; privateValue: number; publicValue: number }[]; title: string }>) {
-  const max = Math.max(1, ...items.map((item) => item.privateValue + item.publicValue));
-  const width = 430;
-  const height = 210;
-  const base = 170;
-  const left = 42;
-  const slot = (width - left - 18) / Math.max(items.length, 1);
-  const ceiling = Math.ceil(max / 100) * 100 || 100;
-
-  return (
-    <div>
-      {title && <p className="mb-2 text-center text-xs font-semibold">{title}</p>}
-      <svg viewBox={`0 0 ${width} ${height}`} className="h-[220px] w-full" role="img" aria-label={title}>
-        {[0, 0.25, 0.5, 0.75, 1].map((tick) => {
-          const y = base - tick * (base - 20);
-          return <g key={tick}><line x1={left} x2={width - 10} y1={y} y2={y} stroke="#d1d5db" strokeDasharray="4 4" /><text x={left - 7} y={y + 3} textAnchor="end" fontSize="8">{Math.round(ceiling * tick)}</text></g>;
-        })}
-        {items.map((item, index) => {
-          const x = left + index * slot + 3;
-          const belowHeight = (item.privateValue / ceiling) * (base - 20);
-          const passedHeight = (item.publicValue / ceiling) * (base - 20);
-          const barWidth = Math.max(20, slot - 5);
-          return <g key={item.label}>
-            <rect x={x} y={base - belowHeight} width={barWidth} height={belowHeight} fill="#93baf4" />
-            <rect x={x} y={base - belowHeight - passedHeight} width={barWidth} height={passedHeight} fill="#1f4a9f" />
-            <text x={x + barWidth / 2} y={base + 14} textAnchor="middle" fontSize="8">{item.label}</text>
-            {(item.privateValue + item.publicValue) > 0 && <text x={x + barWidth / 2} y={base - belowHeight - passedHeight - 4} textAnchor="middle" fontSize="7">{item.privateValue + item.publicValue}</text>}
-          </g>;
-        })}
-        <text x={left + (width - left) / 2} y={height - 1} textAnchor="middle" fontSize="8">Exam score</text>
-      </svg>
-      <div className="mt-1 flex justify-center gap-5 text-xs"><span><i className="mr-1 inline-block size-3 bg-[#93baf4]" />Below passing score</span><span><i className="mr-1 inline-block size-3 bg-[#1f4a9f]" />Passed</span></div>
+    <div className="-mx-1 overflow-x-auto">
+      <table className="w-full border-collapse text-sm">
+        <thead>
+          <tr className="border-b border-neutral-200 text-left text-xs text-neutral-500">
+            <th className="w-10 px-1 pb-2 font-medium">#</th>
+            <th className="px-1 pb-2 font-medium">School</th>
+            <th className="w-20 px-1 pb-2 text-right font-medium">{unit}</th>
+            <th className="w-20 px-1 pb-2 text-right font-medium" title="Passed ÷ examinees">Pass rate</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-neutral-100">
+          {rows.map((row, index) => (
+            <tr key={`${row.name}-${index}`}>
+              <td className="px-1 py-2.5 align-top">
+                <span
+                  className={`inline-flex size-6 items-center justify-center rounded-full text-xs font-semibold ${
+                    RANK_BADGES[rankOf(row.value) - 1] ?? "bg-neutral-100 text-neutral-600"
+                  }`}
+                >
+                  {rankOf(row.value)}
+                </span>
+              </td>
+              <td className="px-1 py-2.5">
+                <span className="flex items-baseline gap-2">
+                  <span className="font-medium text-neutral-900">{row.name}</span>
+                  {row.type ? <span className="shrink-0 text-xs text-neutral-500">{row.type}</span> : null}
+                </span>
+                <span className="mt-1.5 block h-1.5 overflow-hidden rounded-full bg-neutral-100" aria-hidden="true">
+                  <span className="block h-full rounded-full bg-[#1f4a9f]" style={{ width: `${(row.value / max) * 100}%` }} />
+                </span>
+              </td>
+              <td className="px-1 py-2.5 text-right align-top font-semibold text-neutral-900 tabular-nums">{fmt(row.value)}</td>
+              <td className="px-1 py-2.5 text-right align-top text-neutral-700 tabular-nums" title={`${row.examinees} examinee(s)`}>
+                {row.examinees ? `${row.passingRate.toFixed(1)}%` : "—"}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

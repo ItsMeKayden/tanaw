@@ -3,6 +3,7 @@
 import { ACTIVE_APPLICATION } from "@/features/admission/archive-core";
 import { getPassingRule } from "@/features/admission/exam";
 import { ADMISSION_STAGES, EXAM_RESULT_PASSED } from "@/features/admission/stages";
+import { latestPerApplication, mean, median, num, pct } from "@/features/reports/stats";
 import { prisma } from "@/lib/prisma";
 
 /** How many school years the year-over-year chart shows, ending at the selected one. */
@@ -13,35 +14,10 @@ export const NEAR_MISS_MARGIN = 5;
 
 export type OverviewFilters = { cycleId: number | null; campusId: number | null; courseId: number | null };
 
-const num = (value: unknown) => {
-  const n = Number(value);
-  return Number.isFinite(n) ? n : 0;
-};
-export const pct = (part: number, whole: number) => (whole ? (part / whole) * 100 : 0);
-const mean = (values: number[]) => (values.length ? values.reduce((sum, v) => sum + v, 0) / values.length : 0);
-
-function median(values: number[]) {
-  if (!values.length) return 0;
-  const sorted = [...values].sort((a, b) => a - b);
-  const middle = Math.floor(sorted.length / 2);
-  return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
-}
-
 function standardDeviation(values: number[]) {
   if (!values.length) return 0;
   const average = mean(values);
   return Math.sqrt(mean(values.map((value) => (value - average) ** 2)));
-}
-
-/** One exam result per applicant: their latest. */
-function latestPerApplication<T extends { result_id: number; application_id: number | null }>(rows: T[]) {
-  const latest = new Map<number, T>();
-  for (const row of rows) {
-    if (row.application_id === null) continue;
-    const seen = latest.get(row.application_id);
-    if (!seen || row.result_id > seen.result_id) latest.set(row.application_id, row);
-  }
-  return [...latest.values()];
 }
 
 export async function getOverview({ cycleId, campusId, courseId }: OverviewFilters) {

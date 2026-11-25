@@ -16,7 +16,8 @@ import {
   TrendChart,
 } from "@/components/reports/analytics-ui";
 import { resolveCycle } from "@/features/admission/admission-stats";
-import { getOverview, pct } from "@/features/reports/overview";
+import { getOverview } from "@/features/reports/overview";
+import { pct } from "@/features/reports/stats";
 import {
   distributionInsight,
   pipelineInsight,
@@ -217,23 +218,15 @@ export default async function ReportsPage({ searchParams }: PageProps) {
       {/* Compared with earlier years, and by subject */}
       <div className="grid gap-4 lg:grid-cols-2">
         <AnalyticsCard
-          title="Year over year"
-          description={`Last ${data.yearly.length} school year${data.yearly.length === 1 ? "" : "s"}, same campus and course filters`}
+          title="Passing rate by year"
+          description={`Share of examinees who passed, last ${data.yearly.length} school year${data.yearly.length === 1 ? "" : "s"} (same campus and course filters)`}
           insight={trendInsight(data)}
         >
-          <div className="mb-3">
-            <ChartLegend
-              items={[
-                { label: "Passing rate (%)", color: CHART_COLORS.passed },
-                { label: "Average score (of 100)", color: CHART_COLORS.secondary },
-              ]}
-            />
-          </div>
           <TrendChart
+            tickSuffix="%"
             labels={data.yearly.map((y) => y.label)}
             series={[
               { label: "Passing rate", color: CHART_COLORS.passed, values: data.yearly.map((y) => y.passingRate), format: percent },
-              { label: "Average score", color: CHART_COLORS.secondary, values: data.yearly.map((y) => y.average), format: (v) => v.toFixed(1) },
             ]}
           />
         </AnalyticsCard>
