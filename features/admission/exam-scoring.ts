@@ -4,6 +4,14 @@
  */
 import type { PassingRule } from "@/features/admission/exam";
 
+/**
+ * Today's date in the Philippines as "YYYY-MM-DD". Use this, not
+ * toISOString(), which gives the UTC date (yesterday until 8 AM in Manila).
+ */
+export function manilaTodayIso(now = new Date()) {
+  return now.toLocaleDateString("en-CA", { timeZone: "Asia/Manila" });
+}
+
 /** tbl_exam_session_applicant.attendance values (null = not marked yet). */
 export const ATTENDANCE = { PRESENT: "PRESENT", ABSENT: "ABSENT" } as const;
 
